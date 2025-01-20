@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AppShell from "@/components/layout/app-shell";
-import Dashboard from "@/pages/admin/dashboard/dashboard";
-import Login from "@/pages/authentication/login";
+import AppShell from "@/components/layout/AppShell";
+import Dashboard from "@/pages/admin/dashboard/Dashboard";
+import Login from "@/pages/authentication/Login";
+
 import { createBrowserRouter } from "react-router-dom";
 
 const PrivateRoute = ({ element, ...rest }: any) => {

@@ -1,6 +1,48 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+
+// Lazy loading các component
+const PendingUniversityList = React.lazy(
+  () =>
+    import(
+      "@/components/partial/admin-dashboard/pending-request/PendingRequest"
+    )
+);
+const ReportList = React.lazy(
+  () => import("@/components/partial/admin-dashboard/report/Report")
+);
+
+import { UniversityList } from "@/api/agent/UniversityAgent";
+import { getReportList } from "@/api/agent/ReportAgent";
+import { University } from "@/models/University";
+import { Report } from "@/models/Report";
+import LoadingAnimation from "@/components/ui/loading";
 
 export default function Dashboard() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [universityList, setUniversityList] = useState<University[]>([]);
+  const [reportList, setReportList] = useState<Report[]>([]);
+
+  useEffect(() => {
+    const loadAllData = async () => {
+      try {
+        // Tải cả component lười biếng và dữ liệu API song song
+        const [uniData, reportData] = await Promise.all([
+          UniversityList(), // Gọi API dữ liệu danh sách trường đại học
+          getReportList(), // Gọi API dữ liệu báo cáo
+        ]);
+        setUniversityList(uniData);
+        setReportList(reportData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setIsLoading(false); // Hoàn tất tải
+      }
+    };
+
+    loadAllData();
+  }, []);
+
   return (
     <>
       <div className="mb-2 flex items-center justify-between space-y-2">
@@ -106,9 +148,22 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"></div>
+      {/* Sử dụng Suspense cho Lazy Loading */}
+      <React.Suspense fallback={<LoadingAnimation />}>
+        {/* Hiển thị spinner nếu API chưa tải xong */}
+        {isLoading ? (
+          <LoadingAnimation />
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <PendingUniversityList data={universityList} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <ReportList data={reportList} />
+            </div>
+          </>
+        )}
+      </React.Suspense>
     </>
-    //   </Layout.Body>
-    // </Layout>
   );
 }

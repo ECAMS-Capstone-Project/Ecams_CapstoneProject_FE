@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        custom: "bg-gradient-to-r from-[#136CB5] to-[#49BBBD] text-white",
+        custom:
+          "bg-gradient-to-r from-[#136CB5] to-[#49BBBD] text-white stroke-none",
         default:
           "bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
         destructive:

@@ -1,8 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
 // import { UserNav } from "./user-nav";
 import useIsCollapsed from "@/hooks/use-is-collapsed";
-import { Layout } from "./layout";
 import Sidebar from "../ui/sidebar";
+import { Layout } from "./Layout";
 
 export default function AppShell() {
   const [isCollapsed, setIsCollapsed] = useIsCollapsed();

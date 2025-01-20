@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Layout } from "../layout/layout";
 import { Button } from "./button";
 import { ChevronLeft, Menu, X } from "lucide-react";
 import { sidelinks } from "@/data/sidelinks";
 import Nav from "./nav";
+import { Layout } from "../layout/Layout";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean;
