@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppShell from "@/components/layout/AppShell";
-import Dashboard from "@/pages/admin/dashboard/Dashboard";
-import Login from "@/pages/authentication/Login";
+import Dashboard from "@/pages/admin/dashboard/dashboard";
+import Login from "@/pages/authentication/login";
 
 import { createBrowserRouter } from "react-router-dom";
 

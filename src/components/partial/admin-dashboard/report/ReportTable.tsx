@@ -18,7 +18,7 @@ interface ReportProps {
 
 export function ReportTable({ data }: ReportProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [, setSelectedReport] = useState<Report | null>(null);
 
   const handleViewDetail = (report: Report) => {
     setSelectedReport(report);
