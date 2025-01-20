@@ -1,36 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TextField, Button, Link, FormControl } from '@mui/material';
 
 const formSchema = z.object({
-  phoneNumber: z.string().min(1, { message: "Phone number is required" }),
+  email: z.string().email(),
   password: z.string().min(1, { message: "Password is required" }),
-  rememberMe: z.boolean().nullable(),
 });
 
 type userFormValue = z.infer<typeof formSchema>;
 
 const LoginForm: React.FC = () => {
-  const form = useForm<userFormValue>({
+  const { handleSubmit, register, formState: { errors } } = useForm<userFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phoneNumber: "",
+      email: "",
       password: "",
-      rememberMe: false,
     },
   });
 
@@ -41,7 +28,7 @@ const LoginForm: React.FC = () => {
   return (
     <>
       <div className="flex items-center max-h-screen sm:p-8"></div>
-      <div className=" w-full items-center justify-center flex flex-col sm:flex-row overflow-hidden sm:p-8">
+      <div className="w-full items-center justify-center flex flex-col sm:flex-row overflow-hidden sm:p-8">
         {/* Left Side */}
         <div className="w-full sm:w-1/2 p-24 pt-0 ">
           <h1 className="text-3xl font-bold text-gray-800">Login</h1>
@@ -49,76 +36,67 @@ const LoginForm: React.FC = () => {
             Login to access your travelwise account
           </p>
 
-          <Form {...form}>
-            <form className="mt-6" onSubmit={form.handleSubmit(onSubmit)}>
-              {/* Phone Number Input */}
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="phoneNumber"
-                        placeholder="0123456789"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
+            {/* Email Input */}
+            <FormControl fullWidth margin="normal" error={!!errors.email}>
+              <TextField
+                id="email"
+                label="Email"
+                {...register('email')}
+                autoComplete="email"
+                variant="outlined"
+                placeholder="guest@email.com"
+                error={!!errors.email}
+                helperText={errors.email?.message}
+
               />
+            </FormControl>
 
-              {/* Password Input */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="mt-4">
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="****************"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            {/* Password Input */}
+            <FormControl fullWidth margin="normal" error={!!errors.password}>
+              <TextField
+                id="outlined-password-input"
+                label="Password"
+                placeholder="*********"
+                type="password"
+                {...register('password')}
+                variant="outlined"
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                autoComplete="current-password"
               />
+            </FormControl>
 
-              {/* Remember Me and Forgot Password */}
-              <div className="flex items-center justify-between mt-4">
-                <div>
-                  <Checkbox {...form.register("rememberMe")} id="rememberMe" />
-                  <Label htmlFor="rememberMe" className="ml-2 text-gray-700">
-                    Remember me
-                  </Label>
-                </div>
-                <a href="#" className="text-sm text-[#FF8682] hover:underline">
-                  Forgot Password
-                </a>
-              </div>
+            {/* Forgot Password */}
+            <div className="flex items-center justify-end mt-4">
+              <Link href="#" variant="body2" sx={{ color: '#FF8682', textDecoration: 'none' }}>
+                Forgot Password
+              </Link>
+            </div>
 
-              {/* Login Button */}
-              <Button
-                type="submit"
-                className="w-full mt-6 bg-gradient-to-r from-[#136CB5] to-[#49BBBD]"
-              >
-                Login
-              </Button>
+            {/* Login Button */}
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{
+                mt: 3,
+                background: 'linear-gradient(to right, #136CB5, #49BBBD)',
+                textTransform: "none"
+              }}
+            >
+              Login
+            </Button>
 
-              <p className="text-center text-gray-600 mt-4">
-                Don't have an account?{" "}
-                <a href="#" className="text-[#FF8682] hover:underline">
-                  Sign up
-                </a>
-              </p>
-            </form>
-          </Form>
+            {/* Sign Up Link */}
+            <p className="text-center text-gray-600 mt-4">
+              Don't have an account?{' '}
+              <Link href="#" sx={{ color: '#FF8682', textDecoration: 'none' }}>
+                Sign up
+              </Link>
+            </p>
+          </form>
 
           {/* Or login with */}
           <div className="mt-8 text-center">
@@ -131,14 +109,14 @@ const LoginForm: React.FC = () => {
               </div>
             </div>
             <div className="flex justify-center mt-4 gap-4">
-              <Button variant="outline" className="w-1/2 h-12">
+              <Button variant="outlined" className="w-1/2 h-12">
                 <img
                   src="public/image/facebook-icon.png"
                   alt="Facebook"
                   className="w-6 h-6"
                 />
               </Button>
-              <Button variant="outline" className="w-1/2 h-12">
+              <Button variant="outlined" className="w-1/2 h-12">
                 <img
                   src="public/image/google-icon.png"
                   alt="Google"
@@ -152,11 +130,12 @@ const LoginForm: React.FC = () => {
         {/* Right Side */}
         <div className="hidden sm:flex w-full sm:w-1/2 items-center justify-center">
           <img
-            src="public/login-img.png"
+            src="/public/login-img.png"
             alt="Login Illustration"
-            className="w-4/5 mb-20"
+            className="w-4/5 md:w-3/4 lg:w-1/2 xl:w-2/3 mb-20"
           />
         </div>
+
       </div>
     </>
   );
