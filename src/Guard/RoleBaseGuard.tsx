@@ -88,7 +88,6 @@ export default function RoleBasedGuard({
               </Button>
             )}
             {currentRole && currentRole.includes("Staff") && (
-              <Button onClick={handleNavigateHome}>Trở về trang chủ</Button>
             )}
           </AlertTitle>
         </Alert>
