@@ -35,10 +35,6 @@ export default function RoleBasedGuard({
     return () => clearTimeout(timer);
   }, []);
 
-  const handleNavigateHome = () => {
-    navigate("/");
-  };
-
   const handleNavigateDashboard = () => {
     navigate("/dashboard");
   };
@@ -88,6 +84,9 @@ export default function RoleBasedGuard({
               </Button>
             )}
             {currentRole && currentRole.includes("Staff") && (
+              <Button onClick={handleNavigateDashboard}>
+                Trở về trang Admin
+              </Button>
             )}
           </AlertTitle>
         </Alert>
