@@ -5,11 +5,11 @@ import React, { useEffect, useState } from "react";
 const PendingUniversityList = React.lazy(
   () =>
     import(
-      "@/components/partial/admin-dashboard/pending-request/PendingRequest"
+      "@/components/partial/admin/admin-dashboard/pending-request/PendingRequest"
     )
 );
 const ReportList = React.lazy(
-  () => import("@/components/partial/admin-dashboard/report/Report")
+  () => import("@/components/partial/admin/admin-dashboard/report/Report")
 );
 
 import { UniversityList } from "@/api/agent/UniversityAgent";

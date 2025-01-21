@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_ECAMS_API_URL, // Đọc từ biến môi trường
+  // baseURL: import.meta.env.VITE_ECAMS_API_URL, // Đọc từ biến môi trường
+  baseURL: "https://653b3b742e42fd0d54d4d308.mockapi.io", // Đọc từ biến môi trường
   timeout: 10000, // Thời gian timeout (10 giây)
   headers: {
     "Content-Type": "application/json", // Kiểu dữ liệu mặc định
