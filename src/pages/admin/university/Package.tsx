@@ -15,7 +15,7 @@ const DataTable = React.lazy(
   () => import("@/components/ui/datatable/data-table")
 );
 
-const Package = () => {
+const University = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [packageList, setPackageList] = useState<Package[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -44,8 +44,8 @@ const Package = () => {
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title={`Manage Package`}
-              description="Manage Pakage in the system"
+              title={`Manage University`}
+              description="Manage University in the system"
             />
 
             <Button onClick={() => setIsDialogOpen(true)}>
@@ -68,4 +68,4 @@ const Package = () => {
   );
 };
 
-export default Package;
+export default University;
