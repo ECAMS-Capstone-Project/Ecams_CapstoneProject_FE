@@ -13,9 +13,9 @@ interface RoleBasedGuardProps {
 }
 
 // Hook to get the current role
-const useCurrentRole = (): string => {
+const useCurrentRole = (): string[] => {
   const { user } = useAuth();
-  return user?.roleName || "Null";
+  return user?.roles || ["Null"];
 };
 
 // ----------------------------------------------------------------------
@@ -62,7 +62,7 @@ export default function RoleBasedGuard({ accessibleRoles, children, }: RoleBased
   //   return <HomePage />;
   // }
 
-  if (!accessibleRoles.includes(currentRole)) {
+  if (!accessibleRoles.includes(currentRole[0])) {
     return (
       <div
         style={{
@@ -77,10 +77,10 @@ export default function RoleBasedGuard({ accessibleRoles, children, }: RoleBased
           <AlertTitle style={{ fontSize: "20px" }}>Quyền truy cập bị từ chối</AlertTitle>
           Bạn không có quyền để truy cập địa chỉ này
           <AlertTitle style={{ fontSize: "20px", marginTop: "15px" }}>
-            {currentRole === "Admin" && (
+            {currentRole && currentRole[0] === "Admin" && (
               <Button onClick={handleNavigateDashboard}>Trở về trang Admin</Button>
             )}
-            {currentRole === "Customer" && (
+            {currentRole && currentRole[0] === "Customer" && (
               <Button onClick={handleNavigateHome}>Trở về trang chủ</Button>
             )}
           </AlertTitle>

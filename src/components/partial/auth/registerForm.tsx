@@ -358,7 +358,7 @@ const RegisterForm: React.FC = () => {
                                         </Button>
                                         {errors.file && (
                                             <Typography color="error" variant="caption">
-                                                {errors.file?.message}
+                                                {/* {errors.file?.message} */}
                                             </Typography>
                                         )}
                                     </label>
