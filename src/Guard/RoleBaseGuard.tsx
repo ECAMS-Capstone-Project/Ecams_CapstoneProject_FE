@@ -7,7 +7,7 @@ import WaitingModal from "@/components/global/WaitingModal";
 // ----------------------------------------------------------------------
 // Define Props
 interface RoleBasedGuardProps {
-  accessibleRoles: string[]; // Example: ['admin', 'leader']
+  accessibleRoles: string[] | "Null"; // Example: ['admin', 'leader']
   children: ReactNode;
   status?: string;
 }
@@ -15,12 +15,15 @@ interface RoleBasedGuardProps {
 // Hook to get the current role
 const useCurrentRole = (): string[] => {
   const { user } = useAuth();
-  return user?.roles || ["Null"];
+  return user?.roles || ["admin"];
 };
 
 // ----------------------------------------------------------------------
 
-export default function RoleBasedGuard({ accessibleRoles, children, }: RoleBasedGuardProps): JSX.Element {
+export default function RoleBasedGuard({
+  accessibleRoles,
+  children,
+}: RoleBasedGuardProps): JSX.Element {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -74,14 +77,17 @@ export default function RoleBasedGuard({ accessibleRoles, children, }: RoleBased
         }}
       >
         <Alert style={{ fontSize: "20px" }} severity="error">
-          <AlertTitle style={{ fontSize: "20px" }}>Quyền truy cập bị từ chối</AlertTitle>
+          <AlertTitle style={{ fontSize: "20px" }}>
+            Quyền truy cập bị từ chối
+          </AlertTitle>
           Bạn không có quyền để truy cập địa chỉ này
           <AlertTitle style={{ fontSize: "20px", marginTop: "15px" }}>
-            {currentRole && currentRole[0] === "Admin" && (
-              <Button onClick={handleNavigateDashboard}>Trở về trang Admin</Button>
+            {currentRole && currentRole.includes("Admin") && (
+              <Button onClick={handleNavigateDashboard}>
+                Trở về trang Admin
+              </Button>
             )}
-            {currentRole && currentRole[0] === "Customer" && (
-              <Button onClick={handleNavigateHome}>Trở về trang chủ</Button>
+            {currentRole && currentRole.includes("Staff") && (
             )}
           </AlertTitle>
         </Alert>

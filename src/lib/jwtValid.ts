@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { jwtDecode } from "jwt-decode";
 
 // ----------------------------------------------------------------------
@@ -23,7 +24,6 @@ const handleTokenExpired = (exp: number, refreshToken: string): void => {
   const timeLeft = exp * 1000 - currentTime;
   const refreshDelay = 1000;
   console.log(refreshToken);
-
   console.log(
     "Token will refresh in:",
     (exp * 1000 - currentTime + refreshDelay) / 1000,
