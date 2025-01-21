@@ -15,7 +15,7 @@ import {
     Avatar,
     styled,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover"
 import { CalendarIcon } from "lucide-react";
 import { formatDate } from "date-fns";
+import useAuth from "@/hooks/useAuth";
 const MAX_FILE_SIZE = 1024 * 1024 * 5;
 const ACCEPTED_IMAGE_MIME_TYPES = [
     "image/jpeg",
@@ -44,7 +45,7 @@ const schema = z.object({
     phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(6, "Confirm Password is required"),
-    university: z.string().min(1, "University is required"),
+    universityId: z.string().min(1, "University is required"),
     yearStudy: z.string().min(1, "Year of study is required"),
     address: z.string().min(1, "Address is required"),
     agreeToTerms: z.boolean().refine((val) => val, "You must agree to the terms"),
@@ -59,7 +60,8 @@ const schema = z.object({
         ),
     major: z.string().min(1, "Major is required"),
     startDate: z.date(),
-    endDate: z.date()
+    endDate: z.date(),
+    gender: z.string().min(1, "Gender is required")
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords must match",
     path: ["confirmPassword"],
@@ -83,18 +85,39 @@ const RegisterForm: React.FC = () => {
     const [preview, setPreview] = useState<string | null>(null);
     const [date, setDate] = React.useState<Date>()
     const [endDate, setEndDate] = React.useState<Date>()
+    const { registerStudent } = useAuth();
 
     const {
         handleSubmit,
         register,
+        setValue,
         formState: { errors },
     } = useForm<SignUpFormValues>({
         resolver: zodResolver(schema),
     });
+    console.log(errors);
 
-    const onSubmit = (data: SignUpFormValues) => {
+    const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
         console.log(data);
-        alert("Account created successfully!");
+        const formData = new FormData();
+        formData.append("Fullname", data.fullName);
+        formData.append("StudentId", data.studentId);
+        formData.append("Email", data.email);
+        formData.append("PhoneNumber", data.phoneNumber);
+        formData.append("Password", data.password);
+        formData.append("UniversityId", data.universityId);
+        formData.append("YearOfStudy", data.yearStudy);
+        formData.append("Address", data.address);
+        if (data.file) {
+            formData.append("StudentCardImage", data.file[0]);
+        }
+        formData.append("Major", data.major);
+        formData.append("StartDate", data.startDate.toISOString());
+        formData.append("EndDate", data.endDate.toISOString());
+        formData.append("Gender", data.gender);
+
+        await registerStudent(formData);
+
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,16 +187,16 @@ const RegisterForm: React.FC = () => {
                             </Grid2>
 
                             <Grid2 size={{ xs: 12, md: 6 }}>
-                                <FormControl fullWidth error={!!errors.major}>
-                                    <InputLabel>Major</InputLabel>
-                                    <Select {...register('major')} label="Major" id="demo-simple-select-error">
-                                        <MenuItem value="Male">Software Engineer</MenuItem>
-                                        <MenuItem value="Female">Marketing</MenuItem>
-                                        <MenuItem value="Other C">Other</MenuItem>
+                                <FormControl fullWidth error={!!errors.gender}>
+                                    <InputLabel>Gender</InputLabel>
+                                    <Select {...register('gender')} label="Gender" id="demo-simple-select-error">
+                                        <MenuItem value="MALE">Male</MenuItem>
+                                        <MenuItem value="FEMALE">Female</MenuItem>
+                                        <MenuItem value="OTHER">Other</MenuItem>
                                     </Select>
-                                    {errors.major && (
+                                    {errors.gender && (
                                         <Typography color="error" variant="caption">
-                                            {errors.major.message}
+                                            {errors.gender.message}
                                         </Typography>
                                     )}
                                 </FormControl>
@@ -222,16 +245,33 @@ const RegisterForm: React.FC = () => {
                             </Grid2>
 
                             <Grid2 size={{ xs: 12, md: 4 }}>
-                                <FormControl fullWidth error={!!errors.university}>
+                                <FormControl fullWidth error={!!errors.universityId}>
                                     <InputLabel>University</InputLabel>
-                                    <Select {...register('university')} label="University" id="demo-simple-select-error">
-                                        <MenuItem value="University A">University A</MenuItem>
+                                    <Select {...register('universityId')} label="University" id="demo-simple-select-error">
+                                        <MenuItem value="1">University A</MenuItem>
                                         <MenuItem value="University B">University B</MenuItem>
                                         <MenuItem value="University C">University C</MenuItem>
                                     </Select>
-                                    {errors.university && (
+                                    {errors.universityId && (
                                         <Typography color="error" variant="caption">
-                                            {errors.university.message}
+                                            {errors.universityId.message}
+                                        </Typography>
+                                    )}
+                                </FormControl>
+                            </Grid2>
+
+                            <Grid2 size={{ xs: 12, md: 4 }}>
+                                <FormControl fullWidth error={!!errors.yearStudy}>
+                                    <InputLabel>Year of study</InputLabel>
+                                    <Select {...register('yearStudy')} label="Year of study" id="demo-simple-select-error">
+                                        <MenuItem value="1">1</MenuItem>
+                                        <MenuItem value="2">2</MenuItem>
+                                        <MenuItem value="3">3</MenuItem>
+                                        <MenuItem value="4">4</MenuItem>
+                                    </Select>
+                                    {errors.yearStudy && (
+                                        <Typography color="error" variant="caption">
+                                            {errors.yearStudy.message}
                                         </Typography>
                                     )}
                                 </FormControl>
@@ -239,29 +279,13 @@ const RegisterForm: React.FC = () => {
 
                             <Grid2 size={{ xs: 12, md: 4 }}>
                                 <TextField
-                                    {...register('yearStudy')}
-                                    type="number"
-                                    label="Year Of Study"
+                                    {...register('major')}
+                                    type="string"
+                                    label="Major"
                                     fullWidth
-                                    error={!!errors.confirmPassword}
-                                    helperText={errors.confirmPassword?.message}
+                                    error={!!errors.major}
+                                    helperText={errors.major?.message}
                                 />
-                            </Grid2>
-
-                            <Grid2 size={{ xs: 12, md: 4 }}>
-                                <FormControl fullWidth error={!!errors.university}>
-                                    <InputLabel>Gender</InputLabel>
-                                    <Select {...register('university')} label="Gender" id="demo-simple-select-error">
-                                        <MenuItem value="University A">Male</MenuItem>
-                                        <MenuItem value="University B">Female</MenuItem>
-                                        <MenuItem value="University C">Other</MenuItem>
-                                    </Select>
-                                    {errors.university && (
-                                        <Typography color="error" variant="caption">
-                                            {errors.university.message}
-                                        </Typography>
-                                    )}
-                                </FormControl>
                             </Grid2>
 
                             <Grid2 size={{ xs: 12, md: 6 }}>
@@ -273,15 +297,19 @@ const RegisterForm: React.FC = () => {
                                             className={`w-full justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''}`}
                                         >
                                             <CalendarIcon />
-                                            {date ? formatDate(date, "PPP") : <span>Pick Start Date</span>}
+                                            {date ? formatDate(date, "PPP") : <span className="ml-3">Pick Start Date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0">
                                         <Calendar
                                             mode="single"
                                             selected={date}
-                                            onSelect={setDate}
-                                            {...register('startDate')}
+                                            onSelect={(selectedDate) => {
+                                                setDate(selectedDate || undefined); // Cập nhật giá trị `date` trong state
+                                                if (selectedDate) {
+                                                    setValue("startDate", selectedDate); // Cập nhật giá trị vào form state
+                                                }
+                                            }}
                                             initialFocus
                                         />
                                     </PopoverContent>
@@ -297,15 +325,19 @@ const RegisterForm: React.FC = () => {
                                             className={`w-full justify-start text-left font-normal ${!date ? 'text-muted-foreground' : ''}`}
                                         >
                                             <CalendarIcon />
-                                            {endDate ? formatDate(endDate, "PPP") : <span>Pick End Date</span>}
+                                            {endDate ? formatDate(endDate, "PPP") : <span className="ml-3">Pick End Date</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0">
                                         <Calendar
                                             mode="single"
-                                            selected={endDate}
-                                            onSelect={setEndDate}
-                                            {...register('endDate')}
+                                            selected={endDate || undefined} // Đảm bảo `undefined` được truyền khi `endDate` không có giá trị
+                                            onSelect={(selectedDate) => {
+                                                setEndDate(selectedDate || undefined); // Cập nhật giá trị `date` trong state
+                                                if (selectedDate) {
+                                                    setValue("endDate", selectedDate); // Cập nhật giá trị vào form state
+                                                }
+                                            }}
                                             initialFocus
                                         />
                                     </PopoverContent>
@@ -354,7 +386,7 @@ const RegisterForm: React.FC = () => {
                                             component="span"
                                             color="primary"
                                         >
-                                            Choose File
+                                            Choose student card
                                         </Button>
                                         {errors.file && (
                                             <Typography color="error" variant="caption">

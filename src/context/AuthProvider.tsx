@@ -6,7 +6,7 @@ import { LoginRequest } from "@/models/Auth/LoginRequest";
 import { loginAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
-import { registerStaffAPI } from "@/api/auth/RegisterAPI";
+import { registerStaffAPI, registerStudentAPI } from "@/api/auth/RegisterAPI";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface AuthState {
@@ -20,6 +20,7 @@ interface AuthContextProps extends AuthState {
   method: string;
   login: (data: LoginRequest) => Promise<void>;
   registerUniversity: (data: StaffRegisterRequest) => Promise<void>;
+  registerStudent: (data: FormData) => Promise<void>;
   // login_type: (type: string, user: User) => Promise<void>;
   // logout: () => Promise<void>;
   // register: (registerUser: User) => Promise<void>;
@@ -93,7 +94,8 @@ const AuthContext = createContext<AuthContextProps>({
   ...initialState,
   method: "jwt",
   login: async () => { },
-  registerUniversity: async () => { }
+  registerUniversity: async () => { },
+  registerStudent: async () => { },
   // login_type: async () => { },
   // logout: async () => { },
   // register: async () => { },
@@ -207,6 +209,23 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const registerStudent = async (dataInput: FormData) => {
+    try {
+      const response = await registerStudentAPI(dataInput);
+      console.log(response);
+      if (response) {
+        dispatch({
+          type: "REGISTER",
+        });
+        toast.success("Registration successful");
+      } else {
+        toast.error("Registration failed");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // const sendOtp = (otp: string, email: string) => {
   //   VerifyUser(otp, email)
   //     .then(() => {
@@ -230,6 +249,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         method: "jwt",
         login,
         registerUniversity,
+        registerStudent,
         // login_type,
         // logout,
         // register,
