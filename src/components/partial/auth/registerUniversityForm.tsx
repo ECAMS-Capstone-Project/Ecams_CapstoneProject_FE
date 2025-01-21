@@ -13,10 +13,13 @@ import {
     Grid2,
     Stack,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
+import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
+import { GenderEnum } from "@/lib/GenderEnum";
 
 
 // Validation schema using Zod
@@ -38,6 +41,7 @@ type SignUpFormValues = z.infer<typeof schema>;
 
 
 const RegisterUniversityForm: React.FC = () => {
+    const { registerUniversity } = useAuth();
     const {
         handleSubmit,
         register,
@@ -46,9 +50,17 @@ const RegisterUniversityForm: React.FC = () => {
         resolver: zodResolver(schema),
     });
 
-    const onSubmit = (data: SignUpFormValues) => {
+    const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
         console.log(data);
-        alert("Account created successfully!");
+        const user: StaffRegisterRequest = {
+            fullname: data.fullName,
+            email: data.email,
+            gender: data.gender as GenderEnum,
+            address: data.address,
+            phonenumber: data.phoneNumber,
+            password: data.password,
+        }
+        await registerUniversity(user)
     };
 
     return (

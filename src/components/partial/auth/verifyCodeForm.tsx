@@ -38,7 +38,7 @@ const VerifyCodeForm: React.FC = () => {
         <Box display="flex" justifyContent="center" alignItems="center">
             <Grid2 container spacing={6} maxWidth="xl" mb={4}>
                 {/* Left Side */}
-                <Grid2 size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "14px" }}>
+                <Grid2 padding={8} size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "14px" }}>
                     <Typography color="#313131" sx={{ fontWeight: "bold" }} variant="h4" gutterBottom>
                         Verify OTP
                     </Typography>

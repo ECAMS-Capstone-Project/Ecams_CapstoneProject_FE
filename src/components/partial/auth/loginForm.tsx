@@ -4,6 +4,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField, Button, Link, FormControl } from '@mui/material';
+import useAuth from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -13,6 +14,8 @@ const formSchema = z.object({
 type userFormValue = z.infer<typeof formSchema>;
 
 const LoginForm: React.FC = () => {
+  const { login } = useAuth();
+
   const { handleSubmit, register, formState: { errors } } = useForm<userFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -21,8 +24,9 @@ const LoginForm: React.FC = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<userFormValue> = (data) => {
+  const onSubmit: SubmitHandler<userFormValue> = async (data) => {
     console.log(data);
+    await login(data);
   };
 
   return (

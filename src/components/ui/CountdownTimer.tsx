@@ -31,7 +31,7 @@ const CountdownTimer: React.FC = () => {
     }, [seconds, minutes])
 
     return (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "20px" }}>
             <div className='text-base flex align-middle justify-center'>
                 Time Remaining:
                 <span className='font-bold ml-1'>
@@ -44,7 +44,7 @@ const CountdownTimer: React.FC = () => {
                 fullWidth
                 onClick={handleSentOTP}
                 variant="contained"
-                sx={{ width: 150, fontSize: "0.8rem", background: 'linear-gradient(to right, #136CB5, #49BBBD)', color: "white" }}
+                sx={{ width: 150, fontSize: "0.8rem" }}
             >
                 Resend OTP
             </Button>

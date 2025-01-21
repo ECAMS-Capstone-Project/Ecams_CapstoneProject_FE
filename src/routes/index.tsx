@@ -1,4 +1,7 @@
 import ErrorException from "@/components/global/ErrorException";
+import Contact from "@/components/partial/Contact/Contact";
+import GuestAuth from "@/Guard/GuestAuth";
+import ChooseRegister from "@/pages/authentication/chooseRegister";
 import ForgotPassword from "@/pages/authentication/forgotPassword";
 import Login from "@/pages/authentication/login";
 import Register from "@/pages/authentication/register";
@@ -9,12 +12,12 @@ import { createBrowserRouter } from "react-router-dom";
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Login />,
+        element: <Contact />,
         errorElement: <ErrorException />
     },
     {
         path: "/login",
-        element: <Login />,
+        element: <GuestAuth> <Login /> </GuestAuth>,
         errorElement: <ErrorException />
     },
     {
@@ -35,6 +38,11 @@ export const router = createBrowserRouter([
     {
         path: "/verify-code",
         element: <VerifyCode />,
+        errorElement: <ErrorException />
+    },
+    {
+        path: "/choose-register",
+        element: <ChooseRegister />,
         errorElement: <ErrorException />
     }
 ])
