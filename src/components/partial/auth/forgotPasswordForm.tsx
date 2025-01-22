@@ -7,10 +7,14 @@ import {
     Grid2,
     Stack,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useNavigate } from "react-router-dom";
+import { ForgotPasswordAPI } from "@/api/auth/OtpAPI";
+import toast from "react-hot-toast";
+import { ring2 } from 'ldrs'
 
 // Validation schema using Zod
 const schema = z.object({
@@ -21,29 +25,42 @@ type SignUpFormValues = z.infer<typeof schema>;
 
 
 const ForgotPasswordForm: React.FC = () => {
+    ring2.register()
+    const navigate = useNavigate();
     const {
         handleSubmit,
         register,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm<SignUpFormValues>({
         resolver: zodResolver(schema),
     });
 
-    const onSubmit = (data: SignUpFormValues) => {
-        console.log(data);
-        alert("Account created successfully!");
+    const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
+        try {
+            const response = await ForgotPasswordAPI({ email: data.email });
+            if (response.statusCode === 201) {
+                toast.success("OTP sent successfully!");
+            } else {
+                toast.error("Failed to send OTP");
+            }
+        } catch (error) {
+            toast.error("An error occurred while sending OTP");
+            console.log(error);
+        } finally {
+            const encodedEmail = btoa(data.email);
+            navigate(`/verify-code/${encodedEmail}`)
+        }
     };
 
     const handleBackClick = () => {
-        console.log("Back to login clicked");
-        // You can add navigation logic here, for example using react-router
+        navigate('/login')
     };
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center">
             <Grid2 container spacing={6} maxWidth="xl" mb={4}>
                 {/* Left Side */}
-                <Grid2 size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "14px" }}>
+                <Grid2 paddingLeft={6} paddingRight={6} size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: "14px" }}>
                     <Button
                         variant="text"
                         color="primary"
@@ -74,8 +91,30 @@ const ForgotPasswordForm: React.FC = () => {
                             </Grid2>
 
                             <Grid2 size={{ xs: 12 }}>
-                                <Button sx={{ background: 'linear-gradient(to right, #136CB5, #49BBBD)', textTransform: "none" }} type="submit" variant="contained" fullWidth>
-                                    Create account
+                                <Button
+                                    sx={{
+                                        background:
+                                            "linear-gradient(to right, #136CB5, #49BBBD)",
+                                        textTransform: "none",
+                                    }}
+                                    type="submit"
+                                    variant="contained"
+                                    fullWidth
+                                    disabled={isSubmitting}
+                                    startIcon={
+                                        isSubmitting && (
+                                            <l-ring-2
+                                                size="40"
+                                                stroke="5"
+                                                stroke-length="0.25"
+                                                bg-opacity="0.1"
+                                                speed="0.8"
+                                                color="black"
+                                            ></l-ring-2>
+                                        )
+                                    }
+                                >
+                                    {(isSubmitting) ? "Loading" : "Submit"}
                                 </Button>
                             </Grid2>
 

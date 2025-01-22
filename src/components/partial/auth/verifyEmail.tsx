@@ -10,30 +10,24 @@ import {
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate, useParams } from "react-router-dom";
-import { ResetPasswordAPI } from "@/api/auth/OtpAPI";
-import toast from "react-hot-toast";
+import CountdownTimer from "@/components/ui/CountdownTimer";
+import { useParams } from "react-router-dom";
 import { ring2 } from 'ldrs'
-import CountdownTimer2 from "@/components/ui/CountdownTimer2";
+import useAuth from "@/hooks/useAuth";
 
 // Validation schema using Zod
 const schema = z.object({
-    otp: z.string().min(1, "Otp is required"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm Password is required"),
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords must match",
-    path: ["confirmPassword"],
+    otp: z.string().min(1, "Please enter OTP"),
 });
 
 type SignUpFormValues = z.infer<typeof schema>;
 
 
-const VerifyCodeForm: React.FC = () => {
+const VerifyEmailForm: React.FC = () => {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { sendOtp } = useAuth()
     ring2.register()
     const { email } = useParams<{ email: string }>();
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const {
         handleSubmit,
         register,
@@ -43,19 +37,12 @@ const VerifyCodeForm: React.FC = () => {
     });
 
     const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-        try {
-            if (email) {
-                const decodedEmail = atob(email);
-                await ResetPasswordAPI({ email: decodedEmail || "", newPassword: data.password, otp: data.otp });
-                toast.success("Reset password successfully!");
-            }
-        } catch (error) {
-            toast.error("An error occurred while reset password");
-            console.log(error);
-        } finally {
-            navigate('/login')
-        }
-    };
+        console.log(data);
+        if (email) {
+            const decodedEmail = atob(email);
+            await sendOtp(data.otp, decodedEmail)
+        };
+    }
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center">
@@ -80,29 +67,9 @@ const VerifyCodeForm: React.FC = () => {
                                     helperText={errors.otp?.message}
                                 />
                             </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
-                                <TextField
-                                    {...register('password')}
-                                    label="New Password"
-                                    fullWidth
-                                    type="password"
-                                    error={!!errors.password}
-                                    helperText={errors.password?.message}
-                                />
-                            </Grid2>
-                            <Grid2 size={{ xs: 12 }}>
-                                <TextField
-                                    {...register('confirmPassword')}
-                                    label="Confirm Password"
-                                    fullWidth
-                                    type="password"
-                                    error={!!errors.confirmPassword}
-                                    helperText={errors.confirmPassword?.message}
-                                />
-                            </Grid2>
 
                             <Grid2 size={{ xs: 12 }}>
-                                <CountdownTimer2 email={email || ""} setIsLoading={setIsLoading} />
+                                <CountdownTimer email={email || ''} setIsLoading={setIsLoading} />
                             </Grid2>
 
                             <Grid2 size={{ xs: 12 }}>
@@ -143,7 +110,7 @@ const VerifyCodeForm: React.FC = () => {
 
                             <Grid2 size={{ xs: 12 }}>
                                 <div className="flex justify-center mt-4 gap-4">
-                                    <Button onClick={() => navigate('/login')} variant="text" className="w-32 h-12" sx={{ textTransform: "none", textDecoration: "underline", fontSize: "18px", color: "black" }}>
+                                    <Button variant="text" className="w-32 h-12" sx={{ textTransform: "none", textDecoration: "underline", fontSize: "18px", color: "black" }}>
                                         Back to login
                                     </Button>
                                 </div>
@@ -170,4 +137,4 @@ const VerifyCodeForm: React.FC = () => {
     );
 };
 
-export default VerifyCodeForm;
+export default VerifyEmailForm;

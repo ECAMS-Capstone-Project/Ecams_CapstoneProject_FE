@@ -10,26 +10,27 @@ const apiClient = axios.create({
 
 // Thêm interceptor để xử lý request và response
 apiClient.interceptors.request.use(
-  // (config) => {
-  //   // Thêm token nếu cần
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     config.headers.Authorization = `Bearer ${token}`;
-  //   }
-  //   return config;
-  // },
   (config) => {
-    // Log config của request
+    // Thêm token nếu cần
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
+  // (config) => {
+  //   // Log config của request
+  //   return config;
+  // },
   (error) => {
     return Promise.reject(error);
   }
 );
 
 apiClient.interceptors.response.use(
-  (response) =>  { // Log data trả về từ API
-  return response;},
+  (response) => { // Log data trả về từ API
+    return response;
+  },
   // (error) => {
   //   // Xử lý lỗi response
   //   if (error.response?.status === 401) {

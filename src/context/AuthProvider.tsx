@@ -1,12 +1,14 @@
 import { createContext, useEffect, useReducer, ReactNode } from "react";
-import { setSession } from "@/lib/jwtValid";
+import { isValidToken, setSession } from "@/lib/jwtValid";
 import toast from "react-hot-toast";
 // import { jwtDecode } from "jwt-decode";
 import { LoginRequest } from "@/models/Auth/LoginRequest";
-import { loginAPI } from "@/api/auth/LoginAPI";
+import { getCurrentUserAPI, loginAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
 import { registerStaffAPI, registerStudentAPI } from "@/api/auth/RegisterAPI";
+import { jwtDecode } from "jwt-decode";
+import { ConfirmEmailAPI } from "@/api/auth/OtpAPI";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface AuthState {
@@ -24,7 +26,7 @@ interface AuthContextProps extends AuthState {
   // login_type: (type: string, user: User) => Promise<void>;
   // logout: () => Promise<void>;
   // register: (registerUser: User) => Promise<void>;
-  // sendOtp: (otp: string, email: string) => void;
+  sendOtp: (otp: string, email: string) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -96,6 +98,7 @@ const AuthContext = createContext<AuthContextProps>({
   login: async () => { },
   registerUniversity: async () => { },
   registerStudent: async () => { },
+  sendOtp: async () => { },
   // login_type: async () => { },
   // logout: async () => { },
   // register: async () => { },
@@ -110,37 +113,38 @@ function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const initialize = async () => {
       try {
-        // const accessToken = localStorage.getItem("accessToken");
-        // const refreshToken = localStorage.getItem("refreshToken");
-        // if (accessToken && isValidToken(accessToken)) {
-        //   const { email } = jwtDecode<{ email: string }>(accessToken);
-        //   const response = await loginAPI(email);
-        //   const responseJson = await response.json();
-        //   const user = responseJson.metaData;
-
-        //   if (user && user.emailConfirmed === false && user.roleName !== "Administrator") {
-        //     dispatch({
-        //       type: "SEND_OTP",
-        //       payload: { user },
-        //     });
-        //   } else {
-        //     dispatch({
-        //       type: "INITIALIZE",
-        //       payload: { isAuthenticated: true, user },
-        //     });
-        //   }
-        // } else {
-        //   setSession(accessToken, refreshToken);
-        //   if (accessToken === null || refreshToken === null) {
-        //     dispatch({
-        //       type: "INITIALIZE",
-        //       payload: {
-        //         isAuthenticated: false,
-        //         user: null,
-        //       },
-        //     });
-        //   }
-        // }
+        const accessToken = localStorage.getItem("accessToken");
+        const refreshToken = localStorage.getItem("refreshToken");
+        console.log("Test kh access");
+        if (accessToken && isValidToken(accessToken)) {
+          // const { email } = jwtDecode<{ email: string }>(accessToken);
+          const response = await getCurrentUserAPI();
+          const userData = response.data;
+          console.log(response);
+          console.log("Test có access valid");
+          if (response.data?.isVerified === false && response.data.roles[0] !== "Administrator") {
+            dispatch({
+              type: "SEND_OTP",
+              payload: { userData },
+            });
+          } else {
+            dispatch({
+              type: "INITIALIZE",
+              payload: { isAuthenticated: true, userData },
+            });
+          }
+        } else {
+          setSession(accessToken, refreshToken);
+          if (accessToken === null || refreshToken === null) {
+            dispatch({
+              type: "INITIALIZE",
+              payload: {
+                isAuthenticated: false,
+                user: null,
+              },
+            });
+          }
+        }
       } catch (err) {
         setSession(null, null);
         console.error(err);
@@ -154,24 +158,50 @@ function AuthProvider({ children }: AuthProviderProps) {
     initialize();
   }, []);
 
-  const login = async (data: LoginRequest) => {
+  const login = async (dataInput: LoginRequest) => {
     try {
-      const response = await loginAPI(data);
+      const response = await loginAPI(dataInput);
       console.log(response);
       if (response) {
         const { data } = response;
+        if (data?.user.roles[0] == "Administrator") {
+          if (data?.accessToken) window.localStorage.setItem("accessToken", data?.accessToken);
+          dispatch({
+            type: "LOGIN",
+            payload: {
+              user: data?.user,
+            },
+          });
+          return;
+        }
+        if (data?.user.isVerified == false) {
+          dispatch({
+            type: "SEND_OTP",
+            payload: {
+              user: data?.user,
+            },
+          })
+          if (data?.accessToken && data?.refreshToken) {
+            localStorage.setItem("accessToken", data?.accessToken);
+            localStorage.setItem("refreshToken", data?.refreshToken);
+          }
+          const encodedEmail = btoa(dataInput.email);
+          window.location.replace(`/verify-email/${encodedEmail}`);
+          return;
+        }
         setSession(data?.accessToken, data?.refreshToken);
         dispatch({
           type: "LOGIN",
-          payload: data?.user,
+          payload: {
+            user: data?.user,
+          },
         });
-        toast.success("login thành công")
+        toast.success("Login successfully")
       } else {
         toast.error("Login failed");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something error")
     }
   };
 
@@ -201,6 +231,10 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
+        const timeout = setTimeout(() => {
+          window.location.replace("/login");
+        }, 2000);
+        return () => clearTimeout(timeout);
       } else {
         toast.error("Registration failed");
       }
@@ -218,6 +252,10 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
+        const timeout = setTimeout(() => {
+          window.location.replace("/login");
+        }, 2000);
+        return () => clearTimeout(timeout);
       } else {
         toast.error("Registration failed");
       }
@@ -226,21 +264,32 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  // const sendOtp = (otp: string, email: string) => {
-  //   VerifyUser(otp, email)
-  //     .then(() => {
-  //       toast.success("OTP verified successfully");
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       toast.error("Failed to verify OTP");
-  //     });
-  // };
+  const sendOtp = async (otp: string, email: string) => {
+    try {
+      await ConfirmEmailAPI({ email: email, otp: otp });
+      toast.success("Verify Successfully");
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
 
-  // const logout = async () => {
-  //   setSession(null, null);
-  //   dispatch({ type: "LOGOUT" });
-  // };
+      const userResponse = await getCurrentUserAPI();
+      if (userResponse.statusCode !== 200) {
+        toast.error("Verify failed");
+        return;
+      }
+
+      setSession(accessToken, refreshToken);
+      dispatch({
+        type: "LOGIN",
+        payload: {
+          user: userResponse.data,
+        },
+      });
+    } catch (error: any) {
+      console.error("Error:", error.message);
+      toast.error("Đã xảy ra lỗi trong quá trình xác thực");
+    }
+  };
+
 
   return (
     <AuthContext.Provider
@@ -250,10 +299,10 @@ function AuthProvider({ children }: AuthProviderProps) {
         login,
         registerUniversity,
         registerStudent,
+        sendOtp
         // login_type,
         // logout,
         // register,
-        // sendOtp,
       }}
     >
       {children}

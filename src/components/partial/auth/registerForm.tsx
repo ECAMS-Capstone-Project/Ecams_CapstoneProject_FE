@@ -146,7 +146,7 @@ const RegisterForm: React.FC = () => {
                 </Grid2>
 
                 {/* Right Side - Form */}
-                <Grid2 size={{ xs: 12, md: 6 }}>
+                <Grid2 paddingLeft={6} paddingRight={6} size={{ xs: 12, md: 6 }}>
                     <Typography color="#313131" sx={{ fontWeight: "bold" }} variant="h4" gutterBottom>
                         Sign up for student
                     </Typography>

@@ -9,6 +9,7 @@ import Login from "@/pages/authentication/login";
 import Register from "@/pages/authentication/register";
 import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
+import VerifyEmail from "@/pages/authentication/verifyEmail";
 import { createBrowserRouter } from "react-router-dom";
 
 
@@ -50,7 +51,7 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />
     },
     {
-        path: "/verify-code",
+        path: "/verify-code/:email",
         element: <VerifyCode />,
         errorElement: <ErrorException />
     },
@@ -68,5 +69,10 @@ export const router = createBrowserRouter([
                 element: <Dashboard />,
             },
         ],
+    },
+    {
+        path: "/verify-email/:email",
+        element: <GuestAuth><VerifyEmail /></GuestAuth>,
+        errorElement: <ErrorException />
     },
 ])

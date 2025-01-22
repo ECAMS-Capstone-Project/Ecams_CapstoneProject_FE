@@ -7,11 +7,9 @@ interface GuestAuthProps {
 }
 
 export default function GuestAuth({ children }: GuestAuthProps) {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     if (isAuthenticated) {
-        console.log(user);
-
         // if (user && user?.roleName == "Staff") {
         //     return <Navigate to="/personal-profile" />;
         // }

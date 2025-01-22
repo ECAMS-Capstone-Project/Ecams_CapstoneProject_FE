@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { refreshTokenAPI } from "@/api/auth/LoginAPI";
+import { RefreshTokenRequestDTO } from "@/models/Auth/LoginRequest";
 import { jwtDecode } from "jwt-decode";
 
 // ----------------------------------------------------------------------
@@ -23,7 +25,6 @@ const handleTokenExpired = (exp: number, refreshToken: string): void => {
   const currentTime = Date.now();
   const timeLeft = exp * 1000 - currentTime;
   const refreshDelay = 1000;
-  console.log(refreshToken);
   console.log(
     "Token will refresh in:",
     (exp * 1000 - currentTime + refreshDelay) / 1000,
@@ -39,24 +40,28 @@ const handleTokenExpired = (exp: number, refreshToken: string): void => {
       return;
     }
 
-    // try {
-    //   const response = await RefreshToken(refreshToken);
-    //   if (response.statusCode === 201) {
-    //     const { accessToken, refreshToken: newRefreshToken } = response.metaData;
-    //     localStorage.setItem("accessToken", accessToken);
-    //     localStorage.setItem("refreshToken", newRefreshToken);
-    //     console.log("Token refreshed successfully");
+    try {
+      const refreshTokenRequest: RefreshTokenRequestDTO = { refreshToken };
+      const response = await refreshTokenAPI(refreshTokenRequest);
+      if (response.statusCode === 201) {
+        if (response.data?.accessToken && response.data?.refreshToken) {
+          localStorage.setItem("accessToken", response.data.accessToken);
+          localStorage.setItem("refreshToken", response.data.refreshToken);
+        } else {
+          console.error("Access token is undefined");
+        }
+        console.log("Token refreshed successfully");
 
-    //     const nextRefreshTime = exp * 1000 - currentTime + refreshDelay;
-    //     setTimeout(refreshAndScheduleNext, nextRefreshTime);
-    //   } else {
-    //     console.log("Failed to refresh token:", response);
-    //     localStorage.removeItem("accessToken");
-    //     localStorage.removeItem("refreshToken");
-    //   }
-    // } catch (error) {
-    //   console.error("Error during token refresh:", error);
-    // }
+        const nextRefreshTime = exp * 1000 - currentTime + refreshDelay;
+        setTimeout(refreshAndScheduleNext, nextRefreshTime);
+      } else {
+        console.log("Failed to refresh token:", response);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      }
+    } catch (error) {
+      console.error("Error during token refresh:", error);
+    }
   };
 
   setTimeout(refreshAndScheduleNext, timeLeft + refreshDelay);
