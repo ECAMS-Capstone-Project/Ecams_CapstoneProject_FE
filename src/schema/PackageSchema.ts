@@ -1,16 +1,22 @@
 import { z } from "zod";
+
 export const editPackageSchema = z.object({
-    PackageId: z.string().min(1, { message: "Package Id is Required" }),
-    Name: z.string().min(1, { message: "Package Name is Required" }),
-    Price: z.coerce.number().refine((value) => value > 0, {
-      message: "Price must be greater than 0.",
-    }),
-    Duration: z.coerce.number().refine((value) => value > 0, {
-      message: "Duration must be greater than 0.",
-    }),
-    Description: z.string().min(1, { message: "Description is Required" }),
-    EndOfSupportDate: z.string().min(1, { message: "Ended Date is Required" }),
-    Status: z.string().nullable(),
-    Type: z.string().min(1, { message: "Type is Required" }),
-    Value:  z.string().min(1, { message: "Value is Required" }),
-  });
+  packageId: z.string().min(1, { message: "Package ID is required" }),
+  packageName: z.string().min(1, { message: "Package Name is required" }),
+  createdBy: z.string().min(1, { message: "Created By is required" }),
+  updatedBy: z.string().nullable().optional(), // Can be null or undefined
+  price: z.number().min(0, { message: "Price must be greater than or equal to 0" }),
+  status: z.boolean({ required_error: "Status is required" }),
+  duration: z.number().min(1, { message: "Duration must be greater than 0" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  endOfSupportDate: z.string().nullable().optional(), // Can be null or undefined
+  packageDetails: z
+    .array(
+      z.object({
+        packageServiceId: z.string().min(1, { message: "Package Service ID is required" }),
+        packageType: z.string().min(1, { message: "Package Type is required" }),
+        value: z.string().min(1, { message: "Value is required" }),
+      })
+    )
+    .min(1, { message: "At least one package detail is required" }), // Ensure at least one detail exists
+});

@@ -1,23 +1,18 @@
-export interface Package {
-    PackageId: string; // ID duy nhất của package
-    Name: string; // Tên của package
-    CreatedAt: string; // Ngày tạo package
-    UpdatedAt: string; // Ngày cập nhật package
-    CreatedBy: string; // Người tạo package
-    UpdatedBy: string; // Người cập nhật package
-    Price: number; // Giá của package
-    Status: "Active" | "Inactive"; // Trạng thái của package
-    Duration: number; // Thời gian hiệu lực (tính bằng ngày)
-    Description: string; // Mô tả về package
-    EndOfSupportDate: string; // Ngày kết thúc hỗ trợ
-  }
+export interface PackageDetail {
+  packageServiceId: string; // Unique identifier for the package service
+  packageType: string; // Type of service (e.g., Students, Clubs, Events)
+  value: string; // Value associated with the service
+}
 
-  export interface PackageDetail {
-    PackageServiceId: string; // ID duy nhất của dịch vụ package
-    PackageId: string; // ID của package liên quan
-    Value: string; // Giá trị của dịch vụ (ví dụ: "10GB Storage")
-    PackageType: string; // Loại package (Basic, Premium, etc.)
-    Status: "Active" | "Inactive"; // Trạng thái của dịch vụ
-    UpdatedAt: string; // Ngày cập nhật dịch vụ
-  }
-  
+export interface Package {
+  packageId: string; // Unique identifier for the package
+  packageName: string; // Name of the package
+  createdBy: string; // User who created the package
+  updatedBy: string | null; // User who last updated the package, null if not updated
+  price: number; // Price of the package
+  status: boolean; // Status of the package (e.g., active/inactive)
+  duration: number; // Duration of the package in months
+  description: string; // Description of the package
+  endOfSupportDate: string | null; // End date of support, null if not applicable
+  packageDetails: PackageDetail[]; // List of details for the package services
+}

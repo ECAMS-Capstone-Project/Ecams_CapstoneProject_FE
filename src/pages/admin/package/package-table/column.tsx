@@ -18,43 +18,43 @@ const formatDate = (timestamp: string): string => {
 };
 // Định nghĩa columns cho DataTable
 export const packageColumns: ColumnDef<Package>[] = [
+  // {
+  //   accessorKey: "packageId",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Package Id" />
+  //   ),
+  //   cell: ({ row }) => <span>{row.getValue("packageId")} </span>, // Hiển thị giá trị "Name"
+  // },
   {
-    accessorKey: "PackageId",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Package Id" />
-    ),
-    cell: ({ row }) => <span>{row.getValue("PackageId")} </span>, // Hiển thị giá trị "Name"
-  },
-  {
-    accessorKey: "Name",
+    accessorKey: "packageName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => <span>{row.getValue("Name")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => <span>{row.getValue("packageName")}</span>, // Hiển thị giá trị "Name"
   },
 
   {
-    accessorKey: "Duration",
+    accessorKey: "duration",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Duration (Months)" />
     ),
-    cell: ({ row }) => <span>{row.getValue("Duration")} months</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("duration")} months</span>, // Hiển thị Duration kèm đơn vị
   },
   {
-    accessorKey: "Description",
+    accessorKey: "description",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("Description")} days</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("description")} days</span>, // Hiển thị Duration kèm đơn vị
   },
   {
-    accessorKey: "Price",
+    accessorKey: "price",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Price" />
+      <DataTableColumnHeader column={column} title="price" />
     ),
     cell: ({ row }) => (
       <span>
-        {(row.getValue("Price") as number).toLocaleString("en-US", {
+        {(row.getValue("price") as number).toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
         })}
@@ -62,21 +62,21 @@ export const packageColumns: ColumnDef<Package>[] = [
     ), // Hiển thị giá theo định dạng USD
   },
   {
-    accessorKey: "Status",
+    accessorKey: "status",
     header: ({ column }) => (
       <DataTableFacetedFilter
         column={column}
         title="Status"
         options={[
-          { label: "Active", value: "Active" },
-          { label: "Inactive", value: "Inactive" },
+          { label: "Active", value: "1" },
+          { label: "Inactive", value: "2" },
         ]}
       />
     ),
     cell: ({ row }) => {
-      const status = row.getValue("Status") as string;
-      const isActive = status === "Active";
-      const isInactive = status === "Inactive";
+      const status = row.getValue("status") as string;
+      const isActive = status == "1";
+      const isInactive = status == "2";
 
       return (
         <div
@@ -94,18 +94,18 @@ export const packageColumns: ColumnDef<Package>[] = [
           {isInactive && (
             <XCircleIcon size={20} className="h-5 w-5 text-[#5A3825]" />
           )}
-          <span>{status}</span>
+          <span>{status == "1" ? "Active" : "Inactive"}</span>
         </div>
       );
     },
   },
 
   {
-    accessorKey: "EndOfSupportDate",
+    accessorKey: "endOfSupportDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="End of Support" />
     ),
-    cell: ({ row }) => formatDate(row.getValue("EndOfSupportDate")), // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
+    cell: ({ row }) => formatDate(row.getValue("endOfSupportDate")), // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
   },
   {
     id: "actions",
