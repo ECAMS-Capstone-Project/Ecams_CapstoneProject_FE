@@ -5,14 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import type { Package } from "@/models/Package";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { packageColumns } from "./package-table/column";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
-const DataTable = React.lazy(
-  () => import("@/components/ui/datatable/data-table")
+const PackageTable = React.lazy(
+  () => import("@/components/partial/admin/package/PackageTable")
 );
 
 const Package = () => {
@@ -59,9 +58,7 @@ const Package = () => {
             </Dialog>
           </div>
           <Separator />
-          <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-            <DataTable columns={packageColumns} data={packageList} />
-          </div>
+          <PackageTable data={packageList} />
         </>
       )}
     </React.Suspense>

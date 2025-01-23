@@ -14,7 +14,7 @@ const ReportList = React.lazy(
 );
 
 import { UniversityList } from "@/api/agent/UniversityAgent";
-import { getReportList } from "@/api/agent/ReportAgent";
+// import { getReportList } from "@/api/agent/ReportAgent";
 import { University } from "@/models/University";
 import { Report } from "@/models/Report";
 import LoadingAnimation from "@/components/ui/loading";
@@ -22,9 +22,9 @@ import LoadingAnimation from "@/components/ui/loading";
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [universityList, setUniversityList] = useState<University[]>([]);
-  const [reportList, setReportList] = useState<Report[]>([]);
-  const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [reportList] = useState<Report[]>([]);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(5);
 
   useEffect(() => {
     const loadAllData = async () => {
