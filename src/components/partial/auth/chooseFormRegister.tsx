@@ -1,67 +1,110 @@
-import React from "react";
+import React from 'react';
 import {
     Box,
-    Button,
+    Card,
+    CardContent,
     Typography,
+    styled,
     Grid2,
-    Stack,
-} from "@mui/material";
+    Button
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { useNavigate } from "react-router-dom";
 
-const ChooseFormRegister: React.FC = () => {
+// Styled components
+const StyledCard = styled(Card)(({ theme }) => ({
+    maxWidth: 1100,
+    height: 550,
+    margin: 'auto',
+    borderRadius: theme.spacing(2),
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    marginTop: 60,
+    padding: 20
+}));
 
-    const handleBackClick = () => {
-        navigate('/login')
-    };
+const StyledGridItem = styled(Grid2)(({ theme }) => ({
+    borderRadius: "8px",
+    boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+    height: "200px",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    '&:hover': {
+        transform: "translateY(-5px)",
+        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+        '& .grid-image': {
+            transform: "scale(1.1)",
+        },
+        '& .grid-text': {
+            color: theme.palette.primary.main,
+        }
+    }
+}));
 
+
+interface TeamInviteFormProps {
+    onClose?: () => void;
+    onSubmit?: (data: { email: string; role: string }) => void;
+}
+
+const ChooseFormRegister: React.FC<TeamInviteFormProps> = () => {
     const navigate = useNavigate();
+    const handleClick = (data: string) => {
+        if (data == 'student') {
+            navigate('/register');
+        } else {
+            navigate('/register-university');
+        }
+    }
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
-            <Grid2 container spacing={6} maxWidth="xl" mb={4}>
-                <Grid2 size={{ xs: 12, md: 6, sm: 0 }} sx={{ display: "flex", justifyContent: "center" }}>
-                    <Stack
-                        sx={{
-                            display: "flex", alignContent: "center", justifyContent: "center",
-                            width: "80%",
-                            maxWidth: "50rem",
-                        }}
-                    >
-                        <img src="public/image/forgot_password_img.png"></img>
-                    </Stack>
-                </Grid2>
+        <StyledCard>
+            <CardContent>
+                <Button
+                    onClick={() => navigate('/login')}
+                    variant="text"
+                    color="primary"
+                    sx={{ width: "190px", textTransform: "none", color: "black", justifyContent: "start" }}
+                    startIcon={<ArrowBackIosNewIcon />} // Adding the back icon to the start of the button
+                >
+                    Back to Login
+                </Button>
+                <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
+                    <Box display="flex" flexDirection="column" alignItems="center">
+                        <img className='mb-5' width={120} src='https://www.shutterstock.com/image-vector/make-choice-decision-concept-puzzled-600nw-2201623999.jpg'></img>
+                        <Typography sx={{ fontWeight: "bold" }} variant="h5" ml={2} textAlign={"center"}>
+                            Please Choose Your Role To Register
+                        </Typography>
+                    </Box>
+                </Box>
 
-                <Grid2 size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column", justifyContent: "start", gap: "14px" }}>
-                    <Button
-                        variant="text"
-                        color="primary"
-                        sx={{ width: "190px", mb: 1, textTransform: "none", color: "black", justifyContent: "start" }}
-                        startIcon={<ArrowBackIosNewIcon />} // Adding the back icon to the start of the button
-                        onClick={handleBackClick}
-                    >
-                        Back to Login
-                    </Button>
+                <Grid2 container spacing={5} mt={10}>
+                    <StyledGridItem onClick={() => handleClick("student")} size={{ xs: 12, md: 6 }} sx={{
+                        borderRadius: "8px",
+                        boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        height: "200px",
+                        cursor: "pointer"
+                    }}>
+                        <Typography variant="h6" mt={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", flexDirection: "column", fontWeight: "bold" }}>
+                            <img className='mb-5' width={100} src='https://cdn-icons-png.flaticon.com/512/1046/1046374.png'></img>
+                            Student
+                        </Typography>
+                    </StyledGridItem>
+                    <StyledGridItem onClick={() => handleClick("staff")} size={{ xs: 12, md: 6 }} sx={{
+                        borderRadius: "8px",
+                        boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                        height: "200px"
+                    }}>
+                        <Typography variant="h6" mt={1} sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", flexDirection: "column", fontWeight: "bold" }}>
+                            <img className='mb-5' width={90} src='https://cdn-icons-png.flaticon.com/512/12069/12069045.png'></img>
+                            University Staff
+                        </Typography>
+                    </StyledGridItem>
+                    <Grid2 size={{ xs: 12 }} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 
-                    <Typography color="#313131" sx={{ fontWeight: "bold" }} variant="h4" gutterBottom>
-                        Please choose what you are
-                    </Typography>
-                    <Typography color="#313131" sx={{ mb: 2 }} variant="subtitle1" gutterBottom>
-                        Don't worry, happens to all of us.
-                    </Typography>
-
-                    <Grid2 container spacing={4}>
-                        <Grid2 mt={4} size={{ xs: 12 }} display={"flex"} justifyContent={"center"}>
-                            <Button onClick={() => navigate('/register')} sx={{ width: "180px", height: "40px" }} variant="outlined">Student</Button>
-                        </Grid2>
-                        <Grid2 mt={5} size={{ xs: 12 }} display={"flex"} justifyContent={"center"}>
-                            <Button onClick={() => navigate('/register-university')} sx={{ width: "180px", height: "40px" }} variant="outlined">University</Button>
-                        </Grid2>
                     </Grid2>
                 </Grid2>
-
-            </Grid2>
-        </Box>
+            </CardContent>
+        </StyledCard >
     );
 };
 

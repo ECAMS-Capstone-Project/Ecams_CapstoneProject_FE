@@ -3,8 +3,9 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextField, Button, Link, FormControl } from '@mui/material';
+import { TextField, Button, FormControl } from '@mui/material';
 import useAuth from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -34,7 +35,7 @@ const LoginForm: React.FC = () => {
       <div className="flex items-center max-h-screen sm:p-8"></div>
       <div className="w-full items-center justify-center flex flex-col sm:flex-row overflow-hidden sm:p-8">
         {/* Left Side */}
-        <div className="w-full sm:w-1/2 p-24 pt-0 ">
+        <div className="w-full sm:w-1/2 p-28 pt-0">
           <h1 className="text-3xl font-bold text-gray-800">Login</h1>
           <p className="text-gray-600 mt-2 opacity-75">
             Login to access your travelwise account
@@ -73,7 +74,7 @@ const LoginForm: React.FC = () => {
 
             {/* Forgot Password */}
             <div className="flex items-center justify-end mt-4">
-              <Link href="#" variant="body2" sx={{ color: '#FF8682', textDecoration: 'none' }}>
+              <Link to="/forgot-password" style={{ color: '#FF8682', textDecoration: 'none' }}>
                 Forgot Password
               </Link>
             </div>
@@ -96,7 +97,7 @@ const LoginForm: React.FC = () => {
             {/* Sign Up Link */}
             <p className="text-center text-gray-600 mt-4">
               Don't have an account?{' '}
-              <Link href="#" sx={{ color: '#FF8682', textDecoration: 'none' }}>
+              <Link to="/choose-register" style={{ color: '#FF8682', textDecoration: 'none' }}>
                 Sign up
               </Link>
             </p>

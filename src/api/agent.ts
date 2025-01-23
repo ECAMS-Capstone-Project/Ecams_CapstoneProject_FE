@@ -29,6 +29,16 @@ export const put = async <T>(
   return response.data;
 };
 
+// Hàm generic cho PATCH request
+export const patch = async <T>(
+  url: string,
+  data?: object,
+  config?: object
+): Promise<T> => {
+  const response = await apiClient.patch<T>(url, data, config);
+  return response.data;
+};
+
 // Hàm generic cho DELETE request
 export const del = async <T>(url: string, config?: object): Promise<T> => {
   const response = await apiClient.delete<T>(url, config);
