@@ -7,7 +7,7 @@ import { getCurrentUserAPI, loginAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
 import { registerStaffAPI, registerStudentAPI } from "@/api/auth/RegisterAPI";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 import { ConfirmEmailAPI } from "@/api/auth/OtpAPI";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -95,10 +95,10 @@ const reducer = (state: AuthState, action: any): AuthState =>
 const AuthContext = createContext<AuthContextProps>({
   ...initialState,
   method: "jwt",
-  login: async () => { },
-  registerUniversity: async () => { },
-  registerStudent: async () => { },
-  sendOtp: async () => { },
+  login: async () => {},
+  registerUniversity: async () => {},
+  registerStudent: async () => {},
+  sendOtp: async () => {},
   // login_type: async () => { },
   // logout: async () => { },
   // register: async () => { },
@@ -122,7 +122,10 @@ function AuthProvider({ children }: AuthProviderProps) {
           const userData = response.data;
           console.log(response);
           console.log("Test có access valid");
-          if (response.data?.isVerified === false && response.data.roles[0] !== "Administrator") {
+          if (
+            response.data?.isVerified === false &&
+            response.data.roles[0] !== "Administrator"
+          ) {
             dispatch({
               type: "SEND_OTP",
               payload: { userData },
@@ -165,7 +168,8 @@ function AuthProvider({ children }: AuthProviderProps) {
       if (response) {
         const { data } = response;
         if (data?.user.roles[0] == "Administrator") {
-          if (data?.accessToken) window.localStorage.setItem("accessToken", data?.accessToken);
+          if (data?.accessToken)
+            window.localStorage.setItem("accessToken", data?.accessToken);
           dispatch({
             type: "LOGIN",
             payload: {
@@ -180,7 +184,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             payload: {
               user: data?.user,
             },
-          })
+          });
           if (data?.accessToken && data?.refreshToken) {
             localStorage.setItem("accessToken", data?.accessToken);
             localStorage.setItem("refreshToken", data?.refreshToken);
@@ -196,7 +200,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             user: data?.user,
           },
         });
-        toast.success("Login successfully")
+        toast.success("Login successfully");
       } else {
         toast.error("Login failed");
       }
@@ -231,10 +235,9 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
           window.location.replace("/login");
         }, 2000);
-        return () => clearTimeout(timeout);
       } else {
         toast.error("Registration failed");
       }
@@ -252,10 +255,9 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
-        const timeout = setTimeout(() => {
+        setTimeout(() => {
           window.location.replace("/login");
         }, 2000);
-        return () => clearTimeout(timeout);
       } else {
         toast.error("Registration failed");
       }
@@ -290,7 +292,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-
   return (
     <AuthContext.Provider
       value={{
@@ -299,7 +300,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         login,
         registerUniversity,
         registerStudent,
-        sendOtp
+        sendOtp,
         // login_type,
         // logout,
         // register,
