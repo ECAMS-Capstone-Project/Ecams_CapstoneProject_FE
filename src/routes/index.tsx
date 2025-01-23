@@ -1,6 +1,7 @@
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
 import Contact from "@/components/partial/Contact/Contact";
+import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Package from "@/pages/admin/package/Package";
@@ -12,6 +13,7 @@ import Register from "@/pages/authentication/register";
 import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
+import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
 import { createBrowserRouter } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,6 +93,22 @@ export const router = createBrowserRouter([
         <VerifyEmail />
       </GuestAuth>
     ),
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/staff",
+    element: <PrivateRoute />,
+    children: [
+      {
+        index: true,
+        element: <AdditionInfoUniversityForm />,
+      },
+      {
+        path: "/staff/waiting-staff",
+        index: true,
+        element: <WaitingCheckStaffPage />,
+      },
+    ],
     errorElement: <ErrorException />,
   },
 ]);
