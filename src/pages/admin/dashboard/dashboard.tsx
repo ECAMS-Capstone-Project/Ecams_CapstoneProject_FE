@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 
@@ -5,15 +6,15 @@ import React, { useEffect, useState } from "react";
 const PendingUniversityList = React.lazy(
   () =>
     import(
-      "@/components/partial/admin-dashboard/pending-request/PendingRequest"
+      "@/components/partial/admin/admin-dashboard/pending-request/PendingRequest"
     )
 );
 const ReportList = React.lazy(
-  () => import("@/components/partial/admin-dashboard/report/Report")
+  () => import("@/components/partial/admin/admin-dashboard/report/Report")
 );
 
 import { UniversityList } from "@/api/agent/UniversityAgent";
-import { getReportList } from "@/api/agent/ReportAgent";
+// import { getReportList } from "@/api/agent/ReportAgent";
 import { University } from "@/models/University";
 import { Report } from "@/models/Report";
 import LoadingAnimation from "@/components/ui/loading";
@@ -21,18 +22,27 @@ import LoadingAnimation from "@/components/ui/loading";
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [universityList, setUniversityList] = useState<University[]>([]);
-  const [reportList, setReportList] = useState<Report[]>([]);
+  const [reportList] = useState<Report[]>([]);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(5);
 
   useEffect(() => {
     const loadAllData = async () => {
       try {
         // Tải cả component lười biếng và dữ liệu API song song
-        const [uniData, reportData] = await Promise.all([
-          UniversityList(), // Gọi API dữ liệu danh sách trường đại học
-          getReportList(), // Gọi API dữ liệu báo cáo
+        // const [uniData, reportData] = await Promise.all([
+        const [uniData] = await Promise.all([
+          UniversityList(pageSize, pageNo), // Gọi API dữ liệu danh sách trường đại học
+          // getReportList(), // Gọi API dữ liệu báo cáo
         ]);
-        setUniversityList(uniData);
-        setReportList(reportData);
+        setUniversityList(
+          uniData.data?.data
+            .filter((uni) => uni.status === "PENDING")
+            .slice(0, 4) || []
+        ); // Lọc và giới hạn 4 trường đại học
+        console.log(uniData);
+
+        // setReportList(reportData);
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {
@@ -41,7 +51,7 @@ export default function Dashboard() {
     };
 
     loadAllData();
-  }, []);
+  }, [pageNo, pageSize]);
 
   return (
     <>
