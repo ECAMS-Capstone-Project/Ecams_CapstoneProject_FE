@@ -4,6 +4,8 @@ import Contact from "@/components/partial/Contact/Contact";
 import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
+import Package from "@/pages/admin/package/Package";
+import University from "@/pages/admin/university/University";
 import ChooseRegister from "@/pages/authentication/chooseRegister";
 import ForgotPassword from "@/pages/authentication/forgotPassword";
 import Login from "@/pages/authentication/login";
@@ -74,6 +76,14 @@ export const router = createBrowserRouter([
         index: true,
         element: <Dashboard />,
       },
+      {
+        path: "/admin/package",
+        element: <Package />,
+      },
+      {
+        path: "/admin/university",
+        element: <University />,
+      },
     ],
   },
   {
@@ -93,17 +103,12 @@ export const router = createBrowserRouter([
         index: true,
         element: <AdditionInfoUniversityForm />,
       },
-    ],
-    errorElement: <ErrorException />,
-  },
-  {
-    path: "/waiting-staff",
-    element: <PrivateRoute />,
-    children: [
       {
+        path: "/staff/waiting-staff",
         index: true,
         element: <WaitingCheckStaffPage />,
       },
     ],
+    errorElement: <ErrorException />,
   },
 ]);

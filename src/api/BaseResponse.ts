@@ -7,3 +7,13 @@ export interface ResponseDTO<T> {
     message: string;
     data?: T;
 }
+
+export interface ResponseData<T> {
+    currentPage: number;
+    data: Array<T>;
+    hasNext: boolean;
+    hasPrevious: boolean
+    pageSize:number;
+    totalCount: number;
+    totalPages: number;
+}

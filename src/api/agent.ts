@@ -1,8 +1,12 @@
 import apiClient from "./ApiClient";
 
 // Hàm generic cho GET request
-export const get = async <T>(url: string, params?: object): Promise<T> => {
-  const response = await apiClient.get<T>(url, { params });
+export const get = async <T>(url: string): Promise<T> => {
+  const response = await apiClient.get<T>(url);
+  console.log("get res", response );
+  console.log("get res data", response.data );
+
+  
   return response.data;
 };
 // Hàm generic cho POST request

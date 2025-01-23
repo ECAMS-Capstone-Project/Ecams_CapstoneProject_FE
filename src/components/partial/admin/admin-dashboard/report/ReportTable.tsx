@@ -34,7 +34,7 @@ export function ReportTable({ data }: ReportProps) {
             <TableHead>Report Type</TableHead>
             <TableHead>Content</TableHead>
             <TableHead>User</TableHead>
-            <TableHead>Action</TableHead>
+            <TableHead className="text-center">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -48,13 +48,13 @@ export function ReportTable({ data }: ReportProps) {
                 {report.Content}
               </TableCell>
               <TableCell>{report.UserId}</TableCell>
-              <TableCell>
+              <TableCell className=" flex justify-center items-center">
                 <ReportDetailDialog
                   report={report}
                   trigger={
                     <EyeIcon
                       size={24}
-                      className="cursor-pointer text-center"
+                      className="cursor-pointer"
                       onClick={() => handleViewDetail(report)}
                     />
                   }

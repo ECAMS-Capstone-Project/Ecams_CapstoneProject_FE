@@ -1,7 +1,8 @@
 import axios from "axios";
 
+// Khởi tạo apiClient
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_ECAMS_API_URL, // Đọc từ biến môi trường
+  baseURL: import.meta.env.VITE_ECAMS_API_URL , // Đọc từ biến môi trường hoặc dùng mặc định
   timeout: 10000, // Thời gian timeout (10 giây)
   headers: {
     "Content-Type": "application/json", // Kiểu dữ liệu mặc định
@@ -23,6 +24,7 @@ apiClient.interceptors.request.use(
   //   return config;
   // },
   (error) => {
+    console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -39,7 +41,7 @@ apiClient.interceptors.response.use(
   //     window.location.href = "/login";
   //   }
   (error) => {
-    console.error("Response Error:", error.response || error.message); // Log lỗi response
+    console.error("Response Error:", error.response || error.message);
     return Promise.reject(error);
   }
 );
