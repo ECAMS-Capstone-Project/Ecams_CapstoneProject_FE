@@ -18,6 +18,7 @@ interface AuthState {
   isVerify: boolean;
 }
 
+// interface AuthState
 interface AuthContextProps extends AuthState {
   method: string;
   login: (data: LoginRequest) => Promise<void>;
