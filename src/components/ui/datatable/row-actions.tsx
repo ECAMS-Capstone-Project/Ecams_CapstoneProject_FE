@@ -22,6 +22,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   // const user = UserSchema.parse(row.original);
   // console.log(user.id); // Note: use the id for any action (example: delete, view, edit)
+  console.log(row);
 
   return (
     <DropdownMenu>

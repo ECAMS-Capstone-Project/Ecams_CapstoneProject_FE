@@ -4,7 +4,7 @@ import Contact from "@/components/partial/Contact/Contact";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Package from "@/pages/admin/package/Package";
-import University from "@/pages/admin/university/Package";
+import University from "@/pages/admin/university/University";
 import ChooseRegister from "@/pages/authentication/chooseRegister";
 import ForgotPassword from "@/pages/authentication/forgotPassword";
 import Login from "@/pages/authentication/login";

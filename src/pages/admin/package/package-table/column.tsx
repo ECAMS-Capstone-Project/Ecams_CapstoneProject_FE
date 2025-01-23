@@ -23,7 +23,7 @@ export const packageColumns: ColumnDef<Package>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Package Id" />
     ),
-    cell: ({ row }) => <span>{row.getValue("PackageId")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => <span>{row.getValue("PackageId")} </span>, // Hiển thị giá trị "Name"
   },
   {
     accessorKey: "Name",

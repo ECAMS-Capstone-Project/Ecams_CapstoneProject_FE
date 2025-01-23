@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import { useState } from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 import { EyeIcon, Trash2 } from "lucide-react";
@@ -12,9 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
+import { UniversityFormDialog } from "../UniversitDetailDialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -76,7 +76,10 @@ export function DataTableRowActions<TData>({
       {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
-          <EditPackageDialog initialData={row.original as any} />
+          <UniversityFormDialog
+            initialData={row.original as any}
+            mode={row.getValue("status") === "PENDING" ? "pending" : "view"}
+          />
         </DialogContent>
       </Dialog>
     </>

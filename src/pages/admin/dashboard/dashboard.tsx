@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 
@@ -22,17 +23,26 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [universityList, setUniversityList] = useState<University[]>([]);
   const [reportList, setReportList] = useState<Report[]>([]);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   useEffect(() => {
     const loadAllData = async () => {
       try {
         // Tải cả component lười biếng và dữ liệu API song song
-        const [uniData, reportData] = await Promise.all([
-          UniversityList(), // Gọi API dữ liệu danh sách trường đại học
-          getReportList(), // Gọi API dữ liệu báo cáo
+        // const [uniData, reportData] = await Promise.all([
+        const [uniData] = await Promise.all([
+          UniversityList(pageSize, pageNo), // Gọi API dữ liệu danh sách trường đại học
+          // getReportList(), // Gọi API dữ liệu báo cáo
         ]);
-        setUniversityList(uniData);
-        setReportList(reportData);
+        setUniversityList(
+          uniData.data?.data
+            .filter((uni) => uni.status === "PENDING")
+            .slice(0, 4) || []
+        ); // Lọc và giới hạn 4 trường đại học
+        console.log(uniData);
+
+        // setReportList(reportData);
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {
@@ -41,7 +51,7 @@ export default function Dashboard() {
     };
 
     loadAllData();
-  }, []);
+  }, [pageNo, pageSize]);
 
   return (
     <>
