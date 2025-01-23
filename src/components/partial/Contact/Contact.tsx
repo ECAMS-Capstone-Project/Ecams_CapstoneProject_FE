@@ -11,6 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { LocationOn, Phone, Email } from "@mui/icons-material";
+import useAuth from "@/hooks/useAuth";
 
 interface FormData {
   name: string;
@@ -19,6 +20,10 @@ interface FormData {
 }
 
 const Contact: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
+  console.log(user?.email);
+  console.log(isAuthenticated);
+
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",

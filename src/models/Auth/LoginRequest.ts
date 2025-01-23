@@ -12,3 +12,12 @@ export interface LoginResponseDTO {
     accessToken: string | null;
     refreshToken: string | null;
 }
+
+export interface RefreshTokenResponseDTO {
+    accessToken: string | null;
+    refreshToken: string | null;
+}
+
+export interface RefreshTokenRequestDTO {
+    refreshToken: string;
+}
