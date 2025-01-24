@@ -18,14 +18,17 @@ import { UniversityFormDialog } from "../UniversitDetailDialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
+  setActiveTab?: (tab: string) => void;
 }
 
 export function DataTableRowActions<TData>({
   row,
-}: DataTableRowActionsProps<TData>) {
+}: // setActiveTab,
+DataTableRowActionsProps<TData>) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const onConfirm = async () => {
     setLoading(true);
     try {
@@ -39,6 +42,11 @@ export function DataTableRowActions<TData>({
       setLoading(false);
       setOpen(false);
     }
+  };
+
+  const handleSuccess = () => {
+    // setActiveTab("registered"); // Chuyển tab (nếu logic yêu cầu)
+    setIsDialogOpen(false); // Đóng dialog chính
   };
   return (
     <>
@@ -79,6 +87,9 @@ export function DataTableRowActions<TData>({
           <UniversityFormDialog
             initialData={row.original as any}
             mode={row.getValue("status") === "PENDING" ? "pending" : "view"}
+            // setActiveTab={setActiveTab} // Để đổi tab nếu cần
+            onClose={() => setIsDialogOpen(false)} // Đóng dialog này
+            onSuccess={handleSuccess} // Làm mới danh sách sau khi reject
           />
         </DialogContent>
       </Dialog>

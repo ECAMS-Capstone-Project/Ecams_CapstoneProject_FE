@@ -11,12 +11,14 @@ import {
 import { University } from "@/models/University";
 import { EyeIcon } from "lucide-react";
 import { UniversityFormDialog } from "../../university/UniversitDetailDialog";
+import { useState } from "react";
 
 interface UniversityProps {
   data: University[];
 }
 
 export function RequestTable({ data }: UniversityProps) {
+  const [, setIsDialogOpen] = useState(false);
   return (
     <Table className="text-center">
       <TableCaption>A list of your pending university.</TableCaption>
@@ -61,6 +63,7 @@ export function RequestTable({ data }: UniversityProps) {
                   <UniversityFormDialog
                     initialData={university}
                     mode={university.status === "PENDING" ? "pending" : "view"}
+                    onClose={() => setIsDialogOpen}
                   />
                 </DialogContent>
               </Dialog>

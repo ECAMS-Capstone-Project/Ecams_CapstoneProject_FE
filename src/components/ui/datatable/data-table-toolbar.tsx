@@ -10,10 +10,14 @@ import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  searchKey: string;
+  placeholder?: string;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  searchKey,
+  placeholder,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
@@ -21,12 +25,10 @@ export function DataTableToolbar<TData>({
     <div className="flex w-full items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder={"Filter"}
-          value={
-            (table.getColumn("userName")?.getFilterValue() as string) ?? ""
-          }
+          placeholder={placeholder}
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("userName")?.setFilterValue(event.target.value)
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />

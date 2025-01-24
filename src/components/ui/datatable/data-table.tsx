@@ -26,11 +26,15 @@ import { DataTableToolbar } from "./data-table-toolbar";
 interface DataTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  searchKey: string;
+  placeholder?: string;
 }
 
 export default function DataTable<TData>({
   columns,
   data,
+  searchKey,
+  placeholder,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
@@ -62,7 +66,11 @@ export default function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar
+        table={table}
+        searchKey={searchKey}
+        placeholder={placeholder}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

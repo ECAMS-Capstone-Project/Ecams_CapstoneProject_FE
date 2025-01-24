@@ -24,6 +24,7 @@ import { universitySchema } from "@/schema/UniversitySchema";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { DenyRequest } from "./DenialDialog";
 import { useState } from "react";
+import { approveUni } from "@/api/agent/UniversityAgent";
 
 type UniversityDetail = z.infer<typeof universitySchema>;
 
@@ -36,11 +37,16 @@ type FormMode = "view" | "pending" | "edit";
 interface UniversityDetailProps {
   initialData: UniversityDetail | null; // Dữ liệu ban đầu, có thể null
   mode: FormMode; // Chế độ của form
+  setActiveTab?: (tabId: string) => void;
+  onClose: () => void; // Hàm đóng dialog từ `DataTableRowActions`
+  onSuccess?: () => void; // Hàm để làm mới danh sách
 }
 
 export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
   initialData,
   mode,
+  onClose,
+  onSuccess,
 }) => {
   const form = useForm<UniversityDetail>({
     resolver: zodResolver(universitySchema),
@@ -53,8 +59,8 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
       console.log("Updating University:", values);
       toast.success("University updated successfully.");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
+      // const errorMessage = error.response?.data?.message || "An error occurred";
+      // toast.error(errorMessage);
       console.error("Error:", error);
     }
   }
@@ -64,15 +70,21 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
       console.log("Approving university...");
       // Call API để cập nhật status thành "Active"
       if (initialData) {
-        const updatedData = { ...initialData, Status: "Active" };
-        console.log("Updated to Active:", updatedData);
+        await approveUni(initialData.universityId);
         toast.success("University approved successfully.");
+        // navigate("/admin/university")
+        window.location.reload();
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "An error occurred";
+      const errorMessage = error.message || "An error occurred";
       toast.error(errorMessage);
     }
   }
+  // const updateLocalUniversityList = (universityId: string) => {
+  //   setUniList((prevList) =>
+  //     prevList.filter((uni) => uni.universityId !== universityId) // Loại bỏ item bị từ chối
+  //   );
+  // };
 
   return (
     <div className="w-full max-w-2xl mx-auto my-auto">
@@ -296,7 +308,17 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                 </DialogClose>
               )}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DenyRequest />
+                {initialData && (
+                  <DenyRequest
+                    universityId={initialData.universityId}
+                    onClose={() => {
+                      setIsDialogOpen(false); // Đóng dialog phụ
+                      onClose(); // Đóng dialog chính
+                      if (onSuccess) onSuccess(); // Làm mới danh sách
+                    }}
+                    dialogAction={"reject"}
+                  />
+                )}
               </Dialog>
             </div>
           </form>

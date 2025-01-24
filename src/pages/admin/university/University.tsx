@@ -17,6 +17,7 @@ const University = () => {
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  // const [activeTab, setActiveTab] = useState("");
   useEffect(() => {
     const loadUniversity = async () => {
       try {
@@ -52,7 +53,12 @@ const University = () => {
             />
           </div>
           <Separator />
-          <Tabs defaultValue="request" className="w-full mt-3 p-2">
+          <Tabs
+            defaultValue="request"
+            // value={activeTab}
+            // onValueChange={setActiveTab}
+            className="w-full mt-3 p-2"
+          >
             <TabsList>
               <TabsTrigger value="request">Pending Request</TabsTrigger>
               <TabsTrigger value="registered">
