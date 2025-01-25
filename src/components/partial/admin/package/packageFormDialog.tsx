@@ -33,12 +33,22 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
   const form = useForm<EditPackageFormValues>({
     resolver: zodResolver(editPackageSchema),
     defaultValues: initialData || {
-      PackageId: "",
-      Name: "",
-      Price: 0,
-      Duration: 0,
-      Description: "",
-      EndOfSupportDate: "",
+      packageId: "",
+      packageName: "",
+      createdBy: "",
+      updatedBy: null,
+      price: 0,
+      status: true,
+      duration: 0,
+      description: "",
+      endOfSupportDate: null,
+      packageDetails: [
+        {
+          packageServiceId: "",
+          packageType: "",
+          value: "",
+        },
+      ],
     },
   });
 
@@ -80,7 +90,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               {/* Package Name */}
               <FormField
                 control={form.control}
-                name="Name"
+                name="packageName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Package Name</FormLabel>
@@ -95,7 +105,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               {/* Price */}
               <FormField
                 control={form.control}
-                name="Price"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Price</FormLabel>
@@ -114,7 +124,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               {/* Description */}
               <FormField
                 control={form.control}
-                name="Description"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
@@ -132,7 +142,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               {/* Duration */}
               <FormField
                 control={form.control}
-                name="Duration"
+                name="duration"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Duration (Months)</FormLabel>
@@ -149,7 +159,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               />
               <FormField
                 control={form.control}
-                name="Status"
+                name="status"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
@@ -157,8 +167,8 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                       <Input
                         type="text"
                         {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value)}
+                        value={field.value == true ? "Active" : "Inactive"}
+                        // onChange={(e) => field.onChange(e.target.value)}
                         readOnly={!!initialData}
                       />
                     </FormControl>
@@ -168,44 +178,98 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
               />
               <FormField
                 control={form.control}
-                name="Type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Type</FormLabel>
-                    <FormControl>
-                      <Input type="text" {...field} readOnly={!!initialData} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                name="packageDetails" // Chỉ định toàn bộ mảng
+                render={({ field }) => {
+                  const packageTypes = field.value
+                    .map((detail: any) => detail.packageType)
+                    .join(", ");
+
+                  const handleInputChange = (
+                    e: React.ChangeEvent<HTMLInputElement>
+                  ) => {
+                    const updatedTypes = e.target.value
+                      .split(",")
+                      .map((type) => type.trim());
+                    const updatedPackageDetails = updatedTypes.map(
+                      (type, index) => ({
+                        ...field.value[index], // Giữ nguyên các giá trị khác trong từng phần tử
+                        packageType: type,
+                      })
+                    );
+                    field.onChange(updatedPackageDetails); // Cập nhật lại mảng
+                  };
+
+                  return (
+                    <FormItem>
+                      <FormLabel>Package Types</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          value={packageTypes}
+                          onChange={handleInputChange}
+                          placeholder="Enter types separated by commas"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
+
               <FormField
                 control={form.control}
-                name="Value"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Value</FormLabel>
-                    <FormControl>
-                      <Input type="text" {...field} readOnly={!!initialData} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                name="packageDetails" // Chỉ định toàn bộ mảng
+                render={({ field }) => {
+                  const packageValue = field.value
+                    .map((detail: any) => detail.value)
+                    .join(", ");
+
+                  const handleInputChange = (
+                    e: React.ChangeEvent<HTMLInputElement>
+                  ) => {
+                    const updatedValue = e.target.value
+                      .split(",")
+                      .map((type) => type.trim());
+                    const updatedPackageDetails = updatedValue.map(
+                      (type, index) => ({
+                        ...field.value[index], // Giữ nguyên các giá trị khác trong từng phần tử
+                        packageType: type,
+                      })
+                    );
+                    field.onChange(updatedPackageDetails); // Cập nhật lại mảng
+                  };
+
+                  return (
+                    <FormItem>
+                      <FormLabel>Package Value</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          value={packageValue}
+                          onChange={handleInputChange}
+                          placeholder="Enter types separated by commas"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
+
               {/* End Of Support Date */}
-              <FormField
+              {/* <FormField
                 control={form.control}
-                name="EndOfSupportDate"
+                name="endOfSupportDate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>End Of Support Date</FormLabel>
                     <FormControl>
-                      <Input type="text" {...field} readOnly={!!initialData} />
+                      <Input type="date" {...field} readOnly={!!initialData} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
             {/* Submit Button */}
             <div className="flex w-full justify-end mt-4 ">

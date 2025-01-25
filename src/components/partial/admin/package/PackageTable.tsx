@@ -7,12 +7,15 @@ interface PackageData {
   data: Package[];
 }
 const PackageTable = ({ data }: PackageData) => {
-  console.log("table data", data);
-
   return (
     <>
       <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <DataTable columns={packageColumns} data={data} />
+        <DataTable
+          columns={packageColumns}
+          data={data}
+          searchKey={"packageName"}
+          placeholder="Search package's name"
+        />
       </div>
     </>
   );

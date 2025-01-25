@@ -1,6 +1,6 @@
 import "ldrs/pinwheel";
 import { pinwheel } from "ldrs";
-// Default values shown
+
 pinwheel.register();
 
 const LoadingAnimation = () => {

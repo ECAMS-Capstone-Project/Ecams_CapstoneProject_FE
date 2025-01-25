@@ -1,10 +1,9 @@
 import apiClient from "./ApiClient";
 
 // Hàm generic cho GET request
-export const get = async <T>(url: string): Promise<T> => {
-  const response = await apiClient.get<T>(url);
-  console.log("get res", response );
-  console.log("get res data", response.data );
+export const get = async <T>(url: string, params?: object): Promise<T> => {
+  const response = await apiClient.get<T>(url, params);
+
 
   
   return response.data;
@@ -40,7 +39,10 @@ export const patch = async <T>(
 };
 
 // Hàm generic cho DELETE request
-export const del = async <T>(url: string, config?: object): Promise<T> => {
-  const response = await apiClient.delete<T>(url, config);
+export const del = async <T>(url: string, data?: object): Promise<T> => {
+  const response = await apiClient.delete<T>(url, {
+    headers: { "Content-Type": "application/json" }, // Đảm bảo đúng Content-Type
+    data: data, // Gửi body trong request
+  });
   return response.data;
 };
