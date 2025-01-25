@@ -13,9 +13,12 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // Thêm token nếu cần
+    config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJlY2Ftc0BhZG1pbi5jb20iLCJlbWFpbCI6ImVjYW1zQGFkbWluLmNvbSIsInN1YiI6ImNiYzEwOTFmLTEwNzEtNDcyMy1iZGE0LWE1NzAwYTQ3ZTk3NyIsImp0aSI6ImY5YjgwNDM0LTY0YTItNDc3Yy1iZGE0LTZlMWUxYzdkOTg5ZCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFETUlOIiwiZXhwIjoxNzM3OTA3NzQ5LCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MjU2IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzI1NiJ9._KrwKmA2sHoEQWIH8xSlc5GVzsRu41EsYgBfsUNDISE`;
+
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+   
     }
     return config;
   },

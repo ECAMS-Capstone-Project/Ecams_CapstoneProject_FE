@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -36,7 +37,10 @@ export function DataTablePagination({
           <Select
             value={`${pageSize}`}
             onValueChange={(value: any) => {
-              setPageSize(Number(value));
+              const size = Number(value);
+              console.log("Rows Per Page Changed:", size);
+              setPageSize(size);
+              setPageNo(0); // Reset về trang đầu
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -52,13 +56,13 @@ export function DataTablePagination({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {currentPage + 1} of {totalPages}
+          Page {currentPage} of {totalPages}
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => setPageNo(0)}
+            onClick={() => setPageNo(1)}
             disabled={currentPage === 0}
           >
             <span className="sr-only">Go to first page</span>
@@ -68,7 +72,7 @@ export function DataTablePagination({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => setPageNo(currentPage - 1)}
-            disabled={currentPage === 0}
+            disabled={currentPage === 1}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeftIcon className="h-4 w-4" />
@@ -77,7 +81,7 @@ export function DataTablePagination({
             variant="outline"
             className="h-8 w-8 p-0"
             onClick={() => setPageNo(currentPage + 1)}
-            disabled={currentPage >= totalPages - 1}
+            disabled={currentPage >= totalPages}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="h-4 w-4" />
@@ -86,7 +90,7 @@ export function DataTablePagination({
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
             onClick={() => setPageNo(totalPages - 1)}
-            disabled={currentPage >= totalPages - 1}
+            disabled={currentPage >= totalPages}
           >
             <span className="sr-only">Go to last page</span>
             <DoubleArrowRightIcon className="h-4 w-4" />

@@ -15,6 +15,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
+import { deactivePackage } from "@/api/agent/PackageAgent";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -30,9 +31,11 @@ export function DataTableRowActions<TData>({
     setLoading(true);
     try {
       // await agent.Products.delete(data.productId);
-      toast.success("Package delete successfully.");
+      await deactivePackage(row.getValue("packageId"));
+      toast.success("Package deleted successfully.");
+      window.location.reload();
     } catch (error: any) {
-      const errorMessage = error.data?.message || "An error occurred";
+      const errorMessage = error.response.data?.message || "An error occurred";
       toast.error(errorMessage);
       console.error("Error deleting package:", error);
     } finally {
