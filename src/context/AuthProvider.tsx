@@ -96,10 +96,10 @@ const reducer = (state: AuthState, action: any): AuthState =>
 const AuthContext = createContext<AuthContextProps>({
   ...initialState,
   method: "jwt",
-  login: async () => {},
-  registerUniversity: async () => {},
-  registerStudent: async () => {},
-  sendOtp: async () => {},
+  login: async () => { },
+  registerUniversity: async () => { },
+  registerStudent: async () => { },
+  sendOtp: async () => { },
   // login_type: async () => { },
   // logout: async () => { },
   // register: async () => { },
@@ -129,12 +129,12 @@ function AuthProvider({ children }: AuthProviderProps) {
           ) {
             dispatch({
               type: "SEND_OTP",
-              payload: { userData },
+              payload: { user: userData },
             });
           } else {
             dispatch({
               type: "INITIALIZE",
-              payload: { isAuthenticated: true, userData },
+              payload: { isAuthenticated: true, user: userData },
             });
           }
         } else {

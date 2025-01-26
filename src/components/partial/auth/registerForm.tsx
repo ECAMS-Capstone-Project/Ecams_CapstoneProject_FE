@@ -29,13 +29,7 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { formatDate } from "date-fns";
 import useAuth from "@/hooks/useAuth";
-const MAX_FILE_SIZE = 1024 * 1024 * 5;
-const ACCEPTED_IMAGE_MIME_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
 
 // Validation schema using Zod
 const schema = z
@@ -328,9 +322,8 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${
-                        !date ? "text-muted-foreground" : ""
-                      }`}
+                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
+                        }`}
                     >
                       <CalendarIcon />
                       {date ? (
@@ -366,9 +359,8 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${
-                        !date ? "text-muted-foreground" : ""
-                      }`}
+                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
+                        }`}
                     >
                       <CalendarIcon />
                       {endDate ? (
@@ -460,6 +452,7 @@ const RegisterForm: React.FC = () => {
                 {preview && (
                   <Avatar
                     src={preview}
+                    variant="square"
                     alt="Preview"
                     sx={{ width: 100, height: 100 }}
                   />

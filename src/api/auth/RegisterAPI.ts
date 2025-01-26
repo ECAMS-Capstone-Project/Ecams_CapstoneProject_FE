@@ -36,3 +36,19 @@ export const registerStudentAPI = async (formData: FormData): Promise<ResponseDT
         }
     }
 };
+
+export const additionInfoUniversityAPI = async (formData: FormData): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await axiosMultipartForm.post("/Universities", formData);
+        const apiResponse = response.data as ResponseDTO<string>;
+        return apiResponse;
+    } catch (error: any) {
+        if (error.response) {
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
