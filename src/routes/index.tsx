@@ -1,6 +1,7 @@
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
 import Contact from "@/components/partial/Contact/Contact";
+import PaymentConfirmation from "@/components/partial/staff/confirm-payment";
 import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
@@ -14,6 +15,7 @@ import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
 import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
+import PackageList from "@/pages/staff/package/waitingCheckStaffPage";
 import { createBrowserRouter } from "react-router-dom";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,4 +113,14 @@ export const router = createBrowserRouter([
     ],
     errorElement: <ErrorException />,
   },
+  {
+    path: "/view-package",
+    element: <PackageList />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/payment-confirm",
+    element: <PaymentConfirmation />,
+    errorElement: <ErrorException />,
+  }
 ]);

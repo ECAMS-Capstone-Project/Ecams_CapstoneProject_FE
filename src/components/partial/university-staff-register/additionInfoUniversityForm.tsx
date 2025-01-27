@@ -17,6 +17,8 @@ import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
 import useAuth from "@/hooks/useAuth";
 import { additionInfoUniversityAPI } from "@/api/auth/RegisterAPI";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { ring2 } from 'ldrs'
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -53,12 +55,14 @@ const schema = z.object({
 type SignUpFormValues = z.infer<typeof schema>;
 
 const AdditionInfoUniversityForm: React.FC = () => {
+  ring2.register()
+  const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
   const { user } = useAuth()
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
@@ -83,9 +87,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
         const response = await additionInfoUniversityAPI(formDataInput);
         if (response) {
           toast.success("Update info successful");
-          setTimeout(() => {
-            window.location.href = "/staff/waiting-staff";
-          }, 2000);
+          navigate('/staff/waiting-staff')
         } else {
           toast.error("Update info failed");
         }
@@ -268,8 +270,21 @@ const AdditionInfoUniversityForm: React.FC = () => {
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={isSubmitting}
+                  startIcon={
+                    isSubmitting && (
+                      <l-ring-2
+                        size="40"
+                        stroke="5"
+                        stroke-length="0.25"
+                        bg-opacity="0.1"
+                        speed="0.8"
+                        color="black"
+                      ></l-ring-2>
+                    )
+                  }
                 >
-                  Submit
+                  {(isSubmitting) ? "Loading..." : "Submit"}
                 </Button>
               </Grid2>
             </Grid2>

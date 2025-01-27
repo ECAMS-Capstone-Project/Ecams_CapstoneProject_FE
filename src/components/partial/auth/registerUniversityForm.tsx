@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
 import { GenderEnum } from "@/lib/GenderEnum";
-
+import { ring2 } from 'ldrs'
 // Validation schema using Zod
 const schema = z
   .object({
@@ -43,17 +43,17 @@ const schema = z
 type SignUpFormValues = z.infer<typeof schema>;
 
 const RegisterUniversityForm: React.FC = () => {
+  ring2.register()
   const { registerUniversity } = useAuth();
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-    console.log(data);
     const user: StaffRegisterRequest = {
       fullname: data.fullName,
       email: data.email,
@@ -199,6 +199,7 @@ const RegisterUniversityForm: React.FC = () => {
                       I agree to all the{" "}
                       <a
                         href="/terms"
+                        className="text-red-400"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -207,6 +208,7 @@ const RegisterUniversityForm: React.FC = () => {
                       and{" "}
                       <a
                         href="/privacy"
+                        className="text-red-400"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -231,8 +233,21 @@ const RegisterUniversityForm: React.FC = () => {
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={isSubmitting}
+                  startIcon={
+                    isSubmitting && (
+                      <l-ring-2
+                        size="40"
+                        stroke="5"
+                        stroke-length="0.25"
+                        bg-opacity="0.1"
+                        speed="0.8"
+                        color="black"
+                      ></l-ring-2>
+                    )
+                  }
                 >
-                  Create account
+                  {(isSubmitting) ? "Loading..." : "Create account"}
                 </Button>
               </Grid2>
 

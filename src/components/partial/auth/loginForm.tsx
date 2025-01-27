@@ -26,7 +26,6 @@ const LoginForm: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<userFormValue> = async (data) => {
-    console.log(data);
     await login(data);
   };
 

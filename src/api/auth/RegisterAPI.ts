@@ -4,6 +4,7 @@ import { ResponseDTO } from "../BaseResponse";
 import { post } from "../agent";
 import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
 import axiosMultipartForm from "../axiosMultipartForm";
+import toast from "react-hot-toast";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const registerStaffAPI = async (data: StaffRegisterRequest): Promise<ResponseDTO<string>> => {
@@ -13,9 +14,11 @@ export const registerStaffAPI = async (data: StaffRegisterRequest): Promise<Resp
     } catch (error: any) {
         if (error.response) {
             console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
+            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }
@@ -29,9 +32,11 @@ export const registerStudentAPI = async (formData: FormData): Promise<ResponseDT
     } catch (error: any) {
         if (error.response) {
             console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
+            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }
@@ -45,9 +50,11 @@ export const additionInfoUniversityAPI = async (formData: FormData): Promise<Res
     } catch (error: any) {
         if (error.response) {
             console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
+            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }
