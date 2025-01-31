@@ -36,20 +36,17 @@ export function DataTablePagination({
           <p className="text-sm font-medium">Rows per page</p>
           <Select
             value={`${pageSize}`}
-            onValueChange={(value: any) => {
-              const size = Number(value);
-              console.log("Rows Per Page Changed:", size);
-              setPageSize(size);
-              setPageNo(0); // Reset về trang đầu
+            onValueChange={(value) => {
+              setPageSize(Number(value));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[5, 10, 20, 30, 40, 50].map((size) => (
-                <SelectItem key={size} value={`${size}`}>
-                  {size}
+              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
+                  {pageSize}
                 </SelectItem>
               ))}
             </SelectContent>

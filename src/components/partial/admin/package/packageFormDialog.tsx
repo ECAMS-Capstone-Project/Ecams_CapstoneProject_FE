@@ -263,9 +263,23 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                                           {packageType.map((type) => (
                                             <CommandItem
                                               key={type.value}
-                                              onSelect={() =>
-                                                field.onChange(type.value)
-                                              }
+                                              onSelect={() => {
+                                                const isDuplicate = fields.some(
+                                                  (existingField, idx) =>
+                                                    existingField.packageType ===
+                                                      type.value &&
+                                                    idx !== index // Exclude the current index
+                                                );
+
+                                                if (isDuplicate) {
+                                                  toast.error(
+                                                    "This package type has already been selected."
+                                                  );
+                                                  return;
+                                                }
+
+                                                field.onChange(type.value);
+                                              }}
                                             >
                                               {type.label}
                                               <Check
