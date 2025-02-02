@@ -15,7 +15,7 @@ export const PackageList2 = async (): Promise<Package[]> => {
 
 export const PackageList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Package>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<Package>>>(`http://localhost:5214/api/Package/packages?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    const response = await get<ResponseDTO<ResponseData<Package>>>(`http://localhost:5214/api/Package?PageNumber=${pageNo}&PageSize=${pageSize}`);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);

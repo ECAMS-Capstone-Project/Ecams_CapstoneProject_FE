@@ -4,8 +4,11 @@ import Contact from "@/components/partial/Contact/Contact";
 import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
+import Notifications from "@/pages/admin/notification/Notification";
 import Package from "@/pages/admin/package/Package";
+import Payment from "@/pages/admin/payment/Payment";
 import University from "@/pages/admin/university/University";
+import User from "@/pages/admin/user/User";
 import ChooseRegister from "@/pages/authentication/chooseRegister";
 import ForgotPassword from "@/pages/authentication/forgotPassword";
 import Login from "@/pages/authentication/login";
@@ -83,6 +86,18 @@ export const router = createBrowserRouter([
       {
         path: "/admin/university",
         element: <University />,
+      },
+      {
+        path: "/admin/payment",
+        element: <Payment />,
+      },
+      {
+        path: "/admin/user",
+        element: <User />,
+      },
+      {
+        path: "/admin/notification",
+        element: <Notifications />,
       },
     ],
   },

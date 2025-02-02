@@ -6,7 +6,7 @@ import { ResponseData, ResponseDTO } from "../BaseResponse";
 
 export const UniversityList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<University>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<University>>>(`http://localhost:5214/api/Universities/universities?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    const response = await get<ResponseDTO<ResponseData<University>>>(`http://localhost:5214/api/Universities?PageNumber=${pageNo}&PageSize=${pageSize}`);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);
