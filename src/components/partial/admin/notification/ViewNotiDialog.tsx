@@ -1,0 +1,170 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
+import {
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import DialogLoading from "@/components/ui/dialog-loading";
+import { useState } from "react";
+import { NotificationSchema } from "@/schema/NotiSchema";
+import { createNotification } from "@/api/agent/NotiAgent";
+
+type NotificationFormValues = z.infer<typeof NotificationSchema>;
+
+interface NotiDialogProps {
+  initialData: NotificationFormValues | null;
+}
+
+export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
+  const form = useForm<NotificationFormValues>({
+    resolver: zodResolver(NotificationSchema),
+    defaultValues: initialData || {
+      notificationType: "SYSTEM",
+      message: "",
+      createdDate: new Date(),
+    },
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false)
+  console.log("Form Errors:", form.formState.errors);
+
+  async function onSubmit(values: NotificationFormValues) {
+    console.log("create notification", values);
+
+    try {
+      setIsLoading(true);
+      await createNotification(values);
+      toast.success("Notification created successfully.");
+      setOpen(false);
+      window.location.reload();
+    } catch (error: any) {
+      const errorMessage = error.message || "An error occurred";
+      toast.error(errorMessage);
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-full w-full">
+          <DialogLoading />
+        </div>
+      ) : (
+        <>
+          <DialogHeader>
+            <DialogTitle>
+              {initialData
+                ? "View Notification Details"
+                : "Add New System's Notification"}
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {initialData
+              ? "View notification details below."
+              : "Fill out the form below to add a new system's notification."}
+          </DialogDescription>
+          <div>
+            <div className="p-4">
+              <Form {...form}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault(); // Chặn mặc định để kiểm tra
+                    console.log("Form Submitted!");
+                    form.handleSubmit(onSubmit)();
+                  }}
+                >
+                  <div className="grid grid-cols-1 gap-3">
+                    {/* Package Name */}
+                    <FormField
+                      control={form.control}
+                      name="notificationType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Message</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="createdDate"
+                      render={({ field }) => (
+                        <FormItem hidden={!initialData}>
+                          <FormLabel>Created Date</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value?.toString() || ""}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex w-full justify-end mt-4 ">
+                    {!initialData ? (
+                      <Button type="submit">Create Notification</Button>
+                    ) : (
+                      <DialogClose>
+                        <Button type="button">Quit</Button>
+                      </DialogClose>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
