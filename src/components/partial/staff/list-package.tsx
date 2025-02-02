@@ -20,6 +20,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
 
 interface PricingPlan {
     title: string;
@@ -36,6 +37,7 @@ const StyledCard = styled(Card)<{ isPopular?: boolean }>(({ isPopular }) => ({
     backgroundColor: isPopular ? '#231D4F' : '#f3eae9',
     color: isPopular ? '#fff' : 'inherit',
     transform: isPopular ? 'scale(1.05)' : 'scale(1)',
+    borderRadius: "20px",
     transition: 'transform 0.2s ease-in-out',
     '&:hover': {
         transform: isPopular ? 'scale(1.07)' : 'scale(1.02)',
@@ -92,8 +94,15 @@ const BackButton = styled(Button)({
 });
 
 const Pricing: React.FC = () => {
+    const navigate = useNavigate();
     const [currentIndex, setCurrentIndex] = useState(0);
-
+    const handleClick = (plan: PricingPlan) => {
+        navigate('/payment-confirm', {
+            state: {
+                selectedPlan: plan,
+            }
+        });
+    };
     const pricingPlans: PricingPlan[] = [
         {
             title: 'Starter',
@@ -211,7 +220,7 @@ const Pricing: React.FC = () => {
                             spacing={4}
                             justifyContent="center"
                             alignItems="stretch"
-                            sx={{ padding: "35px", borderRadius: "20px", background: "#f7eeed" }}
+                            sx={{ padding: "35px", borderRadius: "20px", background: "#fff" }}
                         >
                             {visiblePlans().map((plan, index) => (
                                 <motion.div
@@ -255,6 +264,7 @@ const Pricing: React.FC = () => {
                                                 ))}
                                             </List>
                                             <StyledButton
+                                                onClick={() => handleClick(plan)}
                                                 variant="contained"
                                                 fullWidth
                                                 isPopular={plan.isPopular}

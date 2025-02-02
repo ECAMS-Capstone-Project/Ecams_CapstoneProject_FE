@@ -2,6 +2,8 @@ import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
 import Contact from "@/components/partial/Contact/Contact";
 import PaymentConfirmation from "@/components/partial/staff/confirm-payment";
+import DashboardStaff from "@/pages/staff/dashboard/dashboardStaff";
+import PackageContract from "@/components/partial/staff/staff-signature/PackageContract";
 import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
@@ -107,9 +109,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/staff/waiting-staff",
-        index: true,
         element: <WaitingCheckStaffPage />,
       },
+      {
+        path: "/staff/dashboard",
+        element: <DashboardStaff />,
+      }
     ],
     errorElement: <ErrorException />,
   },
@@ -121,6 +126,11 @@ export const router = createBrowserRouter([
   {
     path: "/payment-confirm",
     element: <PaymentConfirmation />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/package-contract",
+    element: <PackageContract />,
     errorElement: <ErrorException />,
   }
 ]);

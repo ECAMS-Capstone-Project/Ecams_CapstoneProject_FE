@@ -125,7 +125,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           console.log("Test có access valid");
           if (
             response.data?.isVerified === false &&
-            response.data.roles[0] !== "Administrator"
+            response.data.roles[0].toUpperCase() !== "ADMIN"
           ) {
             dispatch({
               type: "SEND_OTP",
@@ -168,7 +168,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       console.log(response);
       if (response) {
         const { data } = response;
-        if (data?.user.roles[0] == "Administrator") {
+        if (data?.user.roles[0].toUpperCase() == "ADMIN") {
           if (data?.accessToken)
             window.localStorage.setItem("accessToken", data?.accessToken);
           dispatch({
