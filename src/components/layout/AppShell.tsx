@@ -3,6 +3,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import useIsCollapsed from "@/hooks/use-is-collapsed";
 import Sidebar from "../ui/sidebar";
 import { Layout } from "./layout";
+import { UserNav } from "../ui/user-nav";
+import { Separator } from "../ui/separator";
 
 export default function AppShell() {
   const [isCollapsed, setIsCollapsed] = useIsCollapsed();
@@ -24,9 +26,10 @@ export default function AppShell() {
           <Layout.Header sticky>
             {isDashboard}
             <div className="ml-auto flex items-center space-x-4">
-              {/* <UserNav /> */}
+              <UserNav />
             </div>
           </Layout.Header>
+          <Separator className="opacity-50" />
 
           <Layout.Body>
             <Outlet />
