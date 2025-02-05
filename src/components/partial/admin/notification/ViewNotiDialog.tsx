@@ -36,7 +36,6 @@ export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
     defaultValues: initialData || {
       notificationType: "SYSTEM",
       message: "",
-      createdDate: new Date(),
     },
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -119,27 +118,9 @@ export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
                         <FormItem>
                           <FormLabel>Message</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
+                            <textarea
+                              className="border p-2 rounded w-full h-30"
                               {...field}
-                              readOnly={!!initialData}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="createdDate"
-                      render={({ field }) => (
-                        <FormItem hidden={!initialData}>
-                          <FormLabel>Created Date</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="date"
-                              {...field}
-                              value={field.value?.toString() || ""}
                               readOnly={!!initialData}
                             />
                           </FormControl>

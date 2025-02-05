@@ -14,3 +14,15 @@ export const StudentSchema = z.object({
 
 // TypeScript type từ schema
 export type Student = z.infer<typeof StudentSchema>;
+
+export const StaffSchema = z.object({
+    userId: z.string().uuid(),
+    email: z.string().email(),
+    fullname: z.string().min(1),
+    address: z.string().min(1),
+    phonenumber: z.string().min(10).max(15),
+    status: z.string(),
+    roleName: z.string(),
+  });
+  
+  export type Staff = z.infer<typeof StaffSchema>;

@@ -21,16 +21,14 @@ const Notifications = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     const loadPackage = async () => {
       try {
         //   // Tải cả component lười biếng và dữ liệu API song song
-        // const packageData = await PackageList(pageSize, pageNo);
-        // setPackageList(packageData.data?.data || []); // Đảm bảo `data.data` tồn tại
-        // setTotalPages(packageData.data?.totalPages || 1); // Đặt số trang
-        const notiData = await getNotification();
-        setNotification(notiData);
+        const notiData = await getNotification(pageSize, pageNo);
+        setNotification(notiData.data?.data || []); // Đảm bảo `data.data` tồn tại
+        setTotalPages(notiData.data?.totalPages || 1); // Đặt số trang
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {

@@ -12,7 +12,18 @@ export interface User  {
     status: string; // Account status
     isVerified: boolean; // Verification status
   };
+
+  export interface getStaff{
   
+      userId: string;
+      email: string;
+      fullname: string;
+      address: string;
+      phonenumber: string;
+      status: string;
+      roleName: string;
+    
+  }
   // TypeScript model for Staffs
   export interface Staff {
     staffId: string; // Primary key

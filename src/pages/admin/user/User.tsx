@@ -5,8 +5,9 @@ import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-import { Student } from "@/models/User";
-import { getStudentList } from "@/api/agent/UserAgent";
+import { getStaff, Student } from "@/models/User";
+import { getStudentList, StaffList } from "@/api/agent/UserAgent";
+import StaffTable from "@/components/partial/admin/user/staff/StaffTable";
 
 const StudentTable = React.lazy(
   () => import("@/components/partial/admin/user/student/StudentTable")
@@ -15,21 +16,22 @@ const StudentTable = React.lazy(
 const User = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [studentList, setStudentList] = useState<Student[]>([]);
+  const [staffList, setStaffList] = useState<getStaff[]>([]);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [totalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   // const [activeTab, setActiveTab] = useState("");
   useEffect(() => {
     const loadUser = async () => {
       try {
-        // const uniData = await UniversityList(pageSize, pageNo);
+        const staffData = await StaffList(pageSize, pageNo);
         const student = await getStudentList();
-        // if (student) {
-        //   setUniList(uniData.data?.data || []); // Đảm bảo `data.data` tồn tại
-        //   setTotalPages(uniData.data?.totalPages || 1); // Đặt số trang
-        // } else {
-        //   console.warn("UniversityList returned no data");
-        // }
+        if (staffData) {
+          setStaffList(staffData.data?.data || []); // Đảm bảo `data.data` tồn tại
+          setTotalPages(staffData.data?.totalPages || 1); // Đặt số trang
+        } else {
+          console.warn("UniversityList returned no data");
+        }
         if (student) {
           setStudentList(student); // Đảm bảo `data.data` tồn tại
         } else {
@@ -70,7 +72,9 @@ const User = () => {
               <TabsTrigger value="student">Student</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="staff"></TabsContent>
+            <TabsContent value="staff">
+              <StaffTable data={staffList} />
+            </TabsContent>
             <TabsContent value="student">
               <StudentTable data={studentList} />
 

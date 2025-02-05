@@ -27,7 +27,11 @@ export const notiColumns: ColumnDef<Noti>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Message" />
     ),
-    cell: ({ row }) => <span>{row.getValue("message")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => (
+      <span className="truncate max-w-lg block px-5">
+        {row.getValue("message")}
+      </span>
+    ), // Hiển thị giá trị "Name"
   },
 
   {
@@ -37,14 +41,6 @@ export const notiColumns: ColumnDef<Noti>[] = [
     ),
     cell: ({ row }) => <span>SYSTEM</span>,
     //  <span>{row.getValue("notificationType")}</span>, // Hiển thị Duration kèm đơn vị
-  },
-
-  {
-    accessorKey: "createdDate",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created Date" />
-    ),
-    cell: ({ row }) => formatDate(row.getValue("createdDate")), // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
   },
 
   {

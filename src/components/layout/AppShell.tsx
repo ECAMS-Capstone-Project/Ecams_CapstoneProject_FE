@@ -29,7 +29,7 @@ export default function AppShell() {
               <UserNav />
             </div>
           </Layout.Header>
-          <Separator className="opacity-50" />
+          <Separator className="opacity-50 " />
 
           <Layout.Body>
             <Outlet />

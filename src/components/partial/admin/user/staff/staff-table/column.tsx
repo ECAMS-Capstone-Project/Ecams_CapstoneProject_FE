@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, ChevronDown, Eye, XCircleIcon } from "lucide-react";
+// import { DataTableRowActions } from "./row-actions";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -12,54 +12,55 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import toast from "react-hot-toast";
-import { Student } from "@/models/User";
+import { getStaff } from "@/models/User";
+import { ViewStaffDialog } from "../staffFormDialog";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ViewStudentDialog } from "../studentFormDialog";
 
 // Định nghĩa columns cho DataTable
-export const StudentColumns: ColumnDef<Student>[] = [
+export const StaffColumns: ColumnDef<getStaff>[] = [
+  // {
+  //   accessorKey: "imageUrl",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Avatar" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     <div className="flex flex-wrap gap-2">
+  //       <img
+  //         src={row.original.imageUrl}
+  //         alt={"Avatar"}
+  //         className="w-10 h-10 object-cover"
+  //       />
+  //     </div>;
+  //   }, // Hiển thị Duration kèm đơn vị
+  // },
   {
-    accessorKey: "imageUrl",
+    accessorKey: "fullname",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Avatar" />
+      <DataTableColumnHeader column={column} title="Full Name" />
     ),
-    cell: ({ row }) => {
-      <div className="flex flex-wrap gap-2">
-        <img
-          src={row.original.imageUrl}
-          alt={"Avatar"}
-          className="w-10 h-10 object-cover"
-        />
-      </div>;
-    }, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("fullname")}</span>, // Hiển thị giá trị "Name"
   },
   {
-    accessorKey: "studentId",
+    accessorKey: "phonenumber",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Student Id" />
+      <DataTableColumnHeader column={column} title="Phone Number" />
     ),
-    cell: ({ row }) => <span>{row.getValue("studentId")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => <span>{row.getValue("phonenumber")}</span>,
   },
   {
-    accessorKey: "universityId",
+    accessorKey: "email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="University ID" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
-    cell: ({ row }) => <span>{row.getValue("universityId")}</span>,
+    cell: ({ row }) => <span>{row.getValue("email")}</span>,
   },
+
   {
-    accessorKey: "major",
+    accessorKey: "roleName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Major" />
+      <DataTableColumnHeader column={column} title="Role" />
     ),
-    cell: ({ row }) => <span>{row.getValue("major")}</span>, // Hiển thị Duration kèm đơn vị
-  },
-  {
-    accessorKey: "yearOfStudy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Academic Year" />
-    ),
-    cell: ({ row }) => <span>{row.getValue("yearOfStudy")} year</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("roleName")}</span>, // Hiển thị Duration kèm đơn vị
   },
 
   {
@@ -70,16 +71,14 @@ export const StudentColumns: ColumnDef<Student>[] = [
           column={column}
           title="Status"
           options={[
-            { label: "Active", value: true },
-            { label: "Inactive", value: false },
+            { label: "Active", value: "ACTIVE" },
+            { label: "Inactive", value: "INACTIVE" },
           ]}
         />
       </div>
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      const isActive = status == "1";
-      const isInactive = status == "0";
       const [currentStatus, setCurrentStatus] = useState(status);
 
       const reactivateUni = async () => {
@@ -87,7 +86,7 @@ export const StudentColumns: ColumnDef<Student>[] = [
           // Gửi API để cập nhật trạng thái
           // await reactiveUni(row.original.universityId); // Hàm này là một giả định
           toast.success("Reactivate University Successfully.");
-          setCurrentStatus("1");
+          setCurrentStatus("ACTIVE");
         } catch (error) {
           console.error("Failed to update status:", error);
           toast.error("Failed to update status.");
@@ -100,21 +99,21 @@ export const StudentColumns: ColumnDef<Student>[] = [
             <DropdownMenuTrigger asChild>
               <div
                 className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
-                  isActive
+                  currentStatus === "ACTIVE"
                     ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                    : isInactive
+                    : currentStatus === "INACTIVE"
                     ? "bg-[#FFF5BA] text-[#5A3825]"
                     : ""
                 } w-3/4`}
               >
-                {isActive && (
+                {currentStatus === "ACTIVE" && (
                   <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
                 )}
-                {isInactive && (
+                {currentStatus === "INACTIVE" && (
                   <XCircleIcon size={12} className=" text-[#5A3825]" />
                 )}
 
-                <span>{currentStatus == "1" ? "Active" : "Inactive"}</span>
+                <span>{currentStatus}</span>
                 <ChevronDown size={16} />
               </div>
             </DropdownMenuTrigger>
@@ -122,7 +121,7 @@ export const StudentColumns: ColumnDef<Student>[] = [
               <DropdownMenuItem
                 onClick={() => reactivateUni()}
                 className={`${
-                  currentStatus === "1" ? "bg-[#CBF2DA]" : ""
+                  currentStatus === "ACTIVE" ? "bg-[#CBF2DA]" : ""
                 } cursor-pointer`}
               >
                 <CheckCircle2Icon size={18} className=" text-[#2F4F4F]" />{" "}
@@ -137,7 +136,7 @@ export const StudentColumns: ColumnDef<Student>[] = [
                   () => setCurrentStatus("0")
                 }
                 className={`${
-                  currentStatus === "0" ? "bg-[#FFF5BA]" : ""
+                  currentStatus === "INACTIVE" ? "bg-[#FFF5BA]" : ""
                 } cursor-pointer`}
               >
                 <XCircleIcon size={18} className=" text-[#5A3825]" /> Inactive
@@ -169,7 +168,7 @@ export const StudentColumns: ColumnDef<Student>[] = [
             <Eye size={18} />
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
-            <ViewStudentDialog initialData={row.original as any} />
+            <ViewStaffDialog initialData={row.original} />
           </DialogContent>
         </Dialog>
       </>
