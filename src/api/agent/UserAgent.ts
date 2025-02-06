@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getStaff, Student } from "@/models/User";
+import { getStaff, Role, Student } from "@/models/User";
 import { get } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 
@@ -22,3 +22,13 @@ export const getStudentList = async (): Promise<Student[]> => {
           throw error;
         }
       };
+    export const roleList = async (): Promise<Role> => {
+        try {
+          const response = await get<Role>("/Role");
+          return response; // Trả về toàn bộ phản hồi
+        } catch (error: any) {
+          console.error("Error in UniversityList API call:", error.response || error);
+          throw error;
+        }
+      };
+

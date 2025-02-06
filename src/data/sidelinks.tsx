@@ -1,6 +1,7 @@
 import {
   BellRingIcon,
   DollarSignIcon,
+  FileText,
   LayoutDashboardIcon,
   Package2Icon,
   UniversityIcon,
@@ -55,5 +56,11 @@ export const sidelinks: SideLink[] = [
     label: "",
     href: "/admin/notification",
     icon: <BellRingIcon size={18} />,
+  },
+  {
+    title: "Policy",
+    label: "",
+    href: "/admin/policy",
+    icon: <FileText size={18} />,
   },
 ];

@@ -7,6 +7,7 @@ import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Notifications from "@/pages/admin/notification/Notification";
 import Package from "@/pages/admin/package/Package";
 import Payment from "@/pages/admin/payment/Payment";
+import Policy from "@/pages/admin/policy/Policy";
 import University from "@/pages/admin/university/University";
 import User from "@/pages/admin/user/User";
 import ChooseRegister from "@/pages/authentication/chooseRegister";
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/notification",
         element: <Notifications />,
+      },
+      {
+        path: "/admin/policy",
+        element: <Policy />,
       },
     ],
   },

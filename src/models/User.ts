@@ -41,4 +41,9 @@ export interface User  {
     status: boolean;         // Trạng thái (true: Active, false: Inactive)
 }
 
+export interface Role {
+  roleId: string;
+  roleName: string;
+  userRole?: string;
+}
 
