@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -13,77 +13,66 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { editPackageSchema } from "@/schema/PackageSchema";
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
-// import { useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { ChevronsUpDown, Check } from "lucide-react";
-import { packageType } from "@/models/Status";
-import { createPackage } from "@/api/agent/PackageAgent";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useState } from "react";
 
-type EditPackageFormValues = z.infer<typeof editPackageSchema>;
-
-interface EditPackageDialogProps {
-  initialData: EditPackageFormValues | null;
+export interface Transaction {
+  transactionId: number;
+  methodId: number;
+  universityPackageId: number;
+  amount: number;
+  paymentDate: Date;
+  status: string;
 }
 
-export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
+// Giả định đây là schema Zod cho Transaction
+const transactionSchema = z.object({
+  transactionId: z.number(),
+  methodId: z.number(),
+  universityPackageId: z.number(),
+  amount: z.number().positive(), // Số tiền phải dương
+  paymentDate: z.date(), // Ngày thanh toán
+  status: z.string(),
+});
+
+type TransactionFormValues = z.infer<typeof transactionSchema>;
+
+interface PaymentDialogProps {
+  initialData: Transaction | null;
+}
+
+export const PaymentDialog: React.FC<PaymentDialogProps> = ({
   initialData,
 }) => {
-  const form = useForm<EditPackageFormValues>({
-    resolver: zodResolver(editPackageSchema),
+  const form = useForm<TransactionFormValues>({
+    resolver: zodResolver(transactionSchema),
     defaultValues: initialData || {
-      packageName: "",
-      // createdBy: "",
-      // updatedBy: null,
-      price: 0,
-      status: true,
-      duration: 0,
-      description: "",
-      packageDetails: [
-        {
-          packageType: "",
-          value: "",
-        },
-      ],
+      transactionId: 0,
+      methodId: 0,
+      universityPackageId: 0,
+      amount: 0,
+      paymentDate: new Date(),
+      status: "Pending", // Hoặc trạng thái mặc định khác
     },
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [, setOpen] = useState(false);
-  // const [open, setOpen] = useState(false)
-  const { control, handleSubmit } = form;
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "packageDetails",
-  });
 
-  async function onSubmit(values: EditPackageFormValues) {
+  const { handleSubmit } = form;
+
+  async function onSubmit(values: TransactionFormValues) {
     try {
       setIsLoading(true);
-      console.log("Adding New Package:", values);
-      await createPackage(values);
-      toast.success("Package created successfully.");
-      setOpen(false);
-      window.location.reload();
+      console.log("Processing Payment:", values);
+      // await createPayment(values); // Gọi API tạo payment
+      toast.success("Payment processed successfully.");
+      // Đóng dialog hoặc làm gì đó sau khi thành công
+      window.location.reload(); // Refresh hoặc điều hướng
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
@@ -94,7 +83,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
   }
 
   return (
-    <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
+    <div className="min-h-[200px] sm:min-h-[300px] h-auto">
       {isLoading ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
@@ -103,65 +92,26 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
         <>
           <DialogHeader>
             <DialogTitle>
-              {initialData ? "View Package Details" : "Add New Package"}
+              {initialData ? "View Payment Details" : "Add New Payment"}
             </DialogTitle>
           </DialogHeader>
           <DialogDescription>
             {initialData
-              ? "View the package details below."
-              : "Fill out the form below to add a new package."}
+              ? "View the payment details below."
+              : "Fill out the form below to process a new payment."}
           </DialogDescription>
           <div>
             <div className="p-4">
               <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-2 gap-3">
-                    {/* Package Name */}
-                    <FormField
-                      control={control}
-                      name="packageName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Package Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              readOnly={!!initialData}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Price */}
-                    <FormField
-                      control={control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              readOnly={!!initialData}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {/* Description */}
-
-                    {/* Duration */}
+                    {/* Transaction ID */}
                     <FormField
                       control={form.control}
-                      name="duration"
+                      name="transactionId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Duration (Months)</FormLabel>
+                          <FormLabel>Transaction ID</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -173,6 +123,84 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                         </FormItem>
                       )}
                     />
+
+                    {/* Method ID */}
+                    <FormField
+                      control={form.control}
+                      name="methodId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Method ID</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* University Package ID */}
+                    <FormField
+                      control={form.control}
+                      name="universityPackageId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>University Package ID</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Amount */}
+                    <FormField
+                      control={form.control}
+                      name="amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Amount</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Payment Date */}
+                    <FormField
+                      control={form.control}
+                      name="paymentDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Payment Date</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              value={field.value.toString().split("T")[0]}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Status */}
                     <FormField
                       control={form.control}
                       name="status"
@@ -183,10 +211,6 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                             <Input
                               type="text"
                               {...field}
-                              value={
-                                field.value == true ? "Active" : "Inactive"
-                              }
-                              // onChange={(e) => field.onChange(e.target.value)}
                               readOnly={!!initialData}
                             />
                           </FormControl>
@@ -194,156 +218,12 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                         </FormItem>
                       )}
                     />
-                  </div>
-                  <div className="w-full">
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              className="border p-2 rounded w-full h-20"
-                              readOnly={!!initialData}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Package Details */}
-                  <div className="col-span-2">
-                    <FormLabel>Package Details</FormLabel>
-                    {fields.map((field, index) => (
-                      <div
-                        key={field.id}
-                        className="flex items-center gap-3 mb-3 mt-2"
-                      >
-                        {/* Package Type */}
-                        <FormField
-                          control={control}
-                          name={`packageDetails.${index}.packageType`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                {/* <Input
-                          {...field}
-                          placeholder="Package Type (e.g., students, events)"
-                          readOnly={!!initialData}
-                        /> */}
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      className={`w-[200px] justify-between ${
-                                        initialData ? "pointer-events-none" : ""
-                                      }`}
-                                    >
-                                      {field.value
-                                        ? packageType.find(
-                                            (type) => type.value === field.value
-                                          )?.label
-                                        : "Select Package Type..."}
-                                      <ChevronsUpDown className="opacity-50" />
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[200px] p-0">
-                                    <Command>
-                                      <CommandInput placeholder="Search type..." />
-                                      <CommandList>
-                                        <CommandEmpty>
-                                          No types found.
-                                        </CommandEmpty>
-                                        <CommandGroup>
-                                          {packageType.map((type) => (
-                                            <CommandItem
-                                              key={type.value}
-                                              onSelect={() => {
-                                                const isDuplicate = fields.some(
-                                                  (existingField, idx) =>
-                                                    existingField.packageType ===
-                                                      type.value &&
-                                                    idx !== index // Exclude the current index
-                                                );
-
-                                                if (isDuplicate) {
-                                                  toast.error(
-                                                    "This package type has already been selected."
-                                                  );
-                                                  return;
-                                                }
-
-                                                field.onChange(type.value);
-                                              }}
-                                            >
-                                              {type.label}
-                                              <Check
-                                                className={`ml-auto ${
-                                                  field.value === type.value
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                                }`}
-                                              />
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Value */}
-                        <FormField
-                          control={control}
-                          name={`packageDetails.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Value"
-                                  readOnly={!!initialData}
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Remove Button */}
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          onClick={() => remove(index)}
-                          disabled={!!initialData}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    ))}
-
-                    {/* Add New Detail */}
-                    <Button
-                      type="button"
-                      onClick={() => append({ packageType: "", value: "" })}
-                      disabled={!!initialData}
-                    >
-                      Add Detail
-                    </Button>
                   </div>
 
                   {/* Submit Button */}
                   <div className="flex w-full justify-end mt-4 ">
                     {!initialData ? (
-                      <Button type="submit">Add Package</Button>
+                      <Button type="submit">Add Payment</Button>
                     ) : (
                       <DialogClose>
                         <Button type="button">Quit</Button>

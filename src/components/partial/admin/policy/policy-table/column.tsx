@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2Icon, ChevronDown, Eye, XCircleIcon } from "lucide-react";
+import { CheckCircle2Icon, ChevronDown, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,

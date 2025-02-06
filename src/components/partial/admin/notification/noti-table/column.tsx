@@ -1,20 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./row-actions";
 import { Noti } from "@/models/Notification";
 
-const formatDate = (timestamp: string): string => {
-  const date = new Date(timestamp);
-
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-
-  return date.toLocaleString("en-US", options);
-};
 // Định nghĩa columns cho DataTable
 export const notiColumns: ColumnDef<Noti>[] = [
   {
@@ -39,7 +27,7 @@ export const notiColumns: ColumnDef<Noti>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Notification Type" />
     ),
-    cell: ({ row }) => <span>SYSTEM</span>,
+    cell: () => <span>SYSTEM</span>,
     //  <span>{row.getValue("notificationType")}</span>, // Hiển thị Duration kèm đơn vị
   },
 
