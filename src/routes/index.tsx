@@ -7,8 +7,12 @@ import PackageContract from "@/components/partial/staff/staff-signature/PackageC
 import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
+import Notifications from "@/pages/admin/notification/Notification";
 import Package from "@/pages/admin/package/Package";
+import Payment from "@/pages/admin/payment/Payment";
+import Policy from "@/pages/admin/policy/Policy";
 import University from "@/pages/admin/university/University";
+import User from "@/pages/admin/user/User";
 import ChooseRegister from "@/pages/authentication/chooseRegister";
 import ForgotPassword from "@/pages/authentication/forgotPassword";
 import Login from "@/pages/authentication/login";
@@ -16,6 +20,7 @@ import Register from "@/pages/authentication/register";
 import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
+import ProfilePage from "@/pages/common/Profile";
 import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
 import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
@@ -89,6 +94,22 @@ export const router = createBrowserRouter([
         path: "/admin/university",
         element: <University />,
       },
+      {
+        path: "/admin/payment",
+        element: <Payment />,
+      },
+      {
+        path: "/admin/user",
+        element: <User />,
+      },
+      {
+        path: "/admin/notification",
+        element: <Notifications />,
+      },
+      {
+        path: "/admin/policy",
+        element: <Policy />,
+      },
     ],
   },
   {
@@ -139,4 +160,15 @@ export const router = createBrowserRouter([
     element: <WaitingCheckout />,
     errorElement: <ErrorException />,
   }
+  {
+    path: "/common",
+    element: <PrivateRoute />,
+    children: [
+      {
+        path: "/common/profile",
+        element: <ProfilePage />,
+      },
+    ],
+    errorElement: <ErrorException />,
+  },
 ]);

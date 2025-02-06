@@ -18,13 +18,11 @@ const formatDate = (timestamp: string): string => {
 };
 // Định nghĩa columns cho DataTable
 export const packageColumns: ColumnDef<Package>[] = [
-  // {
-  //   accessorKey: "packageId",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Package Id" />
-  //   ),
-  //   cell: ({ row }) => <span>{row.getValue("packageId")} </span>, // Hiển thị giá trị "Name"
-  // },
+  {
+    accessorKey: "packageId",
+    header: undefined,
+    cell: undefined, // Không cần hiển thị
+  },
   {
     accessorKey: "packageName",
     header: ({ column }) => (
@@ -45,7 +43,7 @@ export const packageColumns: ColumnDef<Package>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("description")} days</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("description")}</span>, // Hiển thị Duration kèm đơn vị
   },
   {
     accessorKey: "price",
@@ -68,15 +66,15 @@ export const packageColumns: ColumnDef<Package>[] = [
         column={column}
         title="Status"
         options={[
-          { label: "Active", value: "1" },
-          { label: "Inactive", value: "2" },
+          { label: "Active", value: true },
+          { label: "Inactive", value: false },
         ]}
       />
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       const isActive = status == "1";
-      const isInactive = status == "2";
+      const isInactive = status == "0";
 
       return (
         <div
@@ -97,6 +95,10 @@ export const packageColumns: ColumnDef<Package>[] = [
           <span>{status == "1" ? "Active" : "Inactive"}</span>
         </div>
       );
+    },
+    filterFn: (row, columnId, filterValue) => {
+      const value = row.getValue(columnId); // Giá trị boolean thực tế
+      return filterValue == String(value);
     },
   },
 
