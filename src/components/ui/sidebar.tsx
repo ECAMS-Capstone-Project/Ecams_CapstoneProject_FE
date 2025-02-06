@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { ChevronLeft, Menu, X } from "lucide-react";
-import { sidelinks } from "@/data/sidelinks";
 import Nav from "./nav";
 import { Layout } from "../layout/layout";
+import SidebarLinks from "@/data/sidelinks";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean;
@@ -17,6 +17,7 @@ export default function Sidebar({
   setIsCollapsed,
 }: SidebarProps) {
   const [navOpened, setNavOpened] = useState(false);
+  const sidebarLinks = SidebarLinks(); // Gọi hàm để lấy danh sách link dựa vào user.roleName
 
   /* Make body not scrollable when navBar is opened */
   useEffect(() => {
@@ -30,8 +31,7 @@ export default function Sidebar({
   return (
     <aside
       className={cn(
-        `fixed left-0 right-0 top-0 z-50 w-full border-r-2 border-r-muted transition-[width] md:bottom-0 md:right-auto md:h-svh ${
-          isCollapsed ? "md:w-14" : "md:w-64"
+        `fixed left-0 right-0 top-0 z-50 w-full border-r-2 border-r-muted transition-[width] md:bottom-0 md:right-auto md:h-svh ${isCollapsed ? "md:w-14" : "md:w-64"
         }`,
         className
       )}
@@ -39,9 +39,8 @@ export default function Sidebar({
       {/* Overlay in mobile */}
       <div
         onClick={() => setNavOpened(false)}
-        className={`absolute inset-0 transition-[opacity] delay-100 duration-700 ${
-          navOpened ? "h-svh opacity-50" : "h-0 opacity-0"
-        } w-full bg-black md:hidden`}
+        className={`absolute inset-0 transition-[opacity] delay-100 duration-700 ${navOpened ? "h-svh opacity-50" : "h-0 opacity-0"
+          } w-full bg-black md:hidden`}
       />
 
       <Layout fixed className={navOpened ? "h-svh" : ""}>
@@ -54,18 +53,16 @@ export default function Sidebar({
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 256 256"
-              className={`transition-all ${
-                isCollapsed ? "h-7 w-7" : "h-8 w-8"
-              }`}
+              className={`transition-all ${isCollapsed ? "h-7 w-7" : "h-8 w-8"
+                }`}
             >
               <rect width="256" height="256" fill="none"></rect>
               <image href="" width="256" height="256" />
               <span className="sr-only">ECAMS</span>
             </svg>
             <div
-              className={`flex flex-col justify-end truncate ${
-                isCollapsed ? "invisible w-0" : "visible w-auto"
-              }`}
+              className={`flex flex-col justify-end truncate ${isCollapsed ? "invisible w-0" : "visible w-auto"
+                }`}
             >
               <span className="font-medium">ECAMS</span>
               <span className="text-xs">Platform for student</span>
@@ -89,12 +86,11 @@ export default function Sidebar({
         {/* Navigation links */}
         <Nav
           id="sidebar-menu"
-          className={`z-40 h-full flex-1 overflow-auto ${
-            navOpened ? "max-h-screen" : "max-h-0 py-0 md:max-h-screen md:py-2"
-          }`}
+          className={`z-40 h-full flex-1 overflow-auto ${navOpened ? "max-h-screen" : "max-h-0 py-0 md:max-h-screen md:py-2"
+            }`}
           closeNav={() => setNavOpened(false)}
           isCollapsed={isCollapsed}
-          links={sidelinks}
+          links={sidebarLinks}
         />
 
         {/* Scrollbar width toggle button */}

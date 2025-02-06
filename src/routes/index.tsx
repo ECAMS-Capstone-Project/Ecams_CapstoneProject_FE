@@ -159,7 +159,7 @@ export const router = createBrowserRouter([
     path: "/waiting-checkout",
     element: <WaitingCheckout />,
     errorElement: <ErrorException />,
-  }
+  },
   {
     path: "/common",
     element: <PrivateRoute />,

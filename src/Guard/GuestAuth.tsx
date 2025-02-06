@@ -13,6 +13,9 @@ export default function GuestAuth({ children }: GuestAuthProps) {
         if (user && user.roles[0] == "STAFF") {
             return <Navigate to="/staff" />;
         }
+        if (user && user.roles[0] == "ADMIN") {
+            return <Navigate to="/admin" />;
+        }
         return <Navigate to="/" />;
     }
 
