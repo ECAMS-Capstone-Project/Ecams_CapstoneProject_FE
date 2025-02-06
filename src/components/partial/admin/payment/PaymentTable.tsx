@@ -13,8 +13,8 @@ const PaymentTable = ({ data }: PaymentData) => {
         <DataTable
           columns={paymentColumns}
           data={data}
-          searchKey={"packageName"}
-          placeholder="Search transaction"
+          searchKey={"amount"}
+          placeholder="Search transaction's amount"
         />
       </div>
     </>

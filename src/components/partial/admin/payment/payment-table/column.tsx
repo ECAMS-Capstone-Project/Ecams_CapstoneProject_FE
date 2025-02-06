@@ -41,7 +41,7 @@ export const paymentColumns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "amount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Description" />
+      <DataTableColumnHeader column={column} title="Amount" />
     ),
     cell: ({ row }) => <span>{row.getValue("amount")}</span>, // Hiển thị Duration kèm đơn vị
   },
