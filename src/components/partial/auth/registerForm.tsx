@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -29,13 +29,11 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { formatDate } from "date-fns";
 import useAuth from "@/hooks/useAuth";
-const MAX_FILE_SIZE = 1024 * 1024 * 5;
-const ACCEPTED_IMAGE_MIME_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
+import { University } from "@/models/University";
+import { UniversityList } from "@/api/agent/UniversityAgent";
+import { ring2 } from 'ldrs'
+import toast from "react-hot-toast";
 
 // Validation schema using Zod
 const schema = z
@@ -86,41 +84,63 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const RegisterForm: React.FC = () => {
+  ring2.register()
   const [preview, setPreview] = useState<string | null>(null);
   const [date, setDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
   const { registerStudent } = useAuth();
+  const [listUniversity, setListUniversity] = React.useState<University[]>([]);
+  useEffect(() => {
+    const loadUniversity = async () => {
+      try {
+        const uniData = await UniversityList(100, 1);
 
+        if (uniData) {
+          setListUniversity(uniData.data?.data || []);
+        } else {
+          console.warn("UniversityList returned no data");
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadUniversity();
+  }, []);
   const {
     handleSubmit,
     register,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
   console.log(errors);
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-    console.log(data);
-    const formData = new FormData();
-    formData.append("Fullname", data.fullName);
-    formData.append("StudentId", data.studentId);
-    formData.append("Email", data.email);
-    formData.append("PhoneNumber", data.phoneNumber);
-    formData.append("Password", data.password);
-    formData.append("UniversityId", data.universityId);
-    formData.append("YearOfStudy", data.yearStudy);
-    formData.append("Address", data.address);
-    if (data.file) {
-      formData.append("StudentCardImage", data.file[0]);
-    }
-    formData.append("Major", data.major);
-    formData.append("StartDate", data.startDate.toISOString());
-    formData.append("EndDate", data.endDate.toISOString());
-    formData.append("Gender", data.gender);
+    try {
+      const formData = new FormData();
+      formData.append("Fullname", data.fullName);
+      formData.append("StudentId", data.studentId);
+      formData.append("Email", data.email);
+      formData.append("PhoneNumber", data.phoneNumber);
+      formData.append("Password", data.password);
+      formData.append("UniversityId", data.universityId);
+      formData.append("YearOfStudy", data.yearStudy);
+      formData.append("Address", data.address);
+      if (data.file) {
+        formData.append("StudentCardImage", data.file[0]);
+      }
+      formData.append("Major", data.major);
+      formData.append("StartDate", data.startDate.toISOString());
+      formData.append("EndDate", data.endDate.toISOString());
+      formData.append("Gender", data.gender);
 
-    await registerStudent(formData);
+      await registerStudent(formData);
+    } catch (error) {
+      toast.error("An error occurred");
+      console.log(error);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,13 +290,14 @@ const RegisterForm: React.FC = () => {
                 <FormControl fullWidth error={!!errors.universityId}>
                   <InputLabel>University</InputLabel>
                   <Select
+                    key={listUniversity.length}
                     {...register("universityId")}
                     label="University"
                     id="demo-simple-select-error"
                   >
-                    <MenuItem value="1">University A</MenuItem>
-                    <MenuItem value="University B">University B</MenuItem>
-                    <MenuItem value="University C">University C</MenuItem>
+                    {listUniversity && listUniversity.map((uni, index) => (
+                      <MenuItem key={index + 1} value={uni.universityId}>{uni.universityName}</MenuItem>
+                    ))}
                   </Select>
                   {errors.universityId && (
                     <Typography color="error" variant="caption">
@@ -328,9 +349,8 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${
-                        !date ? "text-muted-foreground" : ""
-                      }`}
+                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
+                        }`}
                     >
                       <CalendarIcon />
                       {date ? (
@@ -366,9 +386,8 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${
-                        !date ? "text-muted-foreground" : ""
-                      }`}
+                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
+                        }`}
                     >
                       <CalendarIcon />
                       {endDate ? (
@@ -404,6 +423,7 @@ const RegisterForm: React.FC = () => {
                       I agree to all the{" "}
                       <a
                         href="/terms"
+                        className="text-red-400"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -411,6 +431,7 @@ const RegisterForm: React.FC = () => {
                       </a>{" "}
                       and{" "}
                       <a
+                        className="text-red-400"
                         href="/privacy"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -460,6 +481,7 @@ const RegisterForm: React.FC = () => {
                 {preview && (
                   <Avatar
                     src={preview}
+                    variant="square"
                     alt="Preview"
                     sx={{ width: 100, height: 100 }}
                   />
@@ -475,8 +497,21 @@ const RegisterForm: React.FC = () => {
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={isSubmitting}
+                  startIcon={
+                    isSubmitting && (
+                      <l-ring-2
+                        size="40"
+                        stroke="5"
+                        stroke-length="0.25"
+                        bg-opacity="0.1"
+                        speed="0.8"
+                        color="black"
+                      ></l-ring-2>
+                    )
+                  }
                 >
-                  Create account
+                  {(isSubmitting) ? "Loading..." : "Create account"}
                 </Button>
               </Grid2>
 

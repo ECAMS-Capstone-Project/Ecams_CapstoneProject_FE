@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,47 +7,111 @@ import {
   TextField,
   Typography,
   Grid2,
+  styled,
+  Avatar,
 } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
+import useAuth from "@/hooks/useAuth";
+import { additionInfoUniversityAPI } from "@/api/auth/RegisterAPI";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { ring2 } from 'ldrs'
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 // Validation schema using Zod
 const schema = z.object({
-  universityName: z.string().min(1, "University name is required"),
-  shortName: z.string().min(1, "Short name is required"),
-  contactPhone: z.string().min(10, "Phone number must be at least 10 digits"),
-  contactEmail: z.string().email("Invalid email address"),
-  location: z.string().min(1, "Address is required"),
-  websiteUrl: z.string().min(1, "Website url is required"),
-  logoLink: z.string().min(1, "Logo link is required"),
+  UniversityName: z.string().min(1, "University name is required"),
+  ShortName: z.string().min(1, "Short name is required"),
+  ContactPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  ContactEmail: z.string().email("Invalid email address"),
+  UniversityAddress: z.string().optional(),
+  WebsiteUrl: z.string().min(1, "Website url is required"),
+  Logo: z
+    .any()
+    .refine((files) => {
+      return files?.[0]?.size <= MAX_FILE_SIZE;
+    }, `Max image size is 5MB.`)
+    .refine(
+      (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    ),
   agreeToTerms: z.boolean().refine((val) => val, "You must agree to the terms"),
 });
 
 type SignUpFormValues = z.infer<typeof schema>;
 
 const AdditionInfoUniversityForm: React.FC = () => {
+  ring2.register()
+  const navigate = useNavigate();
+  const [preview, setPreview] = useState<string | null>(null);
+  const { user } = useAuth()
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-    console.log(data);
-    // const user: StaffRegisterRequest = {
-    //   universityName: data.fullName,
-    //   shortName: data.email,
-    //   contactEmail: data.email,
-    //   contactPhone: data.address,
-    //   location: data.phoneNumber,
-    //   websiteUrl: data.password,
-    //   logoLink: data.address,
-    // };
-  };
+  useEffect(() => {
+    if (user && (user.universityId !== undefined && user.universityId !== null)) {
+      navigate('/staff/dashboard')
+    }
+  }, [user, navigate])
 
+  const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
+    if (user && user.userId) {
+      console.log(user.userId);
+      const formDataInput = new FormData();
+      formDataInput.append("UniversityName", data.UniversityName);
+      formDataInput.append("UniversityAddress", data.UniversityAddress || "");
+      formDataInput.append("ShortName", data.ShortName);
+      formDataInput.append("ContactEmail", data.ContactEmail);
+      formDataInput.append("ContactPhone", data.ContactPhone);
+      if (data.Logo && data.Logo[0]) {
+        formDataInput.append("Logo", data.Logo[0]);
+      }
+      formDataInput.append("WebsiteUrl", data.WebsiteUrl);
+      formDataInput.append("StaffId", user.staffId);
+
+      try {
+        console.log(formDataInput.get("StaffId"));
+        const response = await additionInfoUniversityAPI(formDataInput);
+        if (response) {
+          toast.success("Update info successful");
+          navigate('/staff/waiting-staff')
+        } else {
+          toast.error("Update info failed");
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("An error occurred while updating info");
+      }
+    }
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setPreview(fileUrl);
+    } else {
+      setPreview(null);
+    }
+  };
   return (
     <Box
       display="flex"
@@ -73,72 +137,101 @@ const AdditionInfoUniversityForm: React.FC = () => {
             <Grid2 container spacing={2}>
               <Grid2 size={{ xs: 12, md: 6 }}>
                 <TextField
-                  {...register("universityName")}
+                  {...register("UniversityName")}
                   label="University Name"
                   fullWidth
-                  error={!!errors.universityName}
-                  helperText={errors.universityName?.message}
+                  error={!!errors.UniversityName}
+                  helperText={errors.UniversityName?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
                 <TextField
-                  {...register("shortName")}
+                  {...register("ShortName")}
                   label="Short Name"
                   fullWidth
-                  error={!!errors.shortName}
-                  helperText={errors.shortName?.message}
+                  error={!!errors.ShortName}
+                  helperText={errors.ShortName?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
                 <TextField
-                  {...register("contactEmail")}
+                  {...register("ContactEmail")}
                   label="Contact Email"
                   fullWidth
-                  error={!!errors.contactEmail}
-                  helperText={errors.contactEmail?.message}
+                  error={!!errors.ContactEmail}
+                  helperText={errors.ContactEmail?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
                 <TextField
-                  {...register("contactPhone")}
+                  {...register("ContactPhone")}
                   label="Contact Phone"
                   fullWidth
-                  error={!!errors.contactPhone}
-                  helperText={errors.contactPhone?.message}
+                  error={!!errors.ContactPhone}
+                  helperText={errors.ContactPhone?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12 }}>
                 <TextField
-                  {...register("location")}
+                  {...register("UniversityAddress")}
                   label="Location"
                   fullWidth
-                  error={!!errors.location}
-                  helperText={errors.location?.message}
+                  error={!!errors.UniversityAddress}
+                  helperText={errors.UniversityAddress?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12 }}>
                 <TextField
-                  {...register("websiteUrl")}
+                  {...register("WebsiteUrl")}
                   label="Website Url"
                   fullWidth
-                  error={!!errors.websiteUrl}
-                  helperText={errors.websiteUrl?.message}
+                  error={!!errors.WebsiteUrl}
+                  helperText={errors.WebsiteUrl?.message}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12 }}>
-                <TextField
-                  {...register("logoLink")}
-                  label="Logo Link"
-                  fullWidth
-                  error={!!errors.logoLink}
-                  helperText={errors.logoLink?.message}
-                />
+                <Box>
+                  <VisuallyHiddenInput
+                    accept="image/*"
+                    id="upload-button-file"
+                    type="file"
+                    {...register("Logo")}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      handleFileChange(e);
+                    }}
+                  />
+                  <label htmlFor="upload-button-file">
+                    <Button
+                      variant="contained"
+                      component="span"
+                      color="primary"
+                    >
+                      Choose your logo
+                    </Button>
+                    {errors.Logo && (
+                      <Typography color="error" variant="caption">
+                        Please choose image
+                      </Typography>
+                    )}
+                  </label>
+                </Box>
+              </Grid2>
+
+              <Grid2 size={{ xs: 12 }}>
+                {preview && (
+                  <Avatar
+                    variant="square"
+                    src={preview}
+                    alt="Preview"
+                    sx={{ width: 100, height: 100 }}
+                  />
+                )}
               </Grid2>
 
               <Grid2 size={{ xs: 12 }}>
@@ -183,8 +276,21 @@ const AdditionInfoUniversityForm: React.FC = () => {
                   type="submit"
                   variant="contained"
                   fullWidth
+                  disabled={isSubmitting}
+                  startIcon={
+                    isSubmitting && (
+                      <l-ring-2
+                        size="40"
+                        stroke="5"
+                        stroke-length="0.25"
+                        bg-opacity="0.1"
+                        speed="0.8"
+                        color="black"
+                      ></l-ring-2>
+                    )
+                  }
                 >
-                  Submit
+                  {(isSubmitting) ? "Loading..." : "Submit"}
                 </Button>
               </Grid2>
             </Grid2>

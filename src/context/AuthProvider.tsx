@@ -96,10 +96,10 @@ const reducer = (state: AuthState, action: any): AuthState =>
 const AuthContext = createContext<AuthContextProps>({
   ...initialState,
   method: "jwt",
-  login: async () => {},
-  registerUniversity: async () => {},
-  registerStudent: async () => {},
-  sendOtp: async () => {},
+  login: async () => { },
+  registerUniversity: async () => { },
+  registerStudent: async () => { },
+  sendOtp: async () => { },
   // login_type: async () => { },
   // logout: async () => { },
   // register: async () => { },
@@ -125,16 +125,16 @@ function AuthProvider({ children }: AuthProviderProps) {
           console.log("Test có access valid");
           if (
             response.data?.isVerified === false &&
-            response.data.roles[0] !== "Administrator"
+            response.data.roles[0].toUpperCase() !== "ADMIN"
           ) {
             dispatch({
               type: "SEND_OTP",
-              payload: { userData },
+              payload: { user: userData },
             });
           } else {
             dispatch({
               type: "INITIALIZE",
-              payload: { isAuthenticated: true, userData },
+              payload: { isAuthenticated: true, user: userData },
             });
           }
         } else {
@@ -168,7 +168,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       console.log(response);
       if (response) {
         const { data } = response;
-        if (data?.user.roles[0] == "Administrator") {
+        if (data?.user.roles[0].toUpperCase() == "ADMIN") {
           if (data?.accessToken)
             window.localStorage.setItem("accessToken", data?.accessToken);
           dispatch({
@@ -238,7 +238,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         toast.success("Registration successful");
         setTimeout(() => {
           window.location.replace("/login");
-        }, 2000);
+        }, 500);
       } else {
         toast.error("Registration failed");
       }
@@ -256,9 +256,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
-        setTimeout(() => {
-          window.location.replace("/login");
-        }, 2000);
+        window.location.replace("/login");
       } else {
         toast.error("Registration failed");
       }

@@ -7,12 +7,12 @@ interface GuestAuthProps {
 }
 
 export default function GuestAuth({ children }: GuestAuthProps) {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
     if (isAuthenticated) {
-        // if (user && user?.roleName == "Staff") {
-        //     return <Navigate to="/personal-profile" />;
-        // }
+        if (user && user.roles[0] == "STAFF") {
+            return <Navigate to="/staff" />;
+        }
         return <Navigate to="/" />;
     }
 
