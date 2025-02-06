@@ -3,15 +3,6 @@ import { Package } from "@/models/Package";
 import { del, get, post } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 
-export const PackageList2 = async (): Promise<Package[]> => {
-  try {
-    const response = await get<Package[]>("/package"); // Gọi endpoint
-    return response;
-  } catch (error) {
-    console.error("Error fetching university list:", error);
-    throw error;
-  }
-};
 
 export const PackageList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Package>>> => {
   try {
