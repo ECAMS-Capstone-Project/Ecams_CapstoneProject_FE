@@ -18,6 +18,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth';
+import { formatPrice } from '@/lib/FormatPrice';
 
 const BackgroundWrapper = styled(Box)({
     minHeight: '100vh',
@@ -101,28 +102,6 @@ const PaymentConfirmation: React.FC = () => {
                 paymentMethod: methodPayment
             }
         })
-        // const formBuyCoin = {
-        //   userId: user?.id,
-        //   paymentMethod: methodPayment,
-        //   memberShipId: memberShipBuy?.memberShipId,
-        // };
-        // try {
-        //   const response = await CreatePayment(formBuyCoin);
-        //   if (response.status == StatusCode.CREATED) {
-        //     const responseData = await response.json();
-        //     if (responseData.statusCode == StatusCode.CREATED && methodPayment == "PAYOS") {
-        //       window.location.replace(responseData.metaData.checkoutUrl);
-        //     }else if (responseData.statusCode == StatusCode.CREATED && methodPayment == "Vnpay"){
-        //       window.location.replace(responseData.metaData);
-        //     } else {
-        //       toast.error(responseData.message);
-        //     }
-        //   } else {
-        //     toast.error("Bạn hiện đang sở hữu một gói trong tài khoản");
-        //   }
-        // } catch (error) {
-        //   console.log("Network error" + error);
-        // }
     };
     return (
         <BackgroundWrapper>
@@ -163,7 +142,7 @@ const PaymentConfirmation: React.FC = () => {
                                         <b>Duration:</b> {selectedPlan?.duration} month
                                     </Typography>
                                     <Typography variant="body2" gutterBottom>
-                                        <b>Total:</b> ${selectedPlan?.price + ".00"}
+                                        <b>Total:</b> {formatPrice(selectedPlan?.price)}
                                     </Typography>
                                 </Box>
                                 <div>
@@ -186,7 +165,7 @@ const PaymentConfirmation: React.FC = () => {
                                     <Grid2 size={{ sm: 5 }}>
                                         <Typography variant="body1">Name:</Typography>
                                     </Grid2>
-                                    <Grid2 size={{ sm: 5 }}>
+                                    <Grid2 size={{ sm: 6 }}>
                                         <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
                                             {user?.fullname}
                                         </Typography>
@@ -196,7 +175,7 @@ const PaymentConfirmation: React.FC = () => {
                                     <Grid2 size={{ sm: 5 }}>
                                         <Typography variant="body1">University:</Typography>
                                     </Grid2>
-                                    <Grid2 size={{ sm: 5 }}>
+                                    <Grid2 size={{ sm: 6 }}>
                                         <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
                                             FPT University
                                         </Typography>
@@ -206,7 +185,7 @@ const PaymentConfirmation: React.FC = () => {
                                     <Grid2 size={{ sm: 5 }}>
                                         <Typography variant="body1">Email</Typography>
                                     </Grid2>
-                                    <Grid2 size={{ sm: 5 }}>
+                                    <Grid2 size={{ sm: 6 }}>
                                         <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
                                             {user?.email}
                                         </Typography>
@@ -216,7 +195,7 @@ const PaymentConfirmation: React.FC = () => {
                                     <Grid2 size={{ sm: 5 }}>
                                         <Typography variant="body1">Phone Number:</Typography>
                                     </Grid2>
-                                    <Grid2 size={{ sm: 5 }}>
+                                    <Grid2 size={{ sm: 6 }}>
                                         <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
                                             0922998321
                                         </Typography>
@@ -273,7 +252,7 @@ const PaymentConfirmation: React.FC = () => {
                             >
                                 <Typography>Total (include VAT):</Typography>
                                 <Typography>
-                                    ${selectedPlan?.price + ".00"}
+                                    {formatPrice(selectedPlan?.price)}
                                 </Typography>
                             </Box>
                             <Typography

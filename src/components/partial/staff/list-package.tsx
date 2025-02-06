@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { PackageList3 } from '@/api/agent/PackageAgent';
 import { Package } from '@/models/Package';
+import { formatPrice } from '@/lib/FormatPrice';
 
 // Styled components
 const StyledCard = styled(Card)<{ isPopular?: boolean }>(({ isPopular }) => ({
@@ -171,8 +172,8 @@ const Pricing: React.FC = () => {
                                                             sx={{ alignSelf: 'flex-end', mb: 2 }}
                                                         />
                                                     )}
-                                                    <Typography variant="h4" component="h2" gutterBottom>
-                                                        ${plan.price}
+                                                    <Typography variant="h6" fontWeight={'600'} component="h2" gutterBottom>
+                                                        {formatPrice(plan.price)}
                                                         <Typography variant="subtitle1" component="span">
                                                             / {plan.duration} months
                                                         </Typography>
@@ -208,7 +209,7 @@ const Pricing: React.FC = () => {
                 <div className='flex w-full justify-center'>
                     <Button
                         type="submit"
-                        onClick={() => navigate('/')}
+                        onClick={() => navigate('/staff/dashboard')}
                         variant="contained"
                         color="primary"
                         sx={{

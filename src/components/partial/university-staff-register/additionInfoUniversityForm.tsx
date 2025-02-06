@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -66,6 +66,12 @@ const AdditionInfoUniversityForm: React.FC = () => {
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (user && (user.universityId !== undefined && user.universityId !== null)) {
+      navigate('/staff/dashboard')
+    }
+  }, [user, navigate])
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
     if (user && user.userId) {

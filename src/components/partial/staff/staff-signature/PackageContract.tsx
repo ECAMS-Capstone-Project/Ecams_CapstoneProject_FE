@@ -48,7 +48,7 @@ const PackageContract = () => {
     });
 
     const predefinedSignature =
-        "https://i.postimg.cc/5tgDPXqX/signature.png";
+        "https://res.cloudinary.com/ecams/image/upload/v1738675298/ecams_signature.png";
 
     const clearSignature = () => {
         userSignatureRef.current?.clear();
