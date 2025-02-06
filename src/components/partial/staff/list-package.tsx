@@ -1,35 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Chip,
-    Container,
-    Typography,
-    Stack,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    IconButton,
+    Box, Button, Card, CardContent, Container, Typography, Stack, List,
+    ListItem, ListItemIcon, ListItemText, IconButton, CircularProgress, Alert,
+    Chip
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
+import { PackageList3 } from '@/api/agent/PackageAgent';
+import { Package } from '@/models/Package';
 
-interface PricingPlan {
-    title: string;
-    price: number;
-    description: string;
-    features: string[];
-    isPopular?: boolean;
-}
-
+// Styled components
 const StyledCard = styled(Card)<{ isPopular?: boolean }>(({ isPopular }) => ({
     height: '100%',
     display: 'flex',
@@ -73,6 +57,7 @@ const GradientBackground = styled(Box)({
     minHeight: '99vh',
     position: 'relative',
     overflow: 'hidden',
+    paddingBottom: "20px"
 });
 
 const SliderContainer = styled(Box)({
@@ -81,203 +66,162 @@ const SliderContainer = styled(Box)({
     padding: '0 60px',
 });
 
-const BackButton = styled(Button)({
-    backgroundColor: '#B666D2',
-    borderRadius: "20px",
-    width: "100px",
-    color: 'white',
-    textTransform: 'none',
-    padding: '6px 16px',
-    '&:hover': {
-        backgroundColor: '#9b4bbd',
-    },
-});
-
 const Pricing: React.FC = () => {
     const navigate = useNavigate();
+    const [packages, setPackages] = useState<Package[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const handleClick = (plan: PricingPlan) => {
-        navigate('/payment-confirm', {
-            state: {
-                selectedPlan: plan,
+    const [popularIndex, setPopularIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        const loadPackage = async () => {
+            try {
+                const packageData = await PackageList3(100, 1);
+                const packageList = packageData.data?.data || [];
+                setPackages(packageList);
+
+                if (packageList.length > 0) {
+                    // Chọn random một gói làm Popular
+                    const randomIndex = Math.floor(Math.random() * packageList.length);
+                    setPopularIndex(randomIndex);
+                }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
             }
+        };
+        loadPackage();
+    }, []);
+
+
+    const handleClick = (plan: Package) => {
+        navigate('/payment-confirm', {
+            state: { selectedPlan: plan }
         });
     };
-    const pricingPlans: PricingPlan[] = [
-        {
-            title: 'Starter',
-            price: 19,
-            description: 'Unleash the power of automation',
-            features: [
-                'Multi-step Zaps',
-                '3 Premium Apps',
-                '2 Users team',
-            ],
-        },
-        {
-            title: 'Professional',
-            price: 54,
-            description: 'Advanced tools to take your work to the next level',
-            features: [
-                'Multi-step Zaps',
-                'Unlimited Premium',
-                '50 Users team',
-                'Shared Workspace',
-            ],
-        },
-        {
-            title: 'Company',
-            price: 89,
-            description: 'Automation plus enterprise-grade features',
-            features: [
-                'Multi-step Zaps',
-                'Unlimited Premium',
-                'Unlimited Users Team',
-                'Advanced Admin',
-                'Custom Data Retention',
-            ],
-            isPopular: true,
-        },
-        {
-            title: 'Enterprise',
-            price: 149,
-            description: 'Custom solutions for large organizations',
-            features: [
-                'All Company features',
-                'Custom Integration',
-                'Dedicated Support',
-                'SLA Guarantee',
-                'Custom Training',
-                'Advanced Security',
-            ],
-        },
-    ];
 
     const handlePrevious = () => {
-        setCurrentIndex((prev) => (prev === 0 ? pricingPlans.length - 1 : prev - 1));
+        setCurrentIndex((prev) => (prev === 0 ? packages.length - 1 : prev - 1));
     };
 
     const handleNext = () => {
-        setCurrentIndex((prev) => (prev === pricingPlans.length - 1 ? 0 : prev + 1));
+        setCurrentIndex((prev) => (prev === packages.length - 1 ? 0 : prev + 1));
     };
 
     const visiblePlans = () => {
-        const plans = [];
-        for (let i = 0; i < 3; i++) {
-            const index = (currentIndex + i) % pricingPlans.length;
-            plans.push(pricingPlans[index]);
-        }
-        return plans;
+        if (packages.length === 0) return [];
+        return Array.from({ length: 3 }, (_, i) => packages[(currentIndex + i) % packages.length]);
     };
 
     return (
         <GradientBackground>
             <Container maxWidth="lg">
-                <Box textAlign="center" pt={2} mb={8} display="flex" alignItems="center" justifyContent="space-between">
-                    <IconButton
-                        edge="start"
-                        color="primary"
-                        aria-label="menu"
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography textAlign={'left'} variant="h5" component="h1" gutterBottom color="primary">
-                        ECAMS
+                <Box textAlign="center" pt={2} mb={8}>
+                    <Typography variant="h3" component="h1" gutterBottom color="#231D4F">
+                        Plans & Pricing
                     </Typography>
-                    <BackButton variant="contained">
-                        Back
-                    </BackButton>
+                    <Typography variant="h6" color="#848199">
+                        Whether your automation needs are large or small, we're here to help you scale.
+                    </Typography>
                 </Box>
-                <SliderContainer>
-                    <Box textAlign="center" mb={8}>
-                        <Typography textAlign={'left'} variant="h3" component="h1" gutterBottom color="#231D4F">
-                            Plans & Pricing
-                        </Typography>
-                        <Typography textAlign={'left'} variant="h6" color="#848199">
-                            Whether your time-saving automation needs are large or small,
-                            we're here to help you scale.
-                        </Typography>
-                    </Box>
-                    <SliderArrow
-                        onClick={handlePrevious}
-                        sx={{ left: 0 }}
-                        aria-label="previous plan"
-                    >
-                        <ArrowBackIcon />
-                    </SliderArrow>
 
-                    <SliderArrow
-                        onClick={handleNext}
-                        sx={{ right: 0 }}
-                        aria-label="next plan"
-                    >
-                        <ArrowForwardIcon />
-                    </SliderArrow>
+                {loading && <CircularProgress />}
+                {error && <Alert severity="error">{error}</Alert>}
 
-                    <AnimatePresence mode="wait">
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            spacing={4}
-                            justifyContent="center"
-                            alignItems="stretch"
-                            sx={{ padding: "35px", borderRadius: "20px", background: "#fff" }}
-                        >
-                            {visiblePlans().map((plan, index) => (
-                                <motion.div
-                                    key={`${plan.title}-${index}`}
-                                    initial={{ opacity: 0, x: 50 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -50 }}
-                                    transition={{ duration: 0.5 }}
-                                    style={{ flex: 1 }}
-                                >
-                                    <StyledCard isPopular={plan.isPopular}>
-                                        <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                            {plan.isPopular && (
-                                                <Chip
-                                                    label="MOST POPULAR"
-                                                    color="secondary"
-                                                    size="small"
-                                                    sx={{ alignSelf: 'flex-end', mb: 2 }}
-                                                />
-                                            )}
-                                            <Typography color={plan.isPopular ? '#FFF' : '#231D4F'} variant="h4" component="h2" gutterBottom>
-                                                ${plan.price}
-                                                <Typography variant="subtitle1" component="span">
-                                                    /month
-                                                </Typography>
-                                            </Typography>
-                                            <Typography color={plan.isPopular ? '#FFF' : '#231D4F'} variant="h5" gutterBottom>
-                                                {plan.title}
-                                            </Typography>
-                                            <Typography color={plan.isPopular ? '#FFF' : '#848199'} variant="body1">
-                                                {plan.description}
-                                            </Typography>
-                                            <List sx={{ flexGrow: 1 }}>
-                                                {plan.features.map((feature) => (
-                                                    <ListItem key={feature} sx={{ padding: '4px 0' }}>
-                                                        <ListItemIcon sx={{ minWidth: 36 }}>
-                                                            <CheckIcon sx={{ color: plan.isPopular ? '#FFFFFF' : '#BB6BD9' }} />
-                                                        </ListItemIcon>
-                                                        <ListItemText sx={{ color: plan.isPopular ? '#FFFFFF' : '#848199' }} primary={feature} />
-                                                    </ListItem>
-                                                ))}
-                                            </List>
-                                            <StyledButton
-                                                onClick={() => handleClick(plan)}
-                                                variant="contained"
-                                                fullWidth
-                                                isPopular={plan.isPopular}
-                                            >
-                                                Choose plan
-                                            </StyledButton>
-                                        </CardContent>
-                                    </StyledCard>
-                                </motion.div>
-                            ))}
-                        </Stack>
-                    </AnimatePresence>
-                </SliderContainer>
+                {!loading && !error && packages.length > 0 && (
+                    <SliderContainer>
+                        <SliderArrow onClick={handlePrevious} sx={{ left: 0 }} aria-label="previous plan">
+                            <ArrowBackIcon />
+                        </SliderArrow>
+
+                        <SliderArrow onClick={handleNext} sx={{ right: 0 }} aria-label="next plan">
+                            <ArrowForwardIcon />
+                        </SliderArrow>
+
+                        <AnimatePresence mode="wait">
+                            <Stack
+                                direction={{ xs: 'column', md: 'row' }}
+                                spacing={4}
+                                justifyContent="center"
+                                alignItems="stretch"
+                                sx={{ padding: "35px", borderRadius: "20px", background: "#fff" }}
+                            >
+                                {visiblePlans().map((plan, index) => {
+                                    const isPopular = packages.indexOf(plan) === popularIndex;
+
+                                    return (
+                                        <motion.div
+                                            key={`${plan.packageName}-${index}`}
+                                            initial={{ opacity: 0, x: 50 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -50 }}
+                                            transition={{ duration: 0.5 }}
+                                            style={{ flex: 1 }}
+                                        >
+                                            <StyledCard isPopular={isPopular}>
+                                                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                                    {isPopular && (
+                                                        <Chip
+                                                            label="MOST POPULAR"
+                                                            color="secondary"
+                                                            size="small"
+                                                            sx={{ alignSelf: 'flex-end', mb: 2 }}
+                                                        />
+                                                    )}
+                                                    <Typography variant="h4" component="h2" gutterBottom>
+                                                        ${plan.price}
+                                                        <Typography variant="subtitle1" component="span">
+                                                            / {plan.duration} months
+                                                        </Typography>
+                                                    </Typography>
+                                                    <Typography variant="h5" gutterBottom>
+                                                        {plan.packageName}
+                                                    </Typography>
+                                                    <Typography variant="body1">
+                                                        {plan.description}
+                                                    </Typography>
+                                                    <List sx={{ flexGrow: 1 }}>
+                                                        {plan.packageDetails.map((detail, i) => (
+                                                            <ListItem key={detail.packageType + '-' + i} sx={{ padding: '4px 0' }}>
+                                                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                                                    <CheckIcon sx={{ color: '#BB6BD9' }} />
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={`${detail.packageType}: ${detail.value}`} />
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                    <StyledButton onClick={() => handleClick(plan)} isPopular={isPopular} variant="contained" fullWidth>
+                                                        Choose plan
+                                                    </StyledButton>
+                                                </CardContent>
+                                            </StyledCard>
+                                        </motion.div>
+                                    );
+                                })}
+                            </Stack>
+                        </AnimatePresence>
+                    </SliderContainer>
+                )}
+                <div className='flex w-full justify-center'>
+                    <Button
+                        type="submit"
+                        onClick={() => navigate('/')}
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                            mt: 4,
+                            background: 'linear-gradient(to right, #136CB5, #49BBBD)',
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            width: 250
+                        }}
+                    >
+                        Back To Home Page
+                    </Button>
+                </div>
             </Container>
         </GradientBackground>
     );

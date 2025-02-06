@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
     Box,
-    Button,
     Card,
     Container,
     Typography,
@@ -9,13 +8,16 @@ import {
     styled,
     Grid2,
     TextField,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
+    Button,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '@/hooks/useAuth';
 
 const BackgroundWrapper = styled(Box)({
     minHeight: '100vh',
@@ -61,46 +63,44 @@ const FormContainer = styled(Card)({
     padding: '24px',
 });
 
-const ConfirmButton = styled(Button)({
-    backgroundColor: 'linear-gradient(to right, #136CB5, #49BBBD)',
-    fontWeight: "bold",
-    fontSize: '15px',
-    '&:hover': {
-        backgroundColor: '#0277bd',
-    },
-});
-
-const CancelButton = styled(Button)({
-    fontSize: '15px',
-    fontWeight: "bold",
-    color: '#d32f2f',
-});
-
 const generateRandomCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
 const PaymentConfirmation: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const location = useLocation();
     const { selectedPlan } = location.state || {};
-    console.log(selectedPlan);
     const [userCaptchaInput, setUserCaptchaInput] = useState<string>("");
     const [captchaCode, setCaptchaCode] = useState(generateRandomCode());
+    const [methodPayment, setMethodPayment] = useState("");
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setMethodPayment(event.target.value);
+    };
 
     const handleCaptchaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserCaptchaInput(e.target.value);
     };
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         toast.dismiss()
         if (userCaptchaInput !== captchaCode) {
-            toast.error("Mã Captcha không được trùng khớp. Hãy thử lại!");
+            toast.error("Captcha code does not match. Try again!");
             setCaptchaCode(generateRandomCode());
             setUserCaptchaInput("");
             return;
         }
-        navigate('/package-contract')
+        if (methodPayment == "" || methodPayment == undefined) {
+            toast.error("Please choose payment method");
+            return;
+        }
+        navigate('/package-contract', {
+            state: {
+                selectedPlan: selectedPlan,
+                paymentMethod: methodPayment
+            }
+        })
         // const formBuyCoin = {
         //   userId: user?.id,
         //   paymentMethod: methodPayment,
@@ -140,7 +140,7 @@ const PaymentConfirmation: React.FC = () => {
                 </IconButton>
             </TopBar>
 
-            <Container maxWidth="sm" sx={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: "80px", marginBottom: "20px" }}>
+            <Container maxWidth="lg" sx={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: "80px", marginBottom: "20px" }}>
                 <Typography
                     variant="h4"
                     component="h1"
@@ -148,148 +148,236 @@ const PaymentConfirmation: React.FC = () => {
                 >
                     Confirm your payment
                 </Typography>
-
-                <FormContainer>
-                    <EventCard>
-                        <Box>
-                            <Typography variant="h6" gutterBottom>
-                                Premium Plus Package
-                            </Typography>
-                            <Typography variant="body2" gutterBottom mb={1}>
-                                <b>Quantity:</b> 1 package
-                            </Typography>
-                            <Typography variant="body2" gutterBottom mb={1}>
-                                <b>Duration:</b> 1 month
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                <b>Total:</b> 15.00$
-                            </Typography>
-                        </Box>
-                        <div>
-                            <Box
-                                component="img"
-                                src="/public/image/memberShip.png"
-                                alt="Event"
-                                sx={{
-                                    width: 120,
-                                    height: 120,
-                                    objectFit: 'cover',
-                                    borderRadius: 1,
-                                }}
-                            />
-                        </div>
-                    </EventCard>
-
-                    <Box onSubmit={handleSubmit} component="form" sx={{ '& .MuiTextField-root': { mb: 2, paddingBottom: 3 } }}>
-                        <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1">Name:</Typography>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
-                                    Thanh Van
-                                </Typography>
-                            </Grid2>
-                        </Grid2>
-                        <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1">University:</Typography>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
-                                    FPT University
-                                </Typography>
-                            </Grid2>
-                        </Grid2>
-                        <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1">Email</Typography>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
-                                    contact@gmail.com
-                                </Typography>
-                            </Grid2>
-                        </Grid2>
-                        <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1">Phone Number:</Typography>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
-                                    0922998321
-                                </Typography>
-                            </Grid2>
-                        </Grid2>
-                        <Grid2 container justifyContent="space-between" alignItems="center" mt={1} mb={3}>
-                            <Grid2 size={{ sm: 5 }}>
-                                <Box
-                                    sx={{
-                                        textAlign: "center",
-                                        padding: "10px",
-                                        backgroundColor: "#f0f0f0",
-                                        borderRadius: "5px",
-                                        fontSize: "1.5rem",
-                                        fontWeight: "bold",
-                                        letterSpacing: "0.1em",
-                                    }}
-                                >
-                                    {captchaCode}
+                <Grid2 container spacing={2} sx={{ background: "white" }}>
+                    <Grid2 size={{ md: 6, xs: 12 }}>
+                        <FormContainer>
+                            <EventCard>
+                                <Box>
+                                    <Typography variant="h6" gutterBottom>
+                                        {selectedPlan?.packageName}
+                                    </Typography>
+                                    <Typography variant="body2" gutterBottom mb={1}>
+                                        <b>Quantity:</b> 1 package
+                                    </Typography>
+                                    <Typography variant="body2" gutterBottom mb={1}>
+                                        <b>Duration:</b> {selectedPlan?.duration} month
+                                    </Typography>
+                                    <Typography variant="body2" gutterBottom>
+                                        <b>Total:</b> ${selectedPlan?.price + ".00"}
+                                    </Typography>
                                 </Box>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <TextField
-                                    required
-                                    style={{ marginBottom: "0px", paddingBottom: "0px" }}
-                                    label="Mã CAPTCHA"
-                                    variant="outlined"
-                                    onChange={handleCaptchaChange}
-                                    value={userCaptchaInput}
-                                />
-                            </Grid2>
-                        </Grid2>
-                        <Grid2 container justifyContent="space-between" alignItems="center">
-                            <Grid2 size={{ sm: 5 }}>
-                                <CancelButton
-                                    fullWidth
-                                    variant="text"
-                                    sx={{ color: "#842029", textTransform: "none" }}
-                                    startIcon={<HighlightOffIcon />}
-                                >
-                                    Cancel
-                                </CancelButton>
-                            </Grid2>
-                            <Grid2 size={{ sm: 5 }}>
-                                <ConfirmButton
-                                    type='submit'
-                                    fullWidth
-                                    sx={{ background: 'linear-gradient(to right, #136CB5, #49BBBD)', textTransform: "none", color: "white" }}
-                                    startIcon={<CheckCircleOutlineIcon />}
-                                >
-                                    Confirm
-                                </ConfirmButton>
-                            </Grid2>
-                        </Grid2>
-                        {/* <Box sx={{ display: 'flex', gap: 2, mt: 3, mb: 1 }}>
-                            <CancelButton
-                                fullWidth
-                                variant="text"
-                                sx={{ color: "#842029", textTransform: "none" }}
-                                startIcon={<HighlightOffIcon />}
+                                <div>
+                                    <Box
+                                        component="img"
+                                        src="/public/image/memberShip.png"
+                                        alt="Event"
+                                        sx={{
+                                            width: 120,
+                                            height: 120,
+                                            objectFit: 'cover',
+                                            borderRadius: 1,
+                                        }}
+                                    />
+                                </div>
+                            </EventCard>
+
+                            <Box component="form" sx={{ '& .MuiTextField-root': { mb: 2, paddingBottom: 3, boxShadow: "none" } }}>
+                                <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1">Name:</Typography>
+                                    </Grid2>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
+                                            {user?.fullname}
+                                        </Typography>
+                                    </Grid2>
+                                </Grid2>
+                                <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1">University:</Typography>
+                                    </Grid2>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
+                                            FPT University
+                                        </Typography>
+                                    </Grid2>
+                                </Grid2>
+                                <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1">Email</Typography>
+                                    </Grid2>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
+                                            {user?.email}
+                                        </Typography>
+                                    </Grid2>
+                                </Grid2>
+                                <Grid2 container justifyContent="space-between" alignItems="center" sx={{ height: "50px" }}>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1">Phone Number:</Typography>
+                                    </Grid2>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Typography variant="body1" sx={{ color: "text.secondary", fontWeight: "bold" }}>
+                                            0922998321
+                                        </Typography>
+                                    </Grid2>
+                                </Grid2>
+                                <Grid2 container justifyContent="space-between" alignItems="center" mt={5} mb={3}>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <Box
+                                            sx={{
+                                                textAlign: "center",
+                                                padding: "10px",
+                                                backgroundColor: "#f0f0f0",
+                                                borderRadius: "5px",
+                                                fontSize: "1.5rem",
+                                                fontWeight: "bold",
+                                                letterSpacing: "0.1em",
+                                            }}
+                                        >
+                                            {captchaCode}
+                                        </Box>
+                                    </Grid2>
+                                    <Grid2 size={{ sm: 5 }}>
+                                        <TextField
+                                            required
+                                            style={{ marginBottom: "0px", paddingBottom: "0px" }}
+                                            label="Mã CAPTCHA"
+                                            variant="outlined"
+                                            onChange={handleCaptchaChange}
+                                            value={userCaptchaInput}
+                                        />
+                                    </Grid2>
+                                </Grid2>
+                            </Box>
+                        </FormContainer>
+                    </Grid2>
+                    <Grid2 size={{ md: 6, xs: 12 }} >
+                        <FormContainer>
+                            <Typography
+                                variant="h6"
+                                style={{ color: "black", marginBottom: "15px" }}
                             >
-                                Cancel
-                            </CancelButton>
-                            <ConfirmButton
-                                type='submit'
+                                Cart Total
+                            </Typography>
+                            <Box display="flex" justifyContent="space-between">
+                                <Typography>Quantity: </Typography>
+                                <Typography>1 package</Typography>
+                            </Box>
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                marginTop={2}
+                                borderBottom="1px solid #e0e0e0"
+                                paddingBottom={3}
+                            >
+                                <Typography>Total (include VAT):</Typography>
+                                <Typography>
+                                    ${selectedPlan?.price + ".00"}
+                                </Typography>
+                            </Box>
+                            <Typography
+                                className="mb-2"
+                                variant="h6"
+                                marginTop={2}
+                                style={{ color: "black" }}
+                            >
+                                Payment Method
+                            </Typography>
+                            <RadioGroup
+                                name="paymentMethod"
+                                onChange={handleChange}
+                                sx={{
+                                    marginBottom: "25px",
+                                    borderBottom: "1px solid #e0e0e0",
+                                    paddingBottom: "20px",
+                                }}
+                            >
+                                <FormControlLabel
+                                    value="2"
+                                    control={<Radio />}
+                                    label={
+                                        <Box display="flex" alignItems="center">
+                                            <img
+                                                className="me-2"
+                                                width="30px"
+                                                style={{ height: "25px" }}
+                                                src="https://cdn-new.topcv.vn/unsafe/150x/https://static.topcv.vn/company_logos/cong-ty-cp-giai-phap-thanh-toan-viet-nam-vnpay-6194ba1fa3d66.jpg"
+                                                alt="VNPay logo"
+                                            />
+                                            VNPay
+                                        </Box>
+                                    }
+                                    style={{ color: "black", marginBottom: "25px" }}
+                                />
+                                <FormControlLabel
+                                    value="1"
+                                    control={<Radio />}
+                                    label={
+                                        <Box display="flex" alignItems="center">
+                                            <img
+                                                className="me-2"
+                                                width="30px"
+                                                style={{ height: "25px" }}
+                                                src="https://payos.vn/docs/img/logo.svg"
+                                                alt="PayOS logo"
+                                            />
+                                            PayOS
+                                        </Box>
+                                    }
+                                    style={{ color: "black" }}
+                                />
+                            </RadioGroup>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                onClick={handleSubmit}
                                 fullWidth
-                                sx={{ background: 'linear-gradient(to right, #136CB5, #49BBBD)', textTransform: "none", color: "white" }}
-                                startIcon={<CheckCircleOutlineIcon />}
                             >
                                 Confirm
-                            </ConfirmButton>
-                        </Box> */}
-                    </Box>
-                </FormContainer>
+                            </Button>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    border: "1px solid black",
+                                    height: "35px",
+                                    marginTop: "25px",
+                                    borderRadius: "4px",
+                                }}
+                            >
+                                <img
+                                    className="me-2"
+                                    width="90px"
+                                    style={{ height: "25px" }}
+                                    src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png"
+                                    alt="PayPal acceptance mark"
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    border: "1px solid black",
+                                    height: "35px",
+                                    marginTop: "25px",
+                                    borderRadius: "4px",
+                                }}
+                            >
+                                <img
+                                    className="me-2"
+                                    width="90px"
+                                    style={{ height: "24px" }}
+                                    src="https://payos.vn/docs/img/logo.svg"
+                                    alt="PayPal acceptance mark"
+                                />
+                            </div>
+                        </FormContainer>
+                    </Grid2>
+                </Grid2>
             </Container>
         </BackgroundWrapper>
     );

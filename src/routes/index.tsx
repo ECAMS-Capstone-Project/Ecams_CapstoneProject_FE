@@ -17,8 +17,9 @@ import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
 import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
-import PackageList from "@/pages/staff/package/waitingCheckStaffPage";
+import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
+import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -131,6 +132,11 @@ export const router = createBrowserRouter([
   {
     path: "/package-contract",
     element: <PackageContract />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/waiting-checkout",
+    element: <WaitingCheckout />,
     errorElement: <ErrorException />,
   }
 ]);

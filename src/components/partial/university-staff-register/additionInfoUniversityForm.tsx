@@ -80,7 +80,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
         formDataInput.append("Logo", data.Logo[0]);
       }
       formDataInput.append("WebsiteUrl", data.WebsiteUrl);
-      formDataInput.append("StaffId", user.userId);
+      formDataInput.append("StaffId", user.staffId);
 
       try {
         console.log(formDataInput.get("StaffId"));

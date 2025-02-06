@@ -22,3 +22,14 @@ export const PackageList = async (pageSize: number, pageNo: number): Promise<Res
     throw error;
   }
 };
+
+export const PackageList3 = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Package>>> => {
+  try {
+    const response = await get<ResponseDTO<ResponseData<Package>>>(`/Package?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    return response;
+  } catch (error: any) {
+    console.error("Error in Package API call:", error.response || error);
+    throw error;
+  }
+};
+
