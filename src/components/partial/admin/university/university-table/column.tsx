@@ -27,16 +27,18 @@ export const UniColumns: ColumnDef<University>[] = [
   {
     accessorKey: "logoLink",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Logo Link" />
+      <DataTableColumnHeader column={column} title="Logo" />
     ),
     cell: ({ row }) => {
-      <div className="flex flex-wrap gap-2">
-        <img
-          src={row.original.logoLink}
-          alt={"Product Image"}
-          className="w-10 h-10 object-cover"
-        />
-      </div>;
+      return (
+        <div className="flex flex-wrap gap-2 justify-center">
+          <img
+            src={row.original.logoLink}
+            alt={"Product Image"}
+            className="w-10 h-10 object-cover"
+          />
+        </div>
+      );
     }, // Hiển thị Duration kèm đơn vị
   },
   {
