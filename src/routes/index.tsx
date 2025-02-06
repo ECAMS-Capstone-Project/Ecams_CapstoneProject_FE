@@ -17,6 +17,7 @@ import Register from "@/pages/authentication/register";
 import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
+import Profile from "@/pages/common/Profile";
 import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -127,6 +128,17 @@ export const router = createBrowserRouter([
         path: "/staff/waiting-staff",
         index: true,
         element: <WaitingCheckStaffPage />,
+      },
+    ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/common",
+    element: <PrivateRoute />,
+    children: [
+      {
+        path: "/common/profile",
+        element: <Profile />,
       },
     ],
     errorElement: <ErrorException />,

@@ -26,3 +26,14 @@ export const StaffSchema = z.object({
   });
   
   export type Staff = z.infer<typeof StaffSchema>;
+
+  export const UserAuthDTOSchema = z.object({
+    userId: z.string(),
+    email: z.string().email(), // Validate email format
+    fullname: z.string(),
+    avatar: z.string().url().optional(), // Validate URL format, optional
+    isVerified: z.boolean(),
+    universityId: z.string().optional(), // Optional field
+    roles: z.array(z.string()), // Array of strings
+  });
+
