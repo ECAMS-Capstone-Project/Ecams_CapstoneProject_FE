@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,13 +32,15 @@ export const ProfileForm: React.FC<ProfileProps> = ({ initialData }) => {
     resolver: zodResolver(UserAuthDTOSchema),
     defaultValues: initialData || {},
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [, setOpen] = useState(false);
   const [role, setRole] = useState<Role[]>([]);
   const { control, handleSubmit } = form;
 
   async function onSubmit(values: ProfileFormValues) {
     try {
+      console.log(values);
+
       setIsLoading(true);
       setOpen(false);
       window.location.reload();
@@ -89,7 +90,7 @@ export const ProfileForm: React.FC<ProfileProps> = ({ initialData }) => {
                 <FormField
                   control={form.control}
                   name="avatar"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel>Avatar Image</FormLabel>
                       <FormControl>

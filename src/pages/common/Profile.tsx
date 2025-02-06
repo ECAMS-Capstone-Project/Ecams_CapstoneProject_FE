@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import LoadingAnimation from "@/components/ui/loading";
@@ -7,13 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
-import { useNavigate } from "react-router-dom";
 import { ProfileForm } from "@/components/global/setting/ProfileForm";
 
-const Profile = () => {
+const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -32,10 +29,10 @@ const Profile = () => {
 
     fetchUserInfo();
   }, []);
-
-  return isLoading ? (
-    LoadingAnimation
-  ) : (
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
+  return (
     <>
       <div className="flex items-center justify-between pt-4">
         <Heading
@@ -63,5 +60,4 @@ const Profile = () => {
     </>
   );
 };
-
-export default Profile;
+export default ProfilePage;

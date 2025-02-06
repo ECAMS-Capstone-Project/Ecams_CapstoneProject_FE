@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -91,7 +90,7 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                     <FormField
                       control={form.control}
                       name="imageUrl"
-                      render={({ field }) => (
+                      render={() => (
                         <FormItem>
                           <FormLabel>Avatar</FormLabel>
                           <FormControl>
