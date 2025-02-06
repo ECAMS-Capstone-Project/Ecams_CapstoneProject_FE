@@ -12,12 +12,10 @@ const apiClient = axios.create({
 // Thêm interceptor để xử lý request và response
 apiClient.interceptors.request.use(
   (config) => {
-    // Thêm token nếu cần
 
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-   
     }
     return config;
   },

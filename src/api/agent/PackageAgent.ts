@@ -6,7 +6,7 @@ import { ResponseData, ResponseDTO } from "../BaseResponse";
 
 export const PackageList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Package>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<Package>>>(`http://localhost:5214/api/Package?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    const response = await get<ResponseDTO<ResponseData<Package>>>(`/Package?PageNumber=${pageNo}&PageSize=${pageSize}`);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);
@@ -15,7 +15,7 @@ export const PackageList = async (pageSize: number, pageNo: number): Promise<Res
 };
 export const createPackage = async (value: any): Promise<ResponseDTO<ResponseData<Package>>> => {
   try {
-    const response = await post<ResponseDTO<ResponseData<Package>>>(`Package/insert-package`, value);
+    const response = await post<ResponseDTO<ResponseData<Package>>>(`/Package/insert-package`, value);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);

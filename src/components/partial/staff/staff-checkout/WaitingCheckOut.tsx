@@ -96,7 +96,7 @@ function WaitingCheckout() {
             severity="success"
             style={{ fontSize: "35px", display: "flex", alignItems: "center" }}
           >
-            Thanh toán thành công
+            Payment Successfully
           </Alert>
         </Box>
       )}
@@ -112,7 +112,7 @@ function WaitingCheckout() {
               textAlign: "center",
             }}
           >
-            Thanh toán thất bại
+            Payment Failed
           </Alert>
         </Box>
       )}
@@ -120,12 +120,12 @@ function WaitingCheckout() {
       <Box className="buttonLoading" marginTop={4}>
         <Box className="buttonItem" marginBottom={2}>
           <Link to="/">
-            <Button variant="contained">Về trang chủ</Button>
+            <Button variant="contained">Back to home page</Button>
           </Link>
         </Box>
         <Box className="buttonItem">
           <Link to="/view-package">
-            <Button variant="contained">Về trang mua gói</Button>
+            <Button variant="contained">Back to package</Button>
           </Link>
         </Box>
       </Box>
