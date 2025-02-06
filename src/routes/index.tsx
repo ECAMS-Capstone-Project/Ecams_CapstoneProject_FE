@@ -136,7 +136,7 @@ export const router = createBrowserRouter([
       {
         path: "/staff/dashboard",
         element: <DashboardStaff />,
-      }
+      },
     ],
     errorElement: <ErrorException />,
   },

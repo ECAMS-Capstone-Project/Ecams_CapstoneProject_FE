@@ -23,7 +23,7 @@ export const createPackage = async (value: any): Promise<ResponseDTO<ResponseDat
   }
 };
 
-export const deactivePackage = async (pkgId: string): Promise<ResponseDTO<Package>> => {
+export const deactivePackage = async ( pkgId: string): Promise<ResponseDTO<Package>> => {
   try {
     const response = await del<ResponseDTO<Package>>(`/Package/deactive-package/${pkgId}`);
     return response; // Trả về toàn bộ phản hồi

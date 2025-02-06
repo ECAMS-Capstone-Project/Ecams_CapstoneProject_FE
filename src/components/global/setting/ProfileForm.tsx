@@ -111,11 +111,7 @@ export const ProfileForm: React.FC<ProfileProps> = ({ initialData }) => {
                     <FormItem>
                       <FormLabel>Fullname</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
-                          readOnly={!!initialData}
-                        />
+                        <Input type="text" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -228,7 +224,7 @@ export const ProfileForm: React.FC<ProfileProps> = ({ initialData }) => {
                       )}
                     /> */}
                 <div className="flex w-full justify-end mt-4 ">
-                  <Button type="submit">Create policy</Button>
+                  <Button type="submit">Save</Button>
                 </div>
               </div>
               {/* Submit Button */}

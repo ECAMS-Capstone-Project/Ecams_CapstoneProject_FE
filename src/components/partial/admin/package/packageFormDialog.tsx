@@ -49,41 +49,57 @@ interface EditPackageDialogProps {
 export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
   initialData,
 }) => {
+  const uniquePackageDetails = initialData?.packageDetails.reduce(
+    (acc, curr) => {
+      if (!acc.some((item) => item.packageType === curr.packageType)) {
+        acc.push(curr);
+      }
+      return acc;
+    },
+    [] as { packageType: string; value: string }[]
+  );
+
   const form = useForm<EditPackageFormValues>({
     resolver: zodResolver(editPackageSchema),
-    defaultValues: initialData || {
-      packageName: "",
-      // createdBy: "",
-      // updatedBy: null,
-      price: 0,
-      status: true,
-      duration: 0,
-      description: "",
-      packageDetails: [
-        {
-          packageType: "",
-          value: "",
+    defaultValues: initialData
+      ? { ...initialData, packageDetails: uniquePackageDetails }
+      : {
+          packageName: "",
+          // createdBy: "",
+          // updatedBy: null,
+          price: 0,
+          status: true,
+          duration: 0,
+          description: "",
+          packageDetails: [
+            {
+              packageType: "",
+              value: "",
+            },
+          ],
         },
-      ],
-    },
   });
   const [isLoading, setIsLoading] = useState(false);
   const [, setOpen] = useState(false);
   // const [open, setOpen] = useState(false)
   const { control, handleSubmit } = form;
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "packageDetails",
   });
+  console.log("Before append:", fields);
 
   async function onSubmit(values: EditPackageFormValues) {
+    console.log("Submitted Package Details:", values.packageDetails);
+
     try {
       setIsLoading(true);
       console.log("Adding New Package:", values);
       await createPackage(values);
       toast.success("Package created successfully.");
       setOpen(false);
-      window.location.reload();
+      // window.location.reload();
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
@@ -227,78 +243,98 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                         <FormField
                           control={control}
                           name={`packageDetails.${index}.packageType`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                {/* <Input
-                          {...field}
-                          placeholder="Package Type (e.g., students, events)"
-                          readOnly={!!initialData}
-                        /> */}
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      className={`w-[200px] justify-between ${
-                                        initialData ? "pointer-events-none" : ""
-                                      }`}
-                                    >
-                                      {field.value
-                                        ? packageType.find(
-                                            (type) => type.value === field.value
-                                          )?.label
-                                        : "Select Package Type..."}
-                                      <ChevronsUpDown className="opacity-50" />
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[200px] p-0">
-                                    <Command>
-                                      <CommandInput placeholder="Search type..." />
-                                      <CommandList>
-                                        <CommandEmpty>
-                                          No types found.
-                                        </CommandEmpty>
-                                        <CommandGroup>
-                                          {packageType.map((type) => (
-                                            <CommandItem
-                                              key={type.value}
-                                              onSelect={() => {
-                                                const isDuplicate = fields.some(
-                                                  (existingField, idx) =>
-                                                    existingField.packageType ===
-                                                      type.value &&
-                                                    idx !== index // Exclude the current index
-                                                );
+                          render={({ field }) => {
+                            return (
+                              <>
+                                {console.log("packageDetails", field.value)}
+                                <FormItem>
+                                  <FormControl>
+                                    {/* <Input
+                                      {...field}
+                                      placeholder="Package Type (e.g., students, events)"
+                                      readOnly={!!initialData}
+                                    /> */}
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          role="combobox"
+                                          className={`w-[200px] justify-between ${
+                                            initialData
+                                              ? "pointer-events-none"
+                                              : ""
+                                          }`}
+                                        >
+                                          {field.value
+                                            ? packageType.find(
+                                                (type) =>
+                                                  type.value === field.value
+                                              )?.label
+                                            : "Select Package Type..."}
+                                          <ChevronsUpDown className="opacity-50" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-[200px] p-0">
+                                        <Command>
+                                          <CommandInput placeholder="Search type..." />
+                                          <CommandList>
+                                            <CommandEmpty>
+                                              No types found.
+                                            </CommandEmpty>
+                                            <CommandGroup>
+                                              {packageType.map((type) => (
+                                                <CommandItem
+                                                  key={type.value}
+                                                  onSelect={() => {
+                                                    console.log(
+                                                      "select type",
+                                                      type.value
+                                                    );
 
-                                                if (isDuplicate) {
-                                                  toast.error(
-                                                    "This package type has already been selected."
-                                                  );
-                                                  return;
-                                                }
+                                                    if (
+                                                      fields.some(
+                                                        (existingField) =>
+                                                          existingField.packageType ===
+                                                          type.value
+                                                      )
+                                                    ) {
+                                                      toast.error(
+                                                        "This package type has already been selected."
+                                                      );
+                                                      return;
+                                                    } else {
+                                                      field.onChange(
+                                                        type.value
+                                                      );
+                                                      console.log(
+                                                        "Updated field with:",
+                                                        type.value
+                                                      );
+                                                    }
 
-                                                field.onChange(type.value);
-                                              }}
-                                            >
-                                              {type.label}
-                                              <Check
-                                                className={`ml-auto ${
-                                                  field.value === type.value
-                                                    ? "opacity-100"
-                                                    : "opacity-0"
-                                                }`}
-                                              />
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
-                              </FormControl>
-                            </FormItem>
-                          )}
+                                                    return;
+                                                  }}
+                                                >
+                                                  {type.label}
+                                                  <Check
+                                                    className={`ml-auto ${
+                                                      field.value === type.value
+                                                        ? "opacity-100"
+                                                        : "opacity-0"
+                                                    }`}
+                                                  />
+                                                </CommandItem>
+                                              ))}
+                                            </CommandGroup>
+                                          </CommandList>
+                                        </Command>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </FormControl>
+                                </FormItem>
+                              </>
+                            );
+                          }}
                         />
 
                         {/* Value */}
