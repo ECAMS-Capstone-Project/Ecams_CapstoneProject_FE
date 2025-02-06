@@ -26,18 +26,21 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   title?: string;
   options: {
     label: string;
-    value: string;
+    value: string | boolean;
     icon?: React.ComponentType<{ className?: string }>;
   }[];
 }
-
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
+  const selectedValues = new Set(
+    (column?.getFilterValue() as (string | boolean)[])?.map(
+      (val) => String(val) // Chuyển mọi giá trị thành string để so sánh
+    )
+  );
 
   return (
     <Popover>
@@ -64,11 +67,13 @@ export function DataTableFacetedFilter<TData, TValue>({
                   </Badge>
                 ) : (
                   options
-                    .filter((option) => selectedValues.has(option.value))
+                    .filter((option) =>
+                      selectedValues.has(String(option.value))
+                    )
                     .map((option) => (
                       <Badge
                         variant="secondary"
-                        key={option.value}
+                        key={String(option.value)}
                         className="rounded-sm px-1 font-normal"
                       >
                         {option.label}
@@ -87,15 +92,15 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandEmpty>{"No Filter results"}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value);
+                const isSelected = selectedValues.has(String(option.value));
                 return (
                   <CommandItem
-                    key={option.value}
+                    key={String(option.value)}
                     onSelect={() => {
                       if (isSelected) {
-                        selectedValues.delete(option.value);
+                        selectedValues.delete(String(option.value));
                       } else {
-                        selectedValues.add(option.value);
+                        selectedValues.add(String(option.value));
                       }
                       const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
@@ -117,9 +122,9 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
-                    {facets?.get(option.value) && (
+                    {facets?.get(String(option.value)) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
+                        {facets.get(String(option.value))}
                       </span>
                     )}
                   </CommandItem>
@@ -134,7 +139,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
-                    {"Clean Filters"}
+                    {"Clear Filters"}
                   </CommandItem>
                 </CommandGroup>
               </>

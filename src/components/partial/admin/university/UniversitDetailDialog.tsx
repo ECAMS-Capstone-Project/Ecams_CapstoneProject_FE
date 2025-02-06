@@ -76,7 +76,7 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
         window.location.reload();
       }
     } catch (error: any) {
-      const errorMessage = error.message || "An error occurred";
+      const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
     }
   }

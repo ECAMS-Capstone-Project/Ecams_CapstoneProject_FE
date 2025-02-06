@@ -71,7 +71,7 @@ export const DenyRequest: React.FC<DenyProps> = ({
         if (onSuccess) onSuccess();
       }
     } catch (error: any) {
-      const errorMessage = error.message || "An error occurred";
+      const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false); // Tắt loading

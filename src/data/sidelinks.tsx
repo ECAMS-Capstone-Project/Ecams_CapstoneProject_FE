@@ -1,7 +1,11 @@
 import {
+  BellRingIcon,
+  DollarSignIcon,
+  FileText,
   LayoutDashboardIcon,
   Package2Icon,
   UniversityIcon,
+  UserIcon,
 } from "lucide-react";
 
 export interface NavLink {
@@ -33,5 +37,30 @@ export const sidelinks: SideLink[] = [
     label: "",
     href: "/admin/package",
     icon: <Package2Icon size={18} />,
+  },
+  {
+    title: "Payment",
+    label: "",
+    href: "/admin/payment",
+    icon: <DollarSignIcon size={18} />,
+  },
+  {
+    title: "User",
+    label: "",
+    href: "/admin/user",
+    icon: <UserIcon size={18} />,
+  },
+
+  {
+    title: "Notification",
+    label: "",
+    href: "/admin/notification",
+    icon: <BellRingIcon size={18} />,
+  },
+  {
+    title: "Policy",
+    label: "",
+    href: "/admin/policy",
+    icon: <FileText size={18} />,
   },
 ];

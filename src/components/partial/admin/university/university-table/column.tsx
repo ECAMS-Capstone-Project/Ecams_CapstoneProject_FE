@@ -100,11 +100,11 @@ export const UniColumns: ColumnDef<University>[] = [
       };
 
       return (
-        <div className="flex justify-center">
+        <div className="flex justify-center p-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div
-                className={`flex items-center justify-center gap-1 p-2 rounded-md cursor-pointer ${
+                className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
                   currentStatus === "ACTIVE"
                     ? "bg-[#CBF2DA] text-[#2F4F4F]"
                     : currentStatus === "INACTIVE"
@@ -112,13 +112,13 @@ export const UniColumns: ColumnDef<University>[] = [
                     : currentStatus === "PENDING"
                     ? "bg-[#FFE6CC] text-[#CC6600]"
                     : ""
-                } w-3/4`}
+                } w-auto`}
               >
                 {currentStatus === "ACTIVE" && (
                   <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
                 )}
                 {currentStatus === "INACTIVE" && (
-                  <XCircleIcon size={18} className=" text-[#5A3825]" />
+                  <XCircleIcon size={12} className=" text-[#5A3825]" />
                 )}
                 {currentStatus === "PENDING" && (
                   <CircleEllipsis size={12} className=" text-[#CC6600]" />

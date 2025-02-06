@@ -20,7 +20,7 @@ const Package = () => {
   const [packageList, setPackageList] = useState<Package[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   useEffect(() => {
     const loadPackage = async () => {
