@@ -24,9 +24,9 @@ export function RequestTable({ data }: UniversityProps) {
       <TableCaption>A list of your pending university.</TableCaption>
       <TableHeader className="text-center">
         <TableRow>
-          <TableHead className="text-center">ID</TableHead>
           <TableHead className="text-center">University Name</TableHead>
           <TableHead className="text-center">Contact Email</TableHead>
+          <TableHead className="text-center">Staff</TableHead>
           <TableHead className="text-center">Status</TableHead>
           <TableHead className="text-center">Action</TableHead>
         </TableRow>
@@ -34,11 +34,9 @@ export function RequestTable({ data }: UniversityProps) {
       <TableBody>
         {data.map((university) => (
           <TableRow key={university.universityId}>
-            <TableCell className="font-medium">
-              {university.universityId}
-            </TableCell>
             <TableCell>{university.universityName}</TableCell>
             <TableCell>{university.contactEmail}</TableCell>
+            <TableCell>{university.staffName}</TableCell>
             <TableCell>
               <div
                 className={`flex items-center justify-center rounded-lg px-2 py-1 text-sm font-medium ${
