@@ -25,6 +25,7 @@ import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckSt
 import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
+import PendingUniversity from "@/pages/admin/university/PendingUni";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/university",
         element: <University />,
+      },
+      {
+        path: "/admin/university/pending",
+        element: <PendingUniversity />,
       },
       {
         path: "/admin/payment",

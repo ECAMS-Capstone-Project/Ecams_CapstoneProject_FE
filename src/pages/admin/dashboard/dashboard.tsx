@@ -18,11 +18,12 @@ import { UniversityList } from "@/api/agent/UniversityAgent";
 import { University } from "@/models/University";
 import { Report } from "@/models/Report";
 import LoadingAnimation from "@/components/ui/loading";
+import { getReportList } from "@/api/agent/ReportAgent";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [universityList, setUniversityList] = useState<University[]>([]);
-  const [reportList] = useState<Report[]>([]);
+  const [reportList, setReportList] = useState<Report[]>([]);
   const [pageNo] = useState(1);
   const [pageSize] = useState(5);
 
@@ -31,17 +32,16 @@ export default function Dashboard() {
       try {
         // Tải cả component lười biếng và dữ liệu API song song
         // const [uniData, reportData] = await Promise.all([
-        const [uniData] = await Promise.all([
+        const [uniData, report] = await Promise.all([
           UniversityList(pageSize, pageNo), // Gọi API dữ liệu danh sách trường đại học
-          // getReportList(), // Gọi API dữ liệu báo cáo
+          getReportList(), // Gọi API dữ liệu báo cáo
         ]);
         setUniversityList(
           uniData.data?.data
             .filter((uni) => uni.status === "PENDING")
             .slice(0, 4) || []
         ); // Lọc và giới hạn 4 trường đại học
-        console.log(uniData);
-
+        setReportList(report);
         // setReportList(reportData);
       } catch (error) {
         console.error("Error loading data:", error);

@@ -25,8 +25,9 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { DenyRequest } from "./DenialDialog";
 import { useState } from "react";
 import { approveUni } from "@/api/agent/UniversityAgent";
-import LoadingAnimation from "@/components/ui/loading";
 import DialogLoading from "@/components/ui/dialog-loading";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 type UniversityDetail = z.infer<typeof universitySchema>;
 
@@ -56,6 +57,7 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   async function onSubmit(values: UniversityDetail) {
     try {
       console.log("Updating University:", values);
@@ -75,8 +77,7 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
         setIsLoading(true);
         await approveUni(initialData.universityId);
         toast.success("University approved successfully.");
-        // navigate("/admin/university")
-        window.location.reload();
+        navigate("/admin/university");
       }
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
@@ -90,12 +91,9 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
   //     prevList.filter((uni) => uni.universityId !== universityId) // Loại bỏ item bị từ chối
   //   );
   // };
-  if (isLoading) {
-    return <LoadingAnimation />;
-  }
 
   return (
-    <div>
+    <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
       {isLoading ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
@@ -120,6 +118,24 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {/* Các trường form */}
+                    <FormField
+                      control={form.control}
+                      name="logoLink"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Logo</FormLabel>
+                          <FormControl>
+                            <Avatar className="w-fit h-32">
+                              <AvatarImage src={field.value} />
+                              <AvatarFallback>
+                                {initialData?.shortName}
+                              </AvatarFallback>
+                            </Avatar>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="universityName"
@@ -277,24 +293,6 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                   </FormItem>
                 )}
               /> */}
-                    <FormField
-                      control={form.control}
-                      name="logoLink"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Logo Link</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              readOnly
-                              value={field.value ?? ""}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
 
                   {/* Các nút hành động */}
@@ -302,14 +300,13 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                     {mode === "pending" && (
                       <>
                         <div className="flex justify-center w-full space-x-1">
-                          <DialogClose asChild>
-                            <Button
-                              onClick={handleApprove}
-                              className="w-1/4 sm:w-1/4 bg-[#D4F8E8] text-[#007B55] p-3 hover:bg-[#C2F2DC] hover:text-[#005B40] transition duration-300 ease-in-out"
-                            >
-                              <CheckCircle2 size={18} /> Approve
-                            </Button>
-                          </DialogClose>
+                          <Button
+                            onClick={handleApprove}
+                            className="w-1/4 sm:w-1/4 bg-[#D4F8E8] text-[#007B55] p-3 hover:bg-[#C2F2DC] hover:text-[#005B40] transition duration-300 ease-in-out"
+                          >
+                            <CheckCircle2 size={18} /> Approve
+                          </Button>
+
                           <Button
                             onClick={() => setIsDialogOpen(true)}
                             className="w-1/4 sm:w-1/4 bg-[#F8D7DA] text-[#842029] p-3 hover:bg-[#F4C2C5] hover:text-[#6A1B20] transition duration-300 ease-in-out"

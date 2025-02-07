@@ -6,7 +6,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -29,7 +28,6 @@ export function RolePolicyTable({ data }: PolicyProps) {
           {"View the policy details below."}
         </DialogDescription>
         <Table className="mt-4">
-          <TableCaption>A list of your policy.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>

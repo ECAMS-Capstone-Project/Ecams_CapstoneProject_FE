@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
@@ -6,9 +7,9 @@ import {
   CheckCircle2Icon,
   ChevronDown,
   CircleEllipsis,
+  EyeIcon,
   XCircleIcon,
 } from "lucide-react";
-import { DataTableRowActions } from "./row-actions";
 import { University } from "@/models/University";
 import { useState } from "react";
 import {
@@ -19,11 +20,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import toast from "react-hot-toast";
 import { reactiveUni } from "@/api/agent/UniversityAgent";
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DenyRequest } from "../DenialDialog";
+import { UniversityFormDialog } from "../UniversitDetailDialog";
 
 // Định nghĩa columns cho DataTable
-export const UniColumns: ColumnDef<University>[] = [
+export const UniColumns = (
+  refreshData: () => void
+): ColumnDef<University>[] => [
   {
     accessorKey: "logoLink",
     header: ({ column }) => (
@@ -95,6 +99,7 @@ export const UniColumns: ColumnDef<University>[] = [
           await reactiveUni(row.original.universityId); // Hàm này là một giả định
           toast.success("Reactivate University Successfully.");
           setCurrentStatus("ACTIVE");
+          refreshData();
         } catch (error) {
           console.error("Failed to update status:", error);
           toast.error("Failed to update status.");
@@ -158,7 +163,10 @@ export const UniColumns: ColumnDef<University>[] = [
                     setIsDialogOpen(false);
                   }}
                   dialogAction={"deactive"}
-                  onSuccess={() => setCurrentStatus("INACTIVE")}
+                  onSuccess={() => {
+                    setCurrentStatus("INACTIVE");
+                    refreshData();
+                  }}
                 />
               </Dialog>
             </DropdownMenuContent>
@@ -171,6 +179,22 @@ export const UniColumns: ColumnDef<University>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => {
+      const [, setIsDialogOpen] = useState(false);
+      return (
+        <Dialog>
+          <DialogTrigger>
+            <EyeIcon size={24} className="text-center" />
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl ">
+            <UniversityFormDialog
+              initialData={row.original}
+              mode={row.original.status === "PENDING" ? "pending" : "view"}
+              onClose={() => setIsDialogOpen}
+            />
+          </DialogContent>
+        </Dialog>
+      );
+    },
   },
 ];
