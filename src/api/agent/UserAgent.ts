@@ -13,9 +13,9 @@ export const getStudentList = async (): Promise<Student[]> => {
   }
 }
 
-export const StaffList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<getStaff>>> => {
+export const StaffList = async (role: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<getStaff>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<getStaff>>>(`/User/staffs?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    const response = await get<ResponseDTO<ResponseData<getStaff>>>(`/User?role=${role}&PageNumber=${pageNo}&PageSize=${pageSize}`);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);

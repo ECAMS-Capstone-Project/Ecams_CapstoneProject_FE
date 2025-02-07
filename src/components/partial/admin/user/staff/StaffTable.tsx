@@ -13,7 +13,7 @@ const StaffTable = ({ data }: StaffData) => {
         <DataTable
           columns={StaffColumns}
           data={data}
-          searchKey={"studentId"}
+          searchKey={"fullname"}
           placeholder="Search student's ID"
         />
       </div>

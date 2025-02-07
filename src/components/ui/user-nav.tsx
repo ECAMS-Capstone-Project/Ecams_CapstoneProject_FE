@@ -41,7 +41,7 @@ export function UserNav() {
 
   return (
     <>
-      <div className="flex w-fit justify-center items-center gap-3">
+      <div className="flex w-fit justify-center items-center gap-3 ">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <BellIcon size={24} className="cursor-pointer p-0.5" />

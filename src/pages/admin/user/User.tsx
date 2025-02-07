@@ -24,7 +24,7 @@ const User = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const staffData = await StaffList(pageSize, pageNo);
+        const staffData = await StaffList("STAFF", pageSize, pageNo);
         const student = await getStudentList();
         if (staffData) {
           setStaffList(staffData.data?.data || []); // Đảm bảo `data.data` tồn tại
