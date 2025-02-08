@@ -25,14 +25,7 @@ export interface SideLink extends NavLink {
 const SidebarLinks = () => {
   const { user } = useAuth(); // Lấy user từ context
 
-  const sidelinks: SideLink[] = [
-    {
-      title: "Setting",
-      href: "/common/profile",
-      icon: <Settings size={18} />,
-      id: 1,
-    },
-  ];
+  const sidelinks: SideLink[] = [];
 
   if (user?.roles[0].toLocaleLowerCase() === "admin") {
     sidelinks.push(
@@ -85,7 +78,7 @@ const SidebarLinks = () => {
     sidelinks.push(
       {
         title: "Dashboard",
-        href: "/staff/dashboard",
+        href: "/staff",
         icon: <LayoutDashboardIcon size={18} />,
         id: 1,
       },
@@ -97,7 +90,12 @@ const SidebarLinks = () => {
       },
     );
   }
-
+  sidelinks.push({
+    title: "Setting",
+    href: "/common/profile",
+    icon: <Settings size={18} />,
+    id: 10,
+  });
   return sidelinks;
 };
 

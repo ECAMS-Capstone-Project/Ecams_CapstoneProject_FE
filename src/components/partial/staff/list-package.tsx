@@ -209,7 +209,7 @@ const Pricing: React.FC = () => {
                 <div className='flex w-full justify-center'>
                     <Button
                         type="submit"
-                        onClick={() => navigate('/staff/dashboard')}
+                        onClick={() => navigate('/staff')}
                         variant="contained"
                         color="primary"
                         sx={{

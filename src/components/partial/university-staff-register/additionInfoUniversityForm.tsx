@@ -93,7 +93,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
         const response = await additionInfoUniversityAPI(formDataInput);
         if (response) {
           toast.success("Update info successful");
-          navigate('/staff/waiting-staff')
+          navigate('/waiting-staff')
         } else {
           toast.error("Update info failed");
         }
@@ -119,7 +119,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Grid2 container spacing={6} maxWidth="lg" mb={6}>
+      <Grid2 container spacing={6} maxWidth="lg" mb={6} mt={7}>
         <Typography
           textAlign={"center"}
           color="#313131"

@@ -25,6 +25,7 @@ import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckSt
 import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
+import RoleBasedGuard from "@/Guard/RoleBaseGuard";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -122,19 +123,20 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
+    path: "/update-university",
+    element: <RoleBasedGuard accessibleRoles={['STAFF']}><AdditionInfoUniversityForm /></RoleBasedGuard>,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/waiting-staff",
+    element: <WaitingCheckStaffPage />,
+  },
+  {
     path: "/staff",
-    element: <PrivateRoute />,
+    element: <RoleBasedGuard accessibleRoles={['STAFF']}><PrivateRoute /></RoleBasedGuard>,
     children: [
       {
         index: true,
-        element: <AdditionInfoUniversityForm />,
-      },
-      {
-        path: "/staff/waiting-staff",
-        element: <WaitingCheckStaffPage />,
-      },
-      {
-        path: "/staff/dashboard",
         element: <DashboardStaff />,
       },
     ],

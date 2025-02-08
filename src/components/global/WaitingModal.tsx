@@ -33,7 +33,7 @@ export default function WaitingModal({ open, setOpen }: WaitingModalProps) {
         <DialogTitle id="alert-dialog-title">
           <span className="flex items-center text-indigo-800">
             <AutorenewIcon />
-            <span style={{ marginLeft: "10px" }}>Vui lòng chờ xíu</span>
+            <span style={{ marginLeft: "10px" }}>Please wait</span>
           </span>
           <hr></hr>
         </DialogTitle>

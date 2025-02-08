@@ -1,7 +1,9 @@
 import React from "react";
-import { Box, Typography, Grid2 } from "@mui/material";
+import { Box, Typography, Grid2, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const WaitingCheckStaff: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <Box
       display="flex"
@@ -9,7 +11,7 @@ const WaitingCheckStaff: React.FC = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Grid2 container spacing={6} maxWidth="lg" mb={6}>
+      <Grid2 container spacing={6} maxWidth="lg" mb={6} mt={5}>
         <Typography
           textAlign={"center"}
           color="#313131"
@@ -29,6 +31,23 @@ const WaitingCheckStaff: React.FC = () => {
           ></img>
         </Grid2>
       </Grid2>
+      <div className='flex w-full justify-center'>
+        <Button
+          type="submit"
+          onClick={() => navigate('/login')}
+          variant="contained"
+          color="primary"
+          sx={{
+            mt: 4,
+            background: 'linear-gradient(to right, #136CB5, #49BBBD)',
+            textTransform: "none",
+            fontWeight: "bold",
+            width: 250
+          }}
+        >
+          Back To Login
+        </Button>
+      </div>
     </Box>
   );
 };
