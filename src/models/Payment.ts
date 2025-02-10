@@ -17,6 +17,10 @@ export interface HandleResponse {
     transactionNumber: string;
     isSuccess: boolean;
 }
+export interface CheckBuyPackage {
+    packageId: string;
+    staffId: string;
+}
 export interface Transaction {
     transactionId: number;
     methodId: number;

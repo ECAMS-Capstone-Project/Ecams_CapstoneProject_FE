@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import { PackageList3 } from '@/api/agent/PackageAgent';
 import { Package } from '@/models/Package';
 import { formatPrice } from '@/lib/FormatPrice';
+import { CheckBuyPackageAPI } from '@/api/staff/PaymentAPI';
+import useAuth from '@/hooks/useAuth';
 
 // Styled components
 const StyledCard = styled(Card)<{ isPopular?: boolean }>(({ isPopular }) => ({
@@ -45,7 +47,7 @@ const SliderArrow = styled(IconButton)(({ theme }) => ({
     position: 'absolute',
     top: '60%',
     transform: 'translateY(-50%)',
-    backgroundColor: theme.palette.primary.main,
+    background: 'linear-gradient(to right, #136CB5, #49BBBD)',
     color: '#fff',
     '&:hover': {
         backgroundColor: theme.palette.primary.dark,
@@ -58,6 +60,7 @@ const GradientBackground = styled(Box)({
     minHeight: '99vh',
     position: 'relative',
     overflow: 'hidden',
+    paddingTop: "50px",
     paddingBottom: "20px"
 });
 
@@ -74,6 +77,7 @@ const Pricing: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [popularIndex, setPopularIndex] = useState<number | null>(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         const loadPackage = async () => {
@@ -98,10 +102,15 @@ const Pricing: React.FC = () => {
     }, []);
 
 
-    const handleClick = (plan: Package) => {
-        navigate('/payment-confirm', {
-            state: { selectedPlan: plan }
-        });
+    const handleClick = async (plan: Package) => {
+        if (user) {
+            const response = await CheckBuyPackageAPI({ packageId: plan.packageId, staffId: user.staffId });
+            console.log(response);
+
+            navigate('/payment-confirm', {
+                state: { selectedPlan: plan }
+            });
+        }
     };
 
     const handlePrevious = () => {

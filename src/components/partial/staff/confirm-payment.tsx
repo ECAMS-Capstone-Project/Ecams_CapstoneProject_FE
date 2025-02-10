@@ -273,7 +273,7 @@ const PaymentConfirmation: React.FC = () => {
                                 }}
                             >
                                 <FormControlLabel
-                                    value="2"
+                                    value="VnPay"
                                     control={<Radio />}
                                     label={
                                         <Box display="flex" alignItems="center">
@@ -290,7 +290,7 @@ const PaymentConfirmation: React.FC = () => {
                                     style={{ color: "black", marginBottom: "25px" }}
                                 />
                                 <FormControlLabel
-                                    value="1"
+                                    value="PayOS"
                                     control={<Radio />}
                                     label={
                                         <Box display="flex" alignItems="center">

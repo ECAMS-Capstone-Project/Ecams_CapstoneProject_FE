@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import axiosMultipartForm from "../axiosMultipartForm";
 import { ResponseDTO } from "../BaseResponse";
-import { HandleResponse, PaymentDetails } from "@/models/Payment";
+import { CheckBuyPackage, HandleResponse, PaymentDetails } from "@/models/Payment";
 import { post } from "../agent";
 
 export const paymentPackage = async (formData: FormData): Promise<ResponseDTO<PaymentDetails | string>> => {
@@ -40,6 +40,24 @@ export const paymentPackage = async (formData: FormData): Promise<ResponseDTO<Pa
 export const handleResponse = async (data: HandleResponse): Promise<ResponseDTO<string>> => {
     try {
         const response = await post<ResponseDTO<string>>("/Payment/package/handle-response", data);
+        return response;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        if (error.response) {
+            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message || "API Error");
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            toast.error("Network error. Please try again later");
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const CheckBuyPackageAPI = async (data: CheckBuyPackage): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await post<ResponseDTO<string>>("/Package/check-request", data);
         return response;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
