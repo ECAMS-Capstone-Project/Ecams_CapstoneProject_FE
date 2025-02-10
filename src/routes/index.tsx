@@ -1,6 +1,5 @@
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
-import Contact from "@/components/partial/Contact/Contact";
 import PaymentConfirmation from "@/components/partial/staff/confirm-payment";
 import DashboardStaff from "@/pages/staff/dashboard/dashboardStaff";
 import PackageContract from "@/components/partial/staff/staff-signature/PackageContract";
@@ -26,6 +25,7 @@ import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
 import PendingUniversity from "@/pages/admin/university/PendingUni";
+import GuestLandingPage from "@/components/partial/landing/LandingPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -41,7 +41,7 @@ const PrivateRoute = ({ element, ...rest }: any) => {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Contact />,
+    element: <GuestLandingPage />,
     errorElement: <ErrorException />,
   },
   {
