@@ -26,6 +26,7 @@ import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
 import RoleBasedGuard from "@/Guard/RoleBaseGuard";
+import RequestClubPage from "@/pages/club-owner/RequestClubPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -171,6 +172,11 @@ export const router = createBrowserRouter([
         element: <ProfilePage />,
       },
     ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/create-club",
+    element: <RequestClubPage />,
     errorElement: <ErrorException />,
   },
 ]);
