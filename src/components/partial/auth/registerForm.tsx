@@ -34,6 +34,7 @@ import { University } from "@/models/University";
 import { UniversityList } from "@/api/agent/UniversityAgent";
 import { ring2 } from 'ldrs'
 import toast from "react-hot-toast";
+import PoliciesDialog from "./policiesDiablog";
 
 // Validation schema using Zod
 const schema = z
@@ -90,6 +91,8 @@ const RegisterForm: React.FC = () => {
   const [endDate, setEndDate] = React.useState<Date>();
   const { registerStudent } = useAuth();
   const [listUniversity, setListUniversity] = React.useState<University[]>([]);
+  const [open, setOpen] = React.useState<boolean>(false);
+
   useEffect(() => {
     const loadUniversity = async () => {
       try {
@@ -111,12 +114,23 @@ const RegisterForm: React.FC = () => {
     handleSubmit,
     register,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
+    defaultValues: {
+      agreeToTerms: false,
+    },
     resolver: zodResolver(schema),
   });
-  console.log(errors);
-
+  const agreeToTerms = watch("agreeToTerms");
+  const handleAccept = () => {
+    setValue("agreeToTerms", true);
+    setOpen(false);
+  };
+  const handleDeny = () => {
+    setValue("agreeToTerms", false);
+    setOpen(false);
+  };
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
     try {
       const formData = new FormData();
@@ -416,28 +430,26 @@ const RegisterForm: React.FC = () => {
               <Grid2 size={{ xs: 12 }}>
                 <FormControlLabel
                   control={
-                    <Checkbox {...register("agreeToTerms")} color="primary" />
+                    <Checkbox
+                      color="primary"
+                      disabled={true}
+                      sx={{
+                        "&.Mui-disabled": {
+                          color: "#1565C0",
+                        }
+                      }}
+                      checked={agreeToTerms}
+                    />
                   }
                   label={
-                    <Typography>
-                      I agree to all the{" "}
-                      <a
-                        href="/terms"
+                    <Typography onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                      I agree to all the terms and{" "}
+                      <span
                         className="text-red-400"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Terms
-                      </a>{" "}
-                      and{" "}
-                      <a
-                        className="text-red-400"
-                        href="/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        style={{ cursor: "pointer" }}
                       >
                         Privacy Policies
-                      </a>
+                      </span>
                     </Typography>
                   }
                 />
@@ -557,6 +569,7 @@ const RegisterForm: React.FC = () => {
           </form>
         </Grid2>
       </Grid2>
+      <PoliciesDialog open={open} setOpen={setOpen} handleAccept={handleAccept} handleDeny={handleDeny} type='student' />
     </Box>
   );
 };
