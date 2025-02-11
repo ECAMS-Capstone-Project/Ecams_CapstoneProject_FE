@@ -26,6 +26,8 @@ import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
 import PendingUniversity from "@/pages/admin/university/PendingUni";
 import GuestLandingPage from "@/components/partial/landing/LandingPage";
+import HomePage from "@/pages/student/home/HomePage";
+import StudentAppShell from "@/components/layout/StudentAppShell";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -172,6 +174,17 @@ export const router = createBrowserRouter([
       {
         path: "/common/profile",
         element: <ProfilePage />,
+      },
+    ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/student",
+    element: <StudentAppShell />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
       },
     ],
     errorElement: <ErrorException />,
