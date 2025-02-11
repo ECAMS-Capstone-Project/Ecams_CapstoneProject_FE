@@ -46,7 +46,7 @@ export default function PoliciesDialog({
 
     return (
         <>
-            {listPolicies && listPolicies.length > 0 && (
+            {listPolicies && listPolicies.length >= 0 && (
                 <Dialog open={open} onOpenChange={handleClose}>
                     <DialogContent>
                         <DialogHeader>

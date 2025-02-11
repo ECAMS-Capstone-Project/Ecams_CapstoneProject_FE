@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Policy } from "@/models/Policy";
+import { ArchiveX } from "lucide-react";
 
 interface PolicyProps {
   data: Policy[];
@@ -25,7 +26,16 @@ export function PolicyRegisterTable({ data }: PolicyProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((report) => (
+            {data.length <= 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  <div className="flex justify-center align-middle gap-2">
+                    <ArchiveX />
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+            {data.length > 0 && data.map((report) => (
               <TableRow key={report.policyId} className="text-center">
                 <TableCell className="text-center">{report.title}</TableCell>
                 <TableCell>{report.description}</TableCell>

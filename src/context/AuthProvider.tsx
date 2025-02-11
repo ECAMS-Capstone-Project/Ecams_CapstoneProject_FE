@@ -25,7 +25,7 @@ interface AuthContextProps extends AuthState {
   registerUniversity: (data: StaffRegisterRequest) => Promise<void>;
   registerStudent: (data: FormData) => Promise<void>;
   // login_type: (type: string, user: User) => Promise<void>;
-  // logout: () => Promise<void>;
+  logout: () => Promise<void>;
   // register: (registerUser: User) => Promise<void>;
   sendOtp: (otp: string, email: string) => Promise<void>;
 }
@@ -101,7 +101,7 @@ const AuthContext = createContext<AuthContextProps>({
   registerStudent: async () => { },
   sendOtp: async () => { },
   // login_type: async () => { },
-  // logout: async () => { },
+  logout: async () => { },
   // register: async () => { },
   // sendOtp: () => { },
 });
@@ -291,6 +291,11 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const logout = async () => {
+    setSession(null, null);
+    dispatch({ type: "LOGOUT" });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -300,8 +305,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         registerUniversity,
         registerStudent,
         sendOtp,
+        logout,
         // login_type,
-        // logout,
         // register,
       }}
     >

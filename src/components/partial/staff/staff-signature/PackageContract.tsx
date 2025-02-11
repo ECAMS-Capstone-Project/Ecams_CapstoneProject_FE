@@ -92,7 +92,7 @@ const PackageContract = () => {
                 const formData = new FormData();
                 formData.append("SignatureFile", signatureFile);
                 formData.append("PackageId", selectedPlan.packageId);
-                formData.append("PaymentMethodId", "5a7208c4-cc23-478b-8495-ed8e35135b02");
+                formData.append("PaymentMethodId", "59b3cf1a-4ed7-469a-a551-5196755a12ad");
                 formData.append("StaffId", user.staffId);
 
                 const response = await paymentPackage(formData);

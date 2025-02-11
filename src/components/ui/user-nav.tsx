@@ -15,11 +15,13 @@ import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { BellIcon } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
 
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
-
+  const { logout } = useAuth();
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -33,10 +35,12 @@ export function UserNav() {
     };
 
     fetchUserInfo();
-  }, [getCurrentUserAPI]);
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
+    toast.success("Logout successfully")
   };
 
   return (

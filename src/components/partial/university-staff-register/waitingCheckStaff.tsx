@@ -1,9 +1,17 @@
 import React from "react";
 import { Box, Typography, Grid2, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
 
 const WaitingCheckStaff: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const handleClick = async () => {
+    await logout();
+    navigate('/login');
+    toast.success("Logout successfully")
+  }
   return (
     <Box
       display="flex"
@@ -34,7 +42,7 @@ const WaitingCheckStaff: React.FC = () => {
       <div className='flex w-full justify-center'>
         <Button
           type="submit"
-          onClick={() => navigate('/login')}
+          onClick={handleClick}
           variant="contained"
           color="primary"
           sx={{

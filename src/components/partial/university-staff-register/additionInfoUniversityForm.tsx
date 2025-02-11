@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import { additionInfoUniversityAPI } from "@/api/auth/RegisterAPI";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ring2 } from 'ldrs'
+import PoliciesDialog from "../auth/policiesDiablog";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -55,6 +56,7 @@ const schema = z.object({
 type SignUpFormValues = z.infer<typeof schema>;
 
 const AdditionInfoUniversityForm: React.FC = () => {
+  const [open, setOpen] = React.useState<boolean>(false);
   ring2.register()
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
@@ -62,16 +64,21 @@ const AdditionInfoUniversityForm: React.FC = () => {
   const {
     handleSubmit,
     register,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(schema),
   });
-
-  useEffect(() => {
-    if (user && (user.universityId !== undefined && user.universityId !== null)) {
-      navigate('/staff/dashboard')
-    }
-  }, [user, navigate])
+  const agreeToTerms = watch("agreeToTerms");
+  const handleAccept = () => {
+    setValue("agreeToTerms", true);
+    setOpen(false);
+  };
+  const handleDeny = () => {
+    setValue("agreeToTerms", false);
+    setOpen(false);
+  };
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
     if (user && user.userId) {
@@ -237,26 +244,26 @@ const AdditionInfoUniversityForm: React.FC = () => {
               <Grid2 size={{ xs: 12 }}>
                 <FormControlLabel
                   control={
-                    <Checkbox {...register("agreeToTerms")} color="primary" />
+                    <Checkbox
+                      color="primary"
+                      disabled={true}
+                      sx={{
+                        "&.Mui-disabled": {
+                          color: "#1565C0",
+                        }
+                      }}
+                      checked={agreeToTerms}
+                    />
                   }
                   label={
-                    <Typography>
-                      I agree to all the{" "}
-                      <a
-                        href="/terms"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Terms
-                      </a>{" "}
-                      and{" "}
-                      <a
-                        href="/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <Typography onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                      I agree to all the terms and{" "}
+                      <span
+                        className="text-red-400"
+                        style={{ cursor: "pointer" }}
                       >
                         Privacy Policies
-                      </a>
+                      </span>
                     </Typography>
                   }
                 />
@@ -297,6 +304,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
           </form>
         </Grid2>
       </Grid2>
+      <PoliciesDialog open={open} setOpen={setOpen} handleAccept={handleAccept} handleDeny={handleDeny} type='staff' />
     </Box>
   );
 };
