@@ -15,7 +15,7 @@ export interface NavLink {
   href: string;
   icon: JSX.Element;
   label?: string;
-  id: number
+  id: number;
 }
 
 export interface SideLink extends NavLink {
@@ -55,8 +55,8 @@ const SidebarLinks = () => {
         id: 3,
       },
       {
-        title: "Payment",
-        href: "/admin/payment",
+        title: "Contract",
+        href: "/admin/contract",
         icon: <DollarSignIcon size={18} />,
         id: 4,
       },
@@ -77,7 +77,7 @@ const SidebarLinks = () => {
         href: "/admin/policy",
         icon: <FileText size={18} />,
         id: 7,
-      },
+      }
     );
   }
 
@@ -94,7 +94,7 @@ const SidebarLinks = () => {
         href: "/view-package",
         icon: <FileText size={18} />,
         id: 8,
-      },
+      }
     );
   }
 
@@ -102,4 +102,3 @@ const SidebarLinks = () => {
 };
 
 export default SidebarLinks;
-

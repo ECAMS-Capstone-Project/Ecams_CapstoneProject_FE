@@ -8,7 +8,6 @@ import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Notifications from "@/pages/admin/notification/Notification";
 import Package from "@/pages/admin/package/Package";
-import Payment from "@/pages/admin/payment/Payment";
 import Policy from "@/pages/admin/policy/Policy";
 import University from "@/pages/admin/university/University";
 import User from "@/pages/admin/user/User";
@@ -28,6 +27,8 @@ import PendingUniversity from "@/pages/admin/university/PendingUni";
 import GuestLandingPage from "@/components/partial/landing/LandingPage";
 import HomePage from "@/pages/student/home/HomePage";
 import StudentAppShell from "@/components/layout/StudentAppShell";
+import Contract from "@/pages/admin/contract/Contract";
+import ContractDetail from "@/components/partial/admin/contract/ContractDetail";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -102,8 +103,12 @@ export const router = createBrowserRouter([
         element: <PendingUniversity />,
       },
       {
-        path: "/admin/payment",
-        element: <Payment />,
+        path: "/admin/contract",
+        element: <Contract />,
+      },
+      {
+        path: "/admin/contract/:contractId",
+        element: <ContractDetail />,
       },
       {
         path: "/admin/user",
