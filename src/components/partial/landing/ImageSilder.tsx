@@ -33,21 +33,21 @@ const ImageCarousel = () => {
       <Slider {...settings}>
         <div className="w-full  flex items-center justify-center">
           <img
-            src="https://res.cloudinary.com/ecams/image/upload/v1739185794/Screenshot_2025-02-10_at_18.06.42_gwdt8k.png"
+            src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
             alt="Image 1"
             className="w-3/4 h-auto object-cover"
           />
         </div>
         <div className="w-full  flex justify-center items-center">
           <img
-            src="https://res.cloudinary.com/ecams/image/upload/v1739185794/Screenshot_2025-02-10_at_18.09.07_t5ax2q.png"
+            src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
             alt="Image 2"
             className="w-3/4 h-auto object-cover "
           />
         </div>
         <div className="w-full  flex justify-center items-center">
           <img
-            src="https://res.cloudinary.com/ecams/image/upload/v1739185794/Screenshot_2025-02-10_at_18.09.30_uvzczk.png"
+            src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
             alt="Image 3"
             className="w-3/4 h-auto object-cover "
           />

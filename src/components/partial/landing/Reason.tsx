@@ -34,7 +34,7 @@ export const features = [
     background: (
       <div className="absolute top-0 left-0 right-0 [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] ">
         <img
-          src="https://res.cloudinary.com/ecams/image/upload/v1739189258/unsplash_qfWMUXDcN18_wq7oep.png"
+          src="https://res.cloudinary.com/ecams/image/upload/v1738836477/b616ac24-b222-4c0f-b454-c7ff867ea445_uhwc1s.png"
           alt=""
           className="w-full object-cover"
         />

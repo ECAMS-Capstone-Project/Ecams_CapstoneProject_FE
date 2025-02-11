@@ -21,11 +21,11 @@ const GuestLandingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen scroll-smooth  ">
+    <div className="min-h-screen scroll-smooth bg-gradient-to-b from-[#e0e7ff] to-[#f5f5f5] ">
       {/* Header Section */}
       <header className="bg-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between p-1">
-          <div className="flex justify-center items-center gap-3">
+          <div className="flex justify-center items-center gap-7">
             <img
               src="https://res.cloudinary.com/ecams/image/upload/v1739124259/ECAMS_Logo_ow82lc.png"
               alt="logo"

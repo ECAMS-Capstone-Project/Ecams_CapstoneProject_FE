@@ -44,8 +44,11 @@ export const EventsSection = () => {
 
   return (
     <section className="py-12">
-      <h2 className="text-2xl font-bold text-gray-800">
-        Upcoming <span className="text-blue-600">Events</span>
+      <h2 className="text-3xl font-bold text-gray-800">
+        Upcoming{" "}
+        <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
+          Events
+        </span>
       </h2>
       <div className="grid md:grid-cols-3 gap-6 mt-6 w-full">
         {events.map((event, index) => (
@@ -68,7 +71,7 @@ export const EventsSection = () => {
           </MagicCard>
         ))}
       </div>
-      <div className="flex w-full justify-center items-center mt-3">
+      <div className="flex w-full justify-center items-center mt-5">
         <Button
           variant="custom"
           className=" p-5 text-white text-md font-normal rounded shadow-lg hover:opacity-95 hover:scale-105 hover:shadow-xl transition duration-300"
