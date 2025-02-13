@@ -98,8 +98,10 @@ export default function ContractDetail() {
               Package type: {contract.packageName}
             </p>
             <p className="text-gray-500 text-sm mt-2">
-              📅 {String(contract.signedDate).split("T")[0]} -{" "}
-              {String(contract.endDate).split("T")[0]}
+              📅 From: {String(contract.signedDate).split("T")[0]}
+            </p>
+            <p className="text-gray-500 text-sm mt-2">
+              📅 To: {String(contract.endDate).split("T")[0]}
             </p>
             <span
               className={`mt-2 inline-block px-3 py-1 rounded text-sm font-semibold ${
