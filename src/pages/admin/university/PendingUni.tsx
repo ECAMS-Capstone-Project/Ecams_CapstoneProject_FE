@@ -55,6 +55,7 @@ const PendingUniversity = () => {
 
           <UniversityTable
             data={uniList.filter((uni) => uni.status == "PENDING")}
+            refreshData={undefined}
           />
 
           <DataTablePagination

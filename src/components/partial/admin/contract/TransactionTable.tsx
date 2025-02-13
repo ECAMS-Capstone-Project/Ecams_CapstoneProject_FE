@@ -1,5 +1,4 @@
 import { Contract } from "@/models/Contract";
-import React from "react";
 
 interface ContractData {
   data: Contract;

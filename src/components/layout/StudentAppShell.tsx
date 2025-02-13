@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // StudentAppShell.tsx
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Layout } from "./layout";
 import { StudentHeader } from "./StudentHeader";
 import { Footer } from "./footer";
 
 export default function StudentAppShell() {
-  const location = useLocation();
-
   return (
     <div className="relative h-full overflow-hidden bg-background">
       <main id="content" className="h-full w-full">
