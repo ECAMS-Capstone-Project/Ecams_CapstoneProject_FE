@@ -35,7 +35,7 @@ import RoleBasedGuard from "@/Guard/RoleBaseGuard";
 import RequestClubPage from "@/pages/club-owner/RequestClubPage";
 import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
 import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
-import ContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
+import StaffContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
 import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -173,7 +173,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/staff/contract/:contractId",
-        element: <ContractDetail />,
+        element: <StaffContractDetail />,
         errorElement: <ErrorException />,
       },
       {
