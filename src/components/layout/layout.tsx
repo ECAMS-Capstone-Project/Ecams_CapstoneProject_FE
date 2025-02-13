@@ -90,7 +90,7 @@ const Body = React.forwardRef<
       ref={ref}
       data-layout="body"
       className={cn(
-        "px-4 py-6 md:overflow-hidden md:px-8",
+        " md:overflow-hidden ",
         contextVal && contextVal.fixed && "flex-1",
         className
       )}

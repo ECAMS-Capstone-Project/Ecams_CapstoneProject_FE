@@ -6,7 +6,7 @@ import { SearchBar } from "@/components/partial/student/home/SearchBar";
 const HomePage = () => {
   return (
     <>
-      <div className="mx-0 px-0">
+      <div className="px-4 py-6">
         <Hero />
         <SearchBar />
         <div className="container mx-auto px-4">
