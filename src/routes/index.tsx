@@ -31,6 +31,12 @@ import Contract from "@/pages/admin/contract/Contract";
 import ContractDetail from "@/components/partial/admin/contract/ContractDetail";
 import { Event } from "@/pages/student/events/Event";
 import { Clubs } from "@/pages/student/clubs/Clubs";
+import RoleBasedGuard from "@/Guard/RoleBaseGuard";
+import RequestClubPage from "@/pages/club-owner/RequestClubPage";
+import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
+import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
+import ContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
+import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -136,20 +142,44 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
+    path: "/update-university",
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+        <AdditionInfoUniversityForm />
+      </RoleBasedGuard>
+    ),
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/waiting-staff",
+    element: <WaitingCheckStaffPage />,
+  },
+  {
     path: "/staff",
-    element: <PrivateRoute />,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         index: true,
-        element: <AdditionInfoUniversityForm />,
-      },
-      {
-        path: "/staff/waiting-staff",
-        element: <WaitingCheckStaffPage />,
-      },
-      {
-        path: "/staff/dashboard",
         element: <DashboardStaff />,
+      },
+      {
+        path: "/staff/wallet-staff",
+        element: <WalletStaff />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/staff/contract/:contractId",
+        element: <ContractDetail />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/staff/request-student",
+        element: <ApproveStudentPage />,
+        errorElement: <ErrorException />,
       },
     ],
     errorElement: <ErrorException />,
@@ -176,7 +206,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/common",
-    element: <PrivateRoute />,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF", "ADMIN"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         path: "/common/profile",
@@ -202,6 +236,16 @@ export const router = createBrowserRouter([
         element: <Clubs />,
       },
     ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/create-club",
+    element: <RequestClubPage />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/extend-checkout",
+    element: <ExtendCheckOut />,
     errorElement: <ErrorException />,
   },
 ]);

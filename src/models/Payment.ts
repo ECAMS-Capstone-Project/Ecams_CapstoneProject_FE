@@ -17,7 +17,12 @@ export interface HandleResponse {
     transactionNumber: string;
     isSuccess: boolean;
 }
+export interface CheckBuyPackage {
+    packageId: string;
+    staffId: string;
+}
 export interface Transaction {
+    transactionId: string;
     transactionId: string;
     amount: number;
     paymentDate: string; // ISO 8601 format

@@ -11,4 +11,4 @@ export interface Contract {
     contractUrl: string;
     status: boolean;
     transactions?: Transaction[]; // Optional vì Get All không có
-  }
+}

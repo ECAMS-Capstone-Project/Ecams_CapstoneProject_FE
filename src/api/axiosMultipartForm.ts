@@ -1,6 +1,7 @@
 import axios, {
   AxiosInstance,
   AxiosResponse,
+  InternalAxiosRequestConfig,
   // InternalAxiosRequestConfig,
 } from "axios";
 import toast from "react-hot-toast";
@@ -13,21 +14,21 @@ const axiosMultipartForm: AxiosInstance = axios.create({
 });
 
 axiosMultipartForm.interceptors.request.use(
-  // function (config: InternalAxiosRequestConfig) {
-  //   // Initialize header if not already defined
-  //   config.headers = config.headers || {};
+  function (config: InternalAxiosRequestConfig) {
+    // Initialize header if not already defined
+    config.headers = config.headers || {};
 
-  //   const accessToken = localStorage.getItem("token");
-  //   if (accessToken) {
-  //     config.headers.Authorization = `Bearer ${accessToken}`;
-  //   }
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
-  //   return config;
-  // },
-  (config) => {
-    // Log config của request
     return config;
   },
+  // (config) => {
+  //   // Log config của request
+  //   return config;
+  // },
   function (error) {
     return Promise.reject(error);
   }
