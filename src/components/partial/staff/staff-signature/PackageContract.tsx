@@ -174,7 +174,14 @@ const PackageContract = () => {
               <span>
                 🎯 Party A provides the <b>{selectedPlan?.packageName}</b>{" "}
                 service package to Party B for a period of{" "}
-                <b>{selectedPlan?.duration} months</b>.
+                <b>
+                  {selectedPlan?.duration == 1
+                    ? `${selectedPlan?.duration} + month`
+                      ? selectedPlan?.duration == null || undefined
+                      : "No package yet!"
+                    : `${selectedPlan?.duration} + months`}
+                </b>
+                .
               </span>
             </ListItem>
 
