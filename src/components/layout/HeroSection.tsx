@@ -29,7 +29,7 @@ export const HeroSection = () => {
         <img
           src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
           alt="Hero Image"
-          className="w-full h-auto"
+          className="w-full h-auto rounded-tr-2xl rounded-br-2xl"
         />
       </div>
     </section>

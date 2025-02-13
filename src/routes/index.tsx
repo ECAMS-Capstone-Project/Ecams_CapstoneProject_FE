@@ -30,6 +30,7 @@ import StudentAppShell from "@/components/layout/StudentAppShell";
 import Contract from "@/pages/admin/contract/Contract";
 import ContractDetail from "@/components/partial/admin/contract/ContractDetail";
 import { Event } from "@/pages/student/events/Event";
+import { Clubs } from "@/pages/student/clubs/Clubs";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -195,6 +196,10 @@ export const router = createBrowserRouter([
       {
         path: "/student/event",
         element: <Event />,
+      },
+      {
+        path: "/student/club",
+        element: <Clubs />,
       },
     ],
     errorElement: <ErrorException />,

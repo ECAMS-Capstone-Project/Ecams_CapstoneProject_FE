@@ -32,6 +32,34 @@ export default function ContractDetail() {
 
   if (!contract) return <LoadingAnimation />;
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(`${contract.contractUrl}?fl_attachment`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Download failed");
+      }
+
+      // Chuyển dữ liệu thành Blob
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      // Tạo thẻ <a> ẩn để tải file
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Contract.pdf"; // Đổi tên file nếu cần
+      document.body.appendChild(a);
+      a.click();
+
+      // Xóa thẻ <a> sau khi tải
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb */}
@@ -84,8 +112,7 @@ export default function ContractDetail() {
             </span>
             <Button className="block mt-4 hover:scale-105" variant="custom">
               <a
-                href={contract.contractUrl}
-                target="_blank"
+                onClick={handleDownload}
                 className=" block text-white hover:underline"
               >
                 📄 Download Contract

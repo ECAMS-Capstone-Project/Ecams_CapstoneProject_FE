@@ -18,7 +18,7 @@ export const StudentHeader = () => {
               to="/student"
               className={`text-gray-700 font-medium hover:text-[#136CB5] transition duration-300 scroll-smooth ${
                 checkActiveNav("/student")
-                  ? "font-extrabold text-[#217ac3] "
+                  ? "font-extrabold text-[#2982cc] "
                   : ""
               }`}
             >
@@ -29,7 +29,7 @@ export const StudentHeader = () => {
               to="/student/event"
               className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
                 checkActiveNav("/student/event")
-                  ? "font-extrabold text-[#217ac3]"
+                  ? "font-extrabold text-[#2982cc]"
                   : ""
               }`}
             >
@@ -40,7 +40,7 @@ export const StudentHeader = () => {
               to="/student/club"
               className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
                 checkActiveNav("/student/club")
-                  ? "font-extrabold text-[#217ac3]"
+                  ? "font-extrabold text-[#2982cc]"
                   : ""
               }`}
             >
