@@ -92,9 +92,8 @@ const PackageContract = () => {
                 const formData = new FormData();
                 formData.append("SignatureFile", signatureFile);
                 formData.append("PackageId", selectedPlan.packageId);
-                formData.append("PaymentMethodId", paymentMethod);
+                formData.append("PaymentMethodId", "59b3cf1a-4ed7-469a-a551-5196755a12ad");
                 formData.append("StaffId", user.staffId);
-                console.log(formData.get("PackageId"));
 
                 const response = await paymentPackage(formData);
                 console.log(paymentMethod);
@@ -102,7 +101,7 @@ const PackageContract = () => {
 
                 if (response.statusCode == StatusCodeEnum.CREATED && response.data) {
                     toast.success("Payment successful");
-                    if (paymentMethod == "2") {
+                    if (paymentMethod == "VnPay") {
                         // For VNPAY: redirect using the data directly
                         if (typeof response.data === 'string') {
                             window.location.replace(response.data);

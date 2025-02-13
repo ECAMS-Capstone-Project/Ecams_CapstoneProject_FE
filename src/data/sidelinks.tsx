@@ -5,8 +5,10 @@ import {
   FileText,
   LayoutDashboardIcon,
   Package2Icon,
+  ReceiptText,
   Settings,
   UniversityIcon,
+  UserCheck,
   UserIcon,
 } from "lucide-react";
 
@@ -25,14 +27,7 @@ export interface SideLink extends NavLink {
 const SidebarLinks = () => {
   const { user } = useAuth(); // Lấy user từ context
 
-  const sidelinks: SideLink[] = [
-    {
-      title: "Setting",
-      href: "/common/profile",
-      icon: <Settings size={18} />,
-      id: 1,
-    },
-  ];
+  const sidelinks: SideLink[] = [];
 
   if (user?.roles[0].toLocaleLowerCase() === "admin") {
     sidelinks.push(
@@ -85,7 +80,7 @@ const SidebarLinks = () => {
     sidelinks.push(
       {
         title: "Dashboard",
-        href: "/staff/dashboard",
+        href: "/staff",
         icon: <LayoutDashboardIcon size={18} />,
         id: 1,
       },
@@ -95,9 +90,26 @@ const SidebarLinks = () => {
         icon: <FileText size={18} />,
         id: 8,
       },
+      {
+        title: "Contract",
+        href: "/staff/wallet-staff",
+        icon: <ReceiptText size={18} />,
+        id: 22,
+      },
+      {
+        title: "Request Student",
+        href: "/staff/request-student",
+        icon: <UserCheck size={18} />,
+        id: 23,
+      }
     );
   }
-
+  sidelinks.push({
+    title: "Setting",
+    href: "/common/profile",
+    icon: <Settings size={18} />,
+    id: 10,
+  });
   return sidelinks;
 };
 

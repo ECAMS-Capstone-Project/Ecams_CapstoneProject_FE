@@ -17,11 +17,20 @@ export interface HandleResponse {
     transactionNumber: string;
     isSuccess: boolean;
 }
+export interface CheckBuyPackage {
+    packageId: string;
+    staffId: string;
+}
 export interface Transaction {
-    transactionId: number;
-    methodId: number;
-    universityPackageId: number;
+    transactionId: string;
     amount: number;
-    paymentDate: Date;
+    paymentDate: string; // ISO 8601 format
+    universityName: string;
+    methodName: string;
+    packageName: string;
+    transactionNumber: string;
+    transactionInfo: string;
+    contractUrl: string;
+    type: string; // Enum nếu có danh sách cụ thể
     status: string;
 }

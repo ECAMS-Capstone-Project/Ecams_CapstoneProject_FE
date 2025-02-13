@@ -7,4 +7,7 @@ export interface UserAuthDTO {
     universityId?: string;
     roles: string[];
     staffId: string;
+    universityStatus: string;
+    universityName: string
+    phonenumber: string
 }

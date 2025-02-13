@@ -55,7 +55,8 @@ const ProfilePage = () => {
         <TabsContent value="profile">
           <ProfileForm initialData={userInfo || null} />
         </TabsContent>
-        <TabsContent value="account">hello account</TabsContent>
+        <TabsContent value="account">
+        </TabsContent>
       </Tabs>
     </>
   );

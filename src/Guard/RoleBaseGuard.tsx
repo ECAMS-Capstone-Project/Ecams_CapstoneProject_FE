@@ -15,7 +15,7 @@ interface RoleBasedGuardProps {
 // Hook to get the current role
 const useCurrentRole = (): string[] => {
   const { user } = useAuth();
-  return user?.roles || ["admin"];
+  return user?.roles || ["null"];
 };
 
 // ----------------------------------------------------------------------
@@ -37,6 +37,10 @@ export default function RoleBasedGuard({
 
   const handleNavigateDashboard = () => {
     navigate("/dashboard");
+  };
+
+  const handleNavigateHomePage = () => {
+    navigate("/");
   };
 
   const currentRole = useCurrentRole();
@@ -74,18 +78,23 @@ export default function RoleBasedGuard({
       >
         <Alert style={{ fontSize: "20px" }} severity="error">
           <AlertTitle style={{ fontSize: "20px" }}>
-            Quyền truy cập bị từ chối
+            You can't reach this page
           </AlertTitle>
-          Bạn không có quyền để truy cập địa chỉ này
+          You don't have permission to access this page
           <AlertTitle style={{ fontSize: "20px", marginTop: "15px" }}>
-            {currentRole && currentRole.includes("Admin") && (
+            {currentRole && currentRole.includes("ADMIN") && (
               <Button onClick={handleNavigateDashboard}>
-                Trở về trang Admin
+                Back to Admin
               </Button>
             )}
-            {currentRole && currentRole.includes("Staff") && (
+            {currentRole && currentRole.includes("STAFF") && (
               <Button onClick={handleNavigateDashboard}>
-                Trở về trang Admin
+                Back to Staff
+              </Button>
+            )}
+            {(!currentRole || currentRole.includes('null')) && (
+              <Button onClick={handleNavigateHomePage}>
+                Back to home page
               </Button>
             )}
           </AlertTitle>

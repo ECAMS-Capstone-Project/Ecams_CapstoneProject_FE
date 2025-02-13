@@ -12,13 +12,16 @@ import {
     FormControlLabel,
     Radio,
     Button,
+    CircularProgress,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth';
 import { formatPrice } from '@/lib/FormatPrice';
+import { exchangePackage } from '@/api/staff/PaymentAPI';
+import { StatusCodeEnum } from '@/lib/statusCodeEnum';
 
 const BackgroundWrapper = styled(Box)({
     minHeight: '100vh',
@@ -68,14 +71,14 @@ const generateRandomCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-const PaymentConfirmation: React.FC = () => {
-    const navigate = useNavigate();
+const ExtendCheckOut: React.FC = () => {
     const { user } = useAuth();
     const location = useLocation();
     const { selectedPlan } = location.state || {};
     const [userCaptchaInput, setUserCaptchaInput] = useState<string>("");
     const [captchaCode, setCaptchaCode] = useState(generateRandomCode());
     const [methodPayment, setMethodPayment] = useState("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMethodPayment(event.target.value);
@@ -96,12 +99,42 @@ const PaymentConfirmation: React.FC = () => {
             toast.error("Please choose payment method");
             return;
         }
-        navigate('/package-contract', {
-            state: {
-                selectedPlan: selectedPlan,
-                paymentMethod: methodPayment
+        if (user && selectedPlan) {
+            setIsLoading(true);
+            try {
+                const formData = new FormData();
+                formData.append("PackageId", selectedPlan.packageId);
+                formData.append("PaymentMethodId", "59b3cf1a-4ed7-469a-a551-5196755a12ad");
+                formData.append("StaffId", user.staffId);
+
+                const response = await exchangePackage(formData);
+
+                if (response.statusCode == StatusCodeEnum.CREATED && response.data) {
+                    toast.success("Payment successful");
+                    if (methodPayment == "VnPay") {
+                        // For VNPAY: redirect using the data directly
+                        if (typeof response.data === 'string') {
+                            window.location.replace(response.data);
+                        } else {
+                            toast.error("Invalid response data");
+                        }
+                    } else if (methodPayment == "PayOS") {
+                        // For PAYOS: redirect using the checkoutUrl
+                        if (typeof response.data !== 'string' && response.data.checkoutUrl) {
+                            window.location.replace(response.data.checkoutUrl);
+                        } else {
+                            toast.error("Invalid response data");
+                        }
+                    }
+                } else {
+                    toast.error("Payment failed");
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
             }
-        })
+        }
     };
     return (
         <BackgroundWrapper>
@@ -311,10 +344,11 @@ const PaymentConfirmation: React.FC = () => {
                                 type="submit"
                                 variant="contained"
                                 color="primary"
+                                disabled={isLoading}
                                 onClick={handleSubmit}
                                 fullWidth
                             >
-                                Confirm
+                                {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Confirm'}
                             </Button>
                             <div
                                 style={{
@@ -362,4 +396,4 @@ const PaymentConfirmation: React.FC = () => {
     );
 };
 
-export default PaymentConfirmation;
+export default ExtendCheckOut;
