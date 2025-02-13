@@ -23,7 +23,7 @@ export const createPackage = async (value: any): Promise<ResponseDTO<ResponseDat
   }
 };
 
-export const deactivePackage = async ( pkgId: string): Promise<ResponseDTO<Package>> => {
+export const deactivePackage = async (pkgId: string): Promise<ResponseDTO<Package>> => {
   try {
     const response = await del<ResponseDTO<Package>>(`/Package/deactive-package/${pkgId}`);
     return response; // Trả về toàn bộ phản hồi
@@ -36,6 +36,16 @@ export const deactivePackage = async ( pkgId: string): Promise<ResponseDTO<Packa
 export const PackageList3 = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Package>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<Package>>>(`/Package?PageNumber=${pageNo}&PageSize=${pageSize}`);
+    return response;
+  } catch (error: any) {
+    console.error("Error in Package API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const PackageCurrent = async (staffId: string): Promise<ResponseDTO<Package>> => {
+  try {
+    const response = await get<ResponseDTO<Package>>(`/Package/current-package/${staffId}`);
     return response;
   } catch (error: any) {
     console.error("Error in Package API call:", error.response || error);

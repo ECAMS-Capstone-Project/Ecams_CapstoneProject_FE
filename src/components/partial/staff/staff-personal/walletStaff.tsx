@@ -1,39 +1,21 @@
 import { Avatar, Button, Card, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import ConfirmDialog from "./confirmDialog";
 import { useEffect, useState } from "react";
-import { PackageList3 } from "@/api/agent/PackageAgent";
+import { PackageCurrent, PackageList3 } from "@/api/agent/PackageAgent";
 import { Package } from "@/models/Package";
 import { formatPrice } from "@/lib/FormatPrice";
+import ContractStaffPage from "@/pages/staff/contract/ContractStaffPage";
+import useAuth from "@/hooks/useAuth";
+import { CheckBuyPackageAPI } from "@/api/staff/PaymentAPI";
+import { useNavigate } from "react-router-dom";
 
 const WalletStaff = () => {
-    const [open, setOpen] = useState<boolean>(false);
+    const { user } = useAuth();
     const [packages, setPackages] = useState<Package[]>([]);
+    const [curPackage, setCurPackage] = useState<Package>();
     const [loading, setLoading] = useState<boolean>(true);
-    // Giả lập dữ liệu
-    const user = {
-        name: "Việt Hùng",
-        avatar: "https://via.placeholder.com/50",
-        currentPackage: {
-            name: "Thẻ tháng",
-            expiry: "Còn 20 ngày",
-        },
-        history: [
-            { id: 1, name: "Thẻ tuần", date: "10/02/2024" },
-            { id: 2, name: "Thẻ tháng", date: "01/02/2024" },
-        ],
-        suggestedPackages: [
-            { id: 1, name: "Thẻ quý", price: "USD 29.99", diamonds: 3499 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-            { id: 2, name: "Thẻ năm", price: "USD 99.99", diamonds: 6999 },
-
-        ],
-    };
-
+    const navigate = useNavigate();
+    console.log(loading);
     useEffect(() => {
         const loadPackage = async () => {
             try {
@@ -47,39 +29,58 @@ const WalletStaff = () => {
                 setLoading(false);
             }
         };
+        const loadCurrentPackage = async () => {
+            if (user) {
+                try {
+                    const contractData = await PackageCurrent(user.staffId);
+                    const packageList = contractData.data;
+                    setCurPackage(packageList);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
+                    console.log(error.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+        }
         loadPackage();
-    }, []);
+        loadCurrentPackage();
+    }, [user]);
+
+    const handleClick = async (plan: Package) => {
+        if (user) {
+            const response = await CheckBuyPackageAPI({ packageId: plan.packageId, staffId: user.staffId });
+            console.log(response);
+
+            navigate('/payment-confirm', {
+                state: { selectedPlan: plan }
+            });
+        }
+    };
 
     return (
-        <Container className="p-6 rounded-lg shadow-lg">
+        <Container maxWidth="xl" className="p-6 rounded-lg shadow-lg">
             {/* Header */}
             <Typography variant="h5" className="font-bold text-center mb-4 text-blue-600">
-                👤 My Account
+                👤 My Contract
             </Typography>
 
             {/* Thông tin user */}
             <Card className="p-4 flex items-center space-x-4 shadow-lg mt-3">
-                <Avatar src={user.avatar} alt="User Avatar" sx={{ width: 60, height: 60 }} />
+                <Avatar src={user?.avatar || "./public/image/appLogo.png"} alt="User Avatar" sx={{ width: 60, height: 60 }} />
                 <div>
-                    <Typography className="font-bold text-lg">{user.name}</Typography>
-                    <Typography color="textSecondary">{user.currentPackage.name} - {user.currentPackage.expiry}</Typography>
-                    <Button onClick={() => setOpen(true)} variant="text" sx={{ p: 0 }}>Extend package</Button>
+                    <Typography className="text-lg" fontWeight={'600'}>{user?.fullname}</Typography>
+                    <Typography color="textSecondary" mt={1}><b>Package:</b> {curPackage?.packageName || "No package yet"} </Typography>
+                    <Typography color="textSecondary" mt={1}>📅 Duration: {curPackage?.duration} months
+                    </Typography>
+                    {/* <Typography color="textSecondary" mt={1}>📅 To: {" "} {curPackage?.}</Typography> */}
                 </div>
             </Card>
 
             {/* Lịch sử đăng ký */}
             <Card className="p-4 mt-6 shadow-lg">
                 <Typography className="font-bold mb-3 text-blue-500" mb={2}>📜 Registration History</Typography>
-                {user.history.map((pkg) => (
-                    <motion.div
-                        key={pkg.id}
-                        className="flex justify-between py-2 border-b hover:bg-blue-50 p-2 rounded-lg"
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <Typography>{pkg.name}</Typography>
-                        <Typography color="textSecondary">{pkg.date}</Typography>
-                    </motion.div>
-                ))}
+                <ContractStaffPage />
             </Card>
 
             {/* Gói đề xuất */}
@@ -87,12 +88,12 @@ const WalletStaff = () => {
                 <Typography className="font-bold mb-3 text-blue-500" mb={2}>📦 Recommend Package</Typography>
 
                 {/* Khung scrollable */}
-                <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto overflow-x-hidden pr-2">
+                <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto overflow-x-hidden p-2">
                     {packages && packages.map((pkg, index) => (
                         <motion.div
                             key={index + 1}
                             className="p-4 border rounded-lg shadow-lg bg-white hover:bg-blue-100 transition-all"
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.01 }}
                         >
                             <Typography className="font-bold text-lg" mb={1}>Package Name: {pkg.packageName}</Typography>
                             <Typography color="primary" mb={1}>Duration: {pkg.duration} months</Typography>
@@ -101,6 +102,7 @@ const WalletStaff = () => {
                                 <Button
                                     variant="contained"
                                     color="primary"
+                                    onClick={() => handleClick(pkg)}
                                     sx={{
                                         mt: 2,
                                         justifyContent: "center",
@@ -116,8 +118,6 @@ const WalletStaff = () => {
                     ))}
                 </div>
             </Card>
-
-            <ConfirmDialog open={open} setOpen={setOpen} />
         </Container>
     );
 };

@@ -5,8 +5,10 @@ import {
   FileText,
   LayoutDashboardIcon,
   Package2Icon,
+  ReceiptText,
   Settings,
   UniversityIcon,
+  UserCheck,
   UserIcon,
 } from "lucide-react";
 
@@ -88,6 +90,18 @@ const SidebarLinks = () => {
         icon: <FileText size={18} />,
         id: 8,
       },
+      {
+        title: "Contract",
+        href: "/staff/wallet-staff",
+        icon: <ReceiptText size={18} />,
+        id: 22,
+      },
+      {
+        title: "Request Student",
+        href: "/staff/request-student",
+        icon: <UserCheck size={18} />,
+        id: 23,
+      }
     );
   }
   sidelinks.push({

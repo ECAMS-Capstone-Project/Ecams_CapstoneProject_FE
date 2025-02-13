@@ -7,36 +7,26 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { Package } from "@/models/Package";
-import { PackageCurrent } from "@/api/agent/PackageAgent";
+import { Contract } from "@/models/Contract";
+import { CancelContractStaff } from "@/api/staff/ContractAPI";
 
 interface confirmDialog {
     open: boolean,
     setOpen: (open: boolean) => void
+    contract: Contract | null
+    setFlag: (flag: boolean | ((prevFlag: boolean) => boolean)) => void
 }
 
-export default function ConfirmDialog({ open, setOpen }: confirmDialog) {
+export default function ConfirmCancelDialog({ open, setOpen, contract, setFlag }: confirmDialog) {
     const { user } = useAuth();
     const handleClose = () => setOpen(false);
-    const navigate = useNavigate();
-    const [plan, setPlan] = useState<Package>();
     const handleClick = async () => {
-        navigate('/extend-checkout', {
-            state: { selectedPlan: plan }
-        });
-    };
-    useEffect(() => {
-        async function fetchContractDetail() {
-            if (user) {
-                const response = await PackageCurrent(user.staffId);
-                setPlan(response.data);
-            }
+        if (contract && user) {
+            await CancelContractStaff(contract.contractId, user.staffId)
+            setFlag((prevFlag: boolean) => !prevFlag)
         }
-        fetchContractDetail();
-    }, [user]);
+    };
     return (
         <>
             <Dialog open={open} onOpenChange={handleClose}>
@@ -45,7 +35,7 @@ export default function ConfirmDialog({ open, setOpen }: confirmDialog) {
                         <DialogTitle>Alert</DialogTitle>
                     </DialogHeader>
                     <div>
-                        Do you want to extend this package
+                        Do you want to cancel this contract
                     </div>
                     <div className="flex justify-end space-x-2 mt-4">
                         <Button onClick={handleClose} variant="outline" >
