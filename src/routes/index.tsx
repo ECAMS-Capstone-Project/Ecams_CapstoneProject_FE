@@ -1,6 +1,5 @@
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
-import Contact from "@/components/partial/Contact/Contact";
 import PaymentConfirmation from "@/components/partial/staff/confirm-payment";
 import DashboardStaff from "@/pages/staff/dashboard/dashboardStaff";
 import PackageContract from "@/components/partial/staff/staff-signature/PackageContract";
@@ -9,7 +8,6 @@ import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Notifications from "@/pages/admin/notification/Notification";
 import Package from "@/pages/admin/package/Package";
-import Payment from "@/pages/admin/payment/Payment";
 import Policy from "@/pages/admin/policy/Policy";
 import University from "@/pages/admin/university/University";
 import User from "@/pages/admin/user/User";
@@ -25,11 +23,19 @@ import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckSt
 import PackageList from "@/pages/staff/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
 import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
+import PendingUniversity from "@/pages/admin/university/PendingUni";
+import GuestLandingPage from "@/components/partial/landing/LandingPage";
+import HomePage from "@/pages/student/home/HomePage";
+import StudentAppShell from "@/components/layout/StudentAppShell";
+import Contract from "@/pages/admin/contract/Contract";
+import ContractDetail from "@/components/partial/admin/contract/ContractDetail";
+import { Event } from "@/pages/student/events/Event";
+import { Clubs } from "@/pages/student/clubs/Clubs";
 import RoleBasedGuard from "@/Guard/RoleBaseGuard";
 import RequestClubPage from "@/pages/club-owner/RequestClubPage";
 import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
 import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
-import ContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
+import StaffContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
 import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +52,7 @@ const PrivateRoute = ({ element, ...rest }: any) => {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Contact />,
+    element: <GuestLandingPage />,
     errorElement: <ErrorException />,
   },
   {
@@ -101,8 +107,16 @@ export const router = createBrowserRouter([
         element: <University />,
       },
       {
-        path: "/admin/payment",
-        element: <Payment />,
+        path: "/admin/university/pending",
+        element: <PendingUniversity />,
+      },
+      {
+        path: "/admin/contract",
+        element: <Contract />,
+      },
+      {
+        path: "/admin/contract/:contractId",
+        element: <ContractDetail />,
       },
       {
         path: "/admin/user",
@@ -129,7 +143,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/update-university",
-    element: <RoleBasedGuard accessibleRoles={['STAFF']}><AdditionInfoUniversityForm /></RoleBasedGuard>,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+        <AdditionInfoUniversityForm />
+      </RoleBasedGuard>
+    ),
     errorElement: <ErrorException />,
   },
   {
@@ -138,7 +156,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/staff",
-    element: <RoleBasedGuard accessibleRoles={['STAFF']}><PrivateRoute /></RoleBasedGuard>,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         index: true,
@@ -151,14 +173,14 @@ export const router = createBrowserRouter([
       },
       {
         path: "/staff/contract/:contractId",
-        element: <ContractDetail />,
+        element: <StaffContractDetail />,
         errorElement: <ErrorException />,
       },
       {
         path: "/staff/request-student",
         element: <ApproveStudentPage />,
         errorElement: <ErrorException />,
-      }
+      },
     ],
     errorElement: <ErrorException />,
   },
@@ -184,11 +206,34 @@ export const router = createBrowserRouter([
   },
   {
     path: "/common",
-    element: <RoleBasedGuard accessibleRoles={['STAFF', 'ADMIN']}><PrivateRoute /></RoleBasedGuard>,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STAFF", "ADMIN"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         path: "/common/profile",
         element: <ProfilePage />,
+      },
+    ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/student",
+    element: <StudentAppShell />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "/student/event",
+        element: <Event />,
+      },
+      {
+        path: "/student/club",
+        element: <Clubs />,
       },
     ],
     errorElement: <ErrorException />,

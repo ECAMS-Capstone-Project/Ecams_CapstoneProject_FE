@@ -99,7 +99,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
       await createPackage(values);
       toast.success("Package created successfully.");
       setOpen(false);
-      // window.location.reload();
+      window.location.reload();
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
@@ -379,7 +379,14 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                   {/* Submit Button */}
                   <div className="flex w-full justify-end mt-4 ">
                     {!initialData ? (
-                      <Button type="submit">Add Package</Button>
+                      <>
+                        <div className="flex gap-1">
+                          <Button type="submit">Save</Button>
+                          <DialogClose>
+                            <Button type="button">Cancel</Button>
+                          </DialogClose>
+                        </div>
+                      </>
                     ) : (
                       <DialogClose>
                         <Button type="button">Quit</Button>

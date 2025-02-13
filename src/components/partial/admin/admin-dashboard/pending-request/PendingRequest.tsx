@@ -18,7 +18,7 @@ const PendingUniversityList = ({ data }: UniversityProps) => {
           <Button
             variant="custom"
             className="w-fit"
-            onClick={() => navigate("/admin/university")}
+            onClick={() => navigate("/admin/university/pending")}
           >
             View More <ArrowRight size={18} />
           </Button>

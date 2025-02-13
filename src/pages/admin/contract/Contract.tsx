@@ -3,20 +3,14 @@ import { useEffect, useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-import { Transaction } from "@/models/Payment";
-import { PaymentList } from "@/api/agent/TransactionAgent";
+import type { Contract } from "@/models/Contract";
+import { ContractList } from "@/api/agent/ContractAgent";
+import ContractTable from "@/components/partial/admin/contract/ContractTable";
 
-const PaymentTable = React.lazy(
-  () => import("@/components/partial/admin/payment/PaymentTable")
-);
-
-const Payment = () => {
+const Contract = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [paymentList, setPaymentList] = useState<Transaction[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [contractList, setContractList] = useState<Contract[]>([]);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -24,9 +18,9 @@ const Payment = () => {
     const loadPackage = async () => {
       try {
         //   // Tải cả component lười biếng và dữ liệu API song song
-        const transactionData = await PaymentList(pageSize, pageNo);
-        setPaymentList(transactionData.data?.data || []); // Đảm bảo `data.data` tồn tại
-        setTotalPages(transactionData.data?.totalPages || 1); // Đặt số trang
+        const contractData = await ContractList(pageSize, pageNo);
+        setContractList(contractData.data?.data || []); // Đảm bảo `data.data` tồn tại
+        setTotalPages(contractData.data?.totalPages || 1); // Đặt số trang
       } catch (error) {
         console.error("Error loading data:", error);
       } finally {
@@ -45,18 +39,12 @@ const Payment = () => {
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title={`Manage Payments`}
-              description="Manage Payments in the system"
+              title={`View Contracts`}
+              description="View Contracts in the system"
             />
-
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogContent className="max-w-2xl">
-                <EditPackageDialog initialData={null} />
-              </DialogContent>
-            </Dialog>
           </div>
           <Separator />
-          <PaymentTable data={paymentList} />
+          <ContractTable data={contractList} />
           <DataTablePagination
             currentPage={pageNo}
             totalPages={totalPages}
@@ -70,4 +58,4 @@ const Payment = () => {
   );
 };
 
-export default Payment;
+export default Contract;

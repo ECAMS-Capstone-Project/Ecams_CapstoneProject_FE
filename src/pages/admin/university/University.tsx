@@ -18,24 +18,23 @@ const University = () => {
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   // const [activeTab, setActiveTab] = useState("");
-  useEffect(() => {
-    const loadUniversity = async () => {
-      try {
-        const uniData = await UniversityList(pageSize, pageNo);
+  const loadUniversity = async () => {
+    try {
+      const uniData = await UniversityList(pageSize, pageNo);
 
-        if (uniData) {
-          setUniList(uniData.data?.data || []); // Đảm bảo `data.data` tồn tại
-          setTotalPages(uniData.data?.totalPages || 1); // Đặt số trang
-        } else {
-          console.warn("UniversityList returned no data");
-        }
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false); // Hoàn tất tải
+      if (uniData) {
+        setUniList(uniData.data?.data || []); // Đảm bảo `data.data` tồn tại
+        setTotalPages(uniData.data?.totalPages || 1); // Đặt số trang
+      } else {
+        console.warn("UniversityList returned no data");
       }
-    };
-
+    } catch (error) {
+      console.error("Error loading data:", error);
+    } finally {
+      setIsLoading(false); // Hoàn tất tải
+    }
+  };
+  useEffect(() => {
     loadUniversity();
   }, [pageNo, pageSize]);
 
@@ -54,26 +53,26 @@ const University = () => {
           </div>
           <Separator />
           <Tabs
-            defaultValue="request"
+            defaultValue="active"
             // value={activeTab}
             // onValueChange={setActiveTab}
             className="w-full mt-3 p-2"
           >
             <TabsList>
-              <TabsTrigger value="request">Pending Request</TabsTrigger>
-              <TabsTrigger value="registered">
-                Registered University
-              </TabsTrigger>
+              <TabsTrigger value="active">Active University</TabsTrigger>
+              <TabsTrigger value="inactive">Inactive University</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="registered">
+            <TabsContent value="active">
               <UniversityTable
-                data={uniList.filter((uni) => uni.status !== "PENDING")}
+                data={uniList.filter((uni) => uni.status == "ACTIVE")}
+                refreshData={loadUniversity}
               />
             </TabsContent>
-            <TabsContent value="request">
+            <TabsContent value="inactive">
               <UniversityTable
-                data={uniList.filter((uni) => uni.status === "PENDING")}
+                data={uniList.filter((uni) => uni.status === "INACTIVE")}
+                refreshData={loadUniversity}
               />
 
               <DataTablePagination

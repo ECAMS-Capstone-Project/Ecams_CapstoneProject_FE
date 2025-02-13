@@ -4,14 +4,21 @@ import { Contract } from "@/models/Contract";
 // import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
 import { TransactionTable } from "./TransactionTable";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Card } from "@mui/material";
 import { ContractStaffById } from "@/api/staff/ContractAPI";
 import useAuth from "@/hooks/useAuth";
 import ConfirmDialog from "../staff-personal/confirmDialog";
 import ConfirmCancelDialog from "../staff-personal/confirmCancel";
 
-export default function ContractDetail() {
+export default function StaffContractDetail() {
   const { contractId = "" } = useParams();
   const [contract, setContract] = useState<Contract | null>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -37,7 +44,9 @@ export default function ContractDetail() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/staff/wallet-staff">Contracts</BreadcrumbLink>
+              <BreadcrumbLink href="/staff/wallet-staff">
+                Contracts
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
 
@@ -55,9 +64,9 @@ export default function ContractDetail() {
           {/* Contract Info */}
           <Card
             className="p-6 bg-white shadow-lg rounded-lg h-fit"
-            style={{ "boxShadow": 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }}
-          // gradientColor="#F3FAFB"
-          // gradientOpacity={0.5}
+            style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}
+            // gradientColor="#F3FAFB"
+            // gradientOpacity={0.5}
           >
             <h2 className="text-2xl font-bold mb-2">Contract Informaion</h2>
             <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
@@ -72,18 +81,32 @@ export default function ContractDetail() {
               {String(contract?.endDate).split("T")[0]}
             </p>
             <span
-              className={`mt-4 inline-block px-3 py-1 rounded text-sm font-semibold ${contract?.status
-                ? "bg-green-100 text-green-600"
-                : "bg-red-100 text-red-600"
-                }`}
+              className={`mt-4 inline-block px-3 py-1 rounded text-sm font-semibold ${
+                contract?.status
+                  ? "bg-green-100 text-green-600"
+                  : "bg-red-100 text-red-600"
+              }`}
             >
               {contract?.status ? "Active ✅" : "Inactive ❌"}
             </span>
             <div className="flex justify-between mt-1">
-              <Button className="block mt-4 hover:scale-105" disabled={contract == null || undefined || contract.status == false} onClick={() => setOpenCancel(true)} >
+              <Button
+                className="block mt-4 hover:scale-105"
+                disabled={
+                  contract == null || undefined || contract.status == false
+                }
+                onClick={() => setOpenCancel(true)}
+              >
                 📄 Cancel package
               </Button>
-              <Button className="block mt-4 hover:scale-105" disabled={contract == null || undefined || contract.status == false} variant="custom" onClick={() => setOpen(true)}>
+              <Button
+                className="block mt-4 hover:scale-105"
+                disabled={
+                  contract == null || undefined || contract.status == false
+                }
+                variant="custom"
+                onClick={() => setOpen(true)}
+              >
                 📄 Extend package
               </Button>
             </div>
@@ -100,16 +123,21 @@ export default function ContractDetail() {
             />
           </div>
         ) : (
-          <div className="overflow-hidden flex justify-center" style={{ height: "90%" }}>
-            <img
-              src="https://i.imgflip.com/7tpkno.jpg"
-            />
+          <div
+            className="overflow-hidden flex justify-center"
+            style={{ height: "90%" }}
+          >
+            <img src="https://i.imgflip.com/7tpkno.jpg" />
           </div>
         )}
-
       </div>
       <ConfirmDialog open={open} setOpen={setOpen} />
-      <ConfirmCancelDialog open={openCancel} setOpen={setOpenCancel} contract={contract || null} setFlag={setFlag} />
+      <ConfirmCancelDialog
+        open={openCancel}
+        setOpen={setOpenCancel}
+        contract={contract || null}
+        setFlag={setFlag}
+      />
     </div>
   );
 }

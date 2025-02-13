@@ -31,6 +31,6 @@ export interface Transaction {
     transactionNumber: string;
     transactionInfo: string;
     contractUrl: string;
-    type: string; // Enum nếu có danh sách cụ thể
-    status: string;
-}
+    type:  string; // Enum nếu có danh sách cụ thể
+    status:  string;
+  }
