@@ -8,11 +8,7 @@ interface WaitingModalProps {
   setOpen?: (state: boolean) => void;
 }
 
-export default function WaitingModal({ open, setOpen }: WaitingModalProps) {
-  const handleClose = () => {
-    setOpen?.(false);
-  };
-  console.log(handleClose);
+export default function WaitingModal({ open }: WaitingModalProps) {
   return (
     <Backdrop open={open} style={{ zIndex: 1300 }}>
       <div className="bg-white w-full h-full flex items-center justify-center">

@@ -65,7 +65,7 @@ function WaitingCheckout() {
             setPaymentStatus(status);
             if (isSuccess) {
               setTimeout(() => {
-                window.location.href = "/";
+                window.location.href = "/staff";
               }, 2000);
             } else {
               console.log("Error");
@@ -119,7 +119,7 @@ function WaitingCheckout() {
 
       <Box className="buttonLoading" marginTop={4}>
         <Box className="buttonItem" marginBottom={2}>
-          <Link to="/">
+          <Link to="/staff">
             <Button variant="contained">Back to home page</Button>
           </Link>
         </Box>

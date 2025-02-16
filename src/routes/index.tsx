@@ -37,6 +37,8 @@ import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
 import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
 import StaffContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
 import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
+import ClubListPage from "@/pages/club-owner/manage-club/ClubListPage";
+import ClubDetailPage from "@/pages/club-owner/manage-club/ClubDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -246,6 +248,22 @@ export const router = createBrowserRouter([
   {
     path: "/extend-checkout",
     element: <ExtendCheckOut />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/club-owner",
+    element: <PrivateRoute />,
+    children: [
+      {
+        index: true,
+        element: <ClubListPage />,
+      },
+      {
+        path: "/club-owner/detail",
+        element: <ClubDetailPage />,
+        errorElement: <ErrorException />,
+      }
+    ],
     errorElement: <ErrorException />,
   },
 ]);

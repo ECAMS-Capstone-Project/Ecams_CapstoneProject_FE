@@ -15,15 +15,10 @@ import {
 import { Card } from "@mui/material";
 import { ContractStaffById } from "@/api/staff/ContractAPI";
 import useAuth from "@/hooks/useAuth";
-import ConfirmDialog from "../staff-personal/confirmDialog";
-import ConfirmCancelDialog from "../staff-personal/confirmCancel";
 
 export default function StaffContractDetail() {
   const { contractId = "" } = useParams();
   const [contract, setContract] = useState<Contract | null>(null);
-  const [open, setOpen] = useState<boolean>(false);
-  const [openCancel, setOpenCancel] = useState<boolean>(false);
-  const [flag, setFlag] = useState<boolean>(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -35,9 +30,13 @@ export default function StaffContractDetail() {
       }
     }
     fetchContractDetail();
-  }, [contractId, user, flag]);
+  }, [contractId, user]);
   console.log(contract);
-
+  const handleViewContract = () => {
+    if (contract?.contractUrl) {
+      window.open(contract.contractUrl, "_blank");
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       <nav className="text-sm text-gray-600 mb-6">
@@ -57,18 +56,27 @@ export default function StaffContractDetail() {
         </Breadcrumb>
       </nav>
       {/* Layout 2 cột */}
-      <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-3">
+      <div className="grid gap-3">
         {/* PDF Viewer */}
 
-        <div className="grid-cols-1 md:grid-cols-2 gap-2 mr-4">
+        <div className="grid-cols-1 md:grid-cols-1 gap-2 mr-4">
           {/* Contract Info */}
           <Card
             className="p-6 bg-white shadow-lg rounded-lg h-fit"
             style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}
-            // gradientColor="#F3FAFB"
-            // gradientOpacity={0.5}
+          // gradientColor="#F3FAFB"
+          // gradientOpacity={0.5}
           >
-            <h2 className="text-2xl font-bold mb-2">Contract Informaion</h2>
+            <div className="flex justify-between">
+              <h2 className="text-2xl font-bold mb-2">Contract Informaion</h2>
+              <Button
+                className="block hover:scale-105"
+                variant={'outline'}
+                onClick={handleViewContract}
+              >
+                📄 View Contract PDF
+              </Button>
+            </div>
             <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
               {contract?.universityName || "You don't have contract info"}
             </h3>
@@ -81,63 +89,18 @@ export default function StaffContractDetail() {
               {String(contract?.endDate).split("T")[0]}
             </p>
             <span
-              className={`mt-4 inline-block px-3 py-1 rounded text-sm font-semibold ${
-                contract?.status
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
-              }`}
+              className={`mt-4 inline-block px-3 py-1 rounded text-sm font-semibold ${contract?.status
+                ? "bg-green-100 text-green-600"
+                : "bg-red-100 text-red-600"
+                }`}
             >
               {contract?.status ? "Active ✅" : "Inactive ❌"}
             </span>
-            <div className="flex justify-between mt-1">
-              <Button
-                className="block mt-4 hover:scale-105"
-                disabled={
-                  contract == null || undefined || contract.status == false
-                }
-                onClick={() => setOpenCancel(true)}
-              >
-                📄 Cancel package
-              </Button>
-              <Button
-                className="block mt-4 hover:scale-105"
-                disabled={
-                  contract == null || undefined || contract.status == false
-                }
-                variant="custom"
-                onClick={() => setOpen(true)}
-              >
-                📄 Extend package
-              </Button>
-            </div>
           </Card>
           {/* Transactions Table */}
           {contract && <TransactionTable data={contract} />}
         </div>
-        {contract && contract.contractUrl ? (
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden h-screen ">
-            <iframe
-              src={contract?.contractUrl}
-              title="Contract PDF"
-              className="w-full h-full"
-            />
-          </div>
-        ) : (
-          <div
-            className="overflow-hidden flex justify-center"
-            style={{ height: "90%" }}
-          >
-            <img src="https://i.imgflip.com/7tpkno.jpg" />
-          </div>
-        )}
       </div>
-      <ConfirmDialog open={open} setOpen={setOpen} />
-      <ConfirmCancelDialog
-        open={openCancel}
-        setOpen={setOpenCancel}
-        contract={contract || null}
-        setFlag={setFlag}
-      />
     </div>
   );
 }
