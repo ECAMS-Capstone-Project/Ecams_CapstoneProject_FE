@@ -22,7 +22,7 @@ export const StudentHeader = () => {
                   : ""
               }`}
             >
-              HomePage
+              Home
             </Link>
 
             <Link
