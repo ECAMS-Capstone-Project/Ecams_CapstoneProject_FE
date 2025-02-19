@@ -6,7 +6,7 @@ export interface UserAuthDTO {
     isVerified: boolean;
     universityId?: string;
     roles: string[];
-    staffId: string;
+    representativeId: string;
     universityStatus: string;
     universityName: string
     phonenumber: string

@@ -2,14 +2,14 @@
 
 import { ResponseDTO } from "../BaseResponse";
 import { post } from "../agent";
-import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
+import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegister";
 import axiosMultipartForm from "../axiosMultipartForm";
 import toast from "react-hot-toast";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export const registerStaffAPI = async (data: StaffRegisterRequest): Promise<ResponseDTO<string>> => {
+export const registerRepresentativeAPI = async (data: RepresentativeRegisterRequest): Promise<ResponseDTO<string>> => {
     try {
-        const response = await post<ResponseDTO<string>>("/Auth/sign-up-staff", data);
+        const response = await post<ResponseDTO<string>>("/Auth/sign-up-representative", data);
         return response;
     } catch (error: any) {
         if (error.response) {

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@mui/material";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 // Dữ liệu mô phỏng (thêm 'id' để điều hướng)
 const events = [
@@ -43,9 +45,24 @@ const events = [
 ];
 
 export default function EventList() {
+    const [searchTerm, setSearchTerm] = useState<string>("");
+
+    // Lọc sự kiện dựa trên tên hoặc mô tả
+    const filteredEvents = events.filter((evt) =>
+        evt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     return (
         <div className="flex flex-col gap-4 mt-4 max-h-[420px] overflow-y-auto">
-            {events.map((evt) => (
+            <div className="mt-2 mb-2 ml-2">
+                <Input
+                    placeholder="Search events..."
+                    type="email"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-2/6 "
+                />
+            </div>
+            {filteredEvents.map((evt) => (
                 <Link
                     key={evt.id}
                     to={`/events/${evt.id}`}

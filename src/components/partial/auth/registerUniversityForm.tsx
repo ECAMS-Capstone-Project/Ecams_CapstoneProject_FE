@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
-import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
+import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegister";
 import { GenderEnum } from "@/lib/GenderEnum";
 import { ring2 } from 'ldrs'
 import PoliciesDialog from "./policiesDiablog";
@@ -70,7 +70,7 @@ const RegisterUniversityForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<SignUpFormValues> = async (data) => {
-    const user: StaffRegisterRequest = {
+    const user: RepresentativeRegisterRequest = {
       fullname: data.fullName,
       email: data.email,
       gender: data.gender as GenderEnum,

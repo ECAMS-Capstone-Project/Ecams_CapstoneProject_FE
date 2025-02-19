@@ -55,18 +55,18 @@ export const taskColumn = (
       cell: ({ row }) => {
         const status = row.getValue("status") as string;
         const isInProgress = status === "In progress";
-        const isCompleted = status === "Completed";
+        const isCompleted = status === "Submitted";
         const isPending = status === "Pending";
 
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${isInProgress
-                ? "bg-[#D6E4FF] text-[#007BFF]"
-                : isCompleted
-                  ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                  : isPending
-                    ? "bg-[#FFEFD5] text-[#FFC107]"
-                    : ""
+              ? "bg-[#D6E4FF] text-[#007BFF]"
+              : isCompleted
+                ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                : isPending
+                  ? "bg-[#FFEFD5] text-[#FFC107]"
+                  : ""
               }`}
             style={{ margin: "0 auto" }}
           >

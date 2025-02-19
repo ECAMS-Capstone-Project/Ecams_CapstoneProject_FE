@@ -5,8 +5,8 @@ import toast from "react-hot-toast";
 import { LoginRequest } from "@/models/Auth/LoginRequest";
 import { getCurrentUserAPI, loginAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
-import { StaffRegisterRequest } from "@/models/Auth/StaffRegister";
-import { registerStaffAPI, registerStudentAPI } from "@/api/auth/RegisterAPI";
+import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegister";
+import { registerRepresentativeAPI, registerStudentAPI } from "@/api/auth/RegisterAPI";
 // import { jwtDecode } from "jwt-decode";
 import { ConfirmEmailAPI } from "@/api/auth/OtpAPI";
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -22,7 +22,7 @@ interface AuthState {
 interface AuthContextProps extends AuthState {
   method: string;
   login: (data: LoginRequest) => Promise<void>;
-  registerUniversity: (data: StaffRegisterRequest) => Promise<void>;
+  registerUniversity: (data: RepresentativeRegisterRequest) => Promise<void>;
   registerStudent: (data: FormData) => Promise<void>;
   // login_type: (type: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
@@ -228,9 +228,9 @@ function AuthProvider({ children }: AuthProviderProps) {
   //   }
   // };
 
-  const registerUniversity = async (dataInput: StaffRegisterRequest) => {
+  const registerUniversity = async (dataInput: RepresentativeRegisterRequest) => {
     try {
-      const response = await registerStaffAPI(dataInput);
+      const response = await registerRepresentativeAPI(dataInput);
       if (response) {
         dispatch({
           type: "REGISTER",

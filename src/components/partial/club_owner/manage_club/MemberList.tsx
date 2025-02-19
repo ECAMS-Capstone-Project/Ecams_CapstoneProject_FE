@@ -1,131 +1,110 @@
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { User } from "@/models/User";
+import MemberListTable from "./member/MemberListTable";
+import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
+import { useEffect, useState } from "react";
 
-// Dữ liệu giả lập
-const members = [
+const fakeUsers: User[] = [
     {
-        id: 1,
-        fullName: "Lưu Việt Nam",
-        email: "babykachuma@gmail.com",
-        dob: "2003-07-22",
+        userId: "1",
+        email: "johndoe@example.com",
+        fullname: "John Doe",
+        address: "123 Main Street, Cityville",
+        phonenumber: "+1234567890",
         gender: "Male",
-        role: "Member",
+        avatar: "https://www.example.com/avatar1.jpg",
+        passwordHash: new Uint8Array([10, 20, 30, 40, 50]),
+        passwordSalt: new Uint8Array([5, 10, 15, 20, 25]),
+        status: "Active",
+        isVerified: true,
     },
     {
-        id: 2,
-        fullName: "Lưu Hoàng Nam",
-        email: "babykachuma@gmail.com",
-        dob: "2003-07-22",
-        gender: "Male",
-        role: "Member",
-    },
-    {
-        id: 3,
-        fullName: "Lưu Văn Mạnh",
-        email: "babykachuma@gmail.com",
-        dob: "2003-07-22",
-        gender: "Male",
-        role: "Member",
-    },
-    {
-        id: 4,
-        fullName: "Lành Thị Cúc",
-        email: "babykachuma@gmail.com",
-        dob: "2003-07-22",
+        userId: "2",
+        email: "janedoe@example.com",
+        fullname: "Jane Doe",
+        address: "456 Elm Street, Townsville",
+        phonenumber: "+0987654321",
         gender: "Female",
-        role: "Member",
+        avatar: "https://www.example.com/avatar2.jpg",
+        passwordHash: new Uint8Array([60, 70, 80, 90, 100]),
+        passwordSalt: new Uint8Array([55, 65, 75, 85, 95]),
+        status: "Inactive",
+        isVerified: false,
     },
     {
-        id: 5,
-        fullName: "Phùng Thị Hoa",
-        email: "babykachuma@gmail.com",
-        dob: "2003-07-22",
+        userId: "3",
+        email: "bobs@example.com",
+        fullname: "Bob Smith",
+        address: "789 Oak Street, Villageburg",
+        phonenumber: "+1122334455",
+        gender: "Male",
+        avatar: "https://www.example.com/avatar3.jpg",
+        passwordHash: new Uint8Array([110, 120, 130, 140, 150]),
+        passwordSalt: new Uint8Array([105, 115, 125, 135, 145]),
+        status: "Active",
+        isVerified: true,
+    },
+    {
+        userId: "4",
+        email: "alice@example.com",
+        fullname: "Alice Brown",
+        address: "101 Pine Street, Metrocity",
+        phonenumber: "+2233445566",
         gender: "Female",
-        role: "Club Owner",
+        avatar: "https://www.example.com/avatar4.jpg",
+        passwordHash: new Uint8Array([160, 170, 180, 190, 200]),
+        passwordSalt: new Uint8Array([155, 165, 175, 185, 195]),
+        status: "Pending",
+        isVerified: false,
+    },
+    {
+        userId: "5",
+        email: "carol@example.com",
+        fullname: "Carol White",
+        address: "202 Birch Street, Seaside",
+        phonenumber: "+3344556677",
+        gender: "Female",
+        avatar: "https://www.example.com/avatar5.jpg",
+        passwordHash: new Uint8Array([210, 220, 230, 240, 250]),
+        passwordSalt: new Uint8Array([205, 215, 225, 235, 245]),
+        status: "Active",
+        isVerified: true,
     },
 ];
 
 export default function MemberList() {
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
+    const loadUniversity = async () => {
+        setTotalPages(1);
+        // try {
+        //     const uniData = await UniversityList(pageSize, pageNo);
+
+        //     if (uniData) {
+        //         setUniList(uniData.data?.data || []); // Đảm bảo `data.data` tồn tại
+        //         setTotalPages(uniData.data?.totalPages || 1); // Đặt số trang
+        //     } else {
+        //         console.warn("UniversityList returned no data");
+        //     }
+        // } catch (error) {
+        //     console.error("Error loading data:", error);
+        // } finally {
+        //     setIsLoading(false); // Hoàn tất tải
+        // }
+    };
+    useEffect(() => {
+        loadUniversity();
+    }, [pageNo, pageSize]);
     return (
         <div className="space-y-2">
-            {/* Bảng Member List */}
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Member ID</TableHead>
-                        <TableHead>Full Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Date of Birth</TableHead>
-                        <TableHead>Gender</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {members.map((member) => (
-                        <TableRow key={member.id}>
-                            <TableCell>{member.id}</TableCell>
-                            <TableCell>{member.fullName}</TableCell>
-                            <TableCell>{member.email}</TableCell>
-                            <TableCell>{member.dob}</TableCell>
-                            <TableCell>{member.gender}</TableCell>
-                            <TableCell>
-                                {member.role === "Club Owner" ? (
-                                    <Badge variant="outline" className="border-blue-600 text-blue-600">
-                                        Club Owner
-                                    </Badge>
-                                ) : (
-                                    <Badge variant="outline" className="border-green-600 text-green-600">
-                                        Member
-                                    </Badge>
-                                )}
-                            </TableCell>
-                            <TableCell>
-                                <Button variant="ghost" size="icon">
-                                    <Eye className="w-4 h-4" />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-
-            {/* Thanh phân trang (Pagination) */}
-            <div className="flex items-center justify-end gap-4">
-                {/* Rows per page */}
-                <div className="flex items-center gap-2 text-sm">
-                    <span>Rows per page</span>
-                    <select className="border rounded px-2 py-1 text-sm">
-                        <option value="5">5</option>
-                        <option value="10" defaultValue={"10"}>
-                            10
-                        </option>
-                        <option value="25">25</option>
-                    </select>
-                </div>
-
-                {/* Page info */}
-                <span className="text-sm">Page 1 of 10</span>
-
-                {/* Buttons chuyển trang */}
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon">
-                        <ChevronLeft className="w-4 h-4" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                        <ChevronRight className="w-4 h-4" />
-                    </Button>
-                </div>
-            </div>
+            <MemberListTable data={fakeUsers} />
+            <DataTablePagination
+                currentPage={pageNo}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
+            />
         </div>
     );
 }
