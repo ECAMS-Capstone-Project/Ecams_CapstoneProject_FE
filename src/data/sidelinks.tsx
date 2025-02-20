@@ -1,5 +1,6 @@
 import useAuth from "@/hooks/useAuth";
 import {
+  AreaChart,
   BellRingIcon,
   DollarSignIcon,
   FileText,
@@ -10,6 +11,7 @@ import {
   UniversityIcon,
   UserCheck,
   UserIcon,
+  Wallet,
 } from "lucide-react";
 
 export interface NavLink {
@@ -76,7 +78,7 @@ const SidebarLinks = () => {
     );
   }
 
-  if (user?.roles[0].toLocaleLowerCase() === "staff") {
+  if (user?.roles[0].toLocaleLowerCase() === "representative") {
     sidelinks.push(
       {
         title: "Dashboard",
@@ -101,6 +103,24 @@ const SidebarLinks = () => {
         href: "/staff/request-student",
         icon: <UserCheck size={18} />,
         id: 23,
+      },
+      {
+        title: "Area",
+        href: "/staff/area",
+        icon: <AreaChart size={18} />,
+        id: 24,
+      },
+      {
+        title: "Wallet",
+        href: "/staff/wallet",
+        icon: <Wallet size={18} />,
+        id: 24,
+      },
+      {
+        title: "Event",
+        href: "/staff/event",
+        icon: <Wallet size={18} />,
+        id: 24,
       }
     );
   }

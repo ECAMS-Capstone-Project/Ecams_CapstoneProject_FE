@@ -37,6 +37,9 @@ import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
 import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
 import StaffContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
 import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
+import Area from "@/pages/staff/area/Area";
+import Wallet from "@/pages/staff/wallet/Wallet";
+import Events from "@/pages/staff/event/Event";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -92,7 +95,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <PrivateRoute />,
+    element: (
+      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         index: true,
@@ -157,7 +164,7 @@ export const router = createBrowserRouter([
   {
     path: "/staff",
     element: (
-      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE"]}>
         <PrivateRoute />
       </RoleBasedGuard>
     ),
@@ -179,6 +186,21 @@ export const router = createBrowserRouter([
       {
         path: "/staff/request-student",
         element: <ApproveStudentPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/staff/area",
+        element: <Area />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/staff/wallet",
+        element: <Wallet />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/staff/event",
+        element: <Events />,
         errorElement: <ErrorException />,
       },
     ],
