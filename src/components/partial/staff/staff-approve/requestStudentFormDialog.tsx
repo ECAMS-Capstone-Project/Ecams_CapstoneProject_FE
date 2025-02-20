@@ -141,15 +141,12 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                         </FormItem>
                       )}
                     />
-                    {/* Description */}
-
-                    {/* Duration */}
                     <FormField
                       control={form.control}
-                      name="major"
+                      name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Major</FormLabel>
+                          <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -189,6 +186,74 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                           <FormControl>
                             <Input
                               type="number"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phonenumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gender"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Gender</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="major"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Major</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
                               {...field}
                               readOnly={!!initialData}
                             />
@@ -244,6 +309,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                           onClose={() => {
                             setIsDialogOpen(false);
                           }}
+                          setFlag={setFlag}
                           dialogAction={"reject"}
                         />
                       )}

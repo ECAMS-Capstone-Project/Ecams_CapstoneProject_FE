@@ -16,6 +16,7 @@ interface DenyProps {
   onClose: () => void;
   onSuccess?: () => void;
   dialogAction: string;
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const DenyRequest: React.FC<DenyProps> = ({
@@ -23,12 +24,13 @@ export const DenyRequest: React.FC<DenyProps> = ({
   onClose,
   onSuccess,
   dialogAction,
+  setFlag
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
 
   async function handleReject(event: React.FormEvent) {
-    event.preventDefault(); // ✅ Ngăn reload trang khi submit form
+    event.preventDefault();
 
     if (!reason.trim()) {
       toast.error("Reason is required.");
@@ -55,6 +57,9 @@ export const DenyRequest: React.FC<DenyProps> = ({
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      if (setFlag) {
+        setFlag(pre => !pre)
+      }
     }
   }
 
