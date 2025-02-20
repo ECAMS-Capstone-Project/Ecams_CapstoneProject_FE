@@ -36,7 +36,7 @@ export default function RoleBasedGuard({
   }, []);
 
   const handleNavigateDashboard = () => {
-    navigate("/dashboard");
+    navigate("/staff");
   };
 
   const handleNavigateHomePage = () => {
@@ -83,16 +83,12 @@ export default function RoleBasedGuard({
           You don't have permission to access this page
           <AlertTitle style={{ fontSize: "20px", marginTop: "15px" }}>
             {currentRole && currentRole.includes("ADMIN") && (
-              <Button onClick={handleNavigateDashboard}>
-                Back to Admin
-              </Button>
+              <Button onClick={handleNavigateDashboard}>Back to Admin</Button>
             )}
-            {currentRole && currentRole.includes("STAFF") && (
-              <Button onClick={handleNavigateDashboard}>
-                Back to Staff
-              </Button>
+            {currentRole && currentRole.includes("REPRESENTATIVE") && (
+              <Button onClick={handleNavigateDashboard}>Back to Staff</Button>
             )}
-            {(!currentRole || currentRole.includes('null')) && (
+            {(!currentRole || currentRole.includes("null")) && (
               <Button onClick={handleNavigateHomePage}>
                 Back to home page
               </Button>

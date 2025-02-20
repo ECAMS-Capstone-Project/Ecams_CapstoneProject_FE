@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,11 +14,13 @@ import { getContractDetail } from "@/api/agent/ContractAgent";
 import { TransactionTable } from "./TransactionTable";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { CornerUpLeft } from "lucide-react";
 
 export default function ContractDetail() {
   const { contractId = "" } = useParams();
   const [contract, setContract] = useState<Contract | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     async function fetchContractDetail() {
       const response = await getContractDetail(contractId);
@@ -61,9 +63,15 @@ export default function ContractDetail() {
     }
   };
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 ">
+      <div className="flex items-center mb-7"></div>
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-600 mb-6">
+      <nav className="text-sm text-gray-600 mb-6 flex items-center  gap-2">
+        <CornerUpLeft
+          size={24}
+          onClick={() => navigate(-1)}
+          className="cursor-pointer"
+        />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -79,57 +87,91 @@ export default function ContractDetail() {
       </nav>
 
       {/* Layout 2 cột */}
-      <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] gap-3">
+      <div className="grid mx-auto px-8 gap-3">
         {/* PDF Viewer */}
 
         <div className="grid-cols-1 md:grid-cols-2 gap-2">
           {/* Contract Info */}
           <MagicCard
-            className="p-6 bg-white shadow-lg rounded-lg  h-fit"
+            className="p-8 bg-white shadow-lg rounded-lg  h-fit"
             gradientColor="#F3FAFB"
             gradientOpacity={0.5}
           >
-            <h2 className="text-2xl font-bold mb-2">Contract Informaion</h2>
-            <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
-              {contract.universityName}
-            </h3>
-            <p className="text-gray-600">Staff: {contract.representativeName}</p>
-            <p className="text-[#136CB9] font-semibold mt-1">
-              Package type: {contract.packageName}
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              📅 From: {String(contract.signedDate).split("T")[0]}
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              📅 To: {String(contract.endDate).split("T")[0]}
-            </p>
-            <span
-              className={`mt-2 inline-block px-3 py-1 rounded text-sm font-semibold ${contract.status
-                  ? "bg-green-100 text-green-600"
-                  : "bg-red-100 text-red-600"
-                }`}
-            >
-              {contract.status ? "Active ✅" : "Inactive ❌"}
-            </span>
-            <Button className="block mt-4 hover:scale-105" variant="custom">
-              <a
-                onClick={handleDownload}
-                className=" block text-white hover:underline"
-              >
-                📄 Download Contract
-              </a>
-            </Button>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <h2 className="text-2xl font-bold">Contract Information</h2>
+                <h3 className="text-2xl font-bold text-[#136CB9]">
+                  {contract.universityName}
+                </h3>
+                <p>Staff: {contract.representativeName}</p>
+                <p className="font-semibold text-[#136CB9]">
+                  Package type: {contract.packageName}
+                </p>
+                <p className="text-sm">
+                  📅 From: {String(contract.signedDate).split("T")[0]}
+                </p>
+                <p className="text-sm">
+                  📅 To: {String(contract.endDate).split("T")[0]}
+                </p>
+              </div>
+              <div className="flex flex-col items-end">
+                <span
+                  className={`px-3 py-1 block w-fit rounded text-sm font-semibold ${
+                    contract.status
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
+                  }`}
+                >
+                  {contract.status ? "Active ✅" : "Inactive ❌"}
+                </span>
+                <Dialog>
+                  <DialogTrigger>
+                    {" "}
+                    <Button
+                      className="mt-4 hover:scale-105 transition duration-300 shadow-md hover:shadow-lg"
+                      variant="custom"
+                    >
+                      <a
+                        // onClick={handleDownload}
+                        className="text-white hover:underline"
+                      >
+                        📄 View Contract
+                      </a>
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent className="bg-white p-4 rounded-lg max-w-3xl max-h-screen w-[90%] h-[95%] flex flex-col">
+                    <iframe
+                      src={contract.contractUrl}
+                      className="w-full h-full mt-2"
+                    />
+                  </DialogContent>
+                </Dialog>
+
+                <Button
+                  className="mt-4 hover:scale-105 transition duration-300 shadow-md hover:shadow-lg"
+                  variant="custom"
+                >
+                  <a
+                    onClick={handleDownload}
+                    className="text-white hover:underline"
+                  >
+                    📄 Download Contract
+                  </a>
+                </Button>
+              </div>
+            </div>
           </MagicCard>
           {/* Transactions Table */}
           <TransactionTable data={contract} />
         </div>
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden h-screen ">
+        {/* <div className="bg-white shadow-lg rounded-lg overflow-hidden h-screen ">
           <iframe
             src={contract.contractUrl}
             title="Contract PDF"
             className="w-full h-full"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Action Buttons */}

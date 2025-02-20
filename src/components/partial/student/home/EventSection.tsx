@@ -1,5 +1,7 @@
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
+import { EventCategoryFilter } from "../events/EventFilter";
+import { Input } from "@/components/ui/input";
 
 export const EventsSection = () => {
   const events = [
@@ -44,12 +46,21 @@ export const EventsSection = () => {
 
   return (
     <section className="py-12">
-      <h2 className="text-3xl font-bold text-gray-800">
-        Upcoming{" "}
-        <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-          Events
-        </span>
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-gray-800">
+          <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
+            Events{" "}
+          </span>
+          around you
+        </h2>
+        <div className="flex justify-center items-center gap-2">
+          <Input
+            placeholder="Search for event"
+            className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
+          />
+          <EventCategoryFilter />
+        </div>
+      </div>
       <div className="grid md:grid-cols-3 gap-6 mt-6 w-full">
         {events.map((event, index) => (
           <MagicCard

@@ -15,7 +15,9 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="Package" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{row.getValue("packageName")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center w-full">{row.getValue("packageName")}</div>
+    ),
   },
   {
     accessorKey: "universityName",
@@ -24,7 +26,9 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="University" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{row.getValue("universityName")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center w-full">{row.getValue("universityName")}</div>
+    ),
   },
   {
     accessorKey: "signedDate",
@@ -33,7 +37,11 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="Signed Date" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{String(row.getValue("signedDate")).split("T")[0]}</div>,
+    cell: ({ row }) => (
+      <div className="text-center w-full">
+        {String(row.getValue("signedDate")).split("T")[0]}
+      </div>
+    ),
   },
   {
     accessorKey: "startDate",
@@ -42,7 +50,11 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="Started Date" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{String(row.getValue("startDate")).split("T")[0]}</div>,
+    cell: ({ row }) => (
+      <div className="text-center w-full">
+        {String(row.getValue("startDate")).split("T")[0]}
+      </div>
+    ),
   },
   {
     accessorKey: "endDate",
@@ -51,7 +63,11 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="Ended Date" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{String(row.getValue("endDate")).split("T")[0]}</div>,
+    cell: ({ row }) => (
+      <div className="text-center w-full">
+        {String(row.getValue("endDate")).split("T")[0]}
+      </div>
+    ),
   },
   {
     accessorKey: "status",
@@ -74,10 +90,17 @@ export const contractColumn: ColumnDef<Contract>[] = [
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${isActive ? "bg-[#CBF2DA] text-[#2F4F4F]" : isInactive ? "bg-[#FFF5BA] text-[#5A3825]" : ""
-            }`}
+          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${
+            isActive
+              ? "bg-[#CBF2DA] text-[#2F4F4F]"
+              : isInactive
+              ? "bg-[#FFF5BA] text-[#5A3825]"
+              : ""
+          }`}
         >
-          {isActive && <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />}
+          {isActive && (
+            <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />
+          )}
           {isInactive && <XCircleIcon size={20} className="text-[#5A3825]" />}
           <span>{status == "1" ? "Active" : "Inactive"}</span>
         </div>
@@ -94,14 +117,14 @@ export const contractColumn: ColumnDef<Contract>[] = [
           <EyeIcon
             size={24}
             className="cursor-pointer"
-            onClick={() => navigate(`/representative/contract/${row.original.contractId}`, {
-              state: { rowData: row.original }
-            })}
+            onClick={() =>
+              navigate(`/representative/contract/${row.original.contractId}`, {
+                state: { rowData: row.original },
+              })
+            }
           />
         </div>
       );
     },
   },
 ];
-
-

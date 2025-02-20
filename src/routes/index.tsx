@@ -41,6 +41,9 @@ import ClubListPage from "@/pages/club-owner/manage-club/ClubListPage";
 import ClubDetailPage from "@/pages/club-owner/manage-club/ClubDetailPage";
 import WaitingStudentPage from "@/components/partial/student/waiting/WaitingStudentPage";
 import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPage";
+import Area from "@/pages/staff/area/Area";
+import Wallet from "@/pages/staff/wallet/Wallet";
+import Events from "@/pages/staff/event/Event";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -96,7 +99,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <PrivateRoute />,
+    element: (
+      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         index: true,
@@ -185,6 +192,21 @@ export const router = createBrowserRouter([
         element: <ApproveStudentPage />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/area",
+        element: <Area />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/wallet",
+        element: <Wallet />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/event",
+        element: <Events />,
+        errorElement: <ErrorException />,
+      },
     ],
     errorElement: <ErrorException />,
   },
@@ -211,7 +233,9 @@ export const router = createBrowserRouter([
   {
     path: "/common",
     element: (
-      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}>
+      <RoleBasedGuard
+        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}
+      >
         <PrivateRoute />
       </RoleBasedGuard>
     ),

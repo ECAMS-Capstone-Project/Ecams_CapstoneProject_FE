@@ -15,39 +15,44 @@ export const StudentHeader = () => {
             alt="logo"
             className="w-20 h-16 pb-1"
           />
-          {user && user.roles.includes("STUDENT") && (user.status.toUpperCase() != 'CHECKING') && (
-            <nav className="flex space-x-6">
-              <Link
-                to="/student"
-                className={`text-gray-700 font-medium hover:text-[#136CB5] transition duration-300 scroll-smooth ${checkActiveNav("/student")
-                  ? "font-extrabold text-[#2982cc] "
-                  : ""
+          {user &&
+            user.roles.includes("STUDENT") &&
+            user.status.toUpperCase() != "CHECKING" && (
+              <nav className="flex space-x-6">
+                <Link
+                  to="/student"
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition duration-300 scroll-smooth ${
+                    checkActiveNav("/student")
+                      ? "font-extrabold text-[#2982cc] "
+                      : ""
                   }`}
-              >
-                HomePage
-              </Link>
+                >
+                  Home
+                </Link>
 
-              <Link
-                to="/student/event"
-                className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${checkActiveNav("/student/event")
-                  ? "font-extrabold text-[#2982cc]"
-                  : ""
+                <Link
+                  to="/student/event"
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
+                    checkActiveNav("/student/event")
+                      ? "font-extrabold text-[#2982cc]"
+                      : ""
                   }`}
-              >
-                Events
-              </Link>
+                >
+                  Events
+                </Link>
 
-              <Link
-                to="/student/club"
-                className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${checkActiveNav("/student/club")
-                  ? "font-extrabold text-[#2982cc]"
-                  : ""
+                <Link
+                  to="/student/club"
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
+                    checkActiveNav("/student/club")
+                      ? "font-extrabold text-[#2982cc]"
+                      : ""
                   }`}
-              >
-                Clubs
-              </Link>
-            </nav>
-          )}
+                >
+                  Clubs
+                </Link>
+              </nav>
+            )}
         </div>
         <div className="flex justify-center items-center gap-2">
           <UserNav />

@@ -18,10 +18,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const filterOptions = [
-  { label: "Technology", value: "technology" },
-  { label: "Business", value: "business" },
-  { label: "Health", value: "health" },
-  { label: "Education", value: "education" },
+  { label: "Inside", value: "inside" },
+  { label: "Outside", value: "outside" },
 ];
 
 export function EventCategoryFilter() {
@@ -45,7 +43,7 @@ export function EventCategoryFilter() {
           className="h-10 px-4 rounded-lg text-white bg-gradient-to-r from-[#136CB5] to-[#49BBBD] hover:opacity-90 flex items-center justify-between space-x-2"
         >
           <span>
-            {selected.size > 0 ? `${selected.size} Selected` : "Any category"}
+            {selected.size > 0 ? `${selected.size} Selected` : "Event's scope"}
           </span>
           <ChevronDownIcon className="h-4 w-4" />
         </Button>
