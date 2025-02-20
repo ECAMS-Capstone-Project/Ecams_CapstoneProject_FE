@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import {
+  DialogClose,
   DialogDescription,
   DialogHeader,
   DialogTitle,
@@ -40,7 +41,6 @@ interface WalletDialogProps {
 
 export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
   initialData,
-  onSuccess,
   setOpen,
 }) => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
@@ -121,7 +121,7 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
       if (!isPending || !isUpdating) {
         setOpen && setOpen(false); // Đóng dialog sau khi submit thành công
       }
-      onSuccess && onSuccess(); // Callback reload data nếu cần
+      // onSuccess && onSuccess(); // Callback reload data nếu cần
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
       console.error("Error:", error);
@@ -360,15 +360,29 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
                     )}
                   /> */}
                   <div className="flex w-full justify-end mt-4">
-                    <Button type="submit" disabled={isLoading}>
-                      {isLoading
-                        ? initialData
-                          ? "Updating..."
-                          : "Creating..."
-                        : initialData
-                        ? "Update Wallet"
-                        : "Create Wallet"}
-                    </Button>
+                    {initialData ? (
+                      <DialogClose>
+                        <Button type="submit" disabled={isLoading}>
+                          {isLoading
+                            ? initialData
+                              ? "Updating..."
+                              : "Creating..."
+                            : initialData
+                            ? "Update Wallet"
+                            : "Create Wallet"}
+                        </Button>
+                      </DialogClose>
+                    ) : (
+                      <Button type="submit" disabled={isLoading}>
+                        {isLoading
+                          ? initialData
+                            ? "Updating..."
+                            : "Creating..."
+                          : initialData
+                          ? "Update Wallet"
+                          : "Create Wallet"}
+                      </Button>
+                    )}
                   </div>
                 </form>
               </Form>

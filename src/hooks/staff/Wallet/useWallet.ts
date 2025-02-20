@@ -16,8 +16,7 @@ export const useWallet = (universityId?: string, token?:string, pageSize?: numbe
       
     });
 
-    console.log("Data after invalidateQueries:", data);
-    console.log("Is loading:", isLoading);
+    
 
     const {mutateAsync:createWalletMutation, isPending} = useMutation({
       mutationFn: insertWallet,

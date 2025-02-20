@@ -19,8 +19,8 @@ interface WalletData {
 const WalletCard = ({ wallets }: WalletData) => {
   const [showSensitive] = useState(false);
   const [search, setSearch] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const handleCloseDialog = () => setIsDialogOpen(false);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const handleCloseDialog = () => setIsDialogOpen(false);
   const [openWalletId, setOpenWalletId] = useState<string | null>(null); // Trạng thái open cho ví cụ thể
   const [loading, setLoading] = useState(false);
   const { deactiveWallet } = useWallet();
@@ -106,7 +106,7 @@ const WalletCard = ({ wallets }: WalletData) => {
                 >
                   <Trash2 size={20} className=" text-red-500" />
                 </button>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog>
                   <DialogTrigger>
                     <button>
                       <Edit size={20} />
@@ -116,7 +116,7 @@ const WalletCard = ({ wallets }: WalletData) => {
                     <ViewWalletDialog
                       initialData={wallet}
                       onSuccess={() => {}}
-                      setOpen={handleCloseDialog}
+                      // setOpen={handleCloseDialog}
                     />
                   </DialogContent>
                 </Dialog>
