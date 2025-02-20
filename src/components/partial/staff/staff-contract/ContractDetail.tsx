@@ -72,7 +72,9 @@ export default function StaffContractDetail() {
             <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
               {contract?.universityName || "You don't have contract info"}
             </h3>
-            <p className="text-gray-600">Staff: {contract?.staffName}</p>
+            <p className="text-gray-600">
+              Staff: {contract?.representativeName}
+            </p>
             <p className="text-[#136CB9] font-semibold mt-1">
               Package type: {contract?.packageName}
             </p>

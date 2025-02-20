@@ -8,7 +8,6 @@ import { DataTablePagination } from "@/components/ui/datatable/data-table-pagina
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ViewAreaDialog } from "@/components/partial/staff/staff-area/ViewAreaDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
@@ -30,7 +29,7 @@ const Events = () => {
   // const handleAreaAdded = () => {
   //   refetchAreas(); // Tự động reload danh sách mà không cần state
   // };
-  const handleCloseDialog = () => setIsDialogOpen(false);
+  // const handleCloseDialog = () => setIsDialogOpen(false);
   // const loadArea = async () => {
   //   try {
   //     const areaData = await getAreaList(pageSize, pageNo);
@@ -50,9 +49,7 @@ const Events = () => {
   // useEffect(() => {
   //   loadArea();
   // }, [pageNo, pageSize]);
-  const handleAreaAdded = () => {
-    // Reload danh sách mà không cần reload trang
-  };
+
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
       {/* Hiển thị spinner nếu API chưa tải xong */}
@@ -74,11 +71,11 @@ const Events = () => {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
-                <ViewAreaDialog
+                {/* <ViewAreaDialog
                   initialData={null}
                   onSuccess={handleAreaAdded}
                   setOpen={handleCloseDialog}
-                />
+                /> */}
               </DialogContent>
             </Dialog>
           </div>

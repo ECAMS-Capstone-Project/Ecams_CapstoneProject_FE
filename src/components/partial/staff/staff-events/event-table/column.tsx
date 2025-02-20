@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
@@ -94,7 +93,7 @@ export const EventColums: ColumnDef<Event>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       const [currentStatus, setCurrentStatus] = useState(status);
-      const [isDialogOpen, setIsDialogOpen] = useState(false);
+      const [, setIsDialogOpen] = useState(false);
       const reactivateUni = async () => {
         try {
           // Gửi API để cập nhật trạng thái
