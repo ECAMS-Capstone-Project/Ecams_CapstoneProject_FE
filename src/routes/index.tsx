@@ -1,9 +1,9 @@
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
-import PaymentConfirmation from "@/components/partial/staff/confirm-payment";
-import DashboardStaff from "@/pages/staff/dashboard/dashboardStaff";
-import PackageContract from "@/components/partial/staff/staff-signature/PackageContract";
-import AdditionInfoUniversityForm from "@/components/partial/university-staff-register/additionInfoUniversityForm";
+import PaymentConfirmation from "@/components/partial/representative/confirm-payment";
+import DashboardRepresentative from "@/pages/representative/dashboard/dashboardRepresentative";
+import PackageContract from "@/components/partial/representative/representative-signature/PackageContract";
+import AdditionInfoUniversityForm from "@/components/partial/university-representative-register/additionInfoUniversityForm";
 import GuestAuth from "@/Guard/GuestAuth";
 import Dashboard from "@/pages/admin/dashboard/dashboard";
 import Notifications from "@/pages/admin/notification/Notification";
@@ -19,10 +19,10 @@ import RegisterUniversity from "@/pages/authentication/registerUniversity";
 import VerifyCode from "@/pages/authentication/verifyCode";
 import VerifyEmail from "@/pages/authentication/verifyEmail";
 import ProfilePage from "@/pages/common/Profile";
-import WaitingCheckStaffPage from "@/pages/staff/additionRegister/waitingCheckStaffPage";
-import PackageList from "@/pages/staff/package/packageListPage";
+import WaitingCheckRepresentativePage from "@/pages/representative/additionRegister/waitingCheckRepresentativePage";
+import PackageList from "@/pages/representative/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
-import WaitingCheckout from "@/components/partial/staff/staff-checkout/WaitingCheckOut";
+import WaitingCheckout from "@/components/partial/representative/representative-checkout/WaitingCheckOut";
 import PendingUniversity from "@/pages/admin/university/PendingUni";
 import GuestLandingPage from "@/components/partial/landing/LandingPage";
 import HomePage from "@/pages/student/home/HomePage";
@@ -33,10 +33,14 @@ import { Event } from "@/pages/student/events/Event";
 import { Clubs } from "@/pages/student/clubs/Clubs";
 import RoleBasedGuard from "@/Guard/RoleBaseGuard";
 import RequestClubPage from "@/pages/club-owner/RequestClubPage";
-import WalletStaff from "@/components/partial/staff/staff-personal/walletStaff";
-import ExtendCheckOut from "@/components/partial/staff/staff-checkout/ExtendCheckOut";
-import StaffContractDetail from "@/components/partial/staff/staff-contract/ContractDetail";
-import ApproveStudentPage from "@/pages/staff/approveStudent/ApproveStudentPage";
+import WalletRepresentative from "@/components/partial/representative/representative-personal/walletRepresentative";
+import ExtendCheckOut from "@/components/partial/representative/representative-checkout/ExtendCheckOut";
+import RepresentativeContractDetail from "@/components/partial/representative/representative-contract/ContractDetail";
+import ApproveStudentPage from "@/pages/representative/approveStudent/ApproveStudentPage";
+import ClubListPage from "@/pages/club-owner/manage-club/ClubListPage";
+import ClubDetailPage from "@/pages/club-owner/manage-club/ClubDetailPage";
+import WaitingStudentPage from "@/components/partial/student/waiting/WaitingStudentPage";
+import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPage";
 import Area from "@/pages/staff/area/Area";
 import Wallet from "@/pages/staff/wallet/Wallet";
 import Events from "@/pages/staff/event/Event";
@@ -151,18 +155,18 @@ export const router = createBrowserRouter([
   {
     path: "/update-university",
     element: (
-      <RoleBasedGuard accessibleRoles={["STAFF"]}>
+      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE"]}>
         <AdditionInfoUniversityForm />
       </RoleBasedGuard>
     ),
     errorElement: <ErrorException />,
   },
   {
-    path: "/waiting-staff",
-    element: <WaitingCheckStaffPage />,
+    path: "/waiting-representative",
+    element: <WaitingCheckRepresentativePage />,
   },
   {
-    path: "/staff",
+    path: "/representative",
     element: (
       <RoleBasedGuard accessibleRoles={["REPRESENTATIVE"]}>
         <PrivateRoute />
@@ -171,20 +175,20 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardStaff />,
+        element: <DashboardRepresentative />,
       },
       {
-        path: "/staff/wallet-staff",
-        element: <WalletStaff />,
+        path: "/representative/wallet-representative",
+        element: <WalletRepresentative />,
         errorElement: <ErrorException />,
       },
       {
-        path: "/staff/contract/:contractId",
-        element: <StaffContractDetail />,
+        path: "/representative/contract/:contractId",
+        element: <RepresentativeContractDetail />,
         errorElement: <ErrorException />,
       },
       {
-        path: "/staff/request-student",
+        path: "/representative/request-student",
         element: <ApproveStudentPage />,
         errorElement: <ErrorException />,
       },
@@ -229,7 +233,9 @@ export const router = createBrowserRouter([
   {
     path: "/common",
     element: (
-      <RoleBasedGuard accessibleRoles={["STAFF", "ADMIN"]}>
+      <RoleBasedGuard
+        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}
+      >
         <PrivateRoute />
       </RoleBasedGuard>
     ),
@@ -257,17 +263,42 @@ export const router = createBrowserRouter([
         path: "/student/club",
         element: <Clubs />,
       },
+      {
+        path: "/student/waiting",
+        element: <WaitingStudentPage />,
+      },
     ],
-    errorElement: <ErrorException />,
-  },
-  {
-    path: "/create-club",
-    element: <RequestClubPage />,
     errorElement: <ErrorException />,
   },
   {
     path: "/extend-checkout",
     element: <ExtendCheckOut />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/club",
+    element: <PrivateRoute />,
+    children: [
+      {
+        index: true,
+        element: <ClubListPage />,
+      },
+      {
+        path: "/club/detail",
+        element: <ClubDetailPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/create-club",
+        element: <RequestClubPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/invitation",
+        element: <InvitationClubPage />,
+        errorElement: <ErrorException />,
+      },
+    ],
     errorElement: <ErrorException />,
   },
 ]);

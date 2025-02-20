@@ -12,14 +12,14 @@ export interface PaymentDetails {
     status: string;
 }
 export interface HandleResponse {
-    staffId: string;
+    representativeId: string;
     transactionInfo: string;
     transactionNumber: string;
     isSuccess: boolean;
 }
 export interface CheckBuyPackage {
     packageId: string;
-    staffId: string;
+    representativeId: string;
 }
 export interface Transaction {
     transactionId: string;
@@ -31,6 +31,6 @@ export interface Transaction {
     transactionNumber: string;
     transactionInfo: string;
     contractUrl: string;
-    type:  string; // Enum nếu có danh sách cụ thể
-    status:  string;
-  }
+    type: string; // Enum nếu có danh sách cụ thể
+    status: string;
+}

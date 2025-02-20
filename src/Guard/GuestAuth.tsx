@@ -17,7 +17,7 @@ export default function GuestAuth({ children }: GuestAuthProps) {
       user.universityId != undefined &&
       user.universityStatus != "PENDING"
     ) {
-      return <Navigate to="/staff" />;
+      return <Navigate to="/representative" />;
     }
     if (
       user &&
@@ -31,13 +31,24 @@ export default function GuestAuth({ children }: GuestAuthProps) {
       user.roles.includes("REPRESENTATIVE") &&
       user.universityStatus.toUpperCase() == "PENDING"
     ) {
-      return <Navigate to="/waiting-staff" />;
+      return <Navigate to="/waiting-representative" />;
     }
     if (user && user.roles.includes("ADMIN")) {
       return <Navigate to="/admin" />;
     }
-    if (user && user.roles.includes("STUDENT")) {
+    if (
+      user &&
+      user.roles.includes("STUDENT") &&
+      user.status.toUpperCase() != "CHECKING"
+    ) {
       return <Navigate to="/student" />;
+    }
+    if (
+      user &&
+      user.roles.includes("STUDENT") &&
+      user.status.toUpperCase() == "CHECKING"
+    ) {
+      return <Navigate to="/student/waiting" />;
     }
     return <Navigate to="/" />;
   }
