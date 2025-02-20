@@ -14,11 +14,11 @@ export const contractColumn: ColumnDef<Contract>[] = [
     cell: undefined, // Không cần hiển thị
   },
   {
-    accessorKey: "staffName",
+    accessorKey: "representativeName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Staff" />
+      <DataTableColumnHeader column={column} title="Representative" />
     ),
-    cell: ({ row }) => <span>{row.getValue("staffName")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => <span>{row.getValue("representativeName")}</span>, // Hiển thị giá trị "Name"
   },
 
   {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,7 +15,7 @@ import { TransactionTable } from "./TransactionTable";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, ArrowLeftIcon, CornerUpLeft } from "lucide-react";
+import { CornerUpLeft } from "lucide-react";
 
 export default function ContractDetail() {
   const { contractId = "" } = useParams();
@@ -103,7 +103,7 @@ export default function ContractDetail() {
                 <h3 className="text-2xl font-bold text-[#136CB9]">
                   {contract.universityName}
                 </h3>
-                <p>Staff: {contract.staffName}</p>
+                <p>Staff: {contract.representativeName}</p>
                 <p className="font-semibold text-[#136CB9]">
                   Package type: {contract.packageName}
                 </p>
