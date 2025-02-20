@@ -2,7 +2,7 @@ import { Transaction } from "./Payment";
 
 export interface Contract {
     contractId: string;
-    staffName: string;
+    representativeName: string;
     universityName: string;
     packageName: string;
     signedDate: string; // ISO 8601 format

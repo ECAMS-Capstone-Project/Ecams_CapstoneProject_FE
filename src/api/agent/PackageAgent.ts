@@ -43,9 +43,9 @@ export const PackageList3 = async (pageSize: number, pageNo: number): Promise<Re
   }
 };
 
-export const PackageCurrent = async (staffId: string): Promise<ResponseDTO<Package>> => {
+export const PackageCurrent = async (representativeId: string): Promise<ResponseDTO<Package>> => {
   try {
-    const response = await get<ResponseDTO<Package>>(`/Package/current-package/${staffId}`);
+    const response = await get<ResponseDTO<Package>>(`/Package/current-package/${representativeId}`);
     return response;
   } catch (error: any) {
     console.error("Error in Package API call:", error.response || error);

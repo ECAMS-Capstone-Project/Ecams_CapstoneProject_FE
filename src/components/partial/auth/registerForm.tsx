@@ -14,8 +14,9 @@ import {
   Stack,
   Avatar,
   styled,
+  Autocomplete,
 } from "@mui/material";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
@@ -68,6 +69,10 @@ const schema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords must match",
     path: ["confirmPassword"],
+  })
+  .refine((data) => data.endDate > data.startDate, {
+    message: "End date must be after the start date",
+    path: ["endDate"],
   });
 
 type SignUpFormValues = z.infer<typeof schema>;
@@ -115,10 +120,14 @@ const RegisterForm: React.FC = () => {
     register,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     defaultValues: {
       agreeToTerms: false,
+      gender: "",
+      yearStudy: "",
+      universityId: ""
     },
     resolver: zodResolver(schema),
   });
@@ -245,6 +254,7 @@ const RegisterForm: React.FC = () => {
                     {...register("gender")}
                     label="Gender"
                     id="demo-simple-select-error"
+                    defaultValue=""
                   >
                     <MenuItem value="MALE">Male</MenuItem>
                     <MenuItem value="FEMALE">Female</MenuItem>
@@ -301,24 +311,31 @@ const RegisterForm: React.FC = () => {
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 4 }}>
-                <FormControl fullWidth error={!!errors.universityId}>
-                  <InputLabel>University</InputLabel>
-                  <Select
-                    key={listUniversity.length}
-                    {...register("universityId")}
-                    label="University"
-                    id="demo-simple-select-error"
-                  >
-                    {listUniversity && listUniversity.map((uni, index) => (
-                      <MenuItem key={index + 1} value={uni.universityId}>{uni.universityName}</MenuItem>
-                    ))}
-                  </Select>
-                  {errors.universityId && (
-                    <Typography color="error" variant="caption">
-                      {errors.universityId.message}
-                    </Typography>
+                <Controller
+                  name="universityId"
+                  control={control}
+                  rules={{ required: "University is required" }}
+                  render={({ field }) => (
+                    <FormControl fullWidth error={!!errors.universityId}>
+                      <Autocomplete
+                        options={listUniversity || []}
+                        getOptionLabel={(option) => option.universityName}
+                        isOptionEqualToValue={(option, value) => option.universityId === value.universityId}
+                        disableClearable
+                        onChange={(_, selectedOption) => field.onChange(selectedOption ? selectedOption.universityId : "")}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="University"
+                            variant="outlined"
+                            error={!!errors.universityId}
+                            helperText={errors.universityId?.message}
+                          />
+                        )}
+                      />
+                    </FormControl>
                   )}
-                </FormControl>
+                />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 4 }}>
@@ -328,6 +345,7 @@ const RegisterForm: React.FC = () => {
                     {...register("yearStudy")}
                     label="Year of study"
                     id="demo-simple-select-error"
+                    defaultValue=""
                   >
                     <MenuItem value="1">1</MenuItem>
                     <MenuItem value="2">2</MenuItem>
@@ -426,6 +444,13 @@ const RegisterForm: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               </Grid2>
+              <div className="w-full flex justify-center">
+                {errors.endDate && (
+                  <Typography color="error" variant="caption" mb={0} mt={0}>
+                    {errors.endDate.message}
+                  </Typography>
+                )}
+              </div>
 
               <Grid2 size={{ xs: 12 }}>
                 <FormControlLabel
