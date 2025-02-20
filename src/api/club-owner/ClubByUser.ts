@@ -38,7 +38,7 @@ export const GetAllClubsAPI = async (userId: string, status: string, pageNo: num
 
 export const GetInvitationClubsAPI = async (userId: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/User/${userId}/invitation?PageNumber=${pageNo}&PageSize=1`);
+        const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/User/${userId}/invitation?PageNumber=${pageNo}&PageSize=8`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

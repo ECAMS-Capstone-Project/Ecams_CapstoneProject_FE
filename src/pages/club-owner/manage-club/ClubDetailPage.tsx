@@ -15,7 +15,7 @@ export default function ClubDetailPage() {
                 {/* Dòng 1: Tiêu đề + Badge Active + menu icon (nếu cần) */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center justify-normal flex-wrap ">
-                        <Button variant={'link'} >
+                        <Button onClick={() => history.back()} variant={'link'} >
                             <ChevronLeft />
                         </Button>
                         <h1 className="text-4xl font-bold mr-5">

@@ -58,7 +58,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
       if (setFlag) setFlag(prev => !prev);
       setOpenDialog(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "An error occurred");
+      console.log(error.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +74,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
       if (setFlag) setFlag(prev => !prev);
       setOpenDialog(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "An error occurred");
+      console.log(error.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
