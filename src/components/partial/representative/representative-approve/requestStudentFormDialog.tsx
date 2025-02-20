@@ -54,23 +54,22 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
   const { control } = form;
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const handleApprove = async () => {
+    if (!initialData) return;
     try {
       setIsLoading(true);
-      if (!initialData) return;
       // Call API để cập nhật status thành "Active"
       await approveStu(initialData.userId);
       toast.success("Student approved successfully.");
+      if (setFlag) {
+        setFlag(pre => !pre);
+      }
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
     } finally {
-      if (setFlag) {
-        setFlag(pre => !pre);
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }
-  console.log(initialData);
 
   return (
     <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
@@ -108,6 +107,29 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                       )}
                     />
                     <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <textarea
+                              {...field}
+                              readOnly={!!initialData}
+                              style={{
+                                width: "100%",
+                                padding: "8px",
+                                borderRadius: "5px",
+                                border: "1px solid #ccc",
+                                fontSize: "16px",
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
                       control={control}
                       name="studentId"
                       render={({ field }) => (
@@ -124,7 +146,6 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={control}
                       name="universityName"
@@ -195,23 +216,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              readOnly={!!initialData}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                     <FormField
                       control={form.control}
                       name="phonenumber"
@@ -265,7 +270,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                     />
                   </div>
                   <div className="flex justify-center mt-6">
-                    <Avatar className="w-80 h-72 rounded-lg">
+                    <Avatar className="w-96 h-72 rounded-lg">
                       <AvatarImage
                         src={initialData?.imageUrl}
                         alt={initialData?.fullname}
@@ -277,8 +282,8 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                   <div className="flex w-full justify-end mt-4 space-x-3">
                     {mode === "pending" && (
                       <>
-                        <div className="flex justify-center w-full space-x-1">
-                          <DialogClose asChild >
+                        <div className="flex justify-center w-full space-x-1 gap-5">
+                          <Dialog>
                             <Button
                               onClick={handleApprove}
                               className={`w-1/4 sm:w-1/4 p-3 transition duration-300 ease-in-out ${isLoading
@@ -296,7 +301,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                                 </>
                               )}
                             </Button>
-                          </DialogClose>
+                          </Dialog>
                           <Button
                             type="button"
                             onClick={() => setIsDialogOpen(true)}

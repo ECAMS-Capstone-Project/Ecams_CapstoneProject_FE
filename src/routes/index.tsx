@@ -39,6 +39,8 @@ import RepresentativeContractDetail from "@/components/partial/representative/re
 import ApproveStudentPage from "@/pages/representative/approveStudent/ApproveStudentPage";
 import ClubListPage from "@/pages/club-owner/manage-club/ClubListPage";
 import ClubDetailPage from "@/pages/club-owner/manage-club/ClubDetailPage";
+import WaitingStudentPage from "@/components/partial/student/waiting/WaitingStudentPage";
+import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -209,7 +211,7 @@ export const router = createBrowserRouter([
   {
     path: "/common",
     element: (
-      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE", "ADMIN"]}>
+      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}>
         <PrivateRoute />
       </RoleBasedGuard>
     ),
@@ -237,12 +239,11 @@ export const router = createBrowserRouter([
         path: "/student/club",
         element: <Clubs />,
       },
+      {
+        path: "/student/waiting",
+        element: <WaitingStudentPage />,
+      },
     ],
-    errorElement: <ErrorException />,
-  },
-  {
-    path: "/create-club",
-    element: <RequestClubPage />,
     errorElement: <ErrorException />,
   },
   {
@@ -251,7 +252,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
-    path: "/club-history",
+    path: "/club",
     element: <PrivateRoute />,
     children: [
       {
@@ -259,10 +260,20 @@ export const router = createBrowserRouter([
         element: <ClubListPage />,
       },
       {
-        path: "/club-history/detail",
+        path: "/club/detail",
         element: <ClubDetailPage />,
         errorElement: <ErrorException />,
-      }
+      },
+      {
+        path: "/club/create-club",
+        element: <RequestClubPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/invitation",
+        element: <InvitationClubPage />,
+        errorElement: <ErrorException />,
+      },
     ],
     errorElement: <ErrorException />,
   },

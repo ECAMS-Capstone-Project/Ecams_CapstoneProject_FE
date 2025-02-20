@@ -65,7 +65,7 @@ function WaitingCheckout() {
             setPaymentStatus(status);
             if (isSuccess) {
               setTimeout(() => {
-                window.location.href = "/staff";
+                window.location.href = "/representative";
               }, 2000);
             } else {
               console.log("Error");

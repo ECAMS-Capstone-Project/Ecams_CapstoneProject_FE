@@ -16,6 +16,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    useMediaQuery,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { CreateFieldsAPI, FieldDTO, GetAllFields, RequestClubAPI } from "@/api/club-owner/RequestClubAPI";
@@ -23,6 +24,8 @@ import toast from "react-hot-toast";
 import { StatusCodeEnum } from "@/lib/statusCodeEnum";
 import useAuth from "@/hooks/useAuth";
 import { ring2 } from "ldrs";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Zod Schema for validation
 const clubSchema = z.object({
@@ -60,6 +63,7 @@ const ClubRequestForm: React.FC = () => {
     const [members, setMembers] = useState<{ email: string }[]>([]);
     const [emailInput, setEmailInput] = useState("");
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     const handleFieldInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (e.target.value.trim() == null || e.target.value.trim() == "") {
@@ -162,17 +166,42 @@ const ClubRequestForm: React.FC = () => {
                 const response = await RequestClubAPI(formData)
                 if (response.statusCode == StatusCodeEnum.CREATED) {
                     toast.success("Request successfully")
+                    navigate('/club')
                 }
             } catch (error) {
                 console.error("Error submitting form:", error);
             }
         }
     };
-
+    const isMobile = useMediaQuery("(max-width:600px)");
     return (
-        <div style={{ background: "linear-gradient(180deg, #f5f5f5 0%, #e0e7ff 100%)", display: "flex", minHeight: "100vh" }}>
-            <Container maxWidth="md" sx={{ mt: 2, alignItems: "center", display: "flex" }}>
-                <div style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', padding: "40px", paddingTop: "10px" }}>
+        <div >
+            <Container maxWidth="md" sx={{ display: "flex" }}>
+                <div className="relative" style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', padding: "40px", paddingTop: "10px" }}>
+                    <div className="absolute" style={{ top: "29px" }}>
+                        {isMobile ? (
+                            <Button
+                                onClick={() => window.history.back()}
+                                sx={{
+                                    minWidth: "40px",
+                                    height: "40px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    borderRadius: "50%",
+                                    "@media (max-width: 600px)": {
+                                        left: "-20px",
+                                        top: "-3px",
+                                    },
+                                }}
+                            >
+                                <ChevronLeft />
+                            </Button>
+                        ) : (
+                            <Button sx={{ color: "black" }} onClick={() => window.history.back()}><ChevronLeft />back</Button>
+                        )
+                        }
+                    </div>
                     <Typography variant="h4" align="center" fontWeight="bold" mt={2} color="primary">
                         Create Club
                     </Typography>

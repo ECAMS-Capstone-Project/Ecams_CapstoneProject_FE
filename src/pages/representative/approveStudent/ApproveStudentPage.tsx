@@ -63,7 +63,7 @@ const ApproveStudentPage = () => {
             <TabsList>
               <TabsTrigger value="request">Pending Request</TabsTrigger>
               <TabsTrigger value="registered">
-                Registered University
+                Active Student
               </TabsTrigger>
             </TabsList>
 

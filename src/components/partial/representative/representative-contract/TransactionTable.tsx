@@ -4,7 +4,6 @@ interface ContractData {
   data: Contract;
 }
 export const TransactionTable = (contract: ContractData) => {
-  console.log(contract.data.transactions);
   return (
     <div className="mt-6">
       <h3 className="text-xl font-semibold mb-3">Transaction History</h3>

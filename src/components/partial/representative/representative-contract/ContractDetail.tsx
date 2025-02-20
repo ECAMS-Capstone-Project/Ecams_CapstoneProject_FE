@@ -15,6 +15,7 @@ import {
 import { Card } from "@mui/material";
 import { ContractRepresentativeById } from "@/api/representative/ContractAPI";
 import useAuth from "@/hooks/useAuth";
+import { ArrowLeft } from "lucide-react";
 
 export default function RepresentativeContractDetail() {
   const { contractId = "" } = useParams();
@@ -25,13 +26,11 @@ export default function RepresentativeContractDetail() {
     async function fetchContractDetail() {
       if (user) {
         const response = await ContractRepresentativeById(contractId);
-        console.log(response);
         setContract(response.data || null);
       }
     }
     fetchContractDetail();
   }, [contractId, user]);
-  console.log(contract);
   const handleViewContract = () => {
     if (contract?.contractUrl) {
       window.open(contract.contractUrl, "_blank");
@@ -43,7 +42,7 @@ export default function RepresentativeContractDetail() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/staff/wallet-staff">
+              <BreadcrumbLink href="/representative/wallet-representative">
                 Contracts
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -68,7 +67,7 @@ export default function RepresentativeContractDetail() {
           // gradientOpacity={0.5}
           >
             <div className="flex justify-between">
-              <h2 className="text-2xl font-bold mb-2">Contract Informaion</h2>
+              <h2 className="text-2xl font-bold mb-2"><Button onClick={() => window.history.back()} variant="link" className="p-0 mr-4"><ArrowLeft /></Button>Contract Informaion</h2>
               <Button
                 className="block hover:scale-105"
                 variant={'outline'}
@@ -80,7 +79,7 @@ export default function RepresentativeContractDetail() {
             <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
               {contract?.universityName || "You don't have contract info"}
             </h3>
-            <p className="text-gray-600">Staff: {contract?.staffName}</p>
+            <p className="text-gray-600">Representative: {contract?.representativeName}</p>
             <p className="text-[#136CB9] font-semibold mt-1">
               Package type: {contract?.packageName}
             </p>
@@ -96,6 +95,22 @@ export default function RepresentativeContractDetail() {
             >
               {contract?.status ? "Active ✅" : "Inactive ❌"}
             </span>
+            <div className="mt-3">
+              <ul className="list-disc list-inside space-y-4 mt-4">
+                <li className="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300">
+                  <span className="text-lg font-semibold text-blue-600">Club: </span>
+                  <span className="text-sm text-gray-500 mt-0.5">100 clubs</span>
+                </li>
+                <li className="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300">
+                  <span className="text-lg font-semibold text-blue-600">Event: </span>
+                  <span className="text-sm text-gray-500 mt-0.5">100 events</span>
+                </li>
+                <li className="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300">
+                  <span className="text-lg font-semibold text-blue-600">Student: </span>
+                  <span className="text-sm text-gray-500 mt-0.5">100 students</span>
+                </li>
+              </ul>
+            </div>
           </Card>
           {/* Transactions Table */}
           {contract && <TransactionTable data={contract} />}

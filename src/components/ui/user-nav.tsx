@@ -17,7 +17,7 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { BellIcon } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
-
+import Groups2Icon from '@mui/icons-material/Groups2';
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
@@ -118,15 +118,18 @@ export function UserNav() {
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                Billing
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+              <DropdownMenuItem onClick={() => navigate("/club")}>
+                My club
+                <DropdownMenuShortcut><Groups2Icon /></DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 Settings
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>New Team</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/student")}>
+                Back to page
+                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

@@ -7,9 +7,9 @@ export const ContractRepresentative = async (pageSize: number, pageNo: number, r
     try {
         let response: ResponseDTO<ResponseData<Contract>>;
         if (status != null || undefined) {
-            response = await get<ResponseDTO<ResponseData<Contract>>>(`/Contracts/contracts-of-staff/?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}&representativeId=${representativeId}`);
+            response = await get<ResponseDTO<ResponseData<Contract>>>(`/Contracts/contracts-of-representative/?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}&representativeId=${representativeId}`);
         } else {
-            response = await get<ResponseDTO<ResponseData<Contract>>>(`/Contracts/contracts-of-staff/?PageNumber=${pageNo}&PageSize=${pageSize}&representativeId=${representativeId}`);
+            response = await get<ResponseDTO<ResponseData<Contract>>>(`/Contracts/contracts-of-representative/?PageNumber=${pageNo}&PageSize=${pageSize}&representativeId=${representativeId}`);
         }
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,7 +21,7 @@ export const ContractRepresentative = async (pageSize: number, pageNo: number, r
 
 export const CancelContractRepresentative = async (contractId: string, representativeId: string): Promise<ResponseDTO<string>> => {
     try {
-        const data = { contractId: contractId, staffId: representativeId }
+        const data = { contractId: contractId, representativeId: representativeId }
         const response = await put<ResponseDTO<string>>(`/Contracts/${contractId}/cancel`, data);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,6 +45,17 @@ export const CancelContractRepresentative = async (contractId: string, represent
 export const ContractRepresentativeById = async (representativeId: string): Promise<ResponseDTO<Contract>> => {
     try {
         const response = await get<ResponseDTO<Contract>>(`/Contracts/${representativeId}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetContractCurrentAPI = async (representativeId: string): Promise<ResponseDTO<Contract>> => {
+    try {
+        const response = await get<ResponseDTO<Contract>>(`/Contracts/Representative/${representativeId}/current`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

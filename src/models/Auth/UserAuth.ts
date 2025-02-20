@@ -9,5 +9,6 @@ export interface UserAuthDTO {
     representativeId: string;
     universityStatus: string;
     universityName: string
-    phonenumber: string
+    phonenumber: string;
+    status: string;
 }

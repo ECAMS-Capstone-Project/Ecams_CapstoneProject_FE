@@ -22,6 +22,12 @@ export default function GuestAuth({ children }: GuestAuthProps) {
         if (user && user.roles.includes("ADMIN")) {
             return <Navigate to="/admin" />;
         }
+        if (user && user.roles.includes("STUDENT") && (user.status.toUpperCase() != 'CHECKING')) {
+            return <Navigate to="/student" />;
+        }
+        if (user && user.roles.includes("STUDENT") && (user.status.toUpperCase() == 'CHECKING')) {
+            return <Navigate to="/student/waiting" />;
+        }
         return <Navigate to="/" />;
     }
 

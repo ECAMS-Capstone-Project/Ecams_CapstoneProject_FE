@@ -94,7 +94,9 @@ export const contractColumn: ColumnDef<Contract>[] = [
           <EyeIcon
             size={24}
             className="cursor-pointer"
-            onClick={() => navigate(`/staff/contract/${row.original.contractId}`)}
+            onClick={() => navigate(`/representative/contract/${row.original.contractId}`, {
+              state: { rowData: row.original }
+            })}
           />
         </div>
       );

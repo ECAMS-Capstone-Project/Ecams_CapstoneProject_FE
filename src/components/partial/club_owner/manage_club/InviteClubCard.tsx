@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, Typography, Chip } from "@mui/material";
 import { MagicCard } from "@/components/magicui/magic-card";
-import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 
 interface ClubCardProps {
@@ -10,7 +9,7 @@ interface ClubCardProps {
     field: FieldDTO[];
 }
 
-const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
+const InviteClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
 
     return (
         <Card
@@ -36,16 +35,16 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
                     />
 
                     <div className="p-1 text-left">
-                        <Typography className="font-bold" variant="h6">
+                        <Typography className="font-bold" variant="h6" mt={1}>
                             {title}
                         </Typography>
 
                         <div
                             style={{
                                 display: "grid",
-                                gridTemplateColumns: field.length === 1 ? "auto" : "repeat(auto-fit, minmax(90px, 1fr))",
+                                gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
                                 gap: "8px",
-                                justifyContent: field.length === 1 ? "start" : "start",
+                                justifyContent: "center",
                                 marginTop: "13px",
                             }}
                         >
@@ -65,21 +64,6 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
                                 />
                             ))}
                         </div>
-
-                        <div className="flex w-full justify-center align-middle mt-7">
-                            <Button
-                                variant="custom"
-                                className="rounded-xl"
-                                style={{
-                                    borderRadius: "30px",
-                                    height: "35px",
-                                    textTransform: "none",
-                                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                                }}
-                            >
-                                View more
-                            </Button>
-                        </div>
                     </div>
                 </div>
             </MagicCard>
@@ -87,4 +71,4 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
     );
 };
 
-export default ClubCard;
+export default InviteClubCard;

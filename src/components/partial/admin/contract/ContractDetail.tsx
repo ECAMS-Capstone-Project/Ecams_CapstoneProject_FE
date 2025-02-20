@@ -93,7 +93,7 @@ export default function ContractDetail() {
             <h3 className="text-2xl font-bold mb-2 text-[#136CB9]">
               {contract.universityName}
             </h3>
-            <p className="text-gray-600">Staff: {contract.staffName}</p>
+            <p className="text-gray-600">Staff: {contract.representativeName}</p>
             <p className="text-[#136CB9] font-semibold mt-1">
               Package type: {contract.packageName}
             </p>
@@ -104,11 +104,10 @@ export default function ContractDetail() {
               📅 To: {String(contract.endDate).split("T")[0]}
             </p>
             <span
-              className={`mt-2 inline-block px-3 py-1 rounded text-sm font-semibold ${
-                contract.status
+              className={`mt-2 inline-block px-3 py-1 rounded text-sm font-semibold ${contract.status
                   ? "bg-green-100 text-green-600"
                   : "bg-red-100 text-red-600"
-              }`}
+                }`}
             >
               {contract.status ? "Active ✅" : "Inactive ❌"}
             </span>

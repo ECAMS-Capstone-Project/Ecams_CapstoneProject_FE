@@ -11,7 +11,8 @@ import {
   UserCheck,
   UserIcon,
 } from "lucide-react";
-
+import Groups2Icon from '@mui/icons-material/Groups2';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 export interface NavLink {
   title: string;
   href: string;
@@ -108,10 +109,16 @@ const SidebarLinks = () => {
     sidelinks.push(
       {
         title: "My Club",
-        href: "/club-history",
-        icon: <LayoutDashboardIcon size={18} />,
-        id: 1,
-      }
+        href: "/club",
+        icon: <Groups2Icon />,
+        id: 0,
+      },
+      {
+        title: "Invitation Club",
+        href: "/club/invitation",
+        icon: <HowToRegIcon />,
+        id: 21,
+      },
     );
   }
   sidelinks.push({
