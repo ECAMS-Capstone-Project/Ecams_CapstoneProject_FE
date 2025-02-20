@@ -12,7 +12,7 @@ export default function GuestAuth({ children }: GuestAuthProps) {
   if (isAuthenticated) {
     if (
       user &&
-      user.roles.includes("STAFF") &&
+      user.roles.includes("REPRESENTATIVE") &&
       user.universityId != null &&
       user.universityId != undefined &&
       user.universityStatus != "PENDING"
@@ -21,14 +21,14 @@ export default function GuestAuth({ children }: GuestAuthProps) {
     }
     if (
       user &&
-      user.roles.includes("STAFF") &&
+      user.roles.includes("REPRESENTATIVE") &&
       (user.universityId == null || user.universityId == undefined)
     ) {
       return <Navigate to="/update-university" />;
     }
     if (
       user &&
-      user.roles.includes("STAFF") &&
+      user.roles.includes("REPRESENTATIVE") &&
       user.universityStatus.toUpperCase() == "PENDING"
     ) {
       return <Navigate to="/waiting-staff" />;
