@@ -3,6 +3,7 @@ import { Card, Typography, Chip } from "@mui/material";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
+import { useNavigate } from "react-router-dom";
 
 interface ClubCardProps {
     image: string;
@@ -11,7 +12,7 @@ interface ClubCardProps {
 }
 
 const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
-
+    const navigate = useNavigate();
     return (
         <Card
             sx={{
@@ -76,6 +77,7 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
                                     textTransform: "none",
                                     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                                 }}
+                                onClick={() => navigate('/club/detail')}
                             >
                                 View more
                             </Button>
