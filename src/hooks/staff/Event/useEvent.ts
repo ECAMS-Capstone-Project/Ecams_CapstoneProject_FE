@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getEventList } from "@/api/staff/EventAgent";
+import { getEventList } from "@/api/representative/EventAgent";
 import {  useQuery} from "@tanstack/react-query";
 
 export const useEvents = () => {

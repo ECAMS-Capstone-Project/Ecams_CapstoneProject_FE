@@ -193,17 +193,17 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/staff/area",
+        path: "/representative/area",
         element: <Area />,
         errorElement: <ErrorException />,
       },
       {
-        path: "/staff/wallet",
+        path: "/representative/wallet",
         element: <Wallet />,
         errorElement: <ErrorException />,
       },
       {
-        path: "/staff/event",
+        path: "/representative/event",
         element: <Events />,
         errorElement: <ErrorException />,
       },

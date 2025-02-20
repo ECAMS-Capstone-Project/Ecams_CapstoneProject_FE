@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAreaList, createArea, deactiveArea, updateArea } from "@/api/staff/AreaAgent";
+import { getAreaList, createArea, deactiveArea, updateArea } from "@/api/representative/AreaAgent";
 import toast from "react-hot-toast";
 
 export const useAreas = ( pageSize?: number, pageNo?: number) => {

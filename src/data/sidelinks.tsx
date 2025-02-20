@@ -13,8 +13,8 @@ import {
   UserIcon,
   Wallet,
 } from "lucide-react";
-import Groups2Icon from '@mui/icons-material/Groups2';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
+import Groups2Icon from "@mui/icons-material/Groups2";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 export interface NavLink {
   title: string;
   href: string;
@@ -107,25 +107,31 @@ const SidebarLinks = () => {
       },
       {
         title: "Area",
-        href: "/staff/area",
+        href: "/representative/area",
         icon: <AreaChart size={18} />,
         id: 24,
       },
       {
         title: "Wallet",
-        href: "/staff/wallet",
+        href: "/representative/wallet",
         icon: <Wallet size={18} />,
         id: 24,
       },
       {
         title: "Event",
-        href: "/staff/event",
+        href: "/representative/event",
         icon: <Wallet size={18} />,
         id: 24,
       }
     );
   }
-  if (user?.roles.some(role => role.toLocaleLowerCase() === 'student' || role.toLocaleLowerCase() === 'club-owner')) {
+  if (
+    user?.roles.some(
+      (role) =>
+        role.toLocaleLowerCase() === "student" ||
+        role.toLocaleLowerCase() === "club-owner"
+    )
+  ) {
     sidelinks.push(
       {
         title: "My Club",
@@ -138,7 +144,7 @@ const SidebarLinks = () => {
         href: "/club/invitation",
         icon: <HowToRegIcon />,
         id: 21,
-      },
+      }
     );
   }
   sidelinks.push({

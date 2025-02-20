@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { deactiveWallet, getWalletList, insertWallet, updateWallet } from "@/api/staff/WalletAgent";
+import { deactiveWallet, getWalletList, insertWallet, updateWallet } from "@/api/representative/WalletAgent";
 import { useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
