@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import type { Area } from "@/models/Area";
 import { useAreas } from "@/hooks/staff/Area/useArea";
 import { EditAreaDialog } from "@/components/partial/staff/staff-area/EditAreaDialog";
+import { UserAuthDTO } from "@/models/Auth/UserAuth";
+import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
 const AreaTable = React.lazy(
   () => import("@/components/partial/staff/staff-area/AreaTable")
@@ -21,12 +23,31 @@ const Area = () => {
   const [pageSize, setPageSize] = useState(5);
   // const [totalPages, setTotalPages] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserAuthDTO>();
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await getCurrentUserAPI();
+        if (userInfo) {
+          setUserInfo(userInfo.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
 
+    fetchUserInfo();
+  }, []);
   // const [pageNo, setPageNo] = useState(1);
   // const [pageSize, setPageSize] = useState(5);
+  console.log("uni id" + userInfo?.universityId);
 
   // ✅ Lấy danh sách từ `useAreas()`
-  const { areas, isLoading, totalPages } = useAreas(pageNo, pageSize);
+  const { areas, isLoading, totalPages } = useAreas(
+    pageNo,
+    pageSize,
+    userInfo?.universityId ?? ""
+  );
 
   // ✅ Hàm reload danh sách sau khi thêm mới
   // const handleAreaAdded = () => {
