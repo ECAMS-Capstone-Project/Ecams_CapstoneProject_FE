@@ -23,9 +23,10 @@ import { useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import WaitingModal from "@/components/global/WaitingModal";
-import { ApproveClubAPI, ClubResponseDTO, DenyClubAPI } from "@/api/club-owner/ClubByUser";
+import { ApproveClubAPI, ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 import { Grid2, Typography } from "@mui/material";
 import useAuth from "@/hooks/useAuth";
+import { DenyClubByStu } from "@/pages/club-owner/manage-club/DenialDialog";
 
 type FormMode = "view" | "pending" | "edit";
 
@@ -47,6 +48,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
   });
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleApprove = async () => {
     if (!initialData) return;
@@ -65,19 +67,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
   };
 
   const handleReject = async () => {
-    if (!initialData) return;
-    if (!user) return;
-    try {
-      setIsLoading(true);
-      await DenyClubAPI(initialData.clubId, user.userId);
-      toast.success("Reject successfully.");
-      if (setFlag) setFlag(prev => !prev);
-      setOpenDialog(false);
-    } catch (error: any) {
-      console.log(error.response?.data?.message);
-    } finally {
-      setIsLoading(false);
-    }
+    setOpen(true);
   };
 
   return (
@@ -246,6 +236,16 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
         </div>
       )}
       <WaitingModal open={isLoading} />
+      <DenyClubByStu
+        clubId={initialData?.clubId || ""}
+        studentId={user?.userId || ""}
+        setFlag={setFlag}
+        open={open}
+        onClose={() => {
+          setOpenDialog(false)
+          setOpen(false)
+        }}
+      />
     </div>
   );
 };

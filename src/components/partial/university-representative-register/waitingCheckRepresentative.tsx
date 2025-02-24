@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, Grid2, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
@@ -6,12 +6,20 @@ import toast from "react-hot-toast";
 
 const WaitingCheckRepresentative: React.FC = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const handleClick = async () => {
     await logout();
     navigate('/login');
     toast.success("Logout successfully")
   }
+  useEffect(() => {
+    if (user && user.roles.includes("REPRESENTATIVE") &&
+      user.universityId != null &&
+      user.universityId != undefined &&
+      user.universityStatus != "PENDING") {
+      navigate('/representative');
+    }
+  }, [user, navigate])
   return (
     <Box
       display="flex"

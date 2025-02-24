@@ -70,7 +70,7 @@ export default function RepresentativeContractDetail() {
           // gradientColor="#F3FAFB"
           // gradientOpacity={0.5}
           >
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-2">
               <h2 className="text-2xl font-bold mb-2"><Button onClick={() => window.history.back()} variant="link" className="p-0 mr-4"><ArrowLeft /></Button>Contract Informaion</h2>
               <Button
                 className="block hover:scale-105"
@@ -87,13 +87,13 @@ export default function RepresentativeContractDetail() {
                 </h3>
                 <Grid2 container spacing={3} sx={{ width: "100%", mt: 2 }}>
                   <Grid2 size={{ xs: 12, md: 6 }} >
-                    <p className="text-gray-600 font-semibold mt-2">
+                    <p className="text-gray-600 font-semibold mt-3">
                       🔸 Representative: {contract?.representativeName}
                     </p>
-                    <p className="text-gray-600 font-semibold mt-2">
+                    <p className="text-gray-600 font-semibold mt-3">
                       📦 Package name: {contract?.packageName}
                     </p>
-                    <p className="text-gray-600 font-semibold mt-2">
+                    <p className="text-gray-600 font-semibold mt-3">
                       🔹 Contract status:  <span
                         className={`inline-block px-3 py-1 rounded text-sm font-semibold ${contract?.status
                           ? "bg-green-100 text-green-600"
@@ -105,10 +105,10 @@ export default function RepresentativeContractDetail() {
                     </p>
                   </Grid2>
                   <Grid2 size={{ xs: 12, md: 6 }} >
-                    <p className="text-gray-600 font-semibold mt-2">
-                      📅 Date sign: {String(contract?.signedDate).split("T")[0]} -{" "}
+                    <p className="text-gray-600 font-semibold mt-3">
+                      📅 Date sign: {String(contract?.signedDate).split("T")[0]}
                     </p>
-                    <p className="text-gray-600 font-semibold mt-2">
+                    <p className="text-gray-600 font-semibold mt-3">
                       📅 Date end: {String(contract?.endDate).split("T")[0]}
                     </p>
                   </Grid2>

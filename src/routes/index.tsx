@@ -44,6 +44,7 @@ import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPag
 import Area from "@/pages/staff/area/Area";
 import Wallet from "@/pages/staff/wallet/Wallet";
 import Events from "@/pages/staff/event/Event";
+import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -207,6 +208,11 @@ export const router = createBrowserRouter([
         element: <Events />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/club",
+        element: <CheckingClubPage />,
+        errorElement: <ErrorException />,
+      }
     ],
     errorElement: <ErrorException />,
   },

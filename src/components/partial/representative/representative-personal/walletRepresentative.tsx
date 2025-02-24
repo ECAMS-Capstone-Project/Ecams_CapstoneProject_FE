@@ -74,7 +74,7 @@ const WalletRepresentative = () => {
       </Typography>
 
       {/* Thông tin user và gói hiện tại */}
-      <Card className="p-4 md:flex-row items-center shadow-lg mt-3">
+      <Card className="p-4 md:flex-row items-center shadow-lg mt-4">
         <Grid2 container spacing={3} sx={{ width: "100%" }}>
           {/* Thông tin User */}
           <Grid2 size={{ xs: 12, md: 6 }} boxShadow={1} p={2}>
@@ -159,7 +159,9 @@ const WalletRepresentative = () => {
 
               </>
             ) : (
-              <Typography color="textSecondary">❌ No package assigned</Typography>
+              <div className="flex justify-center">
+                <Typography color="textSecondary" variant="h6">❌ No package assigned</Typography>
+              </div>
             )}
           </Grid2>
         </Grid2>
