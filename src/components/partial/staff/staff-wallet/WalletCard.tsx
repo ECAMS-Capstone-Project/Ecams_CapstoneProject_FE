@@ -90,7 +90,10 @@ const WalletCard = ({ wallets }: WalletData) => {
                   {wallet.status ? "Active" : "Inactive"}
                 </span>
               </p>
-              <p className="mt-2 text-gray-800">
+              <p className="mt-2 text-gray-800 font-medium">
+                Bank: {wallet.bankName}
+              </p>
+              <p className=" text-gray-800">
                 API Key: {showSensitive ? wallet.apiKey : "••••••••"}
               </p>
               <p className="text-gray-800">
@@ -112,7 +115,7 @@ const WalletCard = ({ wallets }: WalletData) => {
                       <Edit size={20} />
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-xl">
+                  <DialogContent className="max-w-lg">
                     <ViewWalletDialog
                       initialData={wallet}
                       onSuccess={() => {}}
@@ -127,7 +130,7 @@ const WalletCard = ({ wallets }: WalletData) => {
                       <EyeIcon size={20} />
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-xl">
+                  <DialogContent className="max-w-lg">
                     <OnlyViewWalletDialog initialData={wallet} />
                   </DialogContent>
                 </Dialog>
