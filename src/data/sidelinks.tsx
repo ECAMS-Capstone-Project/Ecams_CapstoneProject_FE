@@ -122,6 +122,12 @@ const SidebarLinks = () => {
         href: "/representative/event",
         icon: <Wallet size={18} />,
         id: 24,
+      },
+      {
+        title: "Club",
+        href: "/representative/club",
+        icon: <Groups2Icon />,
+        id: 24,
       }
     );
   }
