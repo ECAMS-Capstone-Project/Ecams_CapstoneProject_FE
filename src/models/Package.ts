@@ -15,4 +15,5 @@ export interface Package {
   description: string; // Description of the package
   endOfSupportDate: string | null; // End date of support, null if not applicable
   packageDetails: PackageDetail[]; // List of details for the package services
+  endDate: string;
 }

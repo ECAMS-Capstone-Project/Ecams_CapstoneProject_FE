@@ -37,6 +37,17 @@ export const rejectStu = async (userId: string, stu: any): Promise<ResponseDTO<s
     }
 };
 
+export const GetStudentByIdAPI = async (userId: string): Promise<ResponseDTO<StudentRequest>> => {
+    try {
+        const response = await get<ResponseDTO<StudentRequest>>(`/Students/User/${userId}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
 // export const reactiveUni = async (uniId: string): Promise<ResponseDTO<University>> => {
 //     try {
 //         const response = await patch<ResponseDTO<University>>(`/Universities/reactive-university/${uniId}`);

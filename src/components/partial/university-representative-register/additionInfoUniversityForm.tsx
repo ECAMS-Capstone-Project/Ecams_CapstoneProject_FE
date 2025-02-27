@@ -314,7 +314,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
                   control={
                     <Checkbox
                       color="primary"
-                      disabled={true}
+                      onClick={() => setOpen(true)}
                       sx={{
                         "&.Mui-disabled": {
                           color: "#1565C0",
