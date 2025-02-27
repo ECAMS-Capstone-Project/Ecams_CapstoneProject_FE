@@ -47,6 +47,7 @@ import Events from "@/pages/staff/event/Event";
 import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDialog";
 import { RequestEventDetail } from "@/components/partial/staff/staff-events/RequestEventForm";
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
+import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -223,6 +224,11 @@ export const router = createBrowserRouter([
       {
         path: "/representative/event/new",
         element: <CreateEvent />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/club",
+        element: <CheckingClubPage />,
         errorElement: <ErrorException />,
       },
     ],

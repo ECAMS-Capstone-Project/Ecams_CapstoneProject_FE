@@ -160,7 +160,9 @@ const ClubRequestForm: React.FC = () => {
             data.fieldIds.forEach((id) => formData.append("FieldIds", id));
 
             // Lưu member
-            data.members.forEach((m) => formData.append("Members", JSON.stringify(m)));
+            data.members.forEach((member, index) => {
+                formData.append(`Members[${index}].Email`, member.email);
+            });
 
             try {
                 const response = await RequestClubAPI(formData)
