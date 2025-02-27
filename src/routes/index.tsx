@@ -44,6 +44,9 @@ import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPag
 import Area from "@/pages/staff/area/Area";
 import Wallet from "@/pages/staff/wallet/Wallet";
 import Events from "@/pages/staff/event/Event";
+import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDialog";
+import { RequestEventDetail } from "@/components/partial/staff/staff-events/RequestEventForm";
+import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -205,6 +208,21 @@ export const router = createBrowserRouter([
       {
         path: "/representative/event",
         element: <Events />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/event/:eventId",
+        element: <EventDetail />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/event/request/:eventId",
+        element: <RequestEventDetail />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/event/new",
+        element: <CreateEvent />,
         errorElement: <ErrorException />,
       },
     ],

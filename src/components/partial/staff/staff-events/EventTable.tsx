@@ -13,8 +13,8 @@ const EventTable = ({ data }: EventData) => {
         <DataTable
           columns={EventColums}
           data={data}
-          searchKey={"name"}
-          placeholder="Search area's name"
+          searchKey={"eventName"}
+          placeholder="Search event's name"
         />
       </div>
     </>
