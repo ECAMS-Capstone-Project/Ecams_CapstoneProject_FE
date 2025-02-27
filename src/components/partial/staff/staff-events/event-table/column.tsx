@@ -63,7 +63,13 @@ export const EventColums: ColumnDef<Event>[] = [
     ),
     cell: ({ row }) => {
       const price = row.getValue("price");
-      return <span>{price?.toLocaleString()} VND</span>;
+      return (
+        <span>
+          {price?.toLocaleString() == "0"
+            ? "Free"
+            : price?.toLocaleString() + " VND"}{" "}
+        </span>
+      );
     },
   },
   {

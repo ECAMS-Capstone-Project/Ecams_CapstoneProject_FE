@@ -40,7 +40,7 @@ export const EventSchema = z.object({
       }),
      
  // Kiểm tra ngày kết thúc đăng ký phải lớn hơn ngày bắt đầu đăng ký
-    price: z.coerce.number().positive({ message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
+    price: z.coerce.number().min(0,{ message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
     maxParticipants: z.coerce.number().int().positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
     status: z.string().optional(), // Kiểm tra status không rỗng
     eventAreas: z
