@@ -22,7 +22,6 @@ import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
@@ -62,7 +61,6 @@ export const DenyEventRequest: React.FC<DenyProps> = ({
         console.log("Rejecting university...");
 
         await rejectEvent(value); // Gọi API reject
-        toast.success("Event rejected successfully.");
         navigate("/representative/event");
         onClose();
         if (onSuccess) onSuccess();
