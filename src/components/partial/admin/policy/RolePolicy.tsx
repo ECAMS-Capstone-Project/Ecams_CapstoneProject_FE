@@ -15,7 +15,7 @@ interface PolicyProps {
 }
 function RolePolicy({ data }: PolicyProps) {
   const staffPolicies = data.filter((policy) =>
-    policy.roleName.includes("STAFF")
+    policy.roleName.includes("REPRESENTATIVE")
   );
   const clubPolicies = data.filter((policy) =>
     policy.roleName.includes("CLUB_OWNER")
@@ -27,14 +27,14 @@ function RolePolicy({ data }: PolicyProps) {
     <div className="flex justify-center items-center gap-3 mt-6">
       <Card className="w-1/3">
         <CardHeader>
-          <CardTitle>Staff</CardTitle>
-          <CardDescription>University's Staff</CardDescription>
+          <CardTitle>Representative</CardTitle>
+          <CardDescription>University's Representative</CardDescription>
         </CardHeader>
         <CardFooter className="flex justify-between">
           <Dialog>
             <DialogTrigger className="w-full">
               <Button className="w-full" variant="custom">
-                View staff's policy
+                View representative's policy
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
