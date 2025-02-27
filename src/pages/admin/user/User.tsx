@@ -69,7 +69,7 @@ const User = () => {
             className="w-full mt-3 p-2"
           >
             <TabsList>
-              <TabsTrigger value="staff">Staff</TabsTrigger>
+              <TabsTrigger value="staff">Representative</TabsTrigger>
               <TabsTrigger value="student">Student</TabsTrigger>
             </TabsList>
 

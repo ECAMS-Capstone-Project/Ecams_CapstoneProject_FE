@@ -594,8 +594,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           ? "Updating..."
                           : "Creating..."
                         : initialData
-                        ? "Update Area"
-                        : "Create Area"}
+                        ? "Update Event"
+                        : "Create Event"}
                     </Button>
                   </div>
                 </form>
