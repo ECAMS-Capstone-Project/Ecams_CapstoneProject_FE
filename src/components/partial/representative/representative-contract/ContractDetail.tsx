@@ -17,6 +17,7 @@ import { ContractRepresentativeById } from "@/api/representative/ContractAPI";
 import useAuth from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import { PackageDetail } from "@/models/Package";
+import { format } from "date-fns";
 
 export default function RepresentativeContractDetail() {
   const { contractId = "" } = useParams();
@@ -106,10 +107,12 @@ export default function RepresentativeContractDetail() {
                   </Grid2>
                   <Grid2 size={{ xs: 12, md: 6 }} >
                     <p className="text-gray-600 font-semibold mt-3">
-                      📅 Date sign: {String(contract?.signedDate).split("T")[0]}
+                      📅 Date sign: {contract?.signedDate ? format(new Date(contract.signedDate), 'dd-MM-yyyy') : ""}
+
                     </p>
                     <p className="text-gray-600 font-semibold mt-3">
-                      📅 Date end: {String(contract?.endDate).split("T")[0]}
+                      📅 Date end: {contract?.signedDate ? format(new Date(contract.endDate), 'dd-MM-yyyy') : ""}
+
                     </p>
                   </Grid2>
                 </Grid2>

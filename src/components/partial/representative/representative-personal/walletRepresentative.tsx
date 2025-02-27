@@ -13,6 +13,7 @@ import ConfirmDialog from "./confirmDialog";
 import ConfirmCancelDialog from "./confirmCancel";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
+import { format } from "date-fns";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
@@ -47,6 +48,7 @@ const WalletRepresentative = () => {
       setLoading(false);
     }
   };
+  console.log(curPackage);
 
   // Gọi lại khi user hoặc flag thay đổi
   useEffect(() => {
@@ -136,7 +138,7 @@ const WalletRepresentative = () => {
                     </Typography>
                     <Typography mb={2}>
                       ⏳ <b>Expiry Date:</b>{" "}
-                      {curPackage.endDate.slice(0, 10) || "Not Yet"}
+                      {format(new Date(curPackage.endDate), 'dd-MM-yyyy')}
                     </Typography>
                   </Grid2>
                   <Grid2 size={{ xs: 12, md: 6 }}>
@@ -183,21 +185,16 @@ const WalletRepresentative = () => {
               <Typography variant="h6" fontWeight="bold" color="primary">
                 📌 Package Details:
               </Typography>
-              <ul className="list-disc list-inside space-y-4 mt-4">
-                {curPackage?.packageDetails?.map((detail, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300"
-                  >
-                    <span className="text-lg font-semibold text-blue-600">
-                      {detail.value}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {detail.packageType}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {curPackage?.packageDetails?.map((detail, index) => (
+                <ul className="flex gap-2">
+                  <div className="flex justify-center w-full">
+                    <li key={index + 1} className="flex  w-2/4 items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300">
+                      <span className="text-lg font-semibold text-blue-600">Max {detail.packageType}: </span>
+                      <span className="text-sm text-gray-500 mt-0.5">{detail.value} {detail.packageType} </span>
+                    </li>
+                  </div>
+                </ul>
+              ))}
             </DialogContent>
           </Dialog>
           <Button

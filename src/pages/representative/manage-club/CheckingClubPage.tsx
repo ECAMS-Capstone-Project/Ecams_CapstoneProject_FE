@@ -53,7 +53,7 @@ const CheckingClubPage: React.FC = () => {
                     <Typography component="span" sx={{ color: "blue", fontWeight: "bold" }}>
                         Clubs
                     </Typography>{" "}
-                    Invitation
+                    Request
                 </Typography>
 
                 {loading ? (

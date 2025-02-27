@@ -29,6 +29,7 @@ import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
 import { MemberDetailDialog } from "./MemberDetailDialog";
 import { DenyCheckingClubRequest } from "./DenialDialog";
+import { format } from "date-fns";
 
 // Dữ liệu props cho Dialog Club
 type FormMode = "view" | "pending" | "edit";
@@ -81,7 +82,9 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
     setSelectedMember(memberId);
     setOpenMemberDialog(true);
   };
-
+  const formattedDate = initialData?.foundingDate
+    ? format(new Date(initialData.foundingDate), 'dd-MM-yyyy')
+    : '';
   return (
     <Dialog open={true} onOpenChange={setOpenDialog}>
       <DialogContent className="max-w-3xl">
@@ -125,6 +128,16 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                     </div>
                     <div className="mb-3">
                       <Typography variant="subtitle1" fontWeight="bold">
+                        Created date
+                      </Typography>
+                      <Typography variant="body2" className="text-gray-700">
+                        {formattedDate}
+                      </Typography>
+                    </div>
+                  </Grid2>
+                  <Grid2 size={6}>
+                    <div className="mb-3">
+                      <Typography variant="subtitle1" fontWeight="bold">
                         Purpose
                       </Typography>
                       <Typography variant="body2" className="text-gray-700">
@@ -133,37 +146,11 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                     </div>
                     <div className="mb-3">
                       <Typography variant="subtitle1" fontWeight="bold">
-                        Email
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-700">
-                        {initialData?.contactEmail || "Empty"}
-                      </Typography>
-                    </div>
-                  </Grid2>
-                  <Grid2 size={6}>
-                    <div className="mb-3">
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        Phone
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-700">
-                        {initialData?.contactPhone || "Empty"}
-                      </Typography>
-                    </div>
-                    <div className="mb-3">
-                      <Typography variant="subtitle1" fontWeight="bold">
-                        Created date
-                      </Typography>
-                      <Typography variant="body2" className="text-gray-700">
-                        {initialData?.foundingDate.slice(0, 10)}
-                      </Typography>
-                    </div>
-                    <div className="mb-3">
-                      <Typography variant="subtitle1" fontWeight="bold">
                         Status
                       </Typography>
                       <Chip
-                        label={initialData?.status ? "Active" : "Pending"}
-                        color={initialData?.status ? "success" : "warning"}
+                        label={initialData?.status.toString().toLocaleLowerCase() == "processing" ? "PROCESSING" : "Active"}
+                        color={initialData?.status.toString().toLocaleLowerCase() == "processing" ? "info" : "success"}
                       />
                     </div>
 

@@ -1,4 +1,5 @@
 import { Contract } from "@/models/Contract";
+import { format } from "date-fns";
 
 interface ContractData {
   data: Contract;
@@ -22,7 +23,7 @@ export const TransactionTable = (contract: ContractData) => {
             {contract.data.transactions?.filter((a) => a.status == 'PAID')?.map((txn) => (
               <tr key={txn.transactionId} className="border-b">
                 <td className="p-3">{txn.type}</td>
-                <td className="p-3">{txn.paymentDate.split("T")[0]}</td>
+                <td className="p-3">{format(new Date(txn.paymentDate), 'dd-MM-yyyy')}</td>
                 <td className="p-3">{txn.methodName}</td>
                 <td className="p-3">{txn.amount.toLocaleString()} VND</td>
                 <td className="p-3 font-semibold">
