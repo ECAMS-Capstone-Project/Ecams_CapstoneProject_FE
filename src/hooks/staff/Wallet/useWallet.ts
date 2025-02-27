@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { deactiveWallet, getWalletList, insertWallet, updateWallet } from "@/api/representative/WalletAgent";
+import { deactiveWallet, getWalletList, insertWallet, reactiveWallet, updateWallet } from "@/api/representative/WalletAgent";
 import { useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -51,6 +51,26 @@ export const useWallet = (universityId?: string, token?:string, pageSize?: numbe
         });
       }
     });
+    const {mutateAsync: reactiveWalletMutation, isPending: isReactivating} = useMutation({
+      mutationFn: reactiveWallet,
+      onSuccess: () => {
+        // refetch();
+        toast.success("Wallet reactivated successfully!");
+        refetch(); 
+        queryClient.invalidateQueries({
+          queryKey: ["wallets", universityId, token, pageNo || 0, pageSize || 5]
+        });
+      },
+      onError: (error: any) => {
+        toast.error(error.response.data.message || "Error reactivating area");
+      },
+      onSettled: () => {
+        // Đảm bảo invalidateQueries được gọi sau khi mutation hoàn tất
+        queryClient.invalidateQueries({
+          queryKey: ["wallets"]
+        });
+      }
+    });
     const {mutateAsync: updateWalletMutation, isPending: isUpdating} = useMutation({
       mutationFn: updateWallet,
       onSuccess: () => {
@@ -74,9 +94,11 @@ export const useWallet = (universityId?: string, token?:string, pageSize?: numbe
    isUpdating,
    isPending,
    isDeleting,
+   isReactivating,
    refetchArea: refetch,
    createWallet: createWalletMutation,
    updateWallet: updateWalletMutation,
-    deactiveWallet:deleteWalletMutation
+    deactiveWallet:deleteWalletMutation,
+    reactiveWallet:reactiveWalletMutation
   };
 };

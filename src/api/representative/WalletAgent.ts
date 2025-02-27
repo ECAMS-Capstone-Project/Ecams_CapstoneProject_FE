@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Wallet } from "@/models/Wallet";
-import { del, get, post, put } from "../agent";
+import { del, get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 
 export const getWalletList = async (universityId: string, token:string,pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Wallet>>> => {
@@ -37,6 +37,16 @@ export const getWalletList = async (universityId: string, token:string,pageSize:
 export const deactiveWallet = async (walletId: string): Promise<ResponseDTO<Wallet>> => {
   try {
     const response = await del<ResponseDTO<Wallet>>(`/Wallet/deactive-wallet/${walletId}`);
+    return response; // Trả về toàn bộ phản hồi
+  } catch (error: any) {
+    console.error("Error in deactive area API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const reactiveWallet = async (walletId: string): Promise<ResponseDTO<Wallet>> => {
+  try {
+    const response = await patch<ResponseDTO<Wallet>>(`/Wallet/reactive-wallet/${walletId}`);
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in deactive area API call:", error.response || error);
