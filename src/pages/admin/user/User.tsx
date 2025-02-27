@@ -24,8 +24,8 @@ const User = () => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const staffData = await StaffList("STAFF", pageSize, pageNo);
-        const student = await getStudentList();
+        const staffData = await StaffList("REPRESENTATIVE", pageSize, pageNo);
+        const student = await getStudentList("STUDENT", pageSize, pageNo);
         if (staffData) {
           setStaffList(staffData.data?.data || []); // Đảm bảo `data.data` tồn tại
           setTotalPages(staffData.data?.totalPages || 1); // Đặt số trang
@@ -33,7 +33,8 @@ const User = () => {
           console.warn("UniversityList returned no data");
         }
         if (student) {
-          setStudentList(student); // Đảm bảo `data.data` tồn tại
+          setStudentList(student.data?.data || []); // Đảm bảo `data.data` tồn tại
+          setTotalPages(staffData.data?.totalPages || 1); // Đặt số trang
         } else {
           console.warn("UniversityList returned no data");
         }
@@ -68,7 +69,7 @@ const User = () => {
             className="w-full mt-3 p-2"
           >
             <TabsList>
-              <TabsTrigger value="staff">Staff</TabsTrigger>
+              <TabsTrigger value="staff">Representative</TabsTrigger>
               <TabsTrigger value="student">Student</TabsTrigger>
             </TabsList>
 

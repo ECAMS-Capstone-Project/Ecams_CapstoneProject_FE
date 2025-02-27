@@ -94,11 +94,20 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                       <FormItem>
                         <FormLabel>Wallet's Name</FormLabel>
                         <FormControl>
-                          <Input
-                            type="text"
-                            {...field}
-                            placeholder="Enter wallet's name"
-                          />
+                          <Input type="text" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="bankName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bank's Name</FormLabel>
+                        <FormControl>
+                          <Input type="text" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

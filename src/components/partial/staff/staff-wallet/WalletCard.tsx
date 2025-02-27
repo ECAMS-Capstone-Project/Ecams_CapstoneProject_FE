@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Edit, EyeIcon, Trash2 } from "lucide-react";
+import { Edit, EyeIcon, RotateCcw, Trash2 } from "lucide-react";
 import { Wallet } from "@/models/Wallet";
 import { Input } from "@/components/ui/input";
 import { MagicCard } from "@/components/magicui/magic-card";
@@ -11,6 +11,12 @@ import { useWallet } from "@/hooks/staff/Wallet/useWallet";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WalletData {
   wallets: Wallet[];
@@ -23,7 +29,7 @@ const WalletCard = ({ wallets }: WalletData) => {
   // const handleCloseDialog = () => setIsDialogOpen(false);
   const [openWalletId, setOpenWalletId] = useState<string | null>(null); // Trạng thái open cho ví cụ thể
   const [loading, setLoading] = useState(false);
-  const { deactiveWallet } = useWallet();
+  const { deactiveWallet, reactiveWallet } = useWallet();
   const queryClient = useQueryClient();
 
   const onConfirm = async (walletId: string) => {
@@ -40,7 +46,16 @@ const WalletCard = ({ wallets }: WalletData) => {
       setOpenWalletId(null); // Đóng modal sau khi xác nhận
     }
   };
-
+  async function handleReactive(walletId: string) {
+    try {
+      console.log("Approving Event...");
+      // Call API để cập nhật status thành "Active"
+      await reactiveWallet(walletId);
+    } catch (error: any) {
+      const errorMessage = error.response.data.message || "An error occurred";
+      console.log(errorMessage);
+    }
+  }
   // Lọc ví theo tên hoặc thông tin khác
   const filteredWallets = wallets.filter((wallet) =>
     wallet.walletName.toLowerCase().includes(search.toLowerCase())
@@ -75,7 +90,7 @@ const WalletCard = ({ wallets }: WalletData) => {
               className="cursor-pointer p-5 flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 "
               gradientColor="#D1EAF0"
             >
-              <div className="flex justify-between items-center gap-2">
+              <div className="flex justify-between items-center gap-2 mb-2">
                 <h3 className="text-lg font-semibold">{wallet.walletName}</h3>
               </div>
               <p className="text-gray-500 text-sm gap-2">
@@ -90,48 +105,81 @@ const WalletCard = ({ wallets }: WalletData) => {
                   {wallet.status ? "Active" : "Inactive"}
                 </span>
               </p>
-              <p className="mt-2 text-gray-800">
-                API Key: {showSensitive ? wallet.apiKey : "••••••••"}
-              </p>
-              <p className="text-gray-800">
-                Client ID: {showSensitive ? wallet.clientId : "••••••••"}
-              </p>
-              <p className="text-gray-800">
-                Checksum Key: {showSensitive ? wallet.checkSumKey : "••••••••"}
-              </p>
-              <div className="flex items-center gap-2 justify-end mt-3">
-                <button
-                  onClick={() => setOpenWalletId(wallet.walletId)}
-                  className="pb-[6px]"
-                >
-                  <Trash2 size={20} className=" text-red-500" />
-                </button>
-                <Dialog>
-                  <DialogTrigger>
-                    <button>
-                      <Edit size={20} />
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-xl">
-                    <ViewWalletDialog
-                      initialData={wallet}
-                      onSuccess={() => {}}
-                      // setOpen={handleCloseDialog}
-                    />
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog>
-                  <DialogTrigger>
-                    <button>
-                      <EyeIcon size={20} />
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-xl">
-                    <OnlyViewWalletDialog initialData={wallet} />
-                  </DialogContent>
-                </Dialog>
+              <div className="space-y-1 mt-2">
+                <p className=" text-gray-800 font-medium">
+                  Bank: {wallet.bankName}
+                </p>
+                <p className=" text-gray-800">
+                  API Key: {showSensitive ? wallet.apiKey : "••••••••"}
+                </p>
+                <p className="text-gray-800">
+                  Client ID: {showSensitive ? wallet.clientId : "••••••••"}
+                </p>
+                <p className="text-gray-800">
+                  Checksum Key:{" "}
+                  {showSensitive ? wallet.checkSumKey : "••••••••"}
+                </p>
               </div>
+              {wallet.status ? (
+                <div className="flex items-center gap-2 justify-end mt-3">
+                  <button
+                    onClick={() => setOpenWalletId(wallet.walletId)}
+                    className="pb-[6px]"
+                  >
+                    <Trash2 size={20} className=" text-red-500" />
+                  </button>
+                  <Dialog>
+                    <DialogTrigger>
+                      <button>
+                        <Edit size={20} />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <ViewWalletDialog
+                        initialData={wallet}
+                        onSuccess={() => {}}
+                        // setOpen={handleCloseDialog}
+                      />
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog>
+                    <DialogTrigger>
+                      <button>
+                        <EyeIcon size={20} />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <OnlyViewWalletDialog initialData={wallet} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 justify-end mt-3">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button onClick={() => handleReactive(wallet.walletId)}>
+                          <RotateCcw size={20} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD]">
+                        <p>Reactive wallet</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Dialog>
+                    <DialogTrigger>
+                      {/* <button> */}
+                      <EyeIcon size={23} />
+                      {/* </button> */}
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <OnlyViewWalletDialog initialData={wallet} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
             </MagicCard>
           </div>
         ))}

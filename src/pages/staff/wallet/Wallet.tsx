@@ -68,7 +68,7 @@ const Wallet = () => {
                   New Bank Account
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-xl">
+              <DialogContent className="max-w-lg">
                 <ViewWalletDialog
                   initialData={null}
                   onSuccess={() => {}}

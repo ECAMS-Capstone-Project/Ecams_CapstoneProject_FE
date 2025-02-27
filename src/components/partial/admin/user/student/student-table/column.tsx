@@ -19,47 +19,32 @@ import { ViewStudentDialog } from "../studentFormDialog";
 // Định nghĩa columns cho DataTable
 export const StudentColumns: ColumnDef<Student>[] = [
   {
-    accessorKey: "imageUrl",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Avatar" />
-    ),
-    cell: ({ row }) => {
-      <div className="flex flex-wrap gap-2">
-        <img
-          src={row.original.imageUrl}
-          alt={"Avatar"}
-          className="w-10 h-10 object-cover"
-        />
-      </div>;
-    }, // Hiển thị Duration kèm đơn vị
-  },
-  {
-    accessorKey: "studentId",
+    accessorKey: "userId",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Student Id" />
     ),
-    cell: ({ row }) => <span>{row.getValue("studentId")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => <span>{row.getValue("userId")}</span>, // Hiển thị giá trị "Name"
   },
   {
-    accessorKey: "universityId",
+    accessorKey: "fullname",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="University ID" />
+      <DataTableColumnHeader column={column} title="Fullname" />
     ),
-    cell: ({ row }) => <span>{row.getValue("universityId")}</span>,
+    cell: ({ row }) => <span>{row.getValue("fullname")}</span>,
   },
   {
-    accessorKey: "major",
+    accessorKey: "email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Major" />
+      <DataTableColumnHeader column={column} title="Email" />
     ),
-    cell: ({ row }) => <span>{row.getValue("major")}</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("email")}</span>, // Hiển thị Duration kèm đơn vị
   },
   {
-    accessorKey: "yearOfStudy",
+    accessorKey: "phonenumber",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Academic Year" />
+      <DataTableColumnHeader column={column} title="Phone number" />
     ),
-    cell: ({ row }) => <span>{row.getValue("yearOfStudy")} year</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => <span>{row.getValue("phonenumber")} year</span>, // Hiển thị Duration kèm đơn vị
   },
 
   {

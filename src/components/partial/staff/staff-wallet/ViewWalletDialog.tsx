@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
 import {
   DialogClose,
   DialogDescription,
@@ -28,8 +27,22 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
 import { WalletSchema } from "@/schema/WalletSchema";
 import { useWallet } from "@/hooks/staff/Wallet/useWallet";
-import { Eye, EyeOff } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { bankNameOption } from "@/data/bankData";
 
 type WalletFormValues = z.infer<typeof WalletSchema>;
 
@@ -45,7 +58,6 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
 }) => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const accessToken = localStorage.getItem("accessToken");
-
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisibility, setPasswordVisibility] = useState<{
     apiKey: boolean;
@@ -94,6 +106,7 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
       clientId: "",
       checkSumKey: "",
       walletName: "",
+      bankName: "",
       universityId: "",
     },
   });
@@ -123,7 +136,6 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
       }
       // onSuccess && onSuccess(); // Callback reload data nếu cần
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
@@ -170,6 +182,90 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
                               {...field}
                               placeholder="Enter wallet's name"
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="bankName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Bank's Name</FormLabel>
+                          <FormControl>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={`h-10 px-4 w-full rounded-lg group relative text-white bg-gradient-to-r from-[#136CB5] to-[#49BBBD] hover:opacity-90 flex items-center justify-between space-x-2 ${
+                                    initialData ? "pointer-events-none" : ""
+                                  } `}
+                                >
+                                  <span>
+                                    {field.value
+                                      ? bankNameOption.find(
+                                          (bank) => bank.value === field.value
+                                        )?.label
+                                      : "Select Bank's Name..."}
+                                  </span>
+                                  {!initialData && (
+                                    <ChevronDownIcon className="h-4 w-4" />
+                                  )}
+                                </Button>
+                                {/* Tooltip when hover */}
+                              </PopoverTrigger>
+
+                              <PopoverContent className=" p-0" align="start">
+                                <Command>
+                                  <CommandInput placeholder="Search bank..." />
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      No results found.
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {bankNameOption.map((option) => {
+                                        const isSelected =
+                                          field.value == option.value;
+                                        return (
+                                          <CommandItem
+                                            key={option.value}
+                                            onSelect={() => {
+                                              field.onChange(option.value); // Set the selected value to the form field
+                                            }}
+                                            className="flex items-center"
+                                          >
+                                            <div
+                                              className={cn(
+                                                "mr-2 flex h-4 w-4 items-center justify-center rounded border border-primary",
+                                                isSelected
+                                                  ? "bg-primary text-primary-foreground"
+                                                  : "opacity-50 [&_svg]:invisible"
+                                              )}
+                                            >
+                                              <CheckIcon className="h-4 w-4" />
+                                            </div>
+                                            <span>{option.label}</span>
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                    {field.value && (
+                                      <CommandGroup>
+                                        <CommandItem
+                                          onSelect={() => {
+                                            field.onChange(""); // Clear the form field when clearing selection
+                                          }}
+                                          className="justify-center text-center text-red-500"
+                                        >
+                                          Clear Filters
+                                        </CommandItem>
+                                      </CommandGroup>
+                                    )}
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           </FormControl>
                           <FormMessage />
                         </FormItem>

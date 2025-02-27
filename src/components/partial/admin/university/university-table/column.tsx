@@ -53,11 +53,11 @@ export const UniColumns = (
     cell: ({ row }) => <span>{row.getValue("universityName")}</span>, // Hiển thị giá trị "Name"
   },
   {
-    accessorKey: "staffName",
+    accessorKey: "representativeName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Staff" />
+      <DataTableColumnHeader column={column} title="Representative" />
     ),
-    cell: ({ row }) => <span>{row.getValue("staffName")}</span>,
+    cell: ({ row }) => <span>{row.getValue("representativeName")}</span>,
   },
   {
     accessorKey: "contactEmail",

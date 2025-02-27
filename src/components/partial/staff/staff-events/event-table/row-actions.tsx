@@ -1,41 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
-import { EyeIcon, Trash2 } from "lucide-react";
+import { EyeIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
 import { useAreas } from "@/hooks/staff/Area/useArea";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEvents } from "@/hooks/staff/Event/useEvent";
+import { useNavigate } from "react-router-dom";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { deleteArea, refetchArea } = useAreas();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const onConfirm = async () => {
     setLoading(true);
     try {
       await deleteArea(row.getValue("areaId"));
       queryClient.invalidateQueries({ queryKey: ["areas"] });
       await refetchArea();
-      // window.location.reload();
     } catch (error: any) {
       const errorMessage = error.response.data?.message || "An error occurred";
       toast.error(errorMessage);
@@ -45,6 +37,25 @@ export function DataTableRowActions<TData>({
       setOpen(false);
     }
   };
+
+  // Lấy chi tiết event
+  const { getEventDetailQuery } = useEvents();
+  const {
+    data: eventDetail,
+    isLoading: isEventDetailLoading,
+    error,
+  } = getEventDetailQuery(row.getValue("eventId"));
+
+  if (isEventDetailLoading) {
+    // Nếu dữ liệu đang tải, có thể thêm loading spinner hoặc trạng thái "Đang tải"
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    // Xử lý lỗi khi lấy chi tiết event
+    return <div>Error loading event details: {error.message}</div>;
+  }
+
   return (
     <>
       <AlertModal
@@ -53,37 +64,37 @@ export function DataTableRowActions<TData>({
         onConfirm={onConfirm}
         loading={loading}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">{"Open Menu"}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-fit">
-          {/* Trigger mở dialog */}
-          <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-            <EyeIcon className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
+      <button
+        className="bg-transparent border-none"
+        onClick={() => {
+          eventDetail?.data?.status === "PENDING"
+            ? navigate(
+                `/representative/event/request/${eventDetail?.data?.eventId}`
+              )
+            : navigate(`/representative/event/${eventDetail?.data?.eventId}`);
+        }}
+      >
+        <EyeIcon className="mr-2 h-4 w-4 cursor-pointer text-black" />
+      </button>
 
-          {/* Delete */}
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash2 className="h-4 w-4 text-red-500" />
-            <span className="ml-2">Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Chỉ mở dialog khi eventDetail có dữ liệu */}
 
-      {/* Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-xl">
-          {/* <ViewAreaDialog initialData={row.original as any} /> */}
+      {/* <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl max-h-[90vh] overflow-hidden p-4">
+          {eventDetail?.data ? (
+            eventDetail.data.status === "PENDING" ? (
+              <RequestEventDetailDialog
+                event={eventDetail.data}
+                onClose={() => setDialogOpen(false)}
+              />
+            ) : (
+              ""
+            )
+          ) : (
+            <div>No event details available</div>
+          )}
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </>
   );
 }

@@ -8,12 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
-import {
-  CheckCircle2Icon,
-  XCircleIcon,
-  ChevronDown,
-  CircleEllipsis,
-} from "lucide-react";
+import { CheckCircle2Icon, XCircleIcon, CircleEllipsis } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Event } from "@/models/Event";
@@ -66,7 +61,16 @@ export const EventColums: ColumnDef<Event>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Price" />
     ),
-    cell: ({ row }) => <span>{row.getValue("price")} people</span>,
+    cell: ({ row }) => {
+      const price = row.getValue("price");
+      return (
+        <span>
+          {price?.toLocaleString() == "0"
+            ? "Free"
+            : price?.toLocaleString() + " VND"}{" "}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "maxParticipants",
@@ -131,7 +135,7 @@ export const EventColums: ColumnDef<Event>[] = [
                   <CircleEllipsis size={12} className=" text-[#CC6600]" />
                 )}
                 <span>{currentStatus}</span>
-                <ChevronDown size={16} />
+                {/* <ChevronDown size={16} /> */}
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">

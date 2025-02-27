@@ -50,7 +50,6 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
   setOpen,
 }) => {
   const [, setUserInfo] = useState<UserAuthDTO>();
-  const { createArea, isPending, updateArea, isUpdating } = useAreas(); // Lấy mutation từ React Query
   const [isLoading, setIsLoading] = useState(false);
 
   // Chỉ fetch thông tin user khi cần thiết
@@ -71,6 +70,7 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
       fetchUserInfo();
     }
   }, [initialData]);
+  const { createArea, isPending, updateArea, isUpdating } = useAreas(); // Lấy mutation từ React Query
 
   const form = useForm<AreaFormValues>({
     resolver: zodResolver(AreaSchema),

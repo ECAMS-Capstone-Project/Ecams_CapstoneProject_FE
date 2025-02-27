@@ -26,7 +26,6 @@ import { createPackage } from "@/api/agent/PackageAgent";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useState } from "react";
 import { StudentSchema } from "@/schema/UserSchema";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type StudentFormValues = z.infer<typeof StudentSchema>;
 
@@ -87,22 +86,7 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-2 gap-3">
                     {/* Package Name */}
-                    <FormField
-                      control={form.control}
-                      name="imageUrl"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel>Avatar</FormLabel>
-                          <FormControl>
-                            <Avatar className="w-20 h-20">
-                              <AvatarImage src="https://github.com/shadcn.png" />
-                              <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                     <FormField
                       control={control}
                       name="studentId"

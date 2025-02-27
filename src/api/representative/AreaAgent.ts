@@ -16,9 +16,9 @@ export const getMockAreaList = async (): Promise<Area[]> => {
   }
     }
 
-    export const getAreaList = async (pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Area>>> => {
+    export const getAreaList = async (pageSize: number, pageNo: number, uniId: string): Promise<ResponseDTO<ResponseData<Area>>> => {
         try {
-          const response = await get<ResponseDTO<ResponseData<Area>>>(`/Area?PageNumber=${pageNo}&PageSize=${pageSize}`);
+          const response = await get<ResponseDTO<ResponseData<Area>>>(`/Area?UniversityId=${uniId}&PageNumber=${pageNo}&PageSize=${pageSize}`);
           return response; // Trả về toàn bộ phản hồi
         } catch (error: any) {
           console.error("Error in UniversityList API call:", error.response || error);

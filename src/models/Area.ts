@@ -16,3 +16,10 @@ export interface AreaDetails {
     Capacity: number;
     ImageUrl: string;
 }
+
+export interface EventAreas {
+    areaId: string;
+    name: string;
+    startDate: Date;
+    endDate: Date;
+}

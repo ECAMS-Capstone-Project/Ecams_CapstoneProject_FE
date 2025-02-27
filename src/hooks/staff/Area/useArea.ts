@@ -3,13 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAreaList, createArea, deactiveArea, updateArea } from "@/api/representative/AreaAgent";
 import toast from "react-hot-toast";
 
-export const useAreas = ( pageSize?: number, pageNo?: number) => {
+export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
     const { data, isLoading, refetch } = useQuery({
       queryKey: ["areas", pageNo || 1, pageSize || 5], // Query key động
-      queryFn: () => getAreaList(  pageNo || 1,pageSize || 5,),
+      queryFn: () => getAreaList( pageNo || 1,pageSize || 5,uniId || ""),
       refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
       refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
     });

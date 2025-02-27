@@ -14,7 +14,7 @@ const StaffTable = ({ data }: StaffData) => {
           columns={StaffColumns}
           data={data}
           searchKey={"fullname"}
-          placeholder="Search staff's name..."
+          placeholder="Search representative's name..."
         />
       </div>
     </>

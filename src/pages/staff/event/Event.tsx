@@ -7,23 +7,22 @@ import { DataTablePagination } from "@/components/ui/datatable/data-table-pagina
 
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
+import { useNavigate } from "react-router-dom";
 
 const Events = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [totalPages] = useState(0);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  // const [, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
   // const [pageNo, setPageNo] = useState(1);
   // const [pageSize, setPageSize] = useState(5);
 
   // ✅ Lấy danh sách từ `useAreas()`
-  const { events, isLoading } = useEvents();
+  const { events, isLoading, totalPages } = useEvents(pageNo, pageSize);
 
   // ✅ Hàm reload danh sách sau khi thêm mới
   // const handleAreaAdded = () => {
@@ -63,52 +62,82 @@ const Events = () => {
               description="Manage Event in the system"
             />
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger>
-                <Button className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add New
-                </Button>
-              </DialogTrigger>
+            {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger> */}
+            <Button
+              onClick={() => navigate("/representative/event/new")}
+              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New
+            </Button>
+            {/* </DialogTrigger>
               <DialogContent className="max-w-2xl">
-                {/* <ViewAreaDialog
+                <CreateEventDialog
                   initialData={null}
-                  onSuccess={handleAreaAdded}
+                  onSuccess={() => {}}
                   setOpen={handleCloseDialog}
-                /> */}
+                />
               </DialogContent>
-            </Dialog>
+            </Dialog> */}
           </div>
           <Separator />
           <Tabs
-            defaultValue="active"
+            defaultValue="request"
             // value={activeTab}
             // onValueChange={setActiveTab}
             className="w-full mt-3 p-2"
           >
             <TabsList>
-              <TabsTrigger value="active">Active Event</TabsTrigger>
-              <TabsTrigger value="request">Request Event</TabsTrigger>
+              <TabsTrigger value="request">Event's Request</TabsTrigger>
+
+              <TabsTrigger value="uni">University's Event</TabsTrigger>
+              <TabsTrigger value="club">Club's Event</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="active">
+            <TabsContent value="uni">
               <EventTable
-                data={events.filter((events) => events.status != "PENDING")}
+                data={events.filter(
+                  (events) =>
+                    events.representativeId != null &&
+                    events.status != "PENDING"
+                )}
+              />
+              <DataTablePagination
+                currentPage={pageNo}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
               />
             </TabsContent>
             <TabsContent value="request">
               <EventTable
                 data={events.filter((events) => events.status == "PENDING")}
               />
+              <DataTablePagination
+                currentPage={pageNo}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
+              />
             </TabsContent>
-
-            <DataTablePagination
-              currentPage={pageNo}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              setPageNo={setPageNo}
-              setPageSize={setPageSize}
-            />
+            <TabsContent value="club">
+              <EventTable
+                data={events.filter(
+                  (events) =>
+                    events.clubId != null && events.status != "PENDING"
+                )}
+              />
+              <DataTablePagination
+                currentPage={pageNo}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
+              />
+            </TabsContent>
           </Tabs>
         </>
       )}
