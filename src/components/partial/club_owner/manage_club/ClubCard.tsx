@@ -9,9 +9,10 @@ interface ClubCardProps {
     image: string;
     title: string;
     field: FieldDTO[];
+    clubId: string;
 }
 
-const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
+const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId }) => {
     const navigate = useNavigate();
     return (
         <Card
@@ -77,7 +78,7 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
                                     textTransform: "none",
                                     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                                 }}
-                                onClick={() => navigate('/club/detail')}
+                                onClick={() => navigate(`/club/detail/${clubId}`)}
                             >
                                 View more
                             </Button>

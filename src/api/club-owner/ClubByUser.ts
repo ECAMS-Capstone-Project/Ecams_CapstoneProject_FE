@@ -3,6 +3,8 @@ import toast from "react-hot-toast";
 import { get, patch } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
+import { ClubResponse } from "@/models/Club";
+import { Task } from "@/models/Task";
 
 export enum ClubStatusEnum {
     Inactive = 0,
@@ -34,6 +36,7 @@ export interface ClubResponseDTO {
     clubFields: FieldDTO[];
     clubMembers?: ClubMemberDTO[];
 }
+
 
 export const GetAllClubsAPI = async (userId: string, status: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
@@ -149,5 +152,38 @@ export const ApproveClubCheckingAPI = async (clubId: string): Promise<ResponseDT
             console.error("Network Error:", error.message);
             throw new Error("Network error. Please try again later.");
         }
+    }
+};
+
+export const GetClubsDetailAPI = async (clubId: string): Promise<ResponseDTO<ClubResponse>> => {
+    try {
+        const response = await get<ResponseDTO<ClubResponse>>(`/Clubs/${clubId}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetMemberInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ClubMemberDTO[]>> => {
+    try {
+        const response = await get<ResponseDTO<ClubMemberDTO[]>>(`/Clubs/${clubId}/members?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetTaskInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<Task[]>> => {
+    try {
+        const response = await get<ResponseDTO<Task[]>>(`/Clubs/${clubId}/tasks?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
     }
 };

@@ -308,7 +308,7 @@ export const router = createBrowserRouter([
         element: <ClubListPage />,
       },
       {
-        path: "/club/detail",
+        path: "/club/detail/:clubId",
         element: <ClubDetailPage />,
         errorElement: <ErrorException />,
       },

@@ -22,6 +22,7 @@ import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegis
 import { GenderEnum } from "@/lib/GenderEnum";
 import { ring2 } from 'ldrs'
 import PoliciesDialog from "./policiesDiablog";
+import toast from "react-hot-toast";
 // Validation schema using Zod
 const schema = z
   .object({
@@ -79,6 +80,7 @@ const RegisterUniversityForm: React.FC = () => {
       password: data.password,
     };
     await registerUniversity(user);
+    toast.success("Register successfully");
   };
 
   return (

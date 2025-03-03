@@ -25,7 +25,6 @@ export default function RepresentativeContractDetail() {
   const { user } = useAuth();
   const location = useLocation();
   const details = location.state.rowData.details as PackageDetail[] || [];
-  console.log(location.state.rowData.details);
 
   useEffect(() => {
     async function fetchContractDetail() {

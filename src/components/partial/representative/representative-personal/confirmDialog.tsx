@@ -42,7 +42,7 @@ export default function ConfirmDialog({ open, setOpen }: confirmDialog) {
             <Dialog open={open} onOpenChange={handleClose}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Alert</DialogTitle>
+                        <DialogTitle>Confirm</DialogTitle>
                     </DialogHeader>
                     <div>
                         Do you want to extend this package
