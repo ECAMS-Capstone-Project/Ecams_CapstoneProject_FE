@@ -228,7 +228,6 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                             <FormControl>
                               <Select
                                 {...field}
-                                disabled={!!initialData}
                                 value={
                                   field.value
                                     ? field.value.toString()

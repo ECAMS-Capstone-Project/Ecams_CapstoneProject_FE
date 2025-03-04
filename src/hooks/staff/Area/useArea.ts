@@ -12,6 +12,7 @@ export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) =>
       queryFn: () => getAreaList( pageNo || 1,pageSize || 5,uniId || ""),
       refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
       refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
+      enabled: !!uniId
     });
 
 
