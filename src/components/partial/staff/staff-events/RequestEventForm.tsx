@@ -2,13 +2,19 @@
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  CheckCircle2Icon,
+  CircleEllipsis,
+  XCircle,
+  XCircleIcon,
+} from "lucide-react";
 import { DenyEventRequest } from "./DenyEvent";
 import { useState } from "react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
-import { Heading } from "@/components/ui/heading";
 
 export const RequestEventDetail: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,17 +45,17 @@ export const RequestEventDetail: React.FC = () => {
         <div>
           <div className="container mx-auto px-4">
             {/* Heading */}
-            <Button
-              variant="custom"
-              onClick={() => navigate(-1)}
-              className="mb-2"
-            >
-              <ArrowLeft size={24} />
-            </Button>
-            <Heading
-              title="Manage Events"
-              description="Manage Event in the system"
-            />
+            <div className="flex justify-start items-center gap-2">
+              <ArrowLeft
+                size={24}
+                onClick={() => navigate(-1)}
+                className="cursor-pointer stroke-[#136CB5] hover:stroke-[#36b6b9] transition duration-300"
+              />
+
+              <h2 className="font-bold text-3xl  bg-gradient-to-r from-[#136CB5] to-[#49BBBD] bg-clip-text text-transparent">
+                Event's Request Detailed Information
+              </h2>
+            </div>
 
             <div className="bg-white rounded-xl shadow-xl overflow-hidden mt-8">
               {/* Banner */}
@@ -71,39 +77,22 @@ export const RequestEventDetail: React.FC = () => {
 
               {/* Content */}
               <div className="p-6 space-y-8 ml-3">
-                {/* Event Information */}
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                     Event Information
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-gray-600">Status:</p>
-                      <p
-                        className={`font-semibold text-lg ${
-                          event?.status === "ACTIVE"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {event?.status}
-                      </p>
-                    </div>
-                    <div>
                       <p className="text-gray-600">Price:</p>
                       <p className="font-semibold text-lg">{`${event?.price.toLocaleString()} VND`}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Event Duration:</p>
+                      <p className="text-gray-600">Max Participants:</p>
                       <p className="font-semibold text-lg">
-                        {event?.startDate && event?.endDate
-                          ? `${format(
-                              new Date(event.startDate),
-                              "PP"
-                            )} - ${format(new Date(event.endDate), "PP")}`
-                          : "Invalid event dates"}
+                        {event?.maxParticipants} people
                       </p>
                     </div>
+
                     <div>
                       <p className="text-gray-600">Registered Range:</p>
                       <p className="font-semibold text-lg">
@@ -119,9 +108,14 @@ export const RequestEventDetail: React.FC = () => {
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Max Participants:</p>
+                      <p className="text-gray-600">Event Duration:</p>
                       <p className="font-semibold text-lg">
-                        {event?.maxParticipants} people
+                        {event?.startDate && event?.endDate
+                          ? `${format(
+                              new Date(event.startDate),
+                              "PP"
+                            )} - ${format(new Date(event.endDate), "PP")}`
+                          : "Invalid event dates"}
                       </p>
                     </div>
                   </div>
@@ -157,7 +151,7 @@ export const RequestEventDetail: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {event?.eventAreas?.map((area: any) => (
+                        {event?.eventAreas?.map((area) => (
                           <tr key={area.areaId} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {area.name}
@@ -174,8 +168,8 @@ export const RequestEventDetail: React.FC = () => {
                     </table>
                   </div>
                 </section>
-
                 {/* Event Description */}
+
                 <section>
                   <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                     Description
@@ -184,6 +178,38 @@ export const RequestEventDetail: React.FC = () => {
                     {event?.description}
                   </p>
                 </section>
+
+                {/* Status Description */}
+
+                <section className="flex items-center gap-2">
+                  <h3 className="text-2xl font-semibold text-gray-800 ">
+                    Status:
+                  </h3>
+                  <span
+                    className={`font-semibold text-lg gap-1 py-1 px-2 rounded-md flex items-center justify-center ${
+                      event?.status === "ACTIVE"
+                        ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                        : event?.status === "PENDING"
+                        ? "bg-[#FFE6CC] text-[#CC6600]"
+                        : "bg-[#FFF5BA] text-[#5A3825]"
+                    }`}
+                  >
+                    {event?.status === "ACTIVE"
+                      ? "Active"
+                      : event?.status === "PENDING"
+                      ? "Pending"
+                      : "Inactive"}
+
+                    {event?.status === "ACTIVE" ? (
+                      <CheckCircle2Icon size={19} className="text-[#2F4F4F]" />
+                    ) : event?.status === "PENDING" ? (
+                      <CircleEllipsis size={19} className=" text-[#CC6600]" />
+                    ) : (
+                      <XCircleIcon size={19} className=" text-[#5A3825]" />
+                    )}
+                  </span>
+                </section>
+
                 <div className="flex justify-center w-full space-x-1">
                   <Button
                     onClick={handleApprove}
