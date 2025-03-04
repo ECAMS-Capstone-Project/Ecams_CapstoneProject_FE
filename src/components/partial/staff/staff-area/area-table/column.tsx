@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
@@ -6,7 +7,8 @@ import { Area } from "@/models/Area";
 
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAreas } from "@/hooks/staff/Area/useArea";
 
 // Định nghĩa columns cho DataTable
 export const AreaColums: ColumnDef<Area>[] = [
@@ -70,23 +72,41 @@ export const AreaColums: ColumnDef<Area>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as boolean;
-      const [currentStatus] = useState(status);
+
+      // Hàm xử lý thay đổi trạng thái
+      const handleStatusChange = async () => {
+        const newStatus = !status; // Đổi trạng thái khi nhấn
+        const queryClient = useQueryClient();
+        // Gọi mutation để update dữ liệu trên server
+        const { updateArea } = useAreas();
+        await updateArea;
+
+        // Cập nhật trực tiếp dữ liệu trong bảng mà không cần refetch lại
+        queryClient.setQueryData(["areas"], (oldData: any) => {
+          return oldData.map((item: Area) =>
+            item.areaId === row.original.areaId
+              ? { ...item, status: newStatus }
+              : item
+          );
+        });
+      };
 
       return (
         <div className="flex justify-center p-0">
           <div
+            onClick={handleStatusChange} // Bắt sự kiện click
             className={`flex items-center justify-center gap-1 py-2 px-2 rounded-md cursor-pointer ${
-              currentStatus
-                ? "bg-[#CBF2DA] text-[#2F4F4F]" // Active
-                : "bg-[#FFF5BA] text-[#5A3825]" // Inactive
+              status
+                ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                : "bg-[#FFF5BA] text-[#5A3825]"
             } w-auto`}
           >
-            {currentStatus ? (
+            {status ? (
               <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
             ) : (
               <XCircleIcon size={12} className=" text-[#5A3825]" />
             )}
-            <span>{currentStatus ? "Active" : "Inactive"}</span>
+            <span>{status ? "Active" : "Inactive"}</span>
           </div>
         </div>
       );

@@ -4,6 +4,22 @@ import { get, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import axiosMultipartForm from "../axiosMultipartForm";
 import toast from "react-hot-toast";
+import { FieldDTO } from "../club-owner/RequestClubAPI";
+import { ClubMemberDTO } from "../club-owner/ClubByUser";
+
+export interface EventClubDTO {
+  clubId: string;
+  clubName: string;
+  logoUrl: string;
+  description: string;
+  purpose: string;
+  foundingDate: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  websiteUrl?: string;
+  clubFields?: FieldDTO[];
+  clubMembers?: ClubMemberDTO[];
+}
 
 export const getEventList = async (pageNumber: number, pageSize: number): Promise<ResponseDTO<ResponseData<Event>>> => {
     try {
@@ -19,6 +35,18 @@ export const getEventList = async (pageNumber: number, pageSize: number): Promis
     export const getEventDetail = async (eventId: string): Promise<ResponseDTO<Event>> => {
         try {
             const response = await get<ResponseDTO<Event>>(`/Event/${eventId}`);
+        
+            
+            return response;
+            
+        } catch (error) {
+            console.error("Error fetching university list:", error);
+        throw error;
+      }
+        }
+    export const getEventClubDetail = async (clubId: string): Promise<ResponseDTO<EventClubDTO>> => {
+        try {
+            const response = await get<ResponseDTO<EventClubDTO>>(`/Clubs/${clubId}`);
         
             
             return response;
@@ -78,3 +106,32 @@ export const getEventList = async (pageNumber: number, pageSize: number): Promis
         }
       };
       
+      export const createEventClub = async (formData: FormData): Promise<ResponseDTO<EventClubDTO | string>> => {
+        try {
+            const response = await axiosMultipartForm.post("/Clubs/event-club", formData);
+            const apiResponse = response.data as ResponseDTO<EventClubDTO | string>;
+      
+              if (apiResponse.data && typeof apiResponse.data === "string") {
+                  // Nếu API trả về một chuỗi (thông báo hoặc URL)
+                  console.log("Response String:", apiResponse.data);
+                  return apiResponse;
+              } else if (apiResponse.data && typeof apiResponse.data === "object") {
+                  // Nếu API trả về chi tiết khu vực đã thêm
+                  console.log("Area Details:", apiResponse.data);
+                  return apiResponse;
+              } else {
+                  console.error("Unexpected response data format");
+                  throw new Error("Unexpected response data format");
+              }
+          } catch (error: any) {
+              if (error.response) {
+                  console.error("API Error:", error.response.data.errors);
+                  toast.error(error.response.data.message || "API Error");
+                  throw new Error(error.response.data.message || "API Error");
+              } else {
+                  console.error("Network Error:", error.message);
+                  toast.error("Network error. Please try again later.");
+                  throw new Error("Network error. Please try again later.");
+              }
+          }
+      };

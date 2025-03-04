@@ -51,7 +51,7 @@ export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) =>
     onSuccess: () => {
       // refetch();
       toast.success("Area updated successfully!");
-      queryClient.invalidateQueries( {queryKey:["areas"]}); // Tự động refetch danh sách ✅
+     queryClient.invalidateQueries( {queryKey:["areas"]}); // Tự động refetch danh sách ✅
     },
     onError: (error: any) => {
       toast.error(error.message || "Error deleting area");

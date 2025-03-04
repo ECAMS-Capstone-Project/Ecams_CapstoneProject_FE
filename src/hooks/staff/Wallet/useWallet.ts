@@ -12,7 +12,7 @@ export const useWallet = (universityId?: string, token?:string, pageSize?: numbe
       queryFn:  () =>  getWalletList(universityId ?? "",token ?? "",  pageNo || 0,pageSize || 5,),
       refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
       refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
-    enabled:true, 
+    enabled:!!universityId && !!token, 
       
     });
 

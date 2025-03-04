@@ -75,3 +75,18 @@ export const EventSchema = z.object({
     eventType: z.string()
 
 });
+
+export const EventClubSchema= z.object({
+  userId: z.string().optional(),
+  clubName: z.string().min(3, "Club name must be at least 3 characters"),
+  logo: z
+    .union([
+      z.string().url("Invalid image URL").optional(),  // Nếu có URL ảnh
+      z.instanceof(File).refine((file) => file instanceof File, {
+        message: "Image must be a file", // Kiểm tra nếu là file ảnh
+      }).optional(),
+    ]),
+    description: z.string().min(5, "Description must be at least 5 characters"),
+    purpose: z.string().min(5, "Purpose must be at least 5 characters"),
+    ownerEmail: z.string().email("Invalid email"),
+});

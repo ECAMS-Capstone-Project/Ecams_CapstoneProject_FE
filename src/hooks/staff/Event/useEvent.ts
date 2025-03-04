@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { approveEvent, createEvent, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
+import { approveEvent, createEvent, createEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
 import {  useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -30,12 +30,31 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
       toast.error(error.response.data.message || "An error occurred");
     },
   });
+  const {mutateAsync:createEventClubMutation, isPending:isCreatePending} = useMutation({
+    mutationFn: createEventClub,
+    onSuccess: () => {
+      toast.success("Event Club created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["eventClub"] }); // Tự động refetch danh sách ✅
+    },
+    onError: (error: any) => {
+      console.error("Error:", error.response.data.errors);
+      toast.error(error.response.data.message || "An error occurred");
+    },
+  });
   
   // Fetch chi tiết event theo eventId
   const getEventDetailQuery = (eventId: string) => {
     return useQuery({
       queryKey: ["eventDetail", eventId], // Query key động dựa trên eventId
       queryFn: () => getEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
+      enabled: true, // Chỉ thực hiện khi có eventId
+   
+    });
+  };
+  const getEventClubDetailQuery = (clubId: string) => {
+    return useQuery({
+      queryKey: ["eventClubDetail", clubId], // Query key động dựa trên eventId
+      queryFn: () => getEventClubDetail(clubId), // Gọi API lấy chi tiết sự kiện
       enabled: true, // Chỉ thực hiện khi có eventId
    
     });
@@ -92,10 +111,13 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
   isPending,
   isApproving,
   isRejecting,
+  isCreatePending,
   createEvent: createEventMutation,
    refetchEvents: refetch,
    getEventDetailQuery,
    approveEvent: approveEventMutation,
    rejectEvent: rejectEventMutation,
+   getEventClubDetailQuery,
+   createEventClub: createEventClubMutation
   };
 };

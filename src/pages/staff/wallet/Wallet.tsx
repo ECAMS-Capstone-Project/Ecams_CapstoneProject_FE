@@ -26,6 +26,7 @@ const Wallet = () => {
     const fetchUserInfo = async () => {
       try {
         const userInfo = await getCurrentUserAPI();
+
         if (userInfo) {
           setUserInfo(userInfo.data);
         }
