@@ -14,7 +14,6 @@ import { useWallet } from "@/hooks/staff/Wallet/useWallet";
 import { ViewWalletDialog } from "@/components/partial/staff/staff-wallet/ViewWalletDialog";
 
 import { WalletPagination } from "@/components/partial/staff/staff-wallet/WalletPagination";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Wallet = () => {
   const [pageNo, setPageNo] = useState(1);
@@ -58,7 +57,7 @@ const Wallet = () => {
           <div className="flex items-center justify-between pt-4">
             <Heading
               title={`Manage Wallet`}
-              description="Manage Wallet in the system"
+              description={`Monitor and manage the wallet of ${userInfo?.universityName}`}
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -79,30 +78,7 @@ const Wallet = () => {
           </div>
           <Separator />
 
-          <Tabs
-            defaultValue="active"
-            // value={activeTab}
-            // onValueChange={setActiveTab}
-            className="w-full mt-3 p-2"
-          >
-            <TabsList className="ml-3">
-              <TabsTrigger value="active">Active Wallet</TabsTrigger>
-              <TabsTrigger value="inactive">Inactive Wallet</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="active">
-              <WalletCard
-                wallets={wallets.filter((wallet) => wallet.status === true)}
-              />
-            </TabsContent>
-            <TabsContent value="inactive">
-              <WalletCard
-                wallets={wallets.filter((wallet) => wallet.status !== true)}
-              />
-            </TabsContent>
-          </Tabs>
-
-          {/* Hiển thị ví dưới dạng thẻ */}
+          <WalletCard wallets={wallets} />
 
           <div className="flex justify-between items-center mt-9 pt-6">
             <div className="w-full h-full">

@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WalletStatusFilter } from "./WalletFilter";
 
 interface WalletData {
   wallets: Wallet[];
@@ -31,6 +32,7 @@ const WalletCard = ({ wallets }: WalletData) => {
   const [loading, setLoading] = useState(false);
   const { deactiveWallet, reactiveWallet } = useWallet();
   const queryClient = useQueryClient();
+  const [selectedStatus, setSelectedStatus] = useState<Set<string>>(new Set());
 
   const onConfirm = async (walletId: string) => {
     setLoading(true);
@@ -57,20 +59,27 @@ const WalletCard = ({ wallets }: WalletData) => {
     }
   }
   // Lọc ví theo tên hoặc thông tin khác
-  const filteredWallets = wallets.filter((wallet) =>
-    wallet.walletName.toLowerCase().includes(search.toLowerCase())
+  const filteredWallets = wallets.filter(
+    (wallet) =>
+      wallet.walletName.toLowerCase().includes(search.toLowerCase()) &&
+      (selectedStatus.size === 0 ||
+        selectedStatus.has(wallet.status.toString()))
   );
 
   return (
     <div>
       {/* Tìm kiếm */}
-      <div className="p-4 my-3 flex justify-between items-center">
+      <div className="p-4 my-3 flex justify-start items-center gap-2">
         <Input
           type="text"
           placeholder="Search Wallets..."
           className="p-2 border rounded-lg w-1/3"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+        />
+        <WalletStatusFilter
+          selected={selectedStatus}
+          setSelectedStatus={setSelectedStatus}
         />
       </div>
 
