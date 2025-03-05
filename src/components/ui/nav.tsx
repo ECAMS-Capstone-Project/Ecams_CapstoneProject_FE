@@ -80,7 +80,6 @@ interface NavLinkProps extends SideLink {
   subLink?: boolean;
   closeNav: () => void;
 }
-
 function NavLink({
   title,
   icon,
@@ -100,7 +99,7 @@ function NavLink({
           size: "sm",
         }),
         "h-10 justify-start text-wrap rounded-lg px-8 mx-2",
-        subLink && "h-10 w-full border-l border-l-slate-500 px-2"
+        subLink && "h-10 w-[80%] px-4 mx-11"
       )}
       aria-current={checkActiveNav(href) ? "page" : undefined}
     >
@@ -117,9 +116,6 @@ function NavLink({
 
 function NavLinkDropdown({ title, icon, label, sub, closeNav }: NavLinkProps) {
   const { checkActiveNav } = useCheckActiveNav();
-
-  /* Open collapsible by default
-   * if one of child element is active */
   const isChildActive = !!sub?.find((s) => checkActiveNav(s.href));
 
   return (
@@ -127,7 +123,7 @@ function NavLinkDropdown({ title, icon, label, sub, closeNav }: NavLinkProps) {
       <CollapsibleTrigger
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
-          "group h-12 w-full justify-start rounded-none px-6"
+          "group flex h-10 w-full items-center justify-start rounded-lg px-8 mx-2"
         )}
       >
         <div className="mr-2">{icon}</div>
@@ -139,16 +135,17 @@ function NavLinkDropdown({ title, icon, label, sub, closeNav }: NavLinkProps) {
         )}
         <span
           className={cn(
-            'ml-auto transition-all group-data-[state="open"]:-rotate-180'
+            "ml-auto transition-all group-data-[state='open']:-rotate-180"
           )}
         >
-          <ChevronDown stroke="1" />
+          <ChevronDown size={24} />
         </span>
       </CollapsibleTrigger>
       <CollapsibleContent className="collapsibleDropdown" asChild>
-        <ul>
-          {sub!.map((sublink) => (
-            <li key={sublink.title} className="my-1 ml-8">
+        <ul className="mt-2">
+          {sub?.map((sublink) => (
+            <li key={sublink.title} className="mb-1 ">
+              {/* subLink = true để áp dụng class thụt lề */}
               <NavLink {...sublink} subLink closeNav={closeNav} />
             </li>
           ))}

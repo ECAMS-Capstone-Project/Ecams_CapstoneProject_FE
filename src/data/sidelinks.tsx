@@ -124,17 +124,26 @@ const SidebarLinks = () => {
         icon: <Event />,
         id: 24,
       },
-      {
-        title: "Event-Club",
-        href: "/representative/event-club",
-        icon: <EventAvailableTwoTone />,
-        id: 24,
-      },
+
       {
         title: "Club",
         href: "/representative/club",
         icon: <Groups2Icon />,
         id: 24,
+        sub: [
+          {
+            title: "Event-Club",
+            href: "/representative/event-club",
+            icon: <EventAvailableTwoTone />,
+            id: 24,
+          },
+          {
+            title: "Club",
+            href: "/representative/club",
+            icon: <EventAvailableTwoTone />,
+            id: 24,
+          },
+        ],
       }
     );
   }
