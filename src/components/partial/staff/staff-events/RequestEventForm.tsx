@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import {
-  ArrowLeft,
   CheckCircle2,
   CheckCircle2Icon,
   CircleEllipsis,
+  CornerDownLeftIcon,
   XCircle,
   XCircleIcon,
 } from "lucide-react";
@@ -46,7 +46,7 @@ export const RequestEventDetail: React.FC = () => {
           <div className="container mx-auto px-4">
             {/* Heading */}
             <div className="flex justify-start items-center gap-2">
-              <ArrowLeft
+              <CornerDownLeftIcon
                 size={24}
                 onClick={() => navigate(-1)}
                 className="cursor-pointer stroke-[#136CB5] hover:stroke-[#36b6b9] transition duration-300"
@@ -70,7 +70,7 @@ export const RequestEventDetail: React.FC = () => {
                     {event?.eventName}
                   </h1>
                   <p className="mt-2 text-lg text-gray-200 drop-shadow-md">
-                    {event?.clubName || event?.representativeName}
+                    {event?.clubName + " Club" || event?.representativeName}
                   </p>
                 </div>
               </div>

@@ -43,6 +43,7 @@ export const EventSchema = z.object({
     price: z.coerce.number().min(0,{ message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
     maxParticipants: z.coerce.number().int().positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
     status: z.string().optional(), // Kiểm tra status không rỗng
+    walletId: z.string().optional(), 
     eventAreas: z
   .array(
     z.object({

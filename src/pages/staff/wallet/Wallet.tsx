@@ -13,11 +13,11 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { useWallet } from "@/hooks/staff/Wallet/useWallet";
 import { ViewWalletDialog } from "@/components/partial/staff/staff-wallet/ViewWalletDialog";
 
-import { WalletPagination } from "@/components/partial/staff/staff-wallet/WalletPagination";
+// import { WalletPagination } from "@/components/partial/staff/staff-wallet/WalletPagination";
 
 const Wallet = () => {
-  const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(10);
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const accessToken = localStorage.getItem("accessToken");
@@ -37,7 +37,7 @@ const Wallet = () => {
     fetchUserInfo();
   }, []);
 
-  const { wallets, isLoading, totalPages } = useWallet(
+  const { wallets, isLoading } = useWallet(
     userInfo?.universityId ?? "",
     accessToken ?? "",
     pageNo,
@@ -81,9 +81,8 @@ const Wallet = () => {
 
           <WalletCard wallets={wallets} />
 
-          <div className="flex justify-between items-center mt-9 pt-6">
+          {/* <div className="flex justify-between items-center mt-9 pt-6">
             <div className="w-full h-full">
-              {/* Pagination nằm ở dưới cùng */}
               <WalletPagination
                 totalPages={totalPages}
                 pageSize={pageSize}
@@ -92,7 +91,7 @@ const Wallet = () => {
                 setPageSize={setPageSize}
               />
             </div>
-          </div>
+          </div> */}
         </>
       )}
     </React.Suspense>

@@ -19,7 +19,10 @@ export interface EventClubDTO {
   websiteUrl?: string;
   clubFields?: FieldDTO[];
   clubMembers?: ClubMemberDTO[];
+  isEventClub: boolean;
 }
+
+
 
 export const getEventList = async (pageNumber: number, pageSize: number): Promise<ResponseDTO<ResponseData<Event>>> => {
     try {
@@ -47,6 +50,18 @@ export const getEventList = async (pageNumber: number, pageSize: number): Promis
     export const getEventClubDetail = async (clubId: string): Promise<ResponseDTO<EventClubDTO>> => {
         try {
             const response = await get<ResponseDTO<EventClubDTO>>(`/Clubs/${clubId}`);
+        
+            
+            return response;
+            
+        } catch (error) {
+            console.error("Error fetching university list:", error);
+        throw error;
+      }
+        }
+    export const getEventClub = async (uniId: string, pageNumber: number, pageSize: number): Promise<ResponseDTO<ResponseData<EventClubDTO>>> => {
+        try {
+            const response = await get<ResponseDTO<ResponseData<EventClubDTO>>>(`/Clubs/university/${uniId}?PageNumber=${pageNumber}&PageSize=${pageSize}`);
         
             
             return response;

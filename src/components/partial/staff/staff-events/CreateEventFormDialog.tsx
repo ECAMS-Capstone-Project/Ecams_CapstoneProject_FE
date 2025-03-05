@@ -53,6 +53,7 @@ import { AreaPicker, DatePicker } from "./AreaPicker";
 import { Heading } from "@/components/ui/heading";
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
+import EventWalletPicker from "./WalletPicker";
 
 type EventFormValues = z.infer<typeof EventSchema> & {
   eventAreas: {
@@ -108,6 +109,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       universityId: "",
       representativeId: "",
       clubId: "",
+      walletId: "",
       eventName: "",
       imageUrl: "",
       description: "",
@@ -140,6 +142,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
         "RegisteredStartDate",
         values.registeredStartDate.toISOString()
       );
+      formData.append("WalletId", values.walletId ?? "");
       formData.append(
         "RegisteredEndDate",
         values.registeredEndDate.toISOString()
@@ -387,6 +390,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           </FormItem>
                         )}
                       />
+
                       {/* Hiển thị ngày bắt đầu và kết thúc cho mỗi khu vực */}
                       <FormField
                         control={form.control}
@@ -470,6 +474,24 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                               </PopoverContent>
                             </Popover>
 
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="walletId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Wallet</FormLabel>
+                            <FormControl>
+                              <EventWalletPicker
+                                value={field.value}
+                                onChange={(selectedWalletId) =>
+                                  field.onChange(selectedWalletId)
+                                }
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}

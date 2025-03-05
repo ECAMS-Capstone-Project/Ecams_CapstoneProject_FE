@@ -1,6 +1,10 @@
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { format } from "date-fns";
-import { ArrowLeft, CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  CornerDownLeftIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const EventDetail: React.FC = () => {
@@ -36,7 +40,7 @@ export const EventDetail: React.FC = () => {
       <div className="container mx-auto px-4">
         {/* Heading */}
         <div className="flex justify-start items-center gap-2">
-          <ArrowLeft
+          <CornerDownLeftIcon
             size={24}
             onClick={() => navigate(-1)}
             className="cursor-pointer stroke-[#136CB5] hover:stroke-[#36b6b9] transition duration-300"
@@ -75,7 +79,11 @@ export const EventDetail: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <p className="text-gray-600">Price:</p>
-                  <p className="font-semibold text-lg">{`${event?.price.toLocaleString()} VND`}</p>
+                  <p className="font-semibold text-lg">{`${
+                    event?.price == 0
+                      ? "FREE"
+                      : event?.price.toLocaleString() + " VND"
+                  }`}</p>
                 </div>
                 <div>
                   <p className="text-gray-600">Max Participants:</p>
@@ -170,22 +178,34 @@ export const EventDetail: React.FC = () => {
             {/* Status Description */}
 
             <section className="flex items-center gap-2">
-              <h3 className="text-2xl font-semibold text-gray-800 ">Status:</h3>
-              <span
-                className={`font-semibold text-lg gap-1 py-1 px-2 rounded-md flex items-center justify-center ${
-                  event?.status === "ACTIVE"
-                    ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                    : "bg-[#FFF5BA] text-[#5A3825]"
-                }`}
-              >
-                {event?.status ? "Active" : "Inactive"}
+              <div>
+                <h3 className="text-2xl font-semibold text-gray-800 ">
+                  Status:
+                </h3>
+                <span
+                  className={`font-semibold text-lg gap-1 py-1 px-2 rounded-md flex items-center justify-center ${
+                    event?.status === "ACTIVE"
+                      ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                      : "bg-[#FFF5BA] text-[#5A3825]"
+                  }`}
+                >
+                  {event?.status ? "Active" : "Inactive"}
 
-                {event?.status === "ACTIVE" ? (
-                  <CheckCircle2Icon size={19} className="text-[#2F4F4F]" />
-                ) : (
-                  <XCircleIcon size={19} className=" text-[#5A3825]" />
-                )}
+                  {event?.status === "ACTIVE" ? (
+                    <CheckCircle2Icon size={19} className="text-[#2F4F4F]" />
+                  ) : (
+                    <XCircleIcon size={19} className=" text-[#5A3825]" />
+                  )}
+                </span>
+              </div>
+              {/* <div>
+            <h3 className="text-2xl font-semibold text-gray-800 ">Wallet:</h3>
+              <span
+                className={`font-semibold text-lg gap-1 py-1 px-2 rounded-md flex items-center justify-center `}
+              >
+              {event.}
               </span>
+            </div> */}
             </section>
           </div>
         </div>

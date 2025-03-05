@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { approveEvent, createEvent, createEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
+import { approveEvent, createEvent, createEventClub, getEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
 import {  useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -57,6 +57,14 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
       queryFn: () => getEventClubDetail(clubId), // Gọi API lấy chi tiết sự kiện
       enabled: true, // Chỉ thực hiện khi có eventId
    
+    });
+  };
+
+  const getEventClubQuery = (uniId: string, pageNumber: number, pageSize: number) => {
+    return useQuery({
+      queryKey: ["eventClub", uniId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
+      queryFn: () => getEventClub(uniId, pageNumber, pageSize), // Gọi API lấy thông tin Event Club
+      enabled: !!uniId, // Chỉ thực hiện khi có uniId
     });
   };
     // // Xóa area
@@ -118,6 +126,7 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
    approveEvent: approveEventMutation,
    rejectEvent: rejectEventMutation,
    getEventClubDetailQuery,
-   createEventClub: createEventClubMutation
+   createEventClub: createEventClubMutation,
+   getEventClubQuery
   };
 };
