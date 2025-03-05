@@ -144,12 +144,12 @@ export const CreateEventClubDialog: React.FC<AreaDialogProps> = ({
                           <FormControl>
                             {/* Nếu có ảnh, hiển thị ảnh hiện tại */}
                             <>
-                              <img
+                              {/* <img
                                 src={String(field.value)} // Hiển thị ảnh từ URL
                                 alt="Current Image"
                                 className="w-full h-52 object-contain mb-4"
                                 onChange={field.onChange}
-                              />
+                              /> */}
                               <Input
                                 className="w-60"
                                 type="file"
