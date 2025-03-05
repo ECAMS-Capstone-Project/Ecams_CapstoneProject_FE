@@ -154,7 +154,7 @@ export default function ClubDetailPage() {
 
                 {/* Nội dung tab 1 */}
                 <TabsContent value="events">
-                    <EventList />
+                    <EventList clubId={clubId} />
                 </TabsContent>
 
                 {/* Nội dung tab 2 */}

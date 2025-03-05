@@ -37,6 +37,38 @@ export interface ClubResponseDTO {
     clubMembers?: ClubMemberDTO[];
 }
 
+// Enum cho EventStatus
+export enum EventStatusEnum {
+    PENDING = 1,
+    ACTIVE = 2,
+    INACTIVE = 3,
+}
+
+// Enum cho EventType
+enum EventTypeEnum {
+    PUBLIC = "PUBLIC",
+    PRIVATE = "PRIVATE",
+}
+
+// Interface cho Event
+export interface EventResponse {
+    eventId: string;
+    representativeId?: string;
+    representativeName?: string;
+    clubId?: string;
+    clubName?: string;
+    eventName: string;
+    description: string;
+    imageUrl: string;
+    startDate: Date;
+    endDate: Date;
+    registeredStartDate: Date;
+    registeredEndDate: Date;
+    price: number;
+    maxParticipants?: number;
+    status: EventStatusEnum;
+    eventType: EventTypeEnum;
+}
 
 export const GetAllClubsAPI = async (userId: string, status: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
@@ -166,9 +198,9 @@ export const GetClubsDetailAPI = async (clubId: string): Promise<ResponseDTO<Clu
     }
 };
 
-export const GetMemberInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ClubMemberDTO[]>> => {
+export const GetMemberInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
     try {
-        const response = await get<ResponseDTO<ClubMemberDTO[]>>(`/Clubs/${clubId}/members?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(`/Clubs/${clubId}/members?PageNumber=${pageNo}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -177,9 +209,20 @@ export const GetMemberInClubsAPI = async (clubId: string, pageSize: number, page
     }
 };
 
-export const GetTaskInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<Task[]>> => {
+export const GetTaskInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Task>>> => {
     try {
-        const response = await get<ResponseDTO<Task[]>>(`/Clubs/${clubId}/tasks?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        const response = await get<ResponseDTO<ResponseData<Task>>>(`/Clubs/${clubId}/tasks?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetEventInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<EventResponse>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventResponse>>>(`/Clubs/${clubId}/events?PageNumber=${pageNo}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

@@ -20,7 +20,7 @@ export default function TaskList({ clubId }: props) {
             const taskData = await GetTaskInClubsAPI(clubId, pageSize, pageNo);
 
             if (taskData) {
-                setTaskList(taskData.data || []); // Đảm bảo `data.data` tồn tại
+                setTaskList(taskData.data?.data || []); // Đảm bảo `data.data` tồn tại
                 // setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
             } else {
                 console.warn("UniversityList returned no data");

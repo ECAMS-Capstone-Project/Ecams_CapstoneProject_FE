@@ -18,8 +18,8 @@ export default function MemberList({ clubId }: props) {
             const clubData = await GetMemberInClubsAPI(clubId, pageSize, pageNo);
             console.log(clubData.data);
             if (clubData) {
-                setMemberList(clubData.data || []); // Đảm bảo `data.data` tồn tại
-                // setTotalPages(clubData.data?.totalPages || 1); // Đặt số trang
+                setMemberList(clubData.data?.data || []); // Đảm bảo `data.data` tồn tại
+                setTotalPages(clubData.data?.totalPages || 1); // Đặt số trang
             } else {
                 console.warn("UniversityList returned no data");
             }

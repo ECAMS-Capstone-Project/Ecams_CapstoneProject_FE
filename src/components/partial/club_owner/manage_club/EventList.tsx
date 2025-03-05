@@ -1,102 +1,135 @@
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Avatar } from "@mui/material";
+import { Avatar, CircularProgress, Pagination } from "@mui/material";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { EventResponse, EventStatusEnum, GetEventInClubsAPI } from "@/api/club-owner/ClubByUser";
+import { format } from "date-fns";
+import { formatPrice } from "@/lib/FormatPrice";
 
-// Dữ liệu mô phỏng (thêm 'id' để điều hướng)
-const events = [
-    {
-        id: 1,
-        name: "Linux",
-        version: "LIN v2.0",
-        duration: "4 days (12 hours)",
-        date: "23/07/2022",
-        author: "Johny Deep",
-        isActive: true,
-    },
-    {
-        id: 2,
-        name: "Linux",
-        version: "LIN v2.0",
-        duration: "4 days (12 hours)",
-        date: "23/07/2022",
-        author: "Johny Deep",
-        isActive: true,
-    },
-    {
-        id: 3,
-        name: "AWS Basic",
-        version: "AWB v1.0",
-        duration: "7 days (21 hours)",
-        date: "23/07/2022",
-        author: "Warrior Tran",
-        isActive: true,
-    },
-    {
-        id: 4,
-        name: "AWS Basic",
-        version: "AWB v1.0",
-        duration: "7 days (21 hours)",
-        date: "23/07/2022",
-        author: "Warrior Tran",
-        isActive: true,
-    },
-];
+interface Props {
+    clubId: string;
+}
 
-export default function EventList() {
+export default function EventList({ clubId }: Props) {
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize] = useState(5); // Giữ cố định số lượng sự kiện trên mỗi trang
+    const [totalPages, setTotalPages] = useState(0);
+    const [eventList, setEventList] = useState<EventResponse[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // Lọc sự kiện dựa trên tên hoặc mô tả
-    const filteredEvents = events.filter((evt) =>
-        evt.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // 🎯 Load danh sách sự kiện từ API
+    const loadEvents = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const eventData = await GetEventInClubsAPI(clubId, pageSize, pageNo);
+            if (eventData?.data?.data) {
+                setEventList(eventData.data.data);
+                setTotalPages(eventData.data.totalPages || 1);
+            } else {
+                setEventList([]);
+            }
+        } catch (error) {
+            console.error("Error loading events:", error);
+            setEventList([]);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [clubId, pageNo, pageSize]);
+
+    // 🔥 Tìm kiếm sự kiện trong danh sách đã tải (không gọi API)
+    const filteredEvents = eventList.filter((evt) =>
+        evt.eventName.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    useEffect(() => {
+        loadEvents();
+    }, [loadEvents]);
+
     return (
-        <div className="flex flex-col gap-4 mt-4 max-h-[420px] overflow-y-auto">
-            <div className="mt-2 mb-2 ml-2">
+        <div className="flex flex-col gap-4 mt-4">
+            {/* 🔍 Thanh tìm kiếm */}
+            <div className="flex justify-between items-center">
                 <Input
                     placeholder="Search events..."
-                    type="email"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-2/6 "
+                    className="w-2/6"
                 />
+                {/* Hiển thị số lượng sự kiện */}
+                <span className="text-sm text-gray-600">Total: {filteredEvents.length} events</span>
             </div>
-            {filteredEvents.map((evt) => (
-                <Link
-                    key={evt.id}
-                    to={`/events/${evt.id}`}
-                    className="flex items-center gap-4 rounded-lg bg-white shadow-sm border
-                     hover:shadow-md transition cursor-pointer no-underline"
-                    style={{ height: "105px", borderRadius: "20px" }}
-                >
-                    <div
-                        className="w-32 h-full flex justify-center items-center"
-                        style={{
-                            background: "linear-gradient(to right, #136CB5, #49BBBD)",
-                            borderTopLeftRadius: "20px",
-                            borderBottomLeftRadius: "20px",
-                        }}
-                    >
-                        <Avatar />
+
+            {/* 🔄 Loading state */}
+            {isLoading ? (
+                <div className="flex justify-center items-center py-10">
+                    <CircularProgress />
+                </div>
+            ) : filteredEvents.length === 0 ? (
+                <p className="text-center text-gray-500">No events found.</p>
+            ) : (
+                <>
+                    {/* Danh sách sự kiện */}
+                    <div className="overflow-y-auto max-h-[420px]">
+                        {filteredEvents.map((evt, index) => (
+                            <Link
+                                key={index}
+                                to={`/events/${evt.eventId}`}
+                                className="flex items-center gap-4 rounded-lg bg-white shadow-sm border
+                   hover:shadow-md transition cursor-pointer no-underline"
+                                style={{ height: "105px", marginBottom: "15px" }}
+                            >
+                                {/* Avatar của sự kiện */}
+                                <div
+                                    className="w-32 h-full flex justify-center items-center"
+                                    style={{
+                                        background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                                        borderTopLeftRadius: "20px",
+                                        borderBottomLeftRadius: "20px",
+                                    }}
+                                >
+                                    <Avatar src={evt.imageUrl || "https://blog.topcv.vn/wp-content/uploads/2021/07/sk2uEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"} />
+                                </div>
+
+                                {/* Thông tin sự kiện */}
+                                <div className="flex flex-col py-2 pr-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-xl font-semibold">{evt.eventName}</span>
+                                        {evt.status === EventStatusEnum.ACTIVE && (
+                                            <Badge variant="outline" className="border-green-600 text-green-600">
+                                                Active
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    <span className="text-sm text-gray-600">
+                                        <b>Price:</b> {formatPrice(evt.price)}
+                                        {" · "}
+                                        <b>Registration:</b> {format(evt.registeredStartDate, "dd/MM/yyyy")} -{" "}
+                                        {format(evt.registeredEndDate, "dd/MM/yyyy")}
+                                        {" · "}
+                                        <b>Max:</b> {evt.maxParticipants ?? "N/A"}
+                                        {" · "}
+                                        <b>Club:</b> {evt.clubName ?? "N/A"}
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
 
-                    <div className="flex flex-col py-2 pr-4">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl font-semibold">{evt.name}</span>
-                            {evt.isActive && (
-                                <Badge variant="outline" className="border-green-600 text-green-600">
-                                    Active
-                                </Badge>
-                            )}
-                        </div>
-
-                        <span className="text-sm text-gray-600">
-                            {evt.version} / {evt.duration} on {evt.date} by {evt.author}
-                        </span>
+                    {/* 📌 Phân trang */}
+                    <div className="flex justify-center mt-4">
+                        <Pagination
+                            count={totalPages}
+                            page={pageNo}
+                            onChange={(_, value) => setPageNo(value)}
+                            color="primary"
+                            shape="rounded"
+                        />
                     </div>
-                </Link>
-            ))}
+                </>
+            )}
         </div>
     );
 }
