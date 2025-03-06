@@ -42,7 +42,7 @@ const EventClub = () => {
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
-      {isLoading ? (
+      {isLoading || !eventClub ? (
         <LoadingAnimation />
       ) : (
         <>

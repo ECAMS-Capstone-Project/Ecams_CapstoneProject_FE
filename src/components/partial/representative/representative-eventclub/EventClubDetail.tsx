@@ -82,35 +82,40 @@ const EventClubDetail = ({ club }: EventClubProps) => {
                   </Dialog>
                 </div>
               </div>
-              {club?.clubMembers && club.clubMembers.length > 0 ? (
+              {club?.clubMembers &&
+              club.clubMembers.filter(
+                (member) => member.clubRoleName === "CLUB_OWNER"
+              ).length > 0 ? (
                 <ul className="mt-4 space-y-4">
-                  {club.clubMembers.map((member, index) => (
-                    <li key={index} className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                        {member.avatar ? (
-                          <img
-                            src={member.avatar}
-                            alt={member.fullname}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center w-full h-full bg-gray-500">
-                            <span className="text-white text-lg font-medium">
-                              {member.fullname.charAt(0)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-lg font-semibold text-gray-800">
-                          {member.fullname}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {member.clubRoleName}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
+                  {club.clubMembers
+                    .filter((member) => member.clubRoleName === "CLUB_OWNER")
+                    .map((member, index) => (
+                      <li key={index} className="flex items-center space-x-4">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
+                          {member.avatar ? (
+                            <img
+                              src={member.avatar}
+                              alt={member.fullname}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex items-center justify-center w-full h-full bg-gray-500">
+                              <span className="text-white text-lg font-medium">
+                                {member.fullname.charAt(0)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-lg font-semibold text-gray-800">
+                            {member.fullname}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {member.clubRoleName}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               ) : (
                 <p className="mt-2 text-gray-600">No members yet</p>
