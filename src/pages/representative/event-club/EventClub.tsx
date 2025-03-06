@@ -36,9 +36,9 @@ const EventClub = () => {
   const { data: eventClub } = getEventClubQuery(
     userInfo?.universityId || "",
     1,
-    2
+    10
   );
-  console.log("event", eventClub?.data?.data);
+  console.log("event club", eventClub?.data?.data);
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>

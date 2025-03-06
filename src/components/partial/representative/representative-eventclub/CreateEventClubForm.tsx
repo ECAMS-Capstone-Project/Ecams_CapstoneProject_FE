@@ -117,13 +117,13 @@ export const CreateEventClubDialog: React.FC<AreaDialogProps> = ({
         <>
           <DialogHeader>
             <DialogTitle>
-              {initialData ? "Edit Area" : "Add New Area"}
+              {initialData ? "Edit Area" : "Add New Event Club"}
             </DialogTitle>
           </DialogHeader>
           <DialogDescription>
             {initialData
               ? "Edit area details below."
-              : "Fill out the form below to add a new area."}
+              : "Fill out the form below to add a new event club."}
           </DialogDescription>
           <div>
             <div className="p-4">
