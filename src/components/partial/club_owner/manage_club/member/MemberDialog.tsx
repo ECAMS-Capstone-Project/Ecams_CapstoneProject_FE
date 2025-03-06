@@ -1,11 +1,10 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { CheckCircle, XCircle } from "lucide-react";
+import { GetStudentByIdAPI } from "@/api/representative/StudentAPI";
+import StudentRequest from "@/models/StudentRequest";
+import { Grid2, Typography } from "@mui/material";
+import LoadingAnimation from "@/components/ui/loading";
 
 // Interface User
 export interface User {
@@ -26,148 +25,115 @@ interface UserDetailDialogProps {
 }
 
 const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData }) => {
-  const form = useForm<User>({
-    defaultValues: initialData || {
-      userId: "",
-      email: "",
-      fullname: "",
-      address: "",
-      phonenumber: "",
-      gender: "",
-      avatar: "",
-      status: "Inactive",
-      isVerified: false,
-    },
-  });
+  const [member, setMember] = useState<StudentRequest>();
+  const [loading, setLoading] = useState<boolean>();
+  useEffect(() => {
+    const loadStudent = async () => {
+      if (!initialData || initialData.userId === undefined) return;
+      try {
+        const response = await GetStudentByIdAPI(initialData.userId);
+        setMember(response.data);
+      } catch (error: any) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    loadStudent();
+  }, [initialData]);
   return (
-    <div>
-      <h2 className="text-lg font-semibold mb-4">User Detail</h2>
-
-      {/* Avatar */}
-      <div className="flex justify-center">
-        <Avatar className="w-20 h-20">
-          <AvatarImage src={"https://github.com/shadcn.png"} alt={initialData?.fullname} />
-        </Avatar>
-      </div>
-
-      <Form {...form}>
-        <form className="grid grid-cols-2 gap-4 mt-4">
-          {/* Full Name */}
-          <FormField
-            control={form.control}
-            name="fullname"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name:</FormLabel>
-                <FormControl>
-                  <Input {...field} readOnly className="bg-gray-100" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email:</FormLabel>
-                <FormControl>
-                  <Input {...field} readOnly className="bg-gray-100" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Phone Number */}
-          <FormField
-            control={form.control}
-            name="phonenumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number:</FormLabel>
-                <FormControl>
-                  <Input {...field} readOnly className="bg-gray-100" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Address */}
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address:</FormLabel>
-                <FormControl>
-                  <Input {...field} readOnly className="bg-gray-100" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Gender */}
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gender:</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    readOnly
-                    className={`bg-gray-100 ${field.value === "Male" ? "text-blue-500" : "text-pink-500"}`}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Status */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status:</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    readOnly
-                    className={`bg-gray-100 ${field.value === "Active" ? "text-green-500" : "text-red-500"}`}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Verified */}
-          <div className="flex flex-col col-span-2">
-            <FormLabel>Verified:</FormLabel>
-            <div className="flex items-center gap-2 p-2 rounded-md w-full bg-gray-100">
-              {initialData?.isVerified ? (
-                <CheckCircle size={20} className="text-green-500" />
-              ) : (
-                <XCircle size={20} className="text-red-500" />
-              )}
-              <span>{initialData?.isVerified ? "Verified" : "Not Verified"}</span>
-            </div>
+    <div className="p-5 mt-2">
+      {loading && <div><LoadingAnimation /></div>}
+      {!loading && (
+        <>
+          <h2 className="text-lg font-semibold mb-4">User Detail</h2>
+          {/* Avatar */}
+          <Grid2 container>
+            <Grid2 size={6}>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Student ID
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.studentId}
+                </Typography>
+              </div>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Gender
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.gender}
+                </Typography>
+              </div>
+            </Grid2>
+            <Grid2 size={6}>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Full Name
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.fullname}
+                </Typography>
+              </div>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Email
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.email}
+                </Typography>
+              </div>
+            </Grid2>
+            <Grid2 size={6}>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Major
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.major}
+                </Typography>
+              </div>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  University
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.universityName}
+                </Typography>
+              </div>
+            </Grid2>
+            <Grid2 size={6}>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Academic Year
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.yearOfStudy}
+                </Typography>
+              </div>
+              <div className="mb-3">
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Address
+                </Typography>
+                <Typography variant="body2" className="text-gray-700">
+                  {member?.address}
+                </Typography>
+              </div>
+            </Grid2>
+          </Grid2>
+          <div className="flex justify-center mt-6">
+            <Avatar className="w-72 h-52 rounded-lg">
+              <AvatarImage
+                src={member?.imageUrl || "https://github.com/shadcn.png"}
+                alt="empty"
+                className="object-cover w-full h-full"
+              />
+            </Avatar>
           </div>
-
-          {/* Close Button */}
-          <div className="col-span-2 flex justify-end">
-            <DialogClose asChild>
-              <Button type="button" className="bg-gray-500 text-white">
-                Close
-              </Button>
-            </DialogClose>
-          </div>
-        </form>
-      </Form>
+        </>
+      )}
     </div>
   );
 };

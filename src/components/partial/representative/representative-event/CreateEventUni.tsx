@@ -556,7 +556,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                         variant="contained"
                         component="span"
                         color="primary"
-                        sx={{ textTransform: 'none' }}
+                        sx={{ textTransform: 'none', background: 'linear-gradient(to right, #136CB5, #49BBBD)' }}
                       >
                         Choose image
                       </Button>
