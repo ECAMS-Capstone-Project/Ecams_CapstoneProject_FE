@@ -24,9 +24,9 @@ export interface EventClubDTO {
 
 
 
-export const getEventList = async (pageNumber: number, pageSize: number): Promise<ResponseDTO<ResponseData<Event>>> => {
+export const getEventList = async (uniId: string,pageNumber: number, pageSize: number): Promise<ResponseDTO<ResponseData<Event>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<Event>>>(`/Event?PageNumber=${pageNumber}&PageSize=${pageSize}`);
+        const response = await get<ResponseDTO<ResponseData<Event>>>(`/Event?UniversityId=${uniId}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
         
         return response;
     } catch (error) {
@@ -102,9 +102,9 @@ export const getEventList = async (pageNumber: number, pageSize: number): Promis
           }
       };
 
-      export const approveEvent = async (eventId: string): Promise<ResponseDTO<Event>> => {
+      export const approveEvent = async (eventId: string,walletId: string): Promise<ResponseDTO<Event>> => {
         try {
-          const response = await put<ResponseDTO<Event>>(`/Event/approve-event?eventId=${eventId}`);
+          const response = await put<ResponseDTO<Event>>(`/Event/approve-event`, {eventId,walletId});
           return response; // Trả về toàn bộ phản hồi
         } catch (error: any) {
           console.error("Error in UniversityList API call:", error.response || error);

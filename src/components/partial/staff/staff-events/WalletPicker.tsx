@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { useWallet } from "@/hooks/staff/Wallet/useWallet";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
@@ -82,18 +82,30 @@ const EventWalletPicker: React.FC<EventWalletPickerProps> = ({
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {wallets.map((wallet: Wallet) => (
-                <CommandItem
-                  key={wallet.walletId}
-                  onSelect={() => {
-                    onChange(wallet.walletId);
-                    setOpen(false);
-                  }}
-                  className="flex items-center"
-                >
-                  <span>{wallet.walletName}</span>
-                </CommandItem>
-              ))}
+              {wallets.map((wallet: Wallet) => {
+                const isSelected = selectedWallet?.walletId === wallet.walletId;
+                return (
+                  <CommandItem
+                    key={wallet.walletId}
+                    onSelect={() => {
+                      onChange(!isSelected ? wallet.walletId : "");
+                      setOpen(false);
+                    }}
+                    className="flex items-center"
+                  >
+                    <div
+                      className={`mr-2 flex h-4 w-4 items-center justify-center rounded border ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50"
+                      }`}
+                    >
+                      {isSelected && <CheckIcon className="h-4 w-4" />}
+                    </div>
+                    <span>{wallet.walletName}</span>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

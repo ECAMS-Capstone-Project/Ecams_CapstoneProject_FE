@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { format } from "date-fns";
 import {
   CheckCircle2,
@@ -15,10 +22,15 @@ import { useState } from "react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
+import EventWalletPicker from "./WalletPicker";
+import { Label } from "@/components/ui/label";
 
 export const RequestEventDetail: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const { approveEvent, isApproving, getEventDetailQuery } = useEvents();
+
   const { eventId = "" } = useParams();
   const navigate = useNavigate();
   async function handleApprove() {
@@ -26,7 +38,8 @@ export const RequestEventDetail: React.FC = () => {
       console.log("Approving Event...");
       // Call API để cập nhật status thành "Active"
 
-      await approveEvent(eventId);
+      await approveEvent({ eventId, walletId: selectedWalletId ?? "" });
+
       navigate("/representative/event");
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
@@ -212,7 +225,7 @@ export const RequestEventDetail: React.FC = () => {
 
                 <div className="flex justify-center w-full space-x-1">
                   <Button
-                    onClick={handleApprove}
+                    onClick={() => setIsOpen(true)}
                     className="w-1/4 sm:w-1/4 text-lg bg-[#D4F8E8] text-[#007B55] p-3 hover:bg-[#C2F2DC] hover:text-[#005B40] transition duration-300 ease-in-out"
                   >
                     <CheckCircle2 size={18} /> Approve
@@ -237,6 +250,41 @@ export const RequestEventDetail: React.FC = () => {
               }}
               dialogAction={"reject"}
             />
+          </Dialog>
+
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogContent className="p-4">
+              <DialogHeader className="p-1">
+                <DialogTitle>Select Wallet for Approval</DialogTitle>
+                <DialogDescription>
+                  Choose a wallet for this event to create QR code.
+                </DialogDescription>
+              </DialogHeader>
+              <div className=" p-5">
+                <Label className="mb-3">Wallet name</Label>
+                <EventWalletPicker
+                  value={selectedWalletId}
+                  onChange={(walletId) => setSelectedWalletId(walletId)}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant={"custom"}
+                    onClick={() => {
+                      handleApprove();
+                      setIsOpen(false);
+                    }}
+                    disabled={!selectedWalletId}
+                  >
+                    Confirm Approval
+                  </Button>
+                </DialogFooter>
+              </div>
+            </DialogContent>
           </Dialog>
         </div>
       )}

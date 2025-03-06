@@ -35,7 +35,11 @@ const Events = () => {
 
     fetchUserInfo();
   }, []);
-  const { events, isLoading, totalPages } = useEvents(pageNo, pageSize);
+  const { events, isLoading, totalPages } = useEvents(
+    userInfo?.universityId,
+    pageNo,
+    pageSize
+  );
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -115,7 +119,9 @@ const Events = () => {
               <EventTable
                 data={events.filter(
                   (events) =>
-                    events.clubId != null && events.status != "PENDING"
+                    events.clubId != null &&
+                    events.status != "PENDING" &&
+                    events.representativeId == null
                 )}
               />
               <DataTablePagination
