@@ -210,7 +210,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
           </Button>
           <Heading
             title={`Create new Event`}
-            description="Create a new Event in the system"
+            description="Create an event for your university"
           />
           <div>
             <div className="p-4 mx-7">
