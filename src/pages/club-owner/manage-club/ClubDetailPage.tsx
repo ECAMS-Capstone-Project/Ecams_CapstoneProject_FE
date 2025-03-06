@@ -7,8 +7,24 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { PopoverClub } from "./PopoverClub";
 import { Grid2 } from "@mui/material";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { ClubResponse } from "@/models/Club";
+import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
+import { formatDate } from "date-fns";
 
 export default function ClubDetailPage() {
+    const { clubId = "" } = useParams();
+    const [clubData, setClubData] = useState<ClubResponse | null>(null);
+
+    useEffect(() => {
+        async function fetchClubDetail() {
+            const response = await GetClubsDetailAPI(clubId);
+            setClubData(response.data || null);
+        }
+        fetchClubDetail();
+    }, [clubId]);
+    console.log("clubId", clubId);
     return (
         <div className="max-w-[1700px] mx-auto p-4 pt-0">
             {/* Container chính */}
@@ -20,7 +36,7 @@ export default function ClubDetailPage() {
                             <ChevronLeft />
                         </Button>
                         <h1 className="text-3xl font-bold mr-4 whitespace-nowrap">
-                            Korea - Idol - Kpop - Clubs
+                            {clubData?.clubName}
                         </h1>
                         <Badge
                             variant="secondary"
@@ -47,15 +63,7 @@ export default function ClubDetailPage() {
                             />
                             {/* Mô tả */}
                             <p className="text-gray-700 text-base leading-relaxed text-justify">
-                                The Drama Club at our school is a vibrant community of students
-                                passionate about acting and theater. The club meets every week
-                                after school to rehearse for upcoming performances, ranging from
-                                classic plays to modern productions. Members collaborate to design
-                                sets, create costumes, and learn various acting techniques. The
-                                club not only gives students a chance to showcase their talents on
-                                stage but also helps them develop confidence, teamwork, and public
-                                speaking skills. Every year, the Drama Club organizes a major
-                                performance, which is eagerly anticipated by the entire school.
+                                {clubData?.description}
                             </p>
                         </div>
                     </Grid2>
@@ -63,17 +71,17 @@ export default function ClubDetailPage() {
                         {/* Cột phải: Thông tin thời gian, contact, website */}
                         <div className="flex flex-col md:items-end space-y-1 text-base text-gray-600">
                             <p>
-                                <b>Club owner: Thanh Van</b>
+                                <b>Club owner: {clubData?.clubOwnerName}</b>
                             </p>
                             <p>
-                                <b className="text-xl">31</b> days until now
+                                {/* <b className="text-xl">{clubData.}</b> days until now */}
                             </p>
                             <p>
-                                Created on 23/07/2023
+                                Created on {formatDate(clubData?.foundingDate || new Date(), "dd/MM/yyyy")}
                             </p>
-                            <p>Contact: 0123456789</p>
-                            <p>Email: Fpt@dev.vn</p>
-                            <p>Website URL: https://URL</p>
+                            <p>Contact: {clubData?.contactPhone || "No info"}</p>
+                            <p>Email: {clubData?.contactEmail || "No info"}</p>
+                            <p>Website URL: {clubData?.websiteUrl || "No info"}</p>
                         </div>
                     </Grid2>
 
@@ -92,12 +100,12 @@ export default function ClubDetailPage() {
                             style={{ background: "linear-gradient(to right, #136CB5, #49BBBD)" }}
                         >
                             <span className="text-sm text-white font-bold">Total Members</span>
-                            <span className="text-xl font-bold text-white">10</span>
+                            <span className="text-xl font-bold text-white">{clubData?.numOfMems}</span>
                         </div>
                         {/* Box 2 */}
                         <div className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3 bg-gray-100">
                             <span className="text-sm text-black font-bold">Total Event</span>
-                            <span className="text-xl font-bold">9</span>
+                            <span className="text-xl font-bold">{clubData?.numOfEvents}</span>
                         </div>
                     </div>
 
@@ -146,17 +154,17 @@ export default function ClubDetailPage() {
 
                 {/* Nội dung tab 1 */}
                 <TabsContent value="events">
-                    <EventList />
+                    <EventList clubId={clubId} />
                 </TabsContent>
 
                 {/* Nội dung tab 2 */}
                 <TabsContent value="members">
-                    <MemberList />
+                    <MemberList clubId={clubId} />
                 </TabsContent>
 
                 {/* Nội dung tab 3 */}
                 <TabsContent value="tasks">
-                    <TaskList />
+                    <TaskList clubId={clubId} />
                 </TabsContent>
             </Tabs>
         </div>

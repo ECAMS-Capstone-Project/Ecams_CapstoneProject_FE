@@ -6,15 +6,9 @@ import { Button } from "@/components/ui/button";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import CSS của React Quill
 import { DialogClose } from "@radix-ui/react-dialog";
+import { Task } from "@/models/Task";
+import { format } from "date-fns";
 
-// Interface Task
-interface Task {
-  title: string;
-  description: string;
-  club: string;
-  deadline: string;
-  status: "In Progress" | "Submitted";
-}
 
 interface TaskDetailDialogProps {
   initialData: Task | null;
@@ -24,18 +18,17 @@ interface TaskDetailDialogProps {
 const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
   const form = useForm<Task>({
     defaultValues: initialData || {
-      title: "",
+      taskName: "",
       description: "",
-      club: "",
       deadline: "",
-      status: "In Progress",
+      status: false,
     },
   });
 
   const [editorContent, setEditorContent] = useState(""); // State lưu nội dung của ReactQuill
 
   // Kiểm tra trạng thái Task
-  const isSubmitted = initialData?.status === "Submitted";
+  const isSubmitted = initialData?.status == true;
 
   // Xử lý submit chỉ gửi `editorContent`
   const onSubmit = () => {
@@ -57,10 +50,10 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
           {/* Title (Read-only) */}
           <FormField
             control={form.control}
-            name="title"
+            name="taskName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title:</FormLabel>
+                <FormLabel>Task Name:</FormLabel>
                 <FormControl>
                   <textarea
                     {...field}
@@ -92,19 +85,6 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
             )}
           />
 
-          {/* Club (Read-only) */}
-          <FormField
-            control={form.control}
-            name="club"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Club:</FormLabel>
-                <FormControl>
-                  <Input {...field} readOnly className="bg-gray-100" />
-                </FormControl>
-              </FormItem>
-            )}
-          />
 
           {/* Deadline (Read-only) */}
           <FormField
@@ -114,7 +94,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Deadline:</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} readOnly className="bg-gray-100" />
+                  <Input value={format(new Date(field.value), 'HH:mm:ss dd/MM/yyyy')} readOnly className="bg-gray-100" />
                 </FormControl>
               </FormItem>
             )}

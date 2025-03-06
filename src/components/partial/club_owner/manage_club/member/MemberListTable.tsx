@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import DataTable from "@/components/ui/datatable/data-table";
 import { memberColumn } from "./member-table/column";
-import { User } from "@/models/User";
+import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 
 interface MemberData {
-  data: User[];
+  data: ClubMemberDTO[];
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 }
 const MemberListTable = ({ data, setFlag }: MemberData) => {

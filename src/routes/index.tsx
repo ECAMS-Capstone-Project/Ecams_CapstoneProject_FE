@@ -48,6 +48,8 @@ import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDi
 import { RequestEventDetail } from "@/components/partial/staff/staff-events/RequestEventForm";
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
+import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
+import { CreateTaskClub } from "@/components/partial/representative/representative-task/CreateTaskClub";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -308,7 +310,7 @@ export const router = createBrowserRouter([
         element: <ClubListPage />,
       },
       {
-        path: "/club/detail",
+        path: "/club/detail/:clubId",
         element: <ClubDetailPage />,
         errorElement: <ErrorException />,
       },
@@ -322,6 +324,16 @@ export const router = createBrowserRouter([
         element: <InvitationClubPage />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/club/create-event",
+        element: <CreateEventClub />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/create-task",
+        element: <CreateTaskClub />,
+        errorElement: <ErrorException />,
+      }
     ],
     errorElement: <ErrorException />,
   },

@@ -103,16 +103,6 @@ const WalletRepresentative = () => {
                 <Typography mb={2}>
                   🏫 <b>University:</b> {user?.universityName || "N/A"}
                 </Typography>
-                <Typography mb={2}>
-                  🔘 <b>User Status:</b>{" "}
-                  <span
-                    className={
-                      user?.status ? "text-green-500" : "text-red-500"
-                    }
-                  >
-                    {user?.status ? "Active" : "Inactive"}
-                  </span>
-                </Typography>
               </Grid2>
             </Grid2>
           </Grid2>

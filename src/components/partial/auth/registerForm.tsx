@@ -160,6 +160,7 @@ const RegisterForm: React.FC = () => {
       formData.append("Gender", data.gender);
 
       await registerStudent(formData);
+      toast.success("Register successfully");
     } catch (error) {
       toast.error("An error occurred");
       console.log(error);

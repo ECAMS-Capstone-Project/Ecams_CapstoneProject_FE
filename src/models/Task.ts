@@ -1,7 +1,7 @@
 export interface Task {
-    id: string;
-    title: string;
-    club: string;
-    status: string;
+    taskId: string;
+    taskName: string;
+    description: string;
     deadline: string;
+    status: boolean;
 }

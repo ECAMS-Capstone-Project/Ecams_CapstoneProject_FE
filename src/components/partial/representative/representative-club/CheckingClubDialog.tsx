@@ -30,6 +30,7 @@ import useAuth from "@/hooks/useAuth";
 import { MemberDetailDialog } from "./MemberDetailDialog";
 import { DenyCheckingClubRequest } from "./DenialDialog";
 import { format } from "date-fns";
+import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 
 // Dữ liệu props cho Dialog Club
 type FormMode = "view" | "pending" | "edit";
@@ -87,7 +88,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
     : '';
   return (
     <Dialog open={true} onOpenChange={setOpenDialog}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         {isLoading && (
           <div className="flex justify-center items-center h-full w-full">
             <DialogLoading />
@@ -122,8 +123,8 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                       <Typography variant="subtitle1" fontWeight="bold">
                         Description
                       </Typography>
-                      <Typography variant="body2" className="text-gray-700">
-                        {initialData?.description}
+                      <Typography variant="body2" style={{ textAlign: "justify" }} className="text-gray-700 text-ba">
+                        <DescriptionWithToggle text={initialData?.description || ""} />
                       </Typography>
                     </div>
                     <div className="mb-3">
@@ -181,13 +182,13 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                   Club Members
                 </Typography>
                 <TableContainer component={Paper}>
-                  <Table size="small">
+                  <Table size="medium">
                     <TableHead>
                       <TableRow>
                         <TableCell>Avatar</TableCell>
+                        <TableCell>Student ID</TableCell>
                         <TableCell>Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Email</TableCell>
+                        <TableCell>Role</TableCell>
                         <TableCell align="center">Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -205,7 +206,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                           </TableCell>
                           <TableCell>{member.studentId}</TableCell>
                           <TableCell>{member.fullname}</TableCell>
-                          <TableCell>{member.email}</TableCell>
+                          <TableCell>{member.clubRoleName}</TableCell>
                           <TableCell align="center">
                             <Button
                               variant="link"
