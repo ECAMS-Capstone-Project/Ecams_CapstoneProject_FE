@@ -72,7 +72,7 @@ export const taskColumn = (
           <DataTableColumnHeader column={column} title="Deadline" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{format(row.getValue("deadline"), 'dd/MM/yyyy HH:mm:ss')}</div>,
+      cell: ({ row }) => <div className="text-center w-full">{format(row.getValue("deadline"), 'HH:mm:ss dd/MM/yyyy')}</div>,
     },
     {
       id: "actions",

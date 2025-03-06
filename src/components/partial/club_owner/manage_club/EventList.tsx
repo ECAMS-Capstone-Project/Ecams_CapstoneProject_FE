@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, CircularProgress, Pagination } from "@mui/material";
+import { CircularProgress, Pagination } from "@mui/material";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useCallback } from "react";
 import { EventResponse, EventStatusEnum, GetEventInClubsAPI } from "@/api/club-owner/ClubByUser";
 import { format } from "date-fns";
-import { formatPrice } from "@/lib/FormatPrice";
+import { Button } from "@/components/ui/button";
 
 interface Props {
     clubId: string;
@@ -18,7 +18,7 @@ export default function EventList({ clubId }: Props) {
     const [totalPages, setTotalPages] = useState(0);
     const [eventList, setEventList] = useState<EventResponse[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
+    const navigate = useNavigate()
     // 🎯 Load danh sách sự kiện từ API
     const loadEvents = useCallback(async () => {
         setIsLoading(true);
@@ -58,7 +58,7 @@ export default function EventList({ clubId }: Props) {
                     className="w-2/6"
                 />
                 {/* Hiển thị số lượng sự kiện */}
-                <span className="text-sm text-gray-600">Total: {filteredEvents.length} events</span>
+                <Button onClick={() => navigate('/club/create-event')} variant={"default"}>Create event</Button>
             </div>
 
             {/* 🔄 Loading state */}
@@ -87,9 +87,14 @@ export default function EventList({ clubId }: Props) {
                                         background: "linear-gradient(to right, #136CB5, #49BBBD)",
                                         borderTopLeftRadius: "20px",
                                         borderBottomLeftRadius: "20px",
+                                        backgroundImage: `url(${evt.imageUrl})`,
                                     }}
                                 >
-                                    <Avatar src={evt.imageUrl || "https://blog.topcv.vn/wp-content/uploads/2021/07/sk2uEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"} />
+                                    <img
+                                        src={evt.imageUrl || "https://blog.topcv.vn/wp-content/uploads/2021/07/sk2uEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"} // Fake avatar
+                                        alt="Club Avatar"
+                                        className="w-20 h-20 rounded-full object-cover mr-4 mb-2 md:mb-0"
+                                    />
                                 </div>
 
                                 {/* Thông tin sự kiện */}
@@ -104,14 +109,12 @@ export default function EventList({ clubId }: Props) {
                                     </div>
 
                                     <span className="text-sm text-gray-600">
-                                        <b>Price:</b> {formatPrice(evt.price)}
-                                        {" · "}
                                         <b>Registration:</b> {format(evt.registeredStartDate, "dd/MM/yyyy")} -{" "}
                                         {format(evt.registeredEndDate, "dd/MM/yyyy")}
                                         {" · "}
                                         <b>Max:</b> {evt.maxParticipants ?? "N/A"}
                                         {" · "}
-                                        <b>Club:</b> {evt.clubName ?? "N/A"}
+                                        <b>Type:</b> {evt.eventType ?? "N/A"}
                                     </span>
                                 </div>
                             </Link>

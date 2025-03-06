@@ -51,7 +51,7 @@ export const memberColumn = (
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${isClubOwner
-              ? "bg-red-500 text-white"
+              ? "bg-black text-white"
               : isMember
                 ? "bg-[#4DB848]  text-white"
                 : ""
