@@ -1,31 +1,21 @@
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
-import { Person } from "@mui/icons-material";
 import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { User } from "@/models/User";
+import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 
 export const memberColumn = (
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
-): ColumnDef<User>[] => [
+): ColumnDef<ClubMemberDTO>[] => [
     {
-      accessorKey: "userId",
+      accessorKey: "studentId",
       header: ({ column }) => (
         <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Student Id" />
+          <DataTableColumnHeader column={column} title="Student ID" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("userId")}</div>,
-    },
-    {
-      accessorKey: "fullname",
-      header: ({ column }) => (
-        <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Full name" />
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("fullname")}</div>,
+      cell: ({ row }) => <div className="text-center w-full">{row.getValue("studentId")}</div>,
     },
     {
       accessorKey: "email",
@@ -37,39 +27,31 @@ export const memberColumn = (
       cell: ({ row }) => <div className="text-center w-full">{row.getValue("email")}</div>,
     },
     {
-      accessorKey: "dateOfBirth",
+      accessorKey: "fullname",
       header: ({ column }) => (
         <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Date of birth" />
+          <DataTableColumnHeader column={column} title="Full Name" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("dateOfBirth") || "22/07/2003"}</div>,
+      cell: ({ row }) => <div className="text-center w-full">{row.getValue("fullname")}</div>,
+      // cell: ({ row }) => <div className="text-center w-full">{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
     },
     {
-      accessorKey: "gender",
-      header: ({ column }) => (
-        <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Gender" />
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
-    },
-    {
-      accessorKey: "role",
+      accessorKey: "clubRoleName",
       header: ({ column }) => (
         <div className="text-center w-full">
           <DataTableColumnHeader column={column} title="Role" />
         </div>
       ),
       cell: ({ row }) => {
-        const role = row.getValue("role") || "Member";
-        const isClubOwner = role === "Club Owner";
-        const isMember = role === "Member";
+        const role = row.getValue("clubRoleName") || "CLUB_MEMBER";
+        const isClubOwner = role === "CLUB_OWNER";
+        const isMember = role === "CLUB_MEMBER";
 
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${isClubOwner
-              ? "bg-red-500 text-white"
+              ? "bg-black text-white"
               : isMember
                 ? "bg-[#4DB848]  text-white"
                 : ""

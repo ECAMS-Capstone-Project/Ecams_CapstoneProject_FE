@@ -19,9 +19,9 @@ export const ContractRepresentative = async (pageSize: number, pageNo: number, r
     }
 };
 
-export const CancelContractRepresentative = async (contractId: string, representativeId: string): Promise<ResponseDTO<string>> => {
+export const CancelContractRepresentative = async (contractId: string, representativeId: string, reason: string): Promise<ResponseDTO<string>> => {
     try {
-        const data = { contractId: contractId, representativeId: representativeId }
+        const data = { contractId: contractId, representativeId: representativeId, reason: reason };
         const response = await put<ResponseDTO<string>>(`/Contracts/${contractId}/cancel`, data);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

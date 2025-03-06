@@ -126,7 +126,7 @@ const CheckingClubListPage: React.FC = () => {
                                         display="flex"
                                         justifyContent="center"
                                     >
-                                        <ClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} />
+                                        <ClubCard clubId={club.clubId} image={club.logoUrl} title={club.clubName} field={club.clubFields} />
                                     </Grid2>
                                 ))}
                             </Grid2>
