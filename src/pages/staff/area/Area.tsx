@@ -40,7 +40,6 @@ const Area = () => {
   }, []);
   // const [pageNo, setPageNo] = useState(1);
   // const [pageSize, setPageSize] = useState(5);
-  console.log("uni id" + userInfo?.universityId);
 
   // ✅ Lấy danh sách từ `useAreas()`
   const { areas, isLoading, totalPages } = useAreas(
@@ -84,7 +83,7 @@ const Area = () => {
           <div className="flex items-center justify-between pt-4">
             <Heading
               title={`Manage Area`}
-              description="Manage Area in the system"
+              description={`View and manage all areas of ${userInfo?.universityName}`}
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

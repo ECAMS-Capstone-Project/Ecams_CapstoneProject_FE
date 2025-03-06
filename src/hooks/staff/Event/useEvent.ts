@@ -1,19 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { approveEvent, createEvent, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
+import { ResponseDTO } from "@/api/BaseResponse";
+import { approveEvent, createEvent, createEventClub, getEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
 import {  useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Event } from "@/models/Event";
 
-export const useEvents = (pageNumber?: number, pageSize?: number) => {
+export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
     const { data, isLoading, refetch } =  useQuery({
-      queryKey: ["events", pageNumber, pageSize], // Query key động
-      queryFn:  () =>  getEventList(pageNumber || 1, pageSize || 5),
+      queryKey: ["events",uniId, pageNumber, pageSize], // Query key động
+      queryFn:  () =>  getEventList(uniId || "",pageNumber || 1, pageSize || 5),
       refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
       refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
-    enabled:true, 
+    enabled:!!uniId, 
       
     });
 
@@ -30,6 +32,17 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
       toast.error(error.response.data.message || "An error occurred");
     },
   });
+  const {mutateAsync:createEventClubMutation, isPending:isCreatePending} = useMutation({
+    mutationFn: createEventClub,
+    onSuccess: () => {
+      toast.success("Event Club created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["eventClub"] }); // Tự động refetch danh sách ✅
+    },
+    onError: (error: any) => {
+      console.error("Error:", error.response.data.errors);
+      toast.error(error.response.data.message || "An error occurred");
+    },
+  });
   
   // Fetch chi tiết event theo eventId
   const getEventDetailQuery = (eventId: string) => {
@@ -38,6 +51,22 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
       queryFn: () => getEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
       enabled: true, // Chỉ thực hiện khi có eventId
    
+    });
+  };
+  const getEventClubDetailQuery = (clubId: string) => {
+    return useQuery({
+      queryKey: ["eventClubDetail", clubId], // Query key động dựa trên eventId
+      queryFn: () => getEventClubDetail(clubId), // Gọi API lấy chi tiết sự kiện
+      enabled: true, // Chỉ thực hiện khi có eventId
+   
+    });
+  };
+
+  const getEventClubQuery = (uniId: string, pageNumber: number, pageSize: number) => {
+    return useQuery({
+      queryKey: ["eventClub", uniId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
+      queryFn: () => getEventClub(uniId, pageNumber, pageSize), // Gọi API lấy thông tin Event Club
+      enabled: !!uniId, // Chỉ thực hiện khi có uniId
     });
   };
     // // Xóa area
@@ -61,17 +90,21 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
     //     });
     //   }
     // });
-    const {mutateAsync: approveEventMutation, isPending: isApproving} = useMutation({
-      mutationFn: approveEvent,
-      onSuccess: () => {
-        // refetch();
-        toast.success("Event approved successfully!");
-        queryClient.invalidateQueries( {queryKey:["events"]}); // Tự động refetch danh sách ✅
-      },
-      onError: (error: any) => {
-        toast.error(error.response.data.message || "Error approving event");
-      },
-    });
+    const { mutateAsync: approveEventMutation, isPending: isApproving } = useMutation<
+    ResponseDTO<Event>,
+    unknown,
+    { eventId: string; walletId: string }
+  >({
+    mutationFn: ({ eventId, walletId }) => approveEvent(eventId, walletId),
+    onSuccess: () => {
+      toast.success("Event approved successfully!");
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Error approving event");
+    },
+  });
+  
   
     const {mutateAsync: rejectEventMutation, isPending: isRejecting} = useMutation({
       mutationFn: rejectEvent,
@@ -92,10 +125,14 @@ export const useEvents = (pageNumber?: number, pageSize?: number) => {
   isPending,
   isApproving,
   isRejecting,
+  isCreatePending,
   createEvent: createEventMutation,
    refetchEvents: refetch,
    getEventDetailQuery,
    approveEvent: approveEventMutation,
    rejectEvent: rejectEventMutation,
+   getEventClubDetailQuery,
+   createEventClub: createEventClubMutation,
+   getEventClubQuery
   };
 };

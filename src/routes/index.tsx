@@ -48,6 +48,7 @@ import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDi
 import { RequestEventDetail } from "@/components/partial/staff/staff-events/RequestEventForm";
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
+import EventClub from "@/pages/representative/event-club/EventClub";
 import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
 import { CreateTaskClub } from "@/components/partial/representative/representative-task/CreateTaskClub";
 
@@ -229,6 +230,11 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
+        path: "/representative/event-club",
+        element: <EventClub />,
+        errorElement: <ErrorException />,
+      },
+      {
         path: "/representative/club",
         element: <CheckingClubPage />,
         errorElement: <ErrorException />,
@@ -333,7 +339,7 @@ export const router = createBrowserRouter([
         path: "/club/create-task",
         element: <CreateTaskClub />,
         errorElement: <ErrorException />,
-      }
+      },
     ],
     errorElement: <ErrorException />,
   },

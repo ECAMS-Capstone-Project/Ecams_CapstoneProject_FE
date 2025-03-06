@@ -22,29 +22,21 @@ import {
 } from "@/components/ui/dialog";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useEffect, useState } from "react";
-import { AreaSchema } from "@/schema/AreaSchema";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
-import { useAreas } from "@/hooks/staff/Area/useArea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-type AreaFormValues = z.infer<typeof AreaSchema>;
+import { EventClubSchema } from "@/schema/EventSchema";
+import { useEvents } from "@/hooks/staff/Event/useEvent";
+
+type EventClubFormValues = z.infer<typeof EventClubSchema>;
 
 interface AreaDialogProps {
-  initialData: AreaFormValues | null;
+  initialData: EventClubFormValues | null;
   onSuccess?: () => void; // Callback để reload data sau khi tạo area
   setOpen?: (open: boolean) => void; // Nhận state từ component cha
 }
 
-export const EditAreaDialog: React.FC<AreaDialogProps> = ({
+export const CreateEventClubDialog: React.FC<AreaDialogProps> = ({
   initialData,
   onSuccess,
   setOpen,
@@ -59,7 +51,7 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
         const userInfo = await getCurrentUserAPI();
         if (userInfo) {
           setUserInfo(userInfo.data);
-          form.setValue("universityId", userInfo.data?.universityId ?? "");
+          form.setValue("userId", userInfo.data?.userId ?? "");
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
@@ -70,50 +62,40 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
       fetchUserInfo();
     }
   }, [initialData]);
-  const { createArea, isPending, updateArea, isUpdating } = useAreas(); // Lấy mutation từ React Query
+  const { createEventClub, isCreatePending } = useEvents(); // Lấy mutation từ React Query
 
-  const form = useForm<AreaFormValues>({
-    resolver: zodResolver(AreaSchema),
+  const form = useForm<EventClubFormValues>({
+    resolver: zodResolver(EventClubSchema),
     defaultValues: initialData || {
-      universityId: "",
-      name: "",
+      userId: "",
+      clubName: "",
       description: "",
-      capacity: 0,
+      purpose: "",
+      ownerEmail: "",
     },
   });
 
   // Handle form submit
-  const onSubmit = async (values: AreaFormValues) => {
+  const onSubmit = async (values: EventClubFormValues) => {
     console.log("Form Submitted with values:", values);
     try {
       setIsLoading(true);
       const formData = new FormData();
-      if (initialData) {
-        formData.append("AreaId", values.areaId ?? "");
-        formData.append("ImageUrl", values.imageUrl ?? "");
-        formData.append("Status", values.status?.toString() ?? "");
-        // Chuyển đổi status từ boolean sang string
-      }
-      if (initialData == null) {
-        formData.append("UniversityId", values.universityId);
+      formData.append("UserId", values.userId ?? "");
+      formData.append("ClubName", values.clubName ?? "");
+      formData.append("Purpose", values.purpose);
+
+      formData.append("Description", values.description);
+      formData.append("OwnerEmail", values.ownerEmail);
+
+      if ((values.logo as any) instanceof File) {
+        formData.append("Logo", values.logo ?? "");
       }
 
-      formData.append("Name", values.name);
-      formData.append("Description", values.description ?? "");
-      formData.append("Capacity", values.capacity.toString());
+      // Nếu không có `initialData`, gọi API `createArea`
+      await createEventClub(formData);
 
-      if ((values.imageUrl as any) instanceof File) {
-        formData.append("ImageUrl", values.imageUrl ?? "");
-      }
-
-      if (initialData) {
-        // Nếu có `initialData`, gọi API `updateArea`
-        await updateArea(formData); // Gọi API update
-      } else {
-        // Nếu không có `initialData`, gọi API `createArea`
-        await createArea(formData);
-      }
-      if (!isPending || !isUpdating) {
+      if (!isCreatePending) {
         setOpen && setOpen(false); // Đóng dialog sau khi submit thành công
       }
       onSuccess && onSuccess(); // Callback reload data nếu cần
@@ -127,7 +109,7 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
 
   return (
     <div className="min-h-[200px] sm:min-h-[300px] h-auto sm:min-w-[300px]">
-      {isPending || isUpdating ? (
+      {isCreatePending ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
         </div>
@@ -155,21 +137,19 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                   <div className="w-full">
                     <FormField
                       control={form.control}
-                      name="imageUrl"
+                      name="logo"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Upload Image</FormLabel>
                           <FormControl>
                             {/* Nếu có ảnh, hiển thị ảnh hiện tại */}
                             <>
-                              {initialData && initialData.imageUrl && (
-                                <img
-                                  src={String(initialData.imageUrl)} // Hiển thị ảnh từ URL
-                                  alt="Current Image"
-                                  className="w-full h-52 object-contain mb-4"
-                                  onChange={field.onChange}
-                                />
-                              )}
+                              {/* <img
+                                src={String(field.value)} // Hiển thị ảnh từ URL
+                                alt="Current Image"
+                                className="w-full h-52 object-contain mb-4"
+                                onChange={field.onChange}
+                              /> */}
                               <Input
                                 className="w-60"
                                 type="file"
@@ -194,7 +174,7 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                   <div className="grid grid-cols-2 gap-3">
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="clubName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Name</FormLabel>
@@ -208,59 +188,17 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
 
                     <FormField
                       control={form.control}
-                      name="capacity"
+                      name="ownerEmail"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Capacity</FormLabel>
+                          <FormLabel>Club owner email</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input type="text" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    {initialData ? (
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Status</FormLabel>
-                            <FormControl>
-                              <Select
-                                {...field}
-                                value={field.value ? "true" : "false"} // Chuyển đổi boolean thành string
-                                onValueChange={(value) =>
-                                  field.onChange(value === "true")
-                                } // Chuyển từ string sang boolean
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue
-                                    placeholder={
-                                      field.value ? "Active" : "Inactive"
-                                    }
-                                  />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectGroup>
-                                    <SelectLabel>{field.value}</SelectLabel>
-                                    <SelectItem value={true.toString()}>
-                                      Active
-                                    </SelectItem>
-                                    <SelectItem value={false.toString()}>
-                                      Inactive
-                                    </SelectItem>
-                                  </SelectGroup>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ) : (
-                      ""
-                    )}
                   </div>
                   <FormField
                     control={form.control}
@@ -268,6 +206,22 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className="border p-2 rounded w-full h-30"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="purpose"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Purpose</FormLabel>
                         <FormControl>
                           <textarea
                             className="border p-2 rounded w-full h-30"
@@ -304,8 +258,8 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                           ? "Updating..."
                           : "Creating..."
                         : initialData
-                        ? "Update Area"
-                        : "Create Area"}
+                        ? "Update Event Club"
+                        : "Create Event Club"}
                     </Button>
                   </div>
                 </form>

@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
@@ -11,43 +11,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
 import { useNavigate } from "react-router-dom";
+import { UserAuthDTO } from "@/models/Auth/UserAuth";
+import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
 const Events = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   // const [, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
-  // const [pageNo, setPageNo] = useState(1);
-  // const [pageSize, setPageSize] = useState(5);
+  const [userInfo, setUserInfo] = useState<UserAuthDTO>();
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await getCurrentUserAPI();
+        if (userInfo) {
+          setUserInfo(userInfo.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
 
-  // ✅ Lấy danh sách từ `useAreas()`
-  const { events, isLoading, totalPages } = useEvents(pageNo, pageSize);
-
-  // ✅ Hàm reload danh sách sau khi thêm mới
-  // const handleAreaAdded = () => {
-  //   refetchAreas(); // Tự động reload danh sách mà không cần state
-  // };
-  // const handleCloseDialog = () => setIsDialogOpen(false);
-  // const loadArea = async () => {
-  //   try {
-  //     const areaData = await getAreaList(pageSize, pageNo);
-  //     if (areaData) {
-  //       setAreaList(areaData.data?.data || []); // Đảm bảo `data.data` tồn tại
-  //       setTotalPages(areaData.data?.totalPages || 1); // Đặt số trang
-  //     } else {
-  //       console.warn("AreaList returned no data");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error loading data:", error);
-  //   } finally {
-  //     setIsLoading(false); // Hoàn tất tải
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   loadArea();
-  // }, [pageNo, pageSize]);
+    fetchUserInfo();
+  }, []);
+  const { events, isLoading, totalPages } = useEvents(
+    userInfo?.universityId,
+    pageNo,
+    pageSize
+  );
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -59,7 +51,7 @@ const Events = () => {
           <div className="flex items-center justify-between pt-4">
             <Heading
               title={`Manage Events`}
-              description="Manage Event in the system"
+              description={`Oversee and manage events at ${userInfo?.universityName}`}
             />
 
             {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -127,7 +119,9 @@ const Events = () => {
               <EventTable
                 data={events.filter(
                   (events) =>
-                    events.clubId != null && events.status != "PENDING"
+                    events.clubId != null &&
+                    events.status != "PENDING" &&
+                    events.representativeId == null
                 )}
               />
               <DataTablePagination

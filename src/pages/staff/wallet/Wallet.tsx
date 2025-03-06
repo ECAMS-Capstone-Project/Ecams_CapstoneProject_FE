@@ -13,12 +13,11 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { useWallet } from "@/hooks/staff/Wallet/useWallet";
 import { ViewWalletDialog } from "@/components/partial/staff/staff-wallet/ViewWalletDialog";
 
-import { WalletPagination } from "@/components/partial/staff/staff-wallet/WalletPagination";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { WalletPagination } from "@/components/partial/staff/staff-wallet/WalletPagination";
 
 const Wallet = () => {
-  const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(10);
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const accessToken = localStorage.getItem("accessToken");
@@ -27,6 +26,7 @@ const Wallet = () => {
     const fetchUserInfo = async () => {
       try {
         const userInfo = await getCurrentUserAPI();
+
         if (userInfo) {
           setUserInfo(userInfo.data);
         }
@@ -37,7 +37,7 @@ const Wallet = () => {
     fetchUserInfo();
   }, []);
 
-  const { wallets, isLoading, totalPages } = useWallet(
+  const { wallets, isLoading } = useWallet(
     userInfo?.universityId ?? "",
     accessToken ?? "",
     pageNo,
@@ -58,7 +58,7 @@ const Wallet = () => {
           <div className="flex items-center justify-between pt-4">
             <Heading
               title={`Manage Wallet`}
-              description="Manage Wallet in the system"
+              description={`Monitor and manage the wallet of ${userInfo?.universityName}`}
             />
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -79,34 +79,10 @@ const Wallet = () => {
           </div>
           <Separator />
 
-          <Tabs
-            defaultValue="active"
-            // value={activeTab}
-            // onValueChange={setActiveTab}
-            className="w-full mt-3 p-2"
-          >
-            <TabsList className="ml-3">
-              <TabsTrigger value="active">Active Wallet</TabsTrigger>
-              <TabsTrigger value="inactive">Inactive Wallet</TabsTrigger>
-            </TabsList>
+          <WalletCard wallets={wallets} />
 
-            <TabsContent value="active">
-              <WalletCard
-                wallets={wallets.filter((wallet) => wallet.status === true)}
-              />
-            </TabsContent>
-            <TabsContent value="inactive">
-              <WalletCard
-                wallets={wallets.filter((wallet) => wallet.status !== true)}
-              />
-            </TabsContent>
-          </Tabs>
-
-          {/* Hiển thị ví dưới dạng thẻ */}
-
-          <div className="flex justify-between items-center mt-9 pt-6">
+          {/* <div className="flex justify-between items-center mt-9 pt-6">
             <div className="w-full h-full">
-              {/* Pagination nằm ở dưới cùng */}
               <WalletPagination
                 totalPages={totalPages}
                 pageSize={pageSize}
@@ -115,7 +91,7 @@ const Wallet = () => {
                 setPageSize={setPageSize}
               />
             </div>
-          </div>
+          </div> */}
         </>
       )}
     </React.Suspense>

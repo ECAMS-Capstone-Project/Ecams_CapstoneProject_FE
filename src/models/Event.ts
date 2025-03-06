@@ -18,4 +18,5 @@ export interface Event {
   feedbacks?: [];
   imageUrl: string;
   description: string;
+  walletId?: string;
 }

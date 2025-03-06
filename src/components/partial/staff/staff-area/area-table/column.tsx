@@ -1,22 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./row-actions";
 import { Area } from "@/models/Area";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
-import { CheckCircle2Icon, XCircleIcon, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAreas } from "@/hooks/staff/Area/useArea";
 
 // Định nghĩa columns cho DataTable
 export const AreaColums: ColumnDef<Area>[] = [
   { accessorKey: "areaId", header: undefined, cell: undefined },
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
+    cell: ({ row }) => <span>{row.getValue("name")}</span>,
+  },
   {
     accessorKey: "imageUrl",
     header: ({ column }) => (
@@ -34,25 +37,7 @@ export const AreaColums: ColumnDef<Area>[] = [
       );
     }, // Không cần hiển thị
   },
-  {
-    accessorKey: "universityName",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="University" />
-    ),
-    cell: ({ row }) => (
-      <span className="truncate max-w-lg block px-5">
-        {row.getValue("universityName")}
-      </span>
-    ), // Hiển thị giá trị "Name"
-  },
 
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
-    cell: ({ row }) => <span>{row.getValue("name")}</span>,
-  },
   {
     accessorKey: "description",
     header: ({ column }) => (
@@ -87,81 +72,42 @@ export const AreaColums: ColumnDef<Area>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as boolean;
-      const [currentStatus, setCurrentStatus] = useState(status);
-      const [, setIsDialogOpen] = useState(false);
 
-      const updateAreaStatus = async (newStatus: boolean) => {
-        try {
-          // await updateAreaStatusAPI(row.original.areaId, newStatus); // ✅ Gọi API cập nhật trạng thái
-          toast.success(
-            `Area ${newStatus ? "Activated" : "Deactivated"} Successfully.`
+      // Hàm xử lý thay đổi trạng thái
+      const handleStatusChange = async () => {
+        const newStatus = !status; // Đổi trạng thái khi nhấn
+        const queryClient = useQueryClient();
+        // Gọi mutation để update dữ liệu trên server
+        const { updateArea } = useAreas();
+        await updateArea;
+
+        // Cập nhật trực tiếp dữ liệu trong bảng mà không cần refetch lại
+        queryClient.setQueryData(["areas"], (oldData: any) => {
+          return oldData.map((item: Area) =>
+            item.areaId === row.original.areaId
+              ? { ...item, status: newStatus }
+              : item
           );
-          setCurrentStatus(newStatus);
-          // refreshData(); // 🔥 Làm mới danh sách sau khi cập nhật
-        } catch (error) {
-          console.error("❌ Failed to update status:", error);
-          toast.error("❌ Failed to update status.");
-        }
+        });
       };
 
       return (
         <div className="flex justify-center p-0">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div
-                className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
-                  currentStatus
-                    ? "bg-[#CBF2DA] text-[#2F4F4F]" // Active
-                    : "bg-[#FFF5BA] text-[#5A3825]" // Inactive
-                } w-auto`}
-              >
-                {currentStatus ? (
-                  <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
-                ) : (
-                  <XCircleIcon size={12} className=" text-[#5A3825]" />
-                )}
-                <span>{currentStatus ? "Active" : "Inactive"}</span>
-                <ChevronDown size={16} />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40">
-              <DropdownMenuItem
-                onClick={() => updateAreaStatus(true)}
-                className={`${
-                  currentStatus ? "bg-[#CBF2DA]" : ""
-                } cursor-pointer`}
-              >
-                <CheckCircle2Icon size={18} className=" text-[#2F4F4F]" />
-                Active
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsDialogOpen(true);
-                }}
-                className={`${
-                  !currentStatus ? "bg-[#FFF5BA]" : ""
-                } cursor-pointer`}
-              >
-                <XCircleIcon size={18} className=" text-[#5A3825]" />
-                Inactive
-              </DropdownMenuItem>
-              {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DenyRequest
-                  areaId={row.original.areaId}
-                  onClose={() => {
-                    setIsDialogOpen(false);
-                  }}
-                  dialogAction={"deactivate"}
-                  onSuccess={() => {
-                    setCurrentStatus(false);
-                    refreshData();
-                  }}
-                />
-              </Dialog> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div
+            onClick={handleStatusChange} // Bắt sự kiện click
+            className={`flex items-center justify-center gap-1 py-2 px-2 rounded-md cursor-pointer ${
+              status
+                ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                : "bg-[#FFF5BA] text-[#5A3825]"
+            } w-auto`}
+          >
+            {status ? (
+              <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
+            ) : (
+              <XCircleIcon size={12} className=" text-[#5A3825]" />
+            )}
+            <span>{status ? "Active" : "Inactive"}</span>
+          </div>
         </div>
       );
     },

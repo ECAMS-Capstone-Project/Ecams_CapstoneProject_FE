@@ -73,7 +73,7 @@ export default function DataTable<TData>({
       />
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="text-left">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -82,9 +82,9 @@ export default function DataTable<TData>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
