@@ -21,15 +21,6 @@ export const taskColumn = (
       cell: ({ row }) => <div className="text-center w-full">{row.getValue("taskName")}</div>,
     },
     {
-      accessorKey: "description",
-      header: ({ column }) => (
-        <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Description" />
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("description")}</div>,
-    },
-    {
       accessorKey: "status",
       header: ({ column }) => (
         <div className="text-center w-full">

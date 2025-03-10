@@ -24,7 +24,6 @@ export default function ClubDetailPage() {
         }
         fetchClubDetail();
     }, [clubId]);
-    console.log("clubId", clubId);
     return (
         <div className="max-w-[1700px] mx-auto p-4 pt-0">
             {/* Container chính */}
@@ -103,9 +102,10 @@ export default function ClubDetailPage() {
                             <span className="text-xl font-bold text-white">{clubData?.numOfMems}</span>
                         </div>
                         {/* Box 2 */}
-                        <div className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3 bg-gray-100">
-                            <span className="text-sm text-black font-bold">Total Event</span>
-                            <span className="text-xl font-bold">{clubData?.numOfEvents}</span>
+                        <div className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3 bg-gray-100"
+                            style={{ background: "linear-gradient(to right, #136CB5, #49BBBD)" }}>
+                            <span className="text-sm text-white font-bold">Total Event</span>
+                            <span className="text-xl font-bold text-white">{clubData?.numOfEvents}</span>
                         </div>
                     </div>
 

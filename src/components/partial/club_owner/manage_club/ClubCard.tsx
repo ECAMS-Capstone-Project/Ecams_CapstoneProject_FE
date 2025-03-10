@@ -35,13 +35,20 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId }) => {
                         alt={"test"}
                         style={{ height: "200px", width: "390px" }}
                         className="object-cover rounded-lg"
+
                     />
-
                     <div className="p-1 text-left">
-                        <Typography className="font-bold" variant="h6">
-                            {title}
-                        </Typography>
-
+                        <div className="flex justify-between items-center mt-2">
+                            <Typography className="font-bold" variant="h6">
+                                {title}
+                            </Typography>
+                            <Chip
+                                label="Club Owner"
+                                color="secondary"
+                                size="small"
+                                sx={{ justifyContent: 'end' }}
+                            />
+                        </div>
                         <div
                             style={{
                                 display: "grid",
@@ -67,7 +74,6 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId }) => {
                                 />
                             ))}
                         </div>
-
                         <div className="flex w-full justify-center align-middle mt-7">
                             <Button
                                 variant="custom"

@@ -89,7 +89,7 @@ export const CreateTaskClub: React.FC<CreateTaskProps> = ({
           <Button variant="link" onClick={() => navigate(-1)}>
             <ArrowLeft size={24} />
           </Button>
-          Create Event
+          Create Task
         </h2>
         <p className="text-sm text-muted-foreground ml-5">
           Create new task for your club

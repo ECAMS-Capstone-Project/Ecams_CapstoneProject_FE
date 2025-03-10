@@ -18,15 +18,6 @@ export const memberColumn = (
       cell: ({ row }) => <div className="text-center w-full">{row.getValue("studentId")}</div>,
     },
     {
-      accessorKey: "email",
-      header: ({ column }) => (
-        <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Email" />
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("email")}</div>,
-    },
-    {
       accessorKey: "fullname",
       header: ({ column }) => (
         <div className="text-center w-full">
@@ -35,6 +26,15 @@ export const memberColumn = (
       ),
       cell: ({ row }) => <div className="text-center w-full">{row.getValue("fullname")}</div>,
       // cell: ({ row }) => <div className="text-center w-full">{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <div className="text-center w-full">
+          <DataTableColumnHeader column={column} title="Email" />
+        </div>
+      ),
+      cell: ({ row }) => <div className="text-center w-full">{row.getValue("email")}</div>,
     },
     {
       accessorKey: "clubRoleName",
@@ -51,9 +51,9 @@ export const memberColumn = (
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${isClubOwner
-              ? "bg-black text-white"
+              ? "bg-slate-700 text-white"
               : isMember
-                ? "bg-[#4DB848]  text-white"
+                ? "bg-[#88f0b0]  text-[#2F4F4F]"
                 : ""
               }`}
             style={{ margin: "0 auto" }}
