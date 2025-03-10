@@ -32,15 +32,13 @@ export function DataTableColumnHeader<TData, TValue>({
   }
 
   return (
-    <div
-      className={cn("flex items-center justify-center space-x-2", className)}
-    >
+    <div className={cn("", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
-            className="pl-8 h-8 data-[state=open]:bg-accent"
+            className=" h-8 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
