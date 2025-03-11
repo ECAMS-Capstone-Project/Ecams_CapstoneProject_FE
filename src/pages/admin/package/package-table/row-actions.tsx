@@ -15,7 +15,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
-import { deactivePackage } from "@/api/agent/PackageAgent";
+import { usePackages } from "@/hooks/admin/usePackage";
+import { Package } from "@/models/Package";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -27,13 +29,20 @@ export function DataTableRowActions<TData>({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { deactivePackage } = usePackages();
+  const queryClient = useQueryClient();
   const onConfirm = async () => {
     setLoading(true);
     try {
       // await agent.Products.delete(data.productId);
       await deactivePackage(row.getValue("packageId"));
-      toast.success("Package deleted successfully.");
-      window.location.reload();
+      queryClient.setQueryData(["packages"], (oldData: any) => {
+        return oldData.map((item: Package) =>
+          item.packageId === row.getValue("packageId")
+            ? { ...item, status: 0 } // Cập nhật status trong bảng
+            : item
+        );
+      });
     } catch (error: any) {
       const errorMessage = error.response.data?.message || "An error occurred";
       toast.error(errorMessage);
@@ -71,7 +80,7 @@ export function DataTableRowActions<TData>({
           {/* Delete */}
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash2 className="h-4 w-4 text-red-500" />
-            <span className="ml-2">Delete</span>
+            <span className="ml-2">Deactive</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -79,7 +88,10 @@ export function DataTableRowActions<TData>({
       {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
-          <EditPackageDialog initialData={row.original as any} />
+          <EditPackageDialog
+            initialData={row.original as any}
+            onClose={() => setIsDialogOpen(false)}
+          />
         </DialogContent>
       </Dialog>
     </>

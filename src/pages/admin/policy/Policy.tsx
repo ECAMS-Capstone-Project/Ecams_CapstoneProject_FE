@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
@@ -10,40 +10,18 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import type { Policy } from "@/models/Policy";
-import { getPolicyList } from "@/api/agent/PolicyAgent";
 import { EditPolicyDialog } from "@/components/partial/admin/policy/PolicyFormDialog";
 import RolePolicy from "@/components/partial/admin/policy/RolePolicy";
+import { usePolicy } from "@/hooks/admin/usePolicy";
 
 const PolicyTable = React.lazy(
   () => import("@/components/partial/admin/policy/PolicyTable")
 );
 
 const Policy = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [policyList, setPolicyList] = useState<Policy[]>([]);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-  const [totalPages, setTotalPages] = useState(0);
-  // const [activeTab, setActiveTab] = useState("");
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const policyData = await getPolicyList(pageSize, pageNo);
-        if (policyData) {
-          setPolicyList(policyData.data?.data || []); // Đảm bảo `data.data` tồn tại
-          setTotalPages(policyData.data?.totalPages || 1); // Đặt số trang
-        } else {
-          console.warn("PolicyList returned no data");
-        }
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false); // Hoàn tất tải
-      }
-    };
-
-    loadUser();
-  }, [pageNo, pageSize]);
+  const { policies, isLoading, totalPages } = usePolicy(pageNo, pageSize);
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -83,7 +61,7 @@ const Policy = () => {
             </TabsList>
 
             <TabsContent value="policyList">
-              <PolicyTable data={policyList} />
+              <PolicyTable data={policies} />
               <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}
@@ -93,7 +71,7 @@ const Policy = () => {
               />
             </TabsContent>
             <TabsContent value="rolePolicy">
-              <RolePolicy data={policyList} />
+              <RolePolicy data={policies} />
             </TabsContent>
           </Tabs>
         </>

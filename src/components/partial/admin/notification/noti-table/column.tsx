@@ -7,8 +7,11 @@ import { Noti } from "@/models/Notification";
 export const notiColumns: ColumnDef<Noti>[] = [
   {
     accessorKey: "notificationId",
+    enableColumnFilter: false, // Tắt lọc cột này
+    enableSorting: false, // Tắt sắp xếp cột này
+    enableHiding: true,
     header: undefined,
-    cell: undefined, // Không cần hiển thị
+    cell: undefined,
   },
   {
     accessorKey: "message",
