@@ -35,6 +35,7 @@ export interface ClubResponseDTO {
     status: ClubStatusEnum;
     clubFields: FieldDTO[];
     clubMembers?: ClubMemberDTO[];
+    clubOwnerId: string;
 }
 
 // Enum cho EventStatus

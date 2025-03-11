@@ -8,6 +8,7 @@ import "react-quill/dist/quill.snow.css"; // Import CSS của React Quill
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Task } from "@/models/Task";
 import { format } from "date-fns";
+import useAuth from "@/hooks/useAuth";
 
 
 interface TaskDetailDialogProps {
@@ -24,7 +25,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
       status: false,
     },
   });
-
+  const { user } = useAuth();
   const [editorContent, setEditorContent] = useState(""); // State lưu nội dung của ReactQuill
 
   // Kiểm tra trạng thái Task
@@ -100,16 +101,36 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status:</FormLabel>
+                <FormControl>
+                  <p className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300 resize-none">
+                    {field.value ? <span className="text-[#3a8f5e] font-bold">Completed</span> : <span className="text-[#007BFF] font-bold">In progress</span>}
+                  </p>
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* Rich Text Editor (Editable nếu status là "In Progress") */}
           <div className="col-span-2">
             <FormLabel>Task Content:</FormLabel>
-            <ReactQuill
-              theme="snow"
-              value={editorContent}
-              onChange={setEditorContent}
-              readOnly={isSubmitted} // Nếu status là Submitted thì không cho chỉnh sửa
-              className="bg-white"
-            />
+            {isSubmitted ? (
+              <div className="bg-gray-100 p-2 rounded-md border border-gray-300">
+                <p className="text-center">Task is submitted and cannot be edited</p>
+              </div>
+            ) : (
+              <ReactQuill
+                theme="snow"
+                value={editorContent}
+                onChange={setEditorContent}
+                className="bg-white"
+              />
+            )}
           </div>
 
           {/* Submit hoặc Quit Button */}
@@ -121,7 +142,15 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
                 </Button>
               </DialogClose>
             ) : (
-              <Button type="submit">Submit</Button>
+              user?.roles.includes("club_owner") ? (
+                <DialogClose asChild>
+                  <Button type="button" className=" text-white">
+                    Quit
+                  </Button>
+                </DialogClose>
+              ) : (
+                <Button type="submit">Submit</Button>
+              )
             )}
           </div>
         </form>

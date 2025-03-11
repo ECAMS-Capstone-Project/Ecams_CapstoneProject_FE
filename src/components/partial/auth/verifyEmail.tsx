@@ -11,7 +11,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import CountdownTimer from "@/components/ui/CountdownTimer";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ring2 } from 'ldrs'
 import useAuth from "@/hooks/useAuth";
 
@@ -43,6 +43,7 @@ const VerifyEmailForm: React.FC = () => {
             await sendOtp(data.otp, decodedEmail)
         };
     }
+    const navigate = useNavigate();
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center">
@@ -110,7 +111,7 @@ const VerifyEmailForm: React.FC = () => {
 
                             <Grid2 size={{ xs: 12 }}>
                                 <div className="flex justify-center mt-4 gap-4">
-                                    <Button variant="text" className="w-32 h-12" sx={{ textTransform: "none", textDecoration: "underline", fontSize: "18px", color: "black" }}>
+                                    <Button onClick={() => navigate('/login')} variant="text" className="w-32 h-12" sx={{ textTransform: "none", textDecoration: "underline", fontSize: "18px", color: "black" }}>
                                         Back to login
                                     </Button>
                                 </div>

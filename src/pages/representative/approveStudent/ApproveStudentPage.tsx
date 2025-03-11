@@ -4,28 +4,55 @@ import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-import { GetStudentAPI } from "@/api/representative/StudentAPI";
+import { GetStudentInUniversityAPI } from "@/api/representative/StudentAPI";
 import StudentRequest from "@/models/StudentRequest";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useAuth from "@/hooks/useAuth";
+
+// Lazy load bảng (nếu muốn)
 const ApproveStudentTable = React.lazy(
   () => import("@/components/partial/representative/representative-approve/ApproveStudentTable")
 );
 
 const ApproveStudentPage = () => {
+  const { user } = useAuth();
+
+  // State cho dữ liệu
   const [isLoading, setIsLoading] = useState(true);
   const [stuList, setStuList] = useState<StudentRequest[]>([]);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+
+  // State để refresh data sau khi duyệt
   const [flag, setFlag] = useState<boolean>(false);
+
+  // State cho tab
+  const [activeTab, setActiveTab] = useState<"request" | "registered">("request");
+
   useEffect(() => {
     const loadRequestStudent = async () => {
       try {
-        const uniData = await GetStudentAPI(pageSize, pageNo);
+        if (!user?.universityId) {
+          throw new Error("University ID is undefined");
+        }
+
+        setIsLoading(true);
+
+        // Xác định status theo tab
+        const status = activeTab === "request" ? "CHECKING" : "ACTIVE";
+
+        // Gọi API với status tương ứng
+        const uniData = await GetStudentInUniversityAPI(
+          user.universityId,
+          pageSize,
+          pageNo,
+          status
+        );
 
         if (uniData) {
-          setStuList(uniData.data?.data || []); // Đảm bảo `data.data` tồn tại
-          setTotalPages(uniData.data?.totalPages || 1); // Đặt số trang
+          setStuList(uniData.data?.data || []);
+          setTotalPages(uniData.data?.totalPages || 1);
         } else {
           console.warn("Student returned no data");
         }
@@ -35,41 +62,39 @@ const ApproveStudentPage = () => {
         setIsLoading(false);
       }
     };
-
     loadRequestStudent();
-  }, [pageNo, pageSize, flag]);
+  }, [activeTab, pageNo, pageSize, flag, user]);
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
-      {/* Hiển thị spinner nếu API chưa tải xong */}
-      {(isLoading) ? (
+      {isLoading ? (
         <LoadingAnimation />
       ) : (
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title={`Manage Request Student`}
+              title="Manage Request Student"
               description="Approve request student in the system"
             />
           </div>
           <Separator />
 
           <Tabs
-            defaultValue="request"
-            // value={activeTab}
-            // onValueChange={setActiveTab}
+            // Điều khiển tab bằng state
+            value={activeTab}
+            onValueChange={(val) => setActiveTab(val as "request" | "registered")}
             className="w-full mt-3 p-2"
           >
             <TabsList>
               <TabsTrigger value="request">Pending Request</TabsTrigger>
-              <TabsTrigger value="registered">
-                Active Student
-              </TabsTrigger>
+              <TabsTrigger value="registered">Active Student</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="registered">
+            {/* Tab 1: Pending (CHECKING) */}
+            <TabsContent value="request">
               <ApproveStudentTable
-                data={stuList.filter((uni) => uni.status == "ACTIVE")}
+                data={stuList}
+                setFlag={setFlag}
               />
               <DataTablePagination
                 currentPage={pageNo}
@@ -79,11 +104,10 @@ const ApproveStudentPage = () => {
                 setPageSize={setPageSize}
               />
             </TabsContent>
-            <TabsContent value="request">
-              <ApproveStudentTable
-                data={stuList.filter((uni) => uni.status === "CHECKING")}
-                setFlag={setFlag}
-              />
+
+            {/* Tab 2: Active (ACTIVE) */}
+            <TabsContent value="registered">
+              <ApproveStudentTable data={stuList} />
               <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}
