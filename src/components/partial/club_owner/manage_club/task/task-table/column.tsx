@@ -14,25 +14,16 @@ export const taskColumn = (
     {
       accessorKey: "taskName",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Task Name" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("taskName")}</div>,
-    },
-    {
-      accessorKey: "description",
-      header: ({ column }) => (
-        <div className="text-center w-full">
-          <DataTableColumnHeader column={column} title="Description" />
-        </div>
-      ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("description")}</div>,
+      cell: ({ row }) => <div >{row.getValue("taskName")}</div>,
     },
     {
       accessorKey: "status",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableFacetedFilter
             column={column}
             title="Status"
@@ -68,26 +59,28 @@ export const taskColumn = (
     {
       accessorKey: "deadline",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Deadline" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{format(row.getValue("deadline"), 'HH:mm:ss dd/MM/yyyy')}</div>,
+      cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm:ss dd/MM/yyyy')}</div>,
     },
     {
       id: "actions",
-      header: () => <div className="text-center w-full">Action</div>,
+      header: () => <div >Action</div>,
       cell: ({ row }) => (
-        <Dialog>
-          <DialogTrigger>
-            <div className="flex justify-center">
-              <Eye size={18} />
-            </div>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DataTableRowActions row={row} setFlag={setFlag} />
-          </DialogContent>
-        </Dialog>
+        <>
+          <Dialog>
+            <DialogTrigger>
+              <div className="flex justify-center">
+                <Eye size={18} />
+              </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DataTableRowActions row={row} setFlag={setFlag} />
+            </DialogContent>
+          </Dialog>
+        </>
       ),
     },
   ];

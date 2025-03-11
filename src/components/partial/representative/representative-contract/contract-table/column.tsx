@@ -12,34 +12,34 @@ export const contractColumn: ColumnDef<Contract>[] = [
   {
     accessorKey: "packageName",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div>
         <DataTableColumnHeader column={column} title="Package" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center w-full">{row.getValue("packageName")}</div>
+      <div >{row.getValue("packageName")}</div>
     ),
   },
   {
     accessorKey: "universityName",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="University" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center w-full">{row.getValue("universityName")}</div>
+      <div >{row.getValue("universityName")}</div>
     ),
   },
   {
     accessorKey: "signedDate",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Signed Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center w-full">
+      <div >
         {format(new Date(row.getValue("signedDate")), 'dd-MM-yyyy')}
       </div>
     ),
@@ -47,12 +47,12 @@ export const contractColumn: ColumnDef<Contract>[] = [
   {
     accessorKey: "startDate",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Started Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center w-full">
+      <div >
         {format(new Date(row.getValue("startDate")), 'dd-MM-yyyy')}
       </div>
     ),
@@ -60,12 +60,12 @@ export const contractColumn: ColumnDef<Contract>[] = [
   {
     accessorKey: "endDate",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Ended Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="text-center w-full">
+      <div >
         {format(new Date(row.getValue("endDate")), 'dd-MM-yyyy')}
       </div>
     ),
@@ -73,7 +73,7 @@ export const contractColumn: ColumnDef<Contract>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableFacetedFilter
           column={column}
           title="Status"
@@ -109,7 +109,7 @@ export const contractColumn: ColumnDef<Contract>[] = [
   },
   {
     id: "actions",
-    header: () => <div className="text-center w-full">Actions</div>,
+    header: () => <div >Actions</div>,
     cell: ({ row }) => {
       const navigate = useNavigate();
       return (

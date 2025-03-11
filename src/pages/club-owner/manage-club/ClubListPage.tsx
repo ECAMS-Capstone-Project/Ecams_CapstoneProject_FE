@@ -75,7 +75,7 @@ const ClubListPage: React.FC = () => {
                     <Grid2 container alignItems="center" spacing={2}>
                         <Grid2 size={{ xs: 12, sm: 8 }}>
                             <TabsList>
-                                <TabsTrigger value="ACTIVE">Participate</TabsTrigger>
+                                <TabsTrigger value="ACTIVE">Participated</TabsTrigger>
                                 <TabsTrigger value="INACTIVE">History</TabsTrigger>
                                 <TabsTrigger value="PENDING">Pending</TabsTrigger>
                             </TabsList>
@@ -126,7 +126,7 @@ const ClubListPage: React.FC = () => {
                                         display="flex"
                                         justifyContent="center"
                                     >
-                                        <ClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} clubId={club.clubId} />
+                                        <ClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} clubId={club.clubId} clubOwnerId={club.clubOwnerId} />
                                     </Grid2>
                                 ))}
                             </Grid2>

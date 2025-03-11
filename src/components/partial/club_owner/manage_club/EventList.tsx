@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { CircularProgress, Pagination } from "@mui/material";
+import { Pagination } from "@mui/material";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useCallback } from "react";
 import { EventResponse, EventStatusEnum, GetEventInClubsAPI } from "@/api/club-owner/ClubByUser";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import LoadingAnimation from "@/components/ui/loading";
 
 interface Props {
     clubId: string;
@@ -64,14 +65,14 @@ export default function EventList({ clubId }: Props) {
             {/* 🔄 Loading state */}
             {isLoading ? (
                 <div className="flex justify-center items-center py-10">
-                    <CircularProgress />
+                    <LoadingAnimation />
                 </div>
             ) : filteredEvents.length === 0 ? (
                 <p className="text-center text-gray-500">No events found.</p>
             ) : (
                 <>
                     {/* Danh sách sự kiện */}
-                    <div className="overflow-y-auto max-h-[420px]">
+                    <div>
                         {filteredEvents.map((evt, index) => (
                             <Link
                                 key={index}

@@ -11,52 +11,52 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
   {
     accessorKey: "email",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Email" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{row.getValue("email")} </div>,
+    cell: ({ row }) => <div >{row.getValue("email")} </div>,
   },
   {
     accessorKey: "fullname",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Full Name" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{row.getValue("fullname")}</div>,
+    cell: ({ row }) => <div >{row.getValue("fullname")}</div>,
   },
   {
     accessorKey: "universityName",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="University" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{row.getValue("universityName")}</div>,
+    cell: ({ row }) => <div >{row.getValue("universityName")}</div>,
   },
   {
     accessorKey: "startDate",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Join Date" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{String(row.getValue("startDate")).split("T")[0]}</div>,
+    cell: ({ row }) => <div >{String(row.getValue("startDate")).split("T")[0]}</div>,
   },
   {
     accessorKey: "endDate",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableColumnHeader column={column} title="Left Date" />
       </div>
     ),
-    cell: ({ row }) => <div className="text-center w-full">{String(row.getValue("endDate") || "Not yet").split("T")[0]}</div>,
+    cell: ({ row }) => <div >{String(row.getValue("endDate") || "Not yet").split("T")[0]}</div>,
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div className="text-center w-full">
+      <div >
         <DataTableFacetedFilter
           column={column}
           title="Status"
@@ -97,7 +97,7 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
   },
   {
     id: "actions",
-    header: () => (<div className="text-center w-full">
+    header: () => (<div >
       Action
     </div>),
     cell: ({ row }) =>
