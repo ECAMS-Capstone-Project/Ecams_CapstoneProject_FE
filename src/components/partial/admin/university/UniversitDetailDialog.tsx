@@ -155,10 +155,10 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                     />
                     <FormField
                       control={form.control}
-                      name="staffName"
+                      name="representativeName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Staff</FormLabel>
+                          <FormLabel>Representative</FormLabel>
                           <FormControl>
                             <Input
                               type="text"

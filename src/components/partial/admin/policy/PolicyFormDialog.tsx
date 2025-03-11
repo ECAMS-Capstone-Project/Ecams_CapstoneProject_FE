@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,16 +26,18 @@ import { PolicySchema } from "@/schema/PolicySchema";
 import Select from "react-select";
 import { Role } from "@/models/User";
 import { roleList } from "@/api/agent/UserAgent";
-import { createPolicy } from "@/api/agent/PolicyAgent";
+import { usePolicy } from "@/hooks/admin/usePolicy";
 
 type PolicyFormValues = z.infer<typeof PolicySchema>;
 
 interface PolicyDialogProps {
   initialData: PolicyFormValues | null;
+  onClose?: () => void;
 }
 
 export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
   initialData,
+  onClose,
 }) => {
   const form = useForm<PolicyFormValues>({
     resolver: zodResolver(PolicySchema),
@@ -46,26 +49,22 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
       roleName: [""],
     },
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [, setOpen] = useState(false);
   const [role, setRole] = useState<Role[]>([]);
   const { control, handleSubmit } = form;
-
+  const { createPolicy, isCreating } = usePolicy();
   async function onSubmit(values: PolicyFormValues) {
     console.log("Adding New Policy:", values);
     try {
-      setIsLoading(true);
       console.log("Adding New Policy:", values);
       await createPolicy(values);
       toast.success("Policy created successfully.");
       setOpen(false);
-      window.location.reload();
+      onClose && onClose();
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
       console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
     }
   }
   useEffect(() => {
@@ -80,8 +79,6 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
         }
       } catch (error) {
         console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false); // Hoàn tất tải
       }
     };
     listRole(); // Call the function here
@@ -93,7 +90,7 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
 
   return (
     <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
-      {isLoading ? (
+      {isCreating ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
         </div>
@@ -188,16 +185,18 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
                                 value={defaultRoles} // Sử dụng defaultValue
                                 isMulti
                                 name="roleName"
-                                options={role.map((roleItem) => ({
-                                  label: roleItem.roleName,
-                                  value: roleItem.roleId,
-                                }))}
+                                options={role
+                                  .filter((role) => role.roleName !== "ADMIN")
+                                  .map((roleItem) => ({
+                                    label: roleItem.roleName,
+                                    value: roleItem.roleId,
+                                  }))}
                                 onChange={(selected) => {
                                   field.onChange(
                                     selected.map((item) => item?.value)
                                   );
                                 }}
-                                className="h-9"
+                                className="h-fit"
                                 classNamePrefix="select"
                                 isDisabled={!!initialData}
                               />

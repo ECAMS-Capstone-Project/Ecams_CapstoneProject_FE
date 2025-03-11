@@ -7,8 +7,11 @@ import { Noti } from "@/models/Notification";
 export const notiColumns: ColumnDef<Noti>[] = [
   {
     accessorKey: "notificationId",
+    enableColumnFilter: false, // Tắt lọc cột này
+    enableSorting: false, // Tắt sắp xếp cột này
+    enableHiding: true,
     header: undefined,
-    cell: undefined, // Không cần hiển thị
+    cell: undefined,
   },
   {
     accessorKey: "message",
@@ -16,9 +19,7 @@ export const notiColumns: ColumnDef<Noti>[] = [
       <DataTableColumnHeader column={column} title="Message" />
     ),
     cell: ({ row }) => (
-      <span className="truncate max-w-lg block px-5">
-        {row.getValue("message")}
-      </span>
+      <span className="truncate max-w-lg block">{row.getValue("message")}</span>
     ), // Hiển thị giá trị "Name"
   },
 

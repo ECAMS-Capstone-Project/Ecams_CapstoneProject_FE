@@ -20,16 +20,16 @@ interface UniversityProps {
 export function RequestTable({ data }: UniversityProps) {
   const [, setIsDialogOpen] = useState(false);
   return (
-    <Table className="text-center">
+    <Table>
       <TableCaption>A list of your pending university.</TableCaption>
-      <TableHeader className="text-center">
+      <TableHeader>
         <TableRow>
-          <TableHead className="text-center">Logo</TableHead>
-          <TableHead className="text-center">University Name</TableHead>
-          <TableHead className="text-center">Contact Email</TableHead>
-          <TableHead className="text-center">Staff</TableHead>
-          <TableHead className="text-center">Status</TableHead>
-          <TableHead className="text-center">Action</TableHead>
+          <TableHead>Logo</TableHead>
+          <TableHead>University Name</TableHead>
+          <TableHead>Contact Email</TableHead>
+          <TableHead>Representative</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -47,7 +47,7 @@ export function RequestTable({ data }: UniversityProps) {
             </TableCell>
             <TableCell>{university.universityName}</TableCell>
             <TableCell>{university.contactEmail}</TableCell>
-            <TableCell>{university.staffName}</TableCell>
+            <TableCell>{university.representativeName}</TableCell>
             <TableCell>
               <div
                 className={`flex items-center justify-center rounded-lg px-2 py-1 text-sm font-medium ${

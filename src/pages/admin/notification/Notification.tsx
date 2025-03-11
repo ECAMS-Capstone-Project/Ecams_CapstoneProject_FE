@@ -2,42 +2,41 @@ import { Button } from "@/components/ui/button";
 
 import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-import { Noti } from "@/models/Notification";
-import { getNotification } from "@/api/agent/NotiAgent";
 import { ViewNotiDialog } from "@/components/partial/admin/notification/ViewNotiDialog";
+import { useNotification } from "@/hooks/admin/useNoti";
 const NotiTable = React.lazy(
   () => import("@/components/partial/admin/notification/NotiTable")
 );
 
 const Notifications = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [notification, setNotification] = useState<Noti[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  useEffect(() => {
-    const loadPackage = async () => {
-      try {
-        //   // Tải cả component lười biếng và dữ liệu API song song
-        const notiData = await getNotification(pageSize, pageNo);
-        setNotification(notiData.data?.data || []); // Đảm bảo `data.data` tồn tại
-        setTotalPages(notiData.data?.totalPages || 1); // Đặt số trang
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false); // Hoàn tất tải
-      }
-    };
-    loadPackage();
-  }, [pageNo, pageSize]);
-
+  // useEffect(() => {
+  //   const loadPackage = async () => {
+  //     try {
+  //       //   // Tải cả component lười biếng và dữ liệu API song song
+  //       const notiData = await getNotification(pageSize, pageNo);
+  //       setNotification(notiData.data?.data || []); // Đảm bảo `data.data` tồn tại
+  //       setTotalPages(notiData.data?.totalPages || 1); // Đặt số trang
+  //     } catch (error) {
+  //       console.error("Error loading data:", error);
+  //     } finally {
+  //       setIsLoading(false); // Hoàn tất tải
+  //     }
+  //   };
+  //   loadPackage();
+  // }, [pageNo, pageSize]);
+  const { notifications, totalPages, isLoading } = useNotification(
+    pageNo,
+    pageSize
+  );
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
       {/* Hiển thị spinner nếu API chưa tải xong */}
@@ -57,12 +56,15 @@ const Notifications = () => {
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogContent className="max-w-lg">
-                <ViewNotiDialog initialData={null} />
+                <ViewNotiDialog
+                  initialData={null}
+                  onClose={() => setIsDialogOpen(false)}
+                />
               </DialogContent>
             </Dialog>
           </div>
           <Separator />
-          <NotiTable data={notification} />
+          <NotiTable data={notifications} />
           <DataTablePagination
             currentPage={pageNo}
             totalPages={totalPages}

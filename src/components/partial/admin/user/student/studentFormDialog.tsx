@@ -30,7 +30,7 @@ import { StudentSchema } from "@/schema/UserSchema";
 type StudentFormValues = z.infer<typeof StudentSchema>;
 
 interface StudentDialogProps {
-  initialData: StudentFormValues | null;
+  initialData: StudentFormValues | null | undefined;
 }
 
 export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
@@ -89,10 +89,10 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
 
                     <FormField
                       control={control}
-                      name="studentId"
+                      name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Student ID</FormLabel>
+                          <FormLabel>Email</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -108,10 +108,27 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                     {/* Price */}
                     <FormField
                       control={control}
-                      name="universityId"
+                      name="fullname"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>University ID</FormLabel>
+                          <FormLabel>Fullname</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name="universityName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>University</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -128,10 +145,10 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                     {/* Duration */}
                     <FormField
                       control={form.control}
-                      name="major"
+                      name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Major</FormLabel>
+                          <FormLabel>Address</FormLabel>
                           <FormControl>
                             <Input
                               type="text"
@@ -153,9 +170,7 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                             <Input
                               type="text"
                               {...field}
-                              value={
-                                field.value == true ? "Active" : "Inactive"
-                              }
+                              value={field.value}
                               // onChange={(e) => field.onChange(e.target.value)}
                               readOnly={!!initialData}
                             />
@@ -166,10 +181,10 @@ export const ViewStudentDialog: React.FC<StudentDialogProps> = ({
                     />
                     <FormField
                       control={form.control}
-                      name="yearOfStudy"
+                      name="phonenumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Academic Year</FormLabel>
+                          <FormLabel>Phone Number</FormLabel>
                           <FormControl>
                             <Input
                               type="number"

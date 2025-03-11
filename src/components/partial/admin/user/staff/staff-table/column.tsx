@@ -1,20 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2Icon, ChevronDown, Eye, XCircleIcon } from "lucide-react";
+import { CheckCircle2Icon, Eye, XCircleIcon } from "lucide-react";
 // import { DataTableRowActions } from "./row-actions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import toast from "react-hot-toast";
 import { getStaff } from "@/models/User";
 import { ViewStaffDialog } from "../staffFormDialog";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { getUserDetail } from "@/api/agent/UserAgent";
 
 // Định nghĩa columns cho DataTable
 export const StaffColumns: ColumnDef<getStaff>[] = [
@@ -56,14 +57,6 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
   },
 
   {
-    accessorKey: "roleName",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
-    cell: ({ row }) => <span>{row.getValue("roleName")}</span>, // Hiển thị Duration kèm đơn vị
-  },
-
-  {
     accessorKey: "status",
     header: ({ column }) => (
       <div className="flex items-center justify-center">
@@ -96,27 +89,24 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
       return (
         <div className="flex justify-center p-0">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div
-                className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
-                  currentStatus === "ACTIVE"
-                    ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                    : currentStatus === "INACTIVE"
-                    ? "bg-[#FFF5BA] text-[#5A3825]"
-                    : ""
-                } w-3/4`}
-              >
-                {currentStatus === "ACTIVE" && (
-                  <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
-                )}
-                {currentStatus === "INACTIVE" && (
-                  <XCircleIcon size={12} className=" text-[#5A3825]" />
-                )}
+            <div
+              className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
+                currentStatus === "ACTIVE"
+                  ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                  : currentStatus === "INACTIVE"
+                  ? "bg-[#FFF5BA] text-[#5A3825]"
+                  : ""
+              } w-3/4`}
+            >
+              {currentStatus === "ACTIVE" && (
+                <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
+              )}
+              {currentStatus === "INACTIVE" && (
+                <XCircleIcon size={12} className=" text-[#5A3825]" />
+              )}
 
-                <span>{currentStatus}</span>
-                <ChevronDown size={16} />
-              </div>
-            </DropdownMenuTrigger>
+              <span>{currentStatus}</span>
+            </div>
             <DropdownMenuContent className="w-40">
               <DropdownMenuItem
                 onClick={() => reactivateUni()}
@@ -161,17 +151,33 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <>
-        <Dialog>
-          <DialogTrigger>
-            <Eye size={18} />
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <ViewStaffDialog initialData={row.original} />
-          </DialogContent>
-        </Dialog>
-      </>
-    ),
+    cell: ({ row }) => {
+      const [userDetail, setUserDetail] = useState<getStaff>();
+      useEffect(() => {
+        const loadUserDetail = async () => {
+          try {
+            const response = await getUserDetail(row.original.userId);
+            {
+              response.data && setUserDetail(response.data);
+            }
+          } catch (error) {
+            console.log("Error fetching user detail:", error);
+          }
+        };
+        loadUserDetail();
+      }, [row.original.userId]);
+      return (
+        <>
+          <Dialog>
+            <DialogTrigger>
+              <Eye size={18} />
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <ViewStaffDialog initialData={userDetail} />
+            </DialogContent>
+          </Dialog>
+        </>
+      );
+    },
   },
 ];

@@ -32,3 +32,12 @@ export const roleList = async (): Promise<Role> => {
   }
 };
 
+export const getUserDetail = async (userId: string): Promise<ResponseDTO<Student>> => {
+  try {
+    const response = await get<ResponseDTO<Student>>(`/User/${userId}`);
+    return response;
+  } catch (error) {
+    console.error("Error fetching university list:", error);
+    throw error;
+  }
+}

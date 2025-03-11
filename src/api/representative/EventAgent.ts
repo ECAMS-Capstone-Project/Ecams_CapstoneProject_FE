@@ -91,8 +91,8 @@ export const getEventList = async (uniId: string,pageNumber: number, pageSize: n
               }
           } catch (error: any) {
               if (error.response) {
-                  console.error("API Error:", error.response.data.errors);
-                  toast.error(error.response.data.message || "API Error");
+                  console.error("API Error:", error);
+                //   toast.error(error.response.data.message || "API Error");
                   throw new Error(error.response.data.message || "API Error");
               } else {
                   console.error("Network Error:", error.message);

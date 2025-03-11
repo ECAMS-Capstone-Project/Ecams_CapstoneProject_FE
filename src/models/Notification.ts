@@ -5,4 +5,5 @@ export interface Noti {
     notificationType: string;     // Loại thông báo (ví dụ: "system", "reminder", "alert", ...)
     createdDate?: Date | null;  // Ngày tạo (có thể null)
     updatedDate?: Date | null;  // Ngày cập nhật (có thể null)
+    isRead?: boolean; 
 }
