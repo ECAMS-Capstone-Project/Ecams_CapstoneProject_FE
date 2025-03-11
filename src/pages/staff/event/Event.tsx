@@ -75,7 +75,7 @@ const Events = () => {
           </div>
           <Separator />
           <Tabs
-            defaultValue="request"
+            defaultValue="uni"
             // value={activeTab}
             // onValueChange={setActiveTab}
             className="w-full mt-3 p-2"

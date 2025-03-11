@@ -16,7 +16,6 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import toast from "react-hot-toast";
 import { useNotification } from "@/hooks/useNotification";
-import DialogLoading from "../ui/dialog-loading";
 
 const NotificationDropdown = () => {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
@@ -153,7 +152,7 @@ const NotificationDropdown = () => {
     <div className="relative">
       {isLoading ? (
         <div className="flex justify-center items-center h-full w-full  absolute bg-opacity-50 bg-gray-500 z-50">
-          <DialogLoading />
+          {/* <DialogLoading /> */}
         </div>
       ) : (
         <DropdownMenu>
@@ -171,7 +170,7 @@ const NotificationDropdown = () => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-80 max-h-96 p-2"
+            className="max-w-md w-auto max-h-96 p-2"
             align="end"
             forceMount
             onMouseEnter={markNotificationsAsRead}
@@ -208,7 +207,7 @@ const NotificationDropdown = () => {
                       key={notification.notificationId}
                       className="py-3"
                     >
-                      <div className="flex justify-between items-center w-full">
+                      <div className="flex justify-between items-center w-full px-2">
                         <div className="icon w-1/5">
                           {notification.notificationType === "SYSTEM" ? (
                             <MonitorCog size={26} className="text-yellow-700" />

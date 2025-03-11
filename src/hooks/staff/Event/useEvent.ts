@@ -39,7 +39,7 @@ export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number)
       queryClient.invalidateQueries({ queryKey: ["eventClub"] }); // Tự động refetch danh sách ✅
     },
     onError: (error: any) => {
-      console.error("Error:", error.response.data.errors);
+      console.error("Error:", error);
       toast.error(error.response.data.message || "An error occurred");
     },
   });
