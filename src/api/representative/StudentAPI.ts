@@ -67,3 +67,19 @@ export const GetStudentByIdAPI = async (userId: string): Promise<ResponseDTO<Stu
 //         throw error;
 //     }
 // };
+
+export const GetStudentInUniversityAPI = async (uniId: string, pageSize: number, pageNo: number, status?: string): Promise<ResponseDTO<ResponseData<StudentRequest>>> => {
+    try {
+        let response: ResponseDTO<ResponseData<StudentRequest>>;
+        if (status != null || undefined) {
+            response = await get<ResponseDTO<ResponseData<StudentRequest>>>(`/Students/university/${uniId}?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
+        } else {
+            response = await get<ResponseDTO<ResponseData<StudentRequest>>>(`/Students/university/${uniId}?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        }
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};

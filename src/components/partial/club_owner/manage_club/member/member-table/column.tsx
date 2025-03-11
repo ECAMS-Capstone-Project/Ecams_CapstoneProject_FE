@@ -11,35 +11,35 @@ export const memberColumn = (
     {
       accessorKey: "studentId",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Student ID" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("studentId")}</div>,
+      cell: ({ row }) => <div >{row.getValue("studentId")}</div>,
     },
     {
       accessorKey: "fullname",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Full Name" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("fullname")}</div>,
-      // cell: ({ row }) => <div className="text-center w-full">{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
+      cell: ({ row }) => <div >{row.getValue("fullname")}</div>,
+      // cell: ({ row }) => <div >{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
     },
     {
       accessorKey: "email",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Email" />
         </div>
       ),
-      cell: ({ row }) => <div className="text-center w-full">{row.getValue("email")}</div>,
+      cell: ({ row }) => <div >{row.getValue("email")}</div>,
     },
     {
       accessorKey: "clubRoleName",
       header: ({ column }) => (
-        <div className="text-center w-full">
+        <div >
           <DataTableColumnHeader column={column} title="Role" />
         </div>
       ),
@@ -65,7 +65,7 @@ export const memberColumn = (
     },
     {
       id: "actions",
-      header: () => <div className="text-center w-full">Action</div>,
+      header: () => <div >Action</div>,
       cell: ({ row }) => (
         <Dialog>
           <DialogTrigger>

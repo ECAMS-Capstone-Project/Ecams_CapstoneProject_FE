@@ -4,15 +4,18 @@ import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 interface ClubCardProps {
     image: string;
     title: string;
     field: FieldDTO[];
     clubId: string;
+    clubOwnerId: string;
 }
 
-const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId }) => {
+const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId, clubOwnerId }) => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     return (
         <Card
@@ -43,7 +46,7 @@ const ClubCard: React.FC<ClubCardProps> = ({ image, title, field, clubId }) => {
                                 {title}
                             </Typography>
                             <Chip
-                                label="Club Owner"
+                                label={clubOwnerId == user?.userId ? "Club Owner" : "Member"}
                                 color="secondary"
                                 size="small"
                                 sx={{ justifyContent: 'end' }}
