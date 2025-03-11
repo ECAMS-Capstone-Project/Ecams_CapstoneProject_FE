@@ -1,7 +1,7 @@
 export interface University {
     universityId: string; // Primary key
-  staffId: string; // Foreign key referencing Staffs table
-  staffName?: string; // Staff name
+    representativeId: string; // Foreign key referencing Staffs table
+  representativeName?: string; // Staff name
   universityName: string; // University name
   universityAddress?: string; // Optional university address
   status: string; // Status of the university

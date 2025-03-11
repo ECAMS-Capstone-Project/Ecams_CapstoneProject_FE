@@ -19,9 +19,7 @@ export const notiColumns: ColumnDef<Noti>[] = [
       <DataTableColumnHeader column={column} title="Message" />
     ),
     cell: ({ row }) => (
-      <span className="truncate max-w-lg block px-5">
-        {row.getValue("message")}
-      </span>
+      <span className="truncate max-w-lg block">{row.getValue("message")}</span>
     ), // Hiển thị giá trị "Name"
   },
 
