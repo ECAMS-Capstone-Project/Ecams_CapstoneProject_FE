@@ -19,4 +19,5 @@ export interface Event {
   imageUrl: string;
   description: string;
   walletId?: string;
+  eventType:string;
 }

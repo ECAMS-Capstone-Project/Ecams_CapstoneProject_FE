@@ -2,54 +2,32 @@ import { MagicCard } from "@/components/magicui/magic-card";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
-import { EventCategoryFilter } from "../events/EventFilter";
+import { useClubs } from "@/hooks/student/useClub";
+import { useState } from "react";
+import useAuth from "@/hooks/useAuth";
+import { CalendarDays, SearchXIcon } from "lucide-react";
+import { format } from "date-fns";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 export const ClubsSection = () => {
-  const clubs = [
-    {
-      name: "Harvard University",
-      location: "Cambridge, MA",
-      rating: 4.8,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-    {
-      name: "Stanford University",
-      location: "California",
-      rating: 4.6,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-    {
-      name: "Nanyang University",
-      location: "Singapore",
-      rating: 4.5,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-    {
-      name: "Harvard University",
-      location: "Cambridge, MA",
-      rating: 4.8,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-    {
-      name: "Stanford University",
-      location: "California",
-      rating: 4.6,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-    {
-      name: "Nanyang University",
-      location: "Singapore",
-      rating: 4.5,
-      img: "https://res.cloudinary.com/ecams/image/upload/v1739265664/image3_fwvl15.png",
-    },
-  ];
+  const [pageNo, setPageNo] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize] = useState(5);
+  const { user } = useAuth();
+  const { clubs, totalPages } = useClubs(user?.universityId, pageNo, pageSize);
+  const handlePageChange = (newPage: number) => {
+    setPageNo(newPage);
+  };
+
+  const filteredClubs = clubs.filter((club) =>
+    club.clubName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <section className="py-12">
@@ -63,31 +41,79 @@ export const ClubsSection = () => {
         <div className="flex justify-center items-center gap-2">
           <Input
             placeholder="Search for club"
-            className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
+            className="rounded-xl px-4 h-10 w-[500px] border-slate-400"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <EventCategoryFilter />
+          {/* <EventCategoryFilter
+            value={[]}
+            onChange={function (newValue: string[]): void {
+              throw new Error("Function not implemented.");
+            }}
+          /> */}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-7 mt-6 w-full ">
-        {clubs.map((club, index) => (
+      {filteredClubs.length === 0 && (
+        <div className="flex justify-center items-center h-64">
+          <AnimatedGradientText>
+            <SearchXIcon size={26} color="#136CB5" />{" "}
+            <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "}
+            <span
+              className={
+                "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+              }
+            >
+              No club found!
+            </span>
+          </AnimatedGradientText>
+        </div>
+      )}
+      <div className="grid md:grid-cols-4 gap-7 mt-6 w-full px-8">
+        {filteredClubs.map((club, index) => (
           <MagicCard
             key={index}
             className="cursor-pointer flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 "
             gradientColor="#D1EAF0"
           >
-            <div className="w-full ">
+            <div className="w-full h-auto">
               <img
-                src={club.img}
-                alt={club.name}
-                className="w-full h-1/2 object-cover rounded-lg"
+                src={club.logoUrl}
+                alt={club.clubName}
+                className="w-full h-1/4 aspect-video object-cover rounded-lg"
               />
-              <div className="p-4 text-left flex flex-col gap-6">
-                <h3 className="text-lg font-bold">{club.name}</h3>
-                <p className="text-gray-600">{club.location}</p>
-                <span className="bg-yellow-500 text-white px-2 py-1 rounded-2xl text-sm w-fit">
-                  {club.rating} ⭐
-                </span>
+              <div className="p-4 h-3/4 text-left flex flex-col gap-4">
+                <h3 className="text-2xl font-bold text-[#32aaac]">
+                  {club.clubName}
+                </h3>
+
+                <p className="text-[#348687] font-semibold italic">
+                  {club.contactEmail || "No Contact Email"}
+                </p>
+
+                {/* Mục đích */}
+                <p className="text-md text-gray-700 line-clamp-2 truncate max-w-md block">
+                  {club.purpose}
+                </p>
+
+                {/* <span className="bg-yellow-500 text-white px-2 py-1 rounded-2xl text-sm w-fit">
+                   {club.} ⭐
+                 </span> */}
+                <div className="flex flex-wrap gap-2">
+                  {club.clubFields?.map((field, i) => (
+                    <span
+                      key={i}
+                      className="bg-[#78e1e33c] text-[#348687] text-sm font-semibold px-2 py-1 rounded-full"
+                    >
+                      {field.fieldName}
+                    </span>
+                  ))}
+                </div>
+                {/* Ngày thành lập */}
+                <div className="flex items-center gap-2 text-md text-gray-500">
+                  <CalendarDays size={18} />
+                  <span>Since {format(club.foundingDate, "dd/MM/yyyy")}</span>
+                </div>
               </div>
             </div>
           </MagicCard>
@@ -97,24 +123,39 @@ export const ClubsSection = () => {
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href="#" />
+              <PaginationPrevious
+                onClick={() => handlePageChange(pageNo - 1)}
+                aria-disabled={pageNo === 1}
+                tabIndex={pageNo <= 1 ? -1 : undefined}
+                className={
+                  pageNo <= 1 ? "pointer-events-none opacity-50" : undefined
+                }
+              />
             </PaginationItem>
+
+            {/* Previous pages */}
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  isActive={index + 1 === pageNo}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
             <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
+              <PaginationNext
+                onClick={() => handlePageChange(pageNo + 1)}
+                aria-disabled={pageNo === totalPages}
+                tabIndex={pageNo === totalPages ? totalPages + 1 : undefined}
+                className={
+                  pageNo === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>

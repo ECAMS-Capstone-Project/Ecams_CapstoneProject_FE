@@ -13,41 +13,60 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-// import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+// Ví dụ: inside / outside
 const filterOptions = [
-  { label: "Inside", value: "inside" },
-  { label: "Outside", value: "outside" },
+  { label: "Private", value: "PRIVATE" },
+  { label: "Public", value: "PUBLIC" },
 ];
 
-export function EventCategoryFilter() {
-  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+interface EventCategoryFilterProps {
+  // Mảng các giá trị đã chọn (ví dụ: ["inside", "outside"])
+  value: string[];
+  // Hàm callback khi thay đổi filter
+  onChange: (newValue: string[]) => void;
+}
 
-  const toggleSelection = (value: string) => {
-    const newSelected = new Set(selected);
-    if (newSelected.has(value)) {
-      newSelected.delete(value);
+export function EventCategoryFilter({
+  value,
+  onChange,
+}: EventCategoryFilterProps) {
+  const [open, setOpen] = React.useState(false);
+
+  // Toggle một lựa chọn trong mảng
+  const toggleSelection = (val: string) => {
+    let newValue: string[];
+    if (value.includes(val)) {
+      // Bỏ chọn
+      newValue = value.filter((v) => v !== val);
     } else {
-      newSelected.add(value);
+      // Chọn thêm
+      newValue = [...value, val];
     }
-    setSelected(newSelected);
+    onChange(newValue);
+  };
+
+  const handleClearFilters = () => {
+    onChange([]);
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           className="h-10 px-4 rounded-lg text-white bg-gradient-to-r from-[#136CB5] to-[#49BBBD] hover:opacity-90 flex items-center justify-between space-x-2"
+          onClick={() => setOpen(true)}
         >
           <span>
-            {selected.size > 0 ? `${selected.size} Selected` : "Event's scope"}
+            {value.length > 0 ? `${value.length} Selected` : "Event's scope"}
           </span>
           <ChevronDownIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder="Search category..." />
@@ -55,11 +74,14 @@ export function EventCategoryFilter() {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {filterOptions.map((option) => {
-                const isSelected = selected.has(option.value);
+                const isSelected = value.includes(option.value);
                 return (
                   <CommandItem
                     key={option.value}
-                    onSelect={() => toggleSelection(option.value)}
+                    onSelect={() => {
+                      toggleSelection(option.value);
+                      setOpen(false);
+                    }}
                     className="flex items-center"
                   >
                     <div
@@ -77,10 +99,14 @@ export function EventCategoryFilter() {
                 );
               })}
             </CommandGroup>
-            {selected.size > 0 && (
+
+            {value.length > 0 && (
               <CommandGroup>
                 <CommandItem
-                  onSelect={() => setSelected(new Set())}
+                  onSelect={() => {
+                    handleClearFilters();
+                    setOpen(false);
+                  }}
                   className="justify-center text-center text-red-500"
                 >
                   Clear Filters
