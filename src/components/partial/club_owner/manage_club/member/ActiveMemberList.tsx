@@ -1,12 +1,12 @@
-import MemberListTable from "./member/MemberListTable";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { useEffect, useState } from "react";
 import { ClubMemberDTO, GetMemberInClubsAPI } from "@/api/club-owner/ClubByUser";
+import ActiveMemberListTable from "./A_MemberListTable";
 interface props {
     clubId: string;
 }
 
-export default function MemberList({ clubId }: props) {
+export default function ActiveMemberList({ clubId }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
@@ -34,7 +34,7 @@ export default function MemberList({ clubId }: props) {
 
     return (
         <div className="space-y-2">
-            <MemberListTable data={memberList} />
+            <ActiveMemberListTable data={memberList} />
             <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}

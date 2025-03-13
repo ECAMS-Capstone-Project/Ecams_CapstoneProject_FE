@@ -10,7 +10,6 @@ import { Task } from "@/models/Task";
 import { format } from "date-fns";
 import useAuth from "@/hooks/useAuth";
 
-
 interface TaskDetailDialogProps {
   initialData: Task | null;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,7 +37,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
   };
 
   return (
-    <div>
+    <div className="max-h-[700px] overflow-y-auto p-4">
       <h2 className="text-lg font-semibold">Task Detail</h2>
       <Form {...form}>
         <form
@@ -48,7 +47,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
           }}
           className="grid grid-cols-2 gap-4"
         >
-          {/* Title (Read-only) */}
+          {/* Task Name */}
           <FormField
             control={form.control}
             name="taskName"
@@ -67,7 +66,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
             )}
           />
 
-          {/* Description (Read-only) */}
+          {/* Description */}
           <FormField
             control={form.control}
             name="description"
@@ -79,15 +78,14 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
                     {...field}
                     disabled
                     className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300 resize-none"
-                    rows={2} // Tăng số dòng để hiển thị nhiều hơn
+                    rows={2}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
-
-          {/* Deadline (Read-only) */}
+          {/* Deadline */}
           <FormField
             control={form.control}
             name="deadline"
@@ -95,12 +93,17 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Deadline:</FormLabel>
                 <FormControl>
-                  <Input value={format(new Date(field.value), 'HH:mm:ss dd/MM/yyyy')} readOnly className="bg-gray-100" />
+                  <Input
+                    value={format(new Date(field.value), "HH:mm:ss dd/MM/yyyy")}
+                    readOnly
+                    className="bg-gray-100"
+                  />
                 </FormControl>
               </FormItem>
             )}
           />
 
+          {/* Status */}
           <FormField
             control={form.control}
             name="status"
@@ -108,15 +111,19 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
               <FormItem>
                 <FormLabel>Status:</FormLabel>
                 <FormControl>
-                  <p className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300 resize-none">
-                    {field.value ? <span className="text-[#3a8f5e] font-bold">Completed</span> : <span className="text-[#007BFF] font-bold">In progress</span>}
+                  <p className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300">
+                    {field.value ? (
+                      <span className="text-[#3a8f5e] font-bold">Completed</span>
+                    ) : (
+                      <span className="text-[#007BFF] font-bold">In progress</span>
+                    )}
                   </p>
                 </FormControl>
               </FormItem>
             )}
           />
 
-          {/* Rich Text Editor (Editable nếu status là "In Progress") */}
+          {/* Rich Text Editor */}
           <div className="col-span-2">
             <FormLabel>Task Content:</FormLabel>
             {isSubmitted ? (
@@ -124,29 +131,20 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
                 <p className="text-center">Task is submitted and cannot be edited</p>
               </div>
             ) : (
-              <ReactQuill
-                theme="snow"
-                value={editorContent}
-                onChange={setEditorContent}
-                className="bg-white"
-              />
+              <ReactQuill className="max-h-[400px] overflow-y-auto" theme="snow" value={editorContent} onChange={setEditorContent} />
             )}
           </div>
 
-          {/* Submit hoặc Quit Button */}
+          {/* Buttons */}
           <div className="col-span-2 flex justify-end">
             {isSubmitted ? (
               <DialogClose asChild>
-                <Button type="button" className=" text-white">
-                  Quit
-                </Button>
+                <Button type="button" className=" text-white">Quit</Button>
               </DialogClose>
             ) : (
               user?.roles.includes("club_owner") ? (
                 <DialogClose asChild>
-                  <Button type="button" className=" text-white">
-                    Quit
-                  </Button>
+                  <Button type="button" className=" text-white">Quit</Button>
                 </DialogClose>
               ) : (
                 <Button type="submit">Submit</Button>

@@ -1,24 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import DataTable from "@/components/ui/datatable/data-table";
-import { taskColumn } from "./task-table/column";
-import { Task } from "@/models/Task";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { clubColumn } from "./club-active-table/column";
+import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 
-interface TaskData {
-  data: Task[];
+interface ClubData {
+  data: ClubResponseDTO[];
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 }
-const TaskListTable = ({ data, setFlag }: TaskData) => {
-  const navigate = useNavigate();
+const ClubActiveListTable = ({ data }: ClubData) => {
   return (
     <>
       <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <div className="flex justify-end">
-          <Button onClick={() => navigate('/club/create-task')}>Create task</Button>
-        </div>
         <DataTable
-          columns={taskColumn(setFlag)}
+          columns={clubColumn()}
           data={data}
           searchKey={"taskName"}
           placeholder="Search title"
@@ -28,4 +24,4 @@ const TaskListTable = ({ data, setFlag }: TaskData) => {
   );
 };
 
-export default TaskListTable;
+export default ClubActiveListTable;

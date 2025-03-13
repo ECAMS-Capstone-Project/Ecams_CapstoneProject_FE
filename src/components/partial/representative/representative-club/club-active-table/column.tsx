@@ -3,15 +3,12 @@ import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-colu
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, Eye, Clock } from "lucide-react";
-import { DataTableRowActions } from "./row-actions";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Task } from "@/models/Task";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 // import useAuth from "@/hooks/useAuth";
 
-export const taskColumn = (
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
-): ColumnDef<Task>[] => {
+export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
   // const { user } = useAuth(); // Get the user from useAuth
 
   return [
@@ -19,7 +16,7 @@ export const taskColumn = (
       accessorKey: "taskName",
       header: ({ column }) => (
         <div >
-          <DataTableColumnHeader column={column} title="Task Name" />
+          <DataTableColumnHeader column={column} title="Club Name" />
         </div>
       ),
       cell: ({ row }) => <div >{row.getValue("taskName")}</div>,
@@ -81,7 +78,7 @@ export const taskColumn = (
     {
       id: "actions",
       header: () => <div>Action</div>,
-      cell: ({ row }) => (
+      cell: () => (
         <>
           {/* {user?.roles == row.getValue("")} */}
           <Dialog>
@@ -90,9 +87,6 @@ export const taskColumn = (
                 <Eye size={18} />
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DataTableRowActions row={row} setFlag={setFlag} />
-            </DialogContent>
           </Dialog>
         </>
       ),

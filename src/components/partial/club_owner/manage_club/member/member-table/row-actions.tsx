@@ -15,6 +15,7 @@ export function DataTableRowActions<TData>({
       <MemberDetailDialog
         initialData={row.original as any}
         setFlag={setFlag}
+        mode={row.getValue("status") !== "CHECKING" ? "pending" : "view"}
       />
     </>
   );

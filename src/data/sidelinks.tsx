@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
-import { Event, EventAvailableTwoTone } from "@mui/icons-material";
+import { Event, EventAvailableTwoTone, Diversity3, Pending, Stars } from "@mui/icons-material";
 export interface NavLink {
   title: string;
   href: string;
@@ -116,32 +116,44 @@ const SidebarLinks = () => {
         title: "Wallet",
         href: "/representative/wallet",
         icon: <Wallet size={18} />,
-        id: 24,
+        id: 25,
       },
       {
         title: "Event",
         href: "/representative/event",
         icon: <Event />,
-        id: 24,
+        id: 26,
       },
 
       {
-        title: "Club",
+        title: "Manage Club",
         href: "/representative/club",
         icon: <Groups2Icon />,
-        id: 24,
+        id: 27,
         sub: [
           {
             title: "Event-Club",
             href: "/representative/event-club",
             icon: <EventAvailableTwoTone />,
-            id: 24,
+            id: 28,
           },
           {
-            title: "Club",
+            title: "Request-Club",
             href: "/representative/club",
-            icon: <EventAvailableTwoTone />,
-            id: 24,
+            icon: <Pending />,
+            id: 29,
+          },
+          {
+            title: "Active-Club",
+            href: "/representative/active-club",
+            icon: <Diversity3 />,
+            id: 30,
+          },
+          {
+            title: "Ranking-Club",
+            href: "/representative/club-ranking",
+            icon: <Stars />,
+            id: 30,
           },
         ],
       }
