@@ -78,7 +78,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
           <DialogLoading />
         </div>
       ) : (
-        <div className="w-full max-w-2xl mx-auto my-auto">
+        <div className="w-full max-w-2xl mx-auto my-auto overflow-y max-height-[80vh]">
           <DialogHeader>
             <DialogTitle>
               View Student Details
