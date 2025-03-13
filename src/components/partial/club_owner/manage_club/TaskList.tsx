@@ -23,7 +23,7 @@ export default function TaskList({ clubId }: props) {
                 setTaskList(taskData.data?.data || []); // Đảm bảo `data.data` tồn tại
                 // setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
             } else {
-                console.warn("UniversityList returned no data");
+                console.warn("Task returned no data");
             }
         } catch (error) {
             console.error("Error loading data:", error);

@@ -4,10 +4,14 @@ import { Eye } from "lucide-react";
 import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
+import RoleDropdownCell from "../RoleDropdownCell";
 
-export const memberColumn = (
+export const memberActiveColumn = (
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
-): ColumnDef<ClubMemberDTO>[] => [
+): ColumnDef<ClubMemberDTO>[] => {
+  // const { user } = useAuth(); // Get the user from useAuth
+
+  return [
     {
       accessorKey: "studentId",
       header: ({ column }) => (
@@ -45,20 +49,12 @@ export const memberColumn = (
       ),
       cell: ({ row }) => {
         const role = row.getValue("clubRoleName") || "CLUB_MEMBER";
-        const isClubOwner = role === "CLUB_OWNER";
-        const isMember = role === "CLUB_MEMBER";
-
         return (
-          <div
-            className={`flex items-center justify-center gap-2 p-2 rounded-md w-[180px] ${isClubOwner
-              ? "bg-slate-700 text-white"
-              : isMember
-                ? "bg-[#88f0b0]  text-[#2F4F4F]"
-                : ""
-              }`}
-            style={{ margin: "0 auto" }}
-          >
-            <span>{role as string}</span>
+          <div className="flex justify-center">
+            <RoleDropdownCell
+              role={role as string}
+              row={row}
+            />
           </div>
         );
       },
@@ -80,3 +76,4 @@ export const memberColumn = (
       ),
     },
   ];
+}
