@@ -15,7 +15,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
 import { ViewNotiDialog } from "../ViewNotiDialog";
-import { deleteNotification } from "@/api/agent/NotiAgent";
+import { useNotification } from "@/hooks/admin/useNoti";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -26,20 +26,17 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { deleteNotification, isDeleting } = useNotification();
   const onConfirm = async () => {
-    setLoading(true);
     try {
       // await agent.Products.delete(data.productId);
       await deleteNotification(row.getValue("notificationId"));
-      toast.success("Notification deleted successfully.");
-      window.location.reload();
+      // toast.success("Notification deleted successfully.");
     } catch (error: any) {
       const errorMessage = error.response.data?.message || "An error occurred";
       toast.error(errorMessage);
       console.error("Error deleting noti:", error);
     } finally {
-      setLoading(false);
       setOpen(false);
     }
   };
@@ -49,7 +46,7 @@ export function DataTableRowActions<TData>({
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
-        loading={loading}
+        loading={isDeleting}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

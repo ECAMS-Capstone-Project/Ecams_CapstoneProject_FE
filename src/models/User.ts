@@ -22,6 +22,8 @@ export interface User  {
       phonenumber: string;
       status: string;
       roleName: string;
+      universityName?:string,
+      shortName?:string
     
   }
   // TypeScript model for Staffs
@@ -34,12 +36,14 @@ export interface User  {
     userId: string;          // Mã người dùng (Foreign Key liên kết với bảng Users)
     email: string;    // Mã trường đại học (Foreign Key liên kết với bảng UniversityInformation)
     fullname: string;           // Ngành học
-    address: number;     // Năm học (sử dụng number vì FLOAT trong SQL có thể map sang number trong TypeScript)
-    phonenumber: Date;       // Ngày bắt đầu học (ISO 8601 format: YYYY-MM-DDTHH:mm:ss.sssZ)
+    address: string;     // Năm học (sử dụng number vì FLOAT trong SQL có thể map sang number trong TypeScript)
+    phonenumber: string;       // Ngày bắt đầu học (ISO 8601 format: YYYY-MM-DDTHH:mm:ss.sssZ)
     roleName: string;        // URL ảnh đại diện của sinh viên
-    status: boolean;         // Trạng thái (true: Active, false: Inactive)
+    status: string;         // Trạng thái (true: Active, false: Inactive)
+    universityName?:string,
+    shortName?:string
 }
-
+ 
 
 export interface Role {
   roleId: string;

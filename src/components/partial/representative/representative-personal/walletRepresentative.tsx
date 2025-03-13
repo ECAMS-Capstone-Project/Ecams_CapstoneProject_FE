@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Card, Container, Typography, Grid2 } from "@mui/material";
-import { Button } from "@mui/material";  // Dùng Button từ MUI
+import { Button } from "@mui/material"; // Dùng Button từ MUI
 import { PackageCurrent } from "@/api/agent/PackageAgent";
 import { Package } from "@/models/Package";
 import ContractRepresentativePage from "@/pages/representative/contract/ContractRepresentativePage";
@@ -63,8 +63,6 @@ const WalletRepresentative = () => {
     );
   }
 
-
-
   return (
     <Container maxWidth="xl" className="p-6 rounded-lg shadow-lg">
       {/* Header */}
@@ -80,11 +78,7 @@ const WalletRepresentative = () => {
         <Grid2 container spacing={3} sx={{ width: "100%" }}>
           {/* Thông tin User */}
           <Grid2 size={{ xs: 12, md: 6 }} boxShadow={1} p={2}>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              color="primary"
-              mb={2}>
+            <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
               🔸 <b>Full Name:</b> {user?.fullname}
             </Typography>
             <Grid2 container spacing={3}>
@@ -115,7 +109,8 @@ const WalletRepresentative = () => {
                   variant="h6"
                   fontWeight="bold"
                   color="primary"
-                  mb={2}>
+                  mb={2}
+                >
                   🎟️ <b>Current Package:</b> {curPackage.packageName}
                 </Typography>
                 <Grid2 container spacing={3}>
@@ -128,7 +123,7 @@ const WalletRepresentative = () => {
                     </Typography>
                     <Typography mb={2}>
                       ⏳ <b>Expiry Date:</b>{" "}
-                      {format(new Date(curPackage.endDate), 'dd-MM-yyyy')}
+                      {format(new Date(curPackage.endDate), "dd-MM-yyyy")}
                     </Typography>
                   </Grid2>
                   <Grid2 size={{ xs: 12, md: 6 }}>
@@ -148,65 +143,76 @@ const WalletRepresentative = () => {
                     </Typography>
                   </Grid2>
                 </Grid2>
-
               </>
             ) : (
               <div className="flex justify-center">
-                <Typography color="textSecondary" variant="h6">❌ No package assigned</Typography>
+                <Typography color="textSecondary" variant="h6">
+                  ❌ No package assigned
+                </Typography>
               </div>
             )}
           </Grid2>
         </Grid2>
-        <div className="flex gap-7 mt-1 justify-center">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className="block mt-4 hover:scale-105"
-                sx={{
-                  background: "#5a5d5c",
-                  textTransform: "none",
-                }}
-                variant="contained"
-              >
-                📄 View detail
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="w-full md:w-1/2 p-6 bg-gradient-to-r from-[#e0f7fa] to-[#80deea] rounded-lg shadow-lg">
-              <Typography variant="h6" fontWeight="bold" color="primary">
-                📌 Package Details:
-              </Typography>
-              {curPackage?.packageDetails?.map((detail, index) => (
-                <ul className="flex gap-2">
-                  <div className="flex justify-center w-full">
-                    <li key={index + 1} className="flex  w-2/4 items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300">
-                      <span className="text-lg font-semibold text-blue-600">Max {detail.packageType}: </span>
-                      <span className="text-sm text-gray-500 mt-0.5">{detail.value} {detail.packageType} </span>
-                    </li>
-                  </div>
-                </ul>
-              ))}
-            </DialogContent>
-          </Dialog>
-          <Button
-            className="block mt-4 hover:scale-105"
-            variant="contained"
-            sx={{ background: "black", textTransform: "none" }}
-            onClick={() => setOpenCancel(true)}
-          >
-            📄 Cancel package
-          </Button>
-          <Button
-            className="block mt-4 hover:scale-105"
-            sx={{
-              background: "linear-gradient(to right, #136CB5, #49BBBD)",
-              textTransform: "none",
-            }}
-            variant="contained"
-            onClick={() => setOpen(true)}
-          >
-            📄 Extend package
-          </Button>
-        </div>
+        {curPackage && (
+          <div className="flex gap-7 mt-1 justify-center">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className="block mt-4 hover:scale-105"
+                  sx={{
+                    background: "#5a5d5c",
+                    textTransform: "none",
+                  }}
+                  variant="contained"
+                >
+                  📄 View detail
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-full md:w-1/2 p-6 bg-gradient-to-r from-[#e0f7fa] to-[#80deea] rounded-lg shadow-lg">
+                <Typography variant="h6" fontWeight="bold" color="primary">
+                  📌 Package Details:
+                </Typography>
+                {curPackage?.packageDetails?.map((detail, index) => (
+                  <ul className="flex gap-2">
+                    <div className="flex justify-center w-full">
+                      <li
+                        key={index + 1}
+                        className="flex  w-2/4 items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300"
+                      >
+                        <span className="text-lg font-semibold text-blue-600">
+                          Max {detail.packageType}:{" "}
+                        </span>
+                        <span className="text-sm text-gray-500 mt-0.5">
+                          {detail.value} {detail.packageType}{" "}
+                        </span>
+                      </li>
+                    </div>
+                  </ul>
+                ))}
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              className="block mt-4 hover:scale-105"
+              variant="contained"
+              sx={{ background: "black", textTransform: "none" }}
+              onClick={() => setOpenCancel(true)}
+            >
+              📄 Cancel package
+            </Button>
+            <Button
+              className="block mt-4 hover:scale-105"
+              sx={{
+                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                textTransform: "none",
+              }}
+              variant="contained"
+              onClick={() => setOpen(true)}
+            >
+              📄 Extend package
+            </Button>
+          </div>
+        )}
       </Card>
 
       {/* Lịch sử đăng ký */}

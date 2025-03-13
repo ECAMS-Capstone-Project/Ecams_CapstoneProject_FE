@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import type { Package } from "@/models/Package";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { DataTableRowActions } from "./row-actions";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePackages } from "@/hooks/admin/usePackage";
 
 const formatDate = (timestamp: string): string => {
   const date = new Date(timestamp);
@@ -62,37 +66,57 @@ export const packageColumns: ColumnDef<Package>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableFacetedFilter
-        column={column}
-        title="Status"
-        options={[
-          { label: "Active", value: true },
-          { label: "Inactive", value: false },
-        ]}
-      />
+      <div className="flex items-center justify-center">
+        <DataTableFacetedFilter
+          column={column}
+          title="Status"
+          options={[
+            { label: "Active", value: true },
+            { label: "Inactive", value: false },
+          ]}
+        />
+      </div>
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      const isActive = status == "1";
-      const isInactive = status == "0";
+
+      // Hàm xử lý thay đổi trạng thái
+      const handleStatusChange = async () => {
+        const newStatus = !status;
+        const queryClient = useQueryClient();
+        const { deactivePackage } = usePackages(); // Gọi hook để cập nhật package
+
+        try {
+          await deactivePackage(row.original.packageId); // Gọi mutation update package
+
+          // Cập nhật trực tiếp dữ liệu trong bảng mà không cần refetch lại
+          queryClient.setQueryData(["packages"], (oldData: any) => {
+            return oldData.map((item: Package) =>
+              item.packageId === row.original.packageId
+                ? { ...item, status: newStatus } // Cập nhật status trong bảng
+                : item
+            );
+          });
+        } catch (error) {
+          console.error("Error updating package status:", error);
+        }
+      };
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md ${
-            isActive
+          onClick={handleStatusChange} // Bắt sự kiện click
+          className={`flex items-center justify-center gap-2 p-2 rounded-md cursor-pointer ${
+            status
               ? "bg-[#CBF2DA] text-[#2F4F4F]"
-              : isInactive
-              ? "bg-[#FFF5BA] text-[#5A3825]"
-              : ""
+              : "bg-[#FFF5BA] text-[#5A3825]"
           } w-full`} // Đặt width cố định
         >
-          {isActive && (
+          {status ? (
             <CheckCircle2Icon size={20} className="h-5 w-5 text-[#2F4F4F]" />
-          )}
-          {isInactive && (
+          ) : (
             <XCircleIcon size={20} className="h-5 w-5 text-[#5A3825]" />
           )}
-          <span>{status == "1" ? "Active" : "Inactive"}</span>
+          <span>{status ? "Active" : "Inactive"}</span>
         </div>
       );
     },

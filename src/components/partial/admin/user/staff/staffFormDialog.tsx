@@ -30,7 +30,7 @@ import { StaffSchema } from "@/schema/UserSchema";
 type StaffFormValues = z.infer<typeof StaffSchema>;
 
 interface StaffDialogProps {
-  initialData: StaffFormValues | null;
+  initialData: StaffFormValues | null | undefined;
 }
 
 export const ViewStaffDialog: React.FC<StaffDialogProps> = ({
@@ -119,7 +119,23 @@ export const ViewStaffDialog: React.FC<StaffDialogProps> = ({
                         </FormItem>
                       )}
                     />
-
+                    <FormField
+                      control={control}
+                      name="universityName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>University</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              readOnly={!!initialData}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     {/* Price */}
                     <FormField
                       control={control}

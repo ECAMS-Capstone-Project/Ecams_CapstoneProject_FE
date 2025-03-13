@@ -14,10 +14,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
-import { BellIcon } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
-import Groups2Icon from '@mui/icons-material/Groups2';
+import Groups2Icon from "@mui/icons-material/Groups2";
+import NotificationDropdown from "../global/Notification";
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
@@ -40,13 +40,13 @@ export function UserNav() {
   const handleLogout = async () => {
     await logout();
     navigate("/");
-    toast.success("Logout successfully")
+    toast.success("Logout successfully");
   };
 
   return (
     <>
       <div className="flex w-fit justify-center items-center gap-3 ">
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <BellIcon size={24} className="cursor-pointer p-0.5" />
           </DropdownMenuTrigger>
@@ -84,14 +84,17 @@ export function UserNav() {
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>New Team</DropdownMenuItem> */}
-            </DropdownMenuGroup>
+        {/* </DropdownMenuGroup>
             <DropdownMenuSeparator />
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
+        {userInfo?.roles && !userInfo?.roles.includes("ADMIN") && (
+          <NotificationDropdown />
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-8 w-8">
                 <AvatarImage
                   src="https://github.com/shadcn.png"
@@ -120,7 +123,9 @@ export function UserNav() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/club")}>
                 My club
-                <DropdownMenuShortcut><Groups2Icon /></DropdownMenuShortcut>
+                <DropdownMenuShortcut>
+                  <Groups2Icon />
+                </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 Settings

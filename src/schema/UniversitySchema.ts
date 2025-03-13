@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const universitySchema = z.object({
   universityId: z.string().uuid(), // UUID đảm bảo là định danh duy nhất
-  staffId: z.string().uuid(), // UUID cho staffId
-  staffName: z.string().optional(), // Tên staff không bắt buộc
+  representativeId: z.string().uuid(), // UUID cho staffId
+  representativeName: z.string().optional(), // Tên staff không bắt buộc
   universityName: z.string().min(1, "University name is required."),
   universityAddress: z.string().optional(), // Địa chỉ không bắt buộc
   status: z.string().min(1, "Status is required."), // Trạng thái bắt buộc

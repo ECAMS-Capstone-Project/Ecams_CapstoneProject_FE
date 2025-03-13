@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,15 +23,19 @@ import {
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useState } from "react";
 import { NotificationSchema } from "@/schema/NotiSchema";
-import { createNotification } from "@/api/agent/NotiAgent";
+import { useNotification } from "@/hooks/admin/useNoti";
 
 type NotificationFormValues = z.infer<typeof NotificationSchema>;
 
 interface NotiDialogProps {
   initialData: NotificationFormValues | null;
+  onClose?: () => void;
 }
 
-export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
+export const ViewNotiDialog: React.FC<NotiDialogProps> = ({
+  initialData,
+  onClose,
+}) => {
   const form = useForm<NotificationFormValues>({
     resolver: zodResolver(NotificationSchema),
     defaultValues: initialData || {
@@ -38,8 +43,9 @@ export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
       message: "",
     },
   });
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [, setOpen] = useState(false);
+  const { createNotification, isCreating } = useNotification();
   // const [open, setOpen] = useState(false)
   console.log("Form Errors:", form.formState.errors);
 
@@ -47,23 +53,20 @@ export const ViewNotiDialog: React.FC<NotiDialogProps> = ({ initialData }) => {
     console.log("create notification", values);
 
     try {
-      setIsLoading(true);
       await createNotification(values);
       toast.success("Notification created successfully.");
       setOpen(false);
-      window.location.reload();
+      onClose && onClose();
     } catch (error: any) {
       const errorMessage = error.message || "An error occurred";
       toast.error(errorMessage);
       console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
     }
   }
 
   return (
     <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
-      {isLoading ? (
+      {isCreating ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
         </div>

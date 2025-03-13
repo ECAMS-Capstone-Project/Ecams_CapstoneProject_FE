@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -36,18 +37,20 @@ import {
 } from "@/components/ui/command";
 import { ChevronsUpDown, Check } from "lucide-react";
 import { packageType } from "@/models/Status";
-import { createPackage } from "@/api/agent/PackageAgent";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useState } from "react";
+import { usePackages } from "@/hooks/admin/usePackage";
 
 type EditPackageFormValues = z.infer<typeof editPackageSchema>;
 
 interface EditPackageDialogProps {
   initialData: EditPackageFormValues | null;
+  onClose?: () => void;
 }
 
 export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
   initialData,
+  onClose,
 }) => {
   const uniquePackageDetails = initialData?.packageDetails.reduce(
     (acc, curr) => {
@@ -58,7 +61,7 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
     },
     [] as { packageType: string; value: string }[]
   );
-
+  const { isCreating, createPackage } = usePackages();
   const form = useForm<EditPackageFormValues>({
     resolver: zodResolver(editPackageSchema),
     defaultValues: initialData
@@ -79,7 +82,6 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
           ],
         },
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [, setOpen] = useState(false);
   // const [open, setOpen] = useState(false)
   const { control, handleSubmit } = form;
@@ -94,24 +96,23 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
     console.log("Submitted Package Details:", values.packageDetails);
 
     try {
-      setIsLoading(true);
       console.log("Adding New Package:", values);
       await createPackage(values);
       toast.success("Package created successfully.");
       setOpen(false);
-      window.location.reload();
+      onClose && onClose();
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       toast.error(errorMessage);
       console.error("Error:", error);
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }
 
   return (
     <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
-      {isLoading ? (
+      {isCreating ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
         </div>
