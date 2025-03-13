@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ResponseDTO } from "@/api/BaseResponse";
-import { approveEvent, createEvent, createEventClub, getEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
+import { approveEvent, createEvent, createEventClub, EventFilterParams, getAllEventList, getEventClub, getEventClubDetail, getEventDetail, getEventList, rejectEvent } from "@/api/representative/EventAgent";
 import {  useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Event } from "@/models/Event";
@@ -19,6 +19,13 @@ export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number)
       
     });
 
+    const getAllEventListQuery = ( pageNumber: number, pageSize: number, filterParams?: EventFilterParams) => {
+      return useQuery({
+        queryKey: ["allEvents",  pageNumber, pageSize, filterParams], // Query key động dựa trên uniId, pageNumber và pageSize
+        queryFn: () => getAllEventList(pageNumber, pageSize, filterParams), // Gọi API lấy thông tin Event Club
+        enabled: true, // Chỉ thực hiện khi có uniId
+      });
+    };
 
     // Tạo mới event
   const {mutateAsync:createEventMutation, isPending} = useMutation({
@@ -133,6 +140,7 @@ export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number)
    rejectEvent: rejectEventMutation,
    getEventClubDetailQuery,
    createEventClub: createEventClubMutation,
-   getEventClubQuery
+   getEventClubQuery,
+   getAllEventListQuery
   };
 };
