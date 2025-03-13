@@ -51,6 +51,8 @@ import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPag
 import EventClub from "@/pages/representative/event-club/EventClub";
 import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
 import { CreateTaskClub } from "@/components/partial/representative/representative-task/CreateTaskClub";
+import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
+import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -239,6 +241,16 @@ export const router = createBrowserRouter([
         element: <CheckingClubPage />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/club-ranking",
+        element: <ClubRankingPage />,
+        errorElement: <ErrorException />
+      },
+      {
+        path: "/representative/active-club",
+        element: <ClubActiveListPage />,
+        errorElement: <ErrorException />
+      }
     ],
     errorElement: <ErrorException />,
   },

@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge"; // Badge từ Shadcn UI
 import EventList from "../../../components/partial/club_owner/manage_club/EventList";
-import MemberList from "../../../components/partial/club_owner/manage_club/MemberList";
+import PendingMemberList from "../../../components/partial/club_owner/manage_club/member/PendingMemberList";
 import TaskList from "../../../components/partial/club_owner/manage_club/TaskList";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { ClubResponse } from "@/models/Club";
 import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
 import { formatDate } from "date-fns";
+import ActiveMemberList from "@/components/partial/club_owner/manage_club/member/ActiveMemberList";
 
 export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
@@ -146,9 +147,10 @@ export default function ClubDetailPage() {
             {/* ------------- PHẦN TABS ------------- */}
             <Tabs defaultValue="events" className="w-full">
                 {/* TabsList */}
-                <TabsList className="grid w-3/6 grid-cols-3 mb-2">
+                <TabsList className="grid w-4/6 grid-cols-4 mb-2">
                     <TabsTrigger value="events">Event List</TabsTrigger>
-                    <TabsTrigger value="members">Member List</TabsTrigger>
+                    <TabsTrigger value="members">Active Members</TabsTrigger>
+                    <TabsTrigger value="member pending">Pending Members</TabsTrigger>
                     <TabsTrigger value="tasks">Task</TabsTrigger>
                 </TabsList>
 
@@ -159,7 +161,11 @@ export default function ClubDetailPage() {
 
                 {/* Nội dung tab 2 */}
                 <TabsContent value="members">
-                    <MemberList clubId={clubId} />
+                    <ActiveMemberList clubId={clubId} />
+                </TabsContent>
+
+                <TabsContent value="member pending">
+                    <PendingMemberList clubId={clubId} />
                 </TabsContent>
 
                 {/* Nội dung tab 3 */}

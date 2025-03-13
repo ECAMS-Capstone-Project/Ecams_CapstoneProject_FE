@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Row } from "@tanstack/react-table";
 import TaskDetailDialog from "../TaskDialog";
+// import TaskDialogClubOwner from "../TaskDialogClubOwner";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -16,6 +17,9 @@ export function DataTableRowActions<TData>({
         initialData={row.original as any}
         setFlag={setFlag}
       />
+
+      {/* <TaskDialogClubOwner initialData={row.original as any}
+        setFlag={setFlag} /> */}
     </>
   );
 }
