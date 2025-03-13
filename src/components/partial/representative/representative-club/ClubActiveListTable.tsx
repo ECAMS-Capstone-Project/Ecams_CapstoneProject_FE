@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import DataTable from "@/components/ui/datatable/data-table";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { clubColumn } from "./club-active-table/column";
 import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 
 interface ClubData {
   data: ClubResponseDTO[];
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ClubActiveListTable = ({ data }: ClubData) => {
   return (
