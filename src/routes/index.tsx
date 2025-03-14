@@ -54,6 +54,8 @@ import { CreateTaskClub } from "@/components/partial/representative/representati
 import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
 import { StudentEventDetail } from "@/components/partial/student/events/EventDetail/EventDetail";
+import { FreeEventConfirm } from "@/components/partial/student/event-register/FreeConfirmation";
+import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -307,6 +309,14 @@ export const router = createBrowserRouter([
       {
         path: "/student/events/:eventId",
         element: <StudentEventDetail />,
+      },
+      {
+        path: "/student/events/free-confirmation",
+        element: <FreeEventConfirm />,
+      },
+      {
+        path: "/student/events/success",
+        element: <EventConfirmSuccess />,
       },
       {
         path: "/student/club",

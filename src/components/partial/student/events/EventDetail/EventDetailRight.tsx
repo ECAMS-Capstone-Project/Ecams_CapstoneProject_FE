@@ -1,6 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { Event } from "@/models/Event";
+import AreaImageCarousel from "./AreaImage";
 
 interface EventDetailRightProps {
   event: Event;
@@ -44,11 +45,13 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
           </tbody>
         </table>
       </div>
-      <div className="h-32 w-full bg-gray-300">
-        <img
-          src="https://daihoc.fpt.edu.vn/wp-content/uploads/2022/04/le-tot-nghiep-dai-hoc-fpt-tphcm-2-910x607.jpeg"
-          alt=""
-          className="rounded-md"
+      <div className=" w-full p-3">
+        <AreaImageCarousel
+          area={
+            event.eventAreas && event.eventAreas.length > 0
+              ? event.eventAreas
+              : []
+          }
         />
       </div>
     </div>
