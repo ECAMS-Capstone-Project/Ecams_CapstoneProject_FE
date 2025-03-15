@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils"
 import { useEvents } from "@/hooks/staff/Event/useEvent"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import LoadingAnimation from "@/components/ui/loading"
 import { AreaPicker, DatePicker } from "./AreaPicker"
 import { Avatar, Box, Button, Grid2, styled } from "@mui/material"
@@ -64,6 +64,9 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
 }) => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>()
   const [isLoading, setIsLoading] = useState(false)
+  const location = useLocation()
+  // Lấy dữ liệu state
+  const { clubId } = location.state || {}
 
   // Preview cho ảnh upload
   const [preview, setPreview] = useState<string | null>(null)
@@ -162,6 +165,11 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       setIsLoading(true)
 
       const formData = new FormData()
+      if (clubId) {
+        formData.append("ClubId", clubId)
+      } else {
+        toast.error("Club Id is not available")
+      }
       formData.append("RepresentativeId", values.representativeId ?? "")
       formData.append("UniversityId", values.universityId)
       formData.append("EventName", values.eventName)

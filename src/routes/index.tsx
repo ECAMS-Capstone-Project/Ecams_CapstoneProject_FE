@@ -50,9 +50,9 @@ import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEvent
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
 import EventClub from "@/pages/representative/event-club/EventClub";
 import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
-import { CreateTaskClub } from "@/components/partial/representative/representative-task/CreateTaskClub";
 import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
+import CreateTaskClub from "@/components/partial/representative/representative-task/CreateTaskClub";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {

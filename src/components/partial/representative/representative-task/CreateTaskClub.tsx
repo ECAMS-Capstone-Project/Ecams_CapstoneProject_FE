@@ -1,108 +1,156 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react"
+import React, { useEffect, useState, Suspense } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import { ArrowLeft, CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
 
-// UI & Components
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+// shadcn/ui & Components
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, ArrowLeft } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast"
-import { TaskSchema } from "./TaskSchema"
 
-type TaskFormValues = z.infer<typeof TaskSchema>
+import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema"
 
-interface CreateTaskProps {
-  initialData?: TaskFormValues | null
-  onSuccess?: () => void
-  setOpen?: (open: boolean) => void
+// Lazy import danh sách student
+const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"))
+
+interface Student {
+  studentId: string
+  fullName: string
 }
 
-export const CreateTaskClub: React.FC<CreateTaskProps> = ({
-  initialData,
-  onSuccess,
-  setOpen
-}) => {
+export default function CreateTaskClub() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
-  // Tạo form hook
+  // =========== FAKE load ds sinh viên ===========  
+  const [allStudents, setAllStudents] = useState<Student[]>([])
+  useEffect(() => {
+    const fakeData: Student[] = [
+      { studentId: "ST001", fullName: "John Smith" },
+      { studentId: "ST002", fullName: "Jane Doe" },
+      { studentId: "ST003", fullName: "Jane 1" },
+      { studentId: "ST004", fullName: "Jane 2" },
+      { studentId: "ST005", fullName: "Jane 3" },
+      { studentId: "ST006", fullName: "Jane 4" },
+      { studentId: "ST007", fullName: "Jane 5" },
+      { studentId: "ST008", fullName: "Jane 6" },
+      { studentId: "ST009", fullName: "Jane 7" },
+      { studentId: "ST0010", fullName: "Jane 8" },
+      { studentId: "ST0011", fullName: "Jane 9" },
+      // ... Thêm
+    ]
+    setAllStudents(fakeData)
+  }, [])
+
+  // =========== Search + Debounce ===========  
+  const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  const filteredStudents = allStudents.filter((st) =>
+    st.fullName.toLowerCase().includes(debouncedSearch.toLowerCase())
+  )
+
+  // =========== REACT HOOK FORM ===========  
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(TaskSchema),
-    defaultValues: initialData || {
-      clubId: "",
-      taskName: "",
-      description: "",
-      deadline: new Date(),
-      status: "IN_PROGRESS",
-    },
+    mode: "onChange", // hiển thị lỗi ngay
   })
 
-  // Lấy error state
   const {
-    formState: { errors },
+    handleSubmit,
+    setValue,
+    getValues,
   } = form
-  console.log(errors);
 
-  // Submit handler
+  // Kết hợp date + time => Date final
+  const combineDateTime = (dateObj: Date, timeStr: string) => {
+    const [hour, minute] = timeStr.split(":").map(Number)
+    const newDate = new Date(dateObj)
+    newDate.setHours(hour, minute, 0, 0)
+    return newDate
+  }
+
+  // Submit
   const onSubmit = async (values: TaskFormValues) => {
     try {
       setIsLoading(true)
-
-      // Chuyển dữ liệu sang FormData (nếu cần) hoặc JSON
-      const formData = new FormData()
-      formData.append("ClubId", values.clubId)
-      formData.append("TaskName", values.taskName)
-      formData.append("Description", values.description)
-      formData.append("Deadline", values.deadline.toISOString())
-      formData.append("Status", values.status)
-
-      // Gọi API tạo task (Ví dụ)
-      // await createTaskAPI(formData)
-
-      toast.success("Task created successfully!")
-      onSuccess?.()
-      setOpen?.(false)
-      navigate("/club-owner/task") // Chuyển hướng sang trang Task list (Ví dụ)
+      // Tạo 1 Date final
+      const finalDeadline = combineDateTime(values.deadlineDate, values.deadlineTime)
+      console.log(finalDeadline);
+      // Gọi API
+      navigate("/club-owner/task")
     } catch (error: any) {
-      toast.error(error.message || "An error occurred while creating task.")
+      toast.error(error.message || "An error occurred while creating/updating task.")
       console.error(error)
     } finally {
       setIsLoading(false)
     }
   }
 
+  // Toggle student
+  const handleToggleStudent = (studentId: string, checked: boolean) => {
+    const current = getValues("selectedMembers")
+    if (checked) {
+      setValue("selectedMembers", [...current, studentId])
+    } else {
+      setValue("selectedMembers", current.filter((id) => id !== studentId))
+    }
+  }
+
+  // Check assignAll => xóa selected
+  const handleAssignAllChange = (checked: boolean) => {
+    setValue("assignAll", checked)
+    if (checked) {
+      setValue("selectedMembers", [])
+    }
+  }
+
   return (
     <div className="min-h-[300px]">
       {/* Nút Back */}
-
       <div className="mb-5">
-        <h2 className="text-3xl font-bold tracking-tight">
-          <Button variant="link" onClick={() => navigate(-1)}>
+        <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft size={24} />
           </Button>
           Create Task
         </h2>
-        <p className="text-sm text-muted-foreground ml-5">
+        <p className="text-sm text-muted-foreground ml-11">
           Create new task for your club
         </p>
       </div>
 
       <div className="p-4 mx-7">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* TaskName */}
             <FormField
               control={form.control}
@@ -137,40 +185,61 @@ export const CreateTaskClub: React.FC<CreateTaskProps> = ({
               )}
             />
 
-            {/* Deadline */}
-            <FormField
-              control={form.control}
-              name="deadline"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Deadline</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "text-left font-normal w-full",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? format(field.value, "PPP") : "Pick a date"}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
+            {/* Deadline: ngày và giờ KẾ BÊN NHAU */}
+            <div className="flex space-x-4 w-1/2">
+              {/* Chọn ngày */}
+              <FormField
+                control={form.control}
+                name="deadlineDate"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Deadline Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "text-left font-normal w-full",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? format(field.value, "PPP") : "Pick a date"}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Chọn giờ */}
+              <FormField
+                control={form.control}
+                name="deadlineTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deadline Time</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="time"
                       />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Status */}
             <FormField
@@ -202,12 +271,119 @@ export const CreateTaskClub: React.FC<CreateTaskProps> = ({
               )}
             />
 
-            {/* Nút Submit */}
+            {/* Score */}
+            <FormField
+              control={form.control}
+              name="score"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Score</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      placeholder="Enter score (0-100)"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Assign All */}
+            <FormField
+              control={form.control}
+              name="assignAll"
+              render={() => {
+                const val = getValues("assignAll")
+                return (
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={val}
+                        onCheckedChange={handleAssignAllChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Assign all members</FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        If checked, all members in the club will be assigned
+                      </p>
+                    </div>
+                  </FormItem>
+                )
+              }}
+            />
+
+            {/* Specific Students */}
+            <FormField
+              control={form.control}
+              name="selectedMembers"
+              render={() => {
+                const selected = getValues("selectedMembers")
+                const isAssignAll = getValues("assignAll")
+
+                return (
+                  <FormItem>
+                    <FormLabel>Specific Students</FormLabel>
+
+                    {/* Search bar */}
+                    <div className="mb-2">
+                      <Input
+                        placeholder="Search students..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+
+                    <Suspense fallback={<div className="p-2 text-center">Loading students...</div>}>
+                      <SpecificStudentList
+                        students={filteredStudents}
+                        selected={selected}
+                        isAssignAll={isAssignAll}
+                        handleToggleStudent={handleToggleStudent}
+                      />
+                    </Suspense>
+
+                    {/* FormMessage để hiển thị lỗi refine */}
+                    <FormMessage />
+
+                    {/* Label hiển thị selected student (nếu !isAssignAll) */}
+                    {!isAssignAll && (
+                      <div className="mt-3">
+                        <p className="text-sm font-semibold">Selected Students:</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {selected.length === 0 && (
+                            <span className="text-sm text-muted-foreground">
+                              No students selected.
+                            </span>
+                          )}
+                          {selected.map((id) => {
+                            const st = allStudents.find((s) => s.studentId === id)
+                            if (!st) return null
+                            return (
+                              <span
+                                key={id}
+                                className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
+                              >
+                                {st.fullName}
+                              </span>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </FormItem>
+                )
+              }}
+            />
+
+            {/* Submit */}
             <div className="flex justify-end mt-4">
               <Button type="submit" disabled={isLoading}>
-                {isLoading
-                  ? (initialData ? "Updating..." : "Creating...")
-                  : (initialData ? "Update Task" : "Create Task")
+                {isLoading ?
+                  "Creating..."
+                  : "Create Task"
                 }
               </Button>
             </div>

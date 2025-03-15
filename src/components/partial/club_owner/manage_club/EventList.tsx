@@ -59,7 +59,7 @@ export default function EventList({ clubId }: Props) {
                     className="w-2/6"
                 />
                 {/* Hiển thị số lượng sự kiện */}
-                <Button onClick={() => navigate('/club/create-event')} variant={"default"}>Create event</Button>
+                <Button onClick={() => navigate('/club/create-event', { state: { clubId } })} variant={"default"}>Create event</Button>
             </div>
 
             {/* 🔄 Loading state */}
