@@ -49,10 +49,11 @@ import { RequestEventDetail } from "@/components/partial/staff/staff-events/Requ
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
 import EventClub from "@/pages/representative/event-club/EventClub";
-import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
 import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
 import CreateTaskClub from "@/components/partial/representative/representative-task/CreateTaskClub";
+import ClubConditionPage from "@/pages/representative/manage-club/ClubConditionPage";
+import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -177,9 +178,7 @@ export const router = createBrowserRouter([
   {
     path: "/representative",
     element: (
-      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE"]}>
-        <PrivateRoute />
-      </RoleBasedGuard>
+      <PrivateRoute />
     ),
     children: [
       {
@@ -249,6 +248,11 @@ export const router = createBrowserRouter([
       {
         path: "/representative/active-club",
         element: <ClubActiveListPage />,
+        errorElement: <ErrorException />
+      },
+      {
+        path: "/representative/club-condition",
+        element: <ClubConditionPage />,
         errorElement: <ErrorException />
       }
     ],

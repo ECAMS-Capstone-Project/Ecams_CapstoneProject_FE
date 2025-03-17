@@ -7,6 +7,7 @@ import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import RoleDropdownCell from "../RoleDropdownCell";
 
 export const memberActiveColumn = (
+  isClubOwner: boolean,
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<ClubMemberDTO>[] => {
   // const { user } = useAuth(); // Get the user from useAuth
@@ -54,6 +55,7 @@ export const memberActiveColumn = (
             <RoleDropdownCell
               role={role as string}
               row={row}
+              isClubOwner={isClubOwner}
             />
           </div>
         );

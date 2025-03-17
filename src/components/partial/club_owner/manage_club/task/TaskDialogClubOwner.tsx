@@ -33,6 +33,7 @@ const TaskDialogClubOwner: React.FC<TaskDetailDialogProps> = ({ initialData }) =
       description: "",
       deadline: "",
       status: false,
+      startTime: ""
     },
   });
 
@@ -63,6 +64,7 @@ const TaskDialogClubOwner: React.FC<TaskDetailDialogProps> = ({ initialData }) =
     ];
     setSubmissions(fakeSubs);
   }, [initialData?.taskId]);
+  console.log(initialData);
 
   // Khi club owner lưu feedback
   const handleSaveFeedback = (submissionId: number, newFeedback: string) => {
@@ -133,6 +135,23 @@ const TaskDialogClubOwner: React.FC<TaskDetailDialogProps> = ({ initialData }) =
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="startTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Start Time:</FormLabel>
+                <FormControl>
+                  <Input
+                    value={field.value ? format(new Date(field.value), "HH:mm dd/MM/yyyy") : "Unknown"}
+                    readOnly
+                    className="bg-gray-100"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* Deadline (Read-only) */}
           <FormField
             control={form.control}
@@ -142,7 +161,24 @@ const TaskDialogClubOwner: React.FC<TaskDetailDialogProps> = ({ initialData }) =
                 <FormLabel>Deadline:</FormLabel>
                 <FormControl>
                   <Input
-                    value={format(new Date(field.value), "HH:mm dd/MM/yyyy")}
+                    value={field.value ? format(new Date(field.value), "HH:mm dd/MM/yyyy") : "Unknown"}
+                    readOnly
+                    className="bg-gray-100"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="taskScore"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Task Score:</FormLabel>
+                <FormControl>
+                  <Input
+                    value={field.value ? `${field.value} points` : "Unknown point"}
                     readOnly
                     className="bg-gray-100"
                   />

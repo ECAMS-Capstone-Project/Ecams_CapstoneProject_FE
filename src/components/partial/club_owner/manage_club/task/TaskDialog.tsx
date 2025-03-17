@@ -85,6 +85,23 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="startTime"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Start Time:</FormLabel>
+                <FormControl>
+                  <Input
+                    value={field.value ? format(new Date(field.value), "HH:mm dd/MM/yyyy") : "Unknown"}
+                    readOnly
+                    className="bg-gray-100"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
           {/* Deadline */}
           <FormField
             control={form.control}
@@ -95,6 +112,23 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
                 <FormControl>
                   <Input
                     value={format(new Date(field.value), "HH:mm:ss dd/MM/yyyy")}
+                    readOnly
+                    className="bg-gray-100"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="taskScore"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Task Score:</FormLabel>
+                <FormControl>
+                  <Input
+                    value={field.value ? `${field.value} points` : "Unknown point"}
                     readOnly
                     className="bg-gray-100"
                   />

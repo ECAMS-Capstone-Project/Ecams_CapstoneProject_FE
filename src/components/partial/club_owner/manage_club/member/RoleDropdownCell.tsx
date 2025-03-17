@@ -8,16 +8,15 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import useAuth from "@/hooks/useAuth";
 
 interface RoleDropdownCellProps {
   role: string;
   row: any; // Có thể thay đổi kiểu dữ liệu cho phù hợp, ví dụ: ClubMemberDTO
+  isClubOwner: boolean
 }
 
-const RoleDropdownCell: React.FC<RoleDropdownCellProps> = ({ role, row }) => {
-  const { user } = useAuth();
-  const isCurrentUserClubOwner = user?.roles.includes("CLUB_OWNER");
+const RoleDropdownCell: React.FC<RoleDropdownCellProps> = ({ role, row, isClubOwner }) => {
+  const isCurrentUserClubOwner = isClubOwner;
 
   // Nếu user hiện tại là club owner và role của hàng không phải là CLUB_OWNER,
   // cho phép thay đổi role.

@@ -353,12 +353,12 @@ export default function CreateTaskClub() {
                       <div className="mt-3">
                         <p className="text-sm font-semibold">Selected Students:</p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {selected.length === 0 && (
+                          {selected && selected.length === 0 && (
                             <span className="text-sm text-muted-foreground">
                               No students selected.
                             </span>
                           )}
-                          {selected.map((id) => {
+                          {selected && selected.map((id) => {
                             const st = allStudents.find((s) => s.studentId === id)
                             if (!st) return null
                             return (

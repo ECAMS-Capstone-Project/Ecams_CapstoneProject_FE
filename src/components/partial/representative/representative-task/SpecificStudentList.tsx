@@ -66,8 +66,8 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
             ref={containerRef}
             className="border p-3 rounded space-y-2 max-h-36 overflow-y-auto"
         >
-            {displayed.map((st) => {
-                const isChecked = selected.includes(st.studentId)
+            {displayed && displayed.map((st) => {
+                const isChecked = selected && selected.includes(st.studentId)
                 return (
                     <div key={st.studentId} className="flex items-center space-x-2">
                         <Checkbox

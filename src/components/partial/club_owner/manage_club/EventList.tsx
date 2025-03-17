@@ -10,9 +10,10 @@ import LoadingAnimation from "@/components/ui/loading";
 
 interface Props {
     clubId: string;
+    isClubOwner: boolean;
 }
 
-export default function EventList({ clubId }: Props) {
+export default function EventList({ clubId, isClubOwner }: Props) {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [pageNo, setPageNo] = useState(1);
     const [pageSize] = useState(5); // Giữ cố định số lượng sự kiện trên mỗi trang
@@ -58,8 +59,9 @@ export default function EventList({ clubId }: Props) {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-2/6"
                 />
-                {/* Hiển thị số lượng sự kiện */}
-                <Button onClick={() => navigate('/club/create-event', { state: { clubId } })} variant={"default"}>Create event</Button>
+                {isClubOwner && (
+                    <Button onClick={() => navigate('/club/create-event', { state: { clubId } })} variant={"default"}>Create event</Button>
+                )}
             </div>
 
             {/* 🔄 Loading state */}

@@ -6,9 +6,10 @@ import { Task } from "@/models/Task";
 
 interface props {
     clubId: string
+    isClubOwner: boolean
 }
 
-export default function TaskList({ clubId }: props) {
+export default function TaskList({ clubId, isClubOwner }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
@@ -37,6 +38,7 @@ export default function TaskList({ clubId }: props) {
     return (
         <div className="space-y-2">
             <TaskListTable
+                isClubOwner={isClubOwner}
                 data={taskList} />
             <DataTablePagination
                 currentPage={pageNo}
