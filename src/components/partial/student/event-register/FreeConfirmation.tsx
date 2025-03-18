@@ -19,15 +19,72 @@ import {
 import { format } from "date-fns";
 import { EventAreas } from "@/models/Area";
 import { Place } from "@mui/icons-material";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export const FreeEventConfirm = () => {
   const location = useLocation();
   const event = location.state?.event;
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState({
+    name: "",
+    studentCode: "",
+    email: "",
+    phone: "",
+  });
 
   if (!event) {
     return <div>No event data found. Please navigate from the event page.</div>;
   }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    // Check required fields
+    if (
+      !userInfo.name ||
+      !userInfo.studentCode ||
+      !userInfo.email ||
+      !userInfo.phone
+    ) {
+      toast.error("Please fill in all required information");
+      return;
+    }
+
+    // Check email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userInfo.email)) {
+      toast.error("Invalid email format");
+      return;
+    }
+
+    // Check phone number format
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(userInfo.phone)) {
+      toast.error("Invalid phone number format");
+      return;
+    }
+    if (event.price > 0) {
+      navigate("/events/payment-confirm", {
+        state: {
+          event: event,
+          userInfo: userInfo,
+        },
+      });
+    } else {
+      navigate("/student/events/success", {
+        state: {
+          event: event,
+        },
+      });
+    }
+  };
 
   return (
     <div>
@@ -96,13 +153,17 @@ export const FreeEventConfirm = () => {
                       htmlFor="name"
                       className="block mb-1 text-sm font-medium"
                     >
-                      Name
+                      Full Name
                     </Label>
                     <Input
                       id="name"
+                      name="name"
                       type="text"
-                      placeholder="Thanh Van"
+                      placeholder="Enter your full name"
                       className="w-full"
+                      value={userInfo.name}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
 
@@ -115,9 +176,13 @@ export const FreeEventConfirm = () => {
                     </Label>
                     <Input
                       id="studentCode"
+                      name="studentCode"
                       type="text"
-                      placeholder="SE12345"
+                      placeholder="Enter your student code"
                       className="w-full"
+                      value={userInfo.studentCode}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
 
@@ -130,9 +195,13 @@ export const FreeEventConfirm = () => {
                     </Label>
                     <Input
                       id="email"
+                      name="email"
                       type="email"
-                      placeholder="contact@gmail.com"
+                      placeholder="Enter your email"
                       className="w-full"
+                      value={userInfo.email}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
 
@@ -145,9 +214,13 @@ export const FreeEventConfirm = () => {
                     </Label>
                     <Input
                       id="phone"
+                      name="phone"
                       type="text"
-                      placeholder="0123456789"
+                      placeholder="Enter your phone number"
                       className="w-full"
+                      value={userInfo.phone}
+                      onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </CardContent>
@@ -156,7 +229,7 @@ export const FreeEventConfirm = () => {
                   <Button variant="ghost" className="text-red-900 ">
                     <XCircleIcon /> Cancel
                   </Button>
-                  <Button variant="custom">
+                  <Button variant="custom" onClick={handleSubmit}>
                     <CheckCircle2Icon />
                     Confirm
                   </Button>

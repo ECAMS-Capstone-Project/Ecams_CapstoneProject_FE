@@ -41,7 +41,13 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
                 },
               });
             } else {
-              navigate("/student/events/fee-confirmation");
+              navigate("/student/events/fee-confirmation", {
+                state: {
+                  event: event,
+                  previousPage: location.pathname,
+                  breadcrumb: event.eventName,
+                },
+              });
             }
           }}
         >
