@@ -22,4 +22,5 @@ export interface EventAreas {
     name: string;
     startDate: Date;
     endDate: Date;
+    imageUrl?: string;
 }

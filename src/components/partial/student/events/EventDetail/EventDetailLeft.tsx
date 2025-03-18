@@ -29,9 +29,7 @@ export const EventDetailLeft: React.FC<EventDetailLeftProps> = ({ event }) => {
         </span>
       </div>
       <div className="mb-6 flex items-center gap-6">
-        <h3 className="mb-2 text-3xl font-semibold text-[#136CB9]">
-          Event type:
-        </h3>
+        <h3 className="mb-2 text-3xl font-semibold ">Event type:</h3>
         <span className="inline-block rounded-lg bg-blue-100 px-3 py-1 text-2xl font-semibold text-blue-800 uppercase">
           {event?.eventType || "Unknown"}
         </span>

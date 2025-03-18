@@ -23,7 +23,7 @@ export default function AppShell() {
       >
         <Layout>
           {/* ===== Top Heading ===== */}
-          <Layout.Header sticky>
+          <Layout.Header sticky className="px-4 py-3">
             {isDashboard}
             <div className="ml-auto flex items-center space-x-4">
               <UserNav />

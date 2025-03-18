@@ -14,12 +14,14 @@ import useAuth from "@/hooks/useAuth";
 import { CalendarDays, SearchXIcon } from "lucide-react";
 import { format } from "date-fns";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import { useNavigate } from "react-router-dom";
 
 export const ClubsSection = () => {
   const [pageNo, setPageNo] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [pageSize] = useState(5);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { clubs, totalPages } = useClubs(user?.universityId, pageNo, pageSize);
   const handlePageChange = (newPage: number) => {
     setPageNo(newPage);
@@ -83,7 +85,17 @@ export const ClubsSection = () => {
                 className="w-full h-1/4 aspect-video object-cover rounded-lg"
               />
               <div className="p-4 h-3/4 text-left flex flex-col gap-4">
-                <h3 className="text-2xl font-bold text-[#32aaac]">
+                <h3
+                  className="text-2xl font-bold text-[#32aaac]"
+                  onClick={() =>
+                    navigate(`/student/club/${club.clubId}`, {
+                      state: {
+                        previousPage: location.pathname,
+                        breadcrumb: "Club",
+                      },
+                    })
+                  }
+                >
                   {club.clubName}
                 </h3>
 

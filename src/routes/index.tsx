@@ -54,6 +54,10 @@ import { CreateTaskClub } from "@/components/partial/representative/representati
 import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
 import { StudentEventDetail } from "@/components/partial/student/events/EventDetail/EventDetail";
+import { FreeEventConfirm } from "@/components/partial/student/event-register/FreeConfirmation";
+import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
+import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
+import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -266,6 +270,11 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
+    path: "/events/payment-confirm",
+    element: <EventPaymentConfirmation />,
+    errorElement: <ErrorException />,
+  },
+  {
     path: "/package-contract",
     element: <PackageContract />,
     errorElement: <ErrorException />,
@@ -309,8 +318,25 @@ export const router = createBrowserRouter([
         element: <StudentEventDetail />,
       },
       {
+        path: "/student/events/free-confirmation",
+        element: <FreeEventConfirm />,
+      },
+      {
+        path: "/student/events/fee-confirmation",
+        element: <FreeEventConfirm />,
+      },
+      {
+        path: "/student/events/success",
+        element: <EventConfirmSuccess />,
+      },
+
+      {
         path: "/student/club",
         element: <Clubs />,
+      },
+      {
+        path: "/student/club/:clubId",
+        element: <StudentClubDetail />,
       },
       {
         path: "/student/waiting",
