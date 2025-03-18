@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import DataTable from "@/components/ui/datatable/data-table";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { clubColumn } from "./club-active-table/column";
 import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 

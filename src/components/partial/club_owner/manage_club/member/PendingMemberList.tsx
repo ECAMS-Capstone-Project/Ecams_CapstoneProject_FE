@@ -76,7 +76,7 @@ export default function PendingMemberList({ clubId }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
-    const [memberList, setMemberList] = useState<ClubMemberDTO[]>([]);
+    const [, setMemberList] = useState<ClubMemberDTO[]>([]);
     const [, setIsLoading] = useState(true);
     const loadUniversity = async () => {
         setTotalPages(1);
