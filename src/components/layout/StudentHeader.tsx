@@ -7,7 +7,7 @@ export const StudentHeader = () => {
   const { checkActiveNav } = useCheckActiveNav();
   const { user } = useAuth();
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 w-full px-4 box-border">
+    <header className="bg-white shadow-md sticky top-0 z-50 w-full px-4 py-2 box-border">
       <div className="container mx-auto flex items-center justify-between pb-1">
         <div className="flex justify-center items-center gap-7">
           <img

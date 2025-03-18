@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Event } from "@/models/Event";
 import { get, put } from "../agent";
@@ -34,6 +35,54 @@ export const getEventList = async (uniId: string,pageNumber: number, pageSize: n
     throw error;
   }
     }
+  // 1) Định nghĩa kiểu cho filter (nếu cần)
+export interface EventFilterParams {
+  type?: string
+  startDate?: string
+  endDate?: string
+  status?: string
+  // ... các trường khác
+}
+
+// 2) Hàm buildQueryString đơn giản để nối param
+function buildQueryString(baseUrl: string, params: Record<string, any>) {
+  const query = Object.entries(params)
+    .filter(([_, value]) => value !== undefined && value !== null && value !== "")
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join("&")
+
+  return query ? `${baseUrl}?${query}` : baseUrl
+}
+
+// 3) Sửa hàm getAllEventList
+export const getAllEventList = async (
+  pageNumber: number,
+  pageSize: number,
+  filterParams?: EventFilterParams
+): Promise<ResponseDTO<ResponseData<Event>>> => {
+  // Xây dựng đối tượng params
+  const queryParams = {
+    PageNumber: pageNumber,
+    PageSize: pageSize,
+    Type: filterParams?.type,
+    StartDate: filterParams?.startDate,
+    EndDate: filterParams?.endDate,
+    Status: filterParams?.status,
+    // ... các filter khác nếu có
+  }
+
+  // Tạo URL
+  const url = buildQueryString("/Event", queryParams)
+
+  try {
+    const response = await get<ResponseDTO<ResponseData<Event>>>(url)
+    return response
+  } catch (error) {
+    console.error("Error fetching events:", error)
+    throw error
+  }
+}
+
 
     export const getEventDetail = async (eventId: string): Promise<ResponseDTO<Event>> => {
         try {

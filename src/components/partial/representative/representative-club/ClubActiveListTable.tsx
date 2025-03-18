@@ -5,7 +5,7 @@ import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 
 interface ClubData {
   data: ClubResponseDTO[];
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ClubActiveListTable = ({ data }: ClubData) => {
   return (
