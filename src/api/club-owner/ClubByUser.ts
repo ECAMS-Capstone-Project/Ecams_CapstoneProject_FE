@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import toast from "react-hot-toast";
-import { get, patch } from "../agent";
+import { del, get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
 import { ClubResponse } from "@/models/Club";
@@ -12,14 +12,18 @@ export enum ClubStatusEnum {
     Pending = 2,
     // ... tùy chỉnh thêm
 }
-
 export interface ClubMemberDTO {
-    avatar: string,
-    clubRoleName: string,
-    email: string,
-    fullname: string,
-    studentId: string,
-    userId: string,
+    userId: string;
+    studentId: string;
+    clubMemberId: string;
+    clubRoleName: string;
+    joinedAt: string;
+    requestedDate: string;
+    clubActivityPoint: number;
+    leftDate: string | null;
+    avatar: string;
+    fullname: string;
+    email: string;
 }
 
 export interface ClubResponseDTO {
@@ -70,6 +74,28 @@ export interface EventResponse {
     maxParticipants?: number;
     status: EventStatusEnum;
     eventType: EventTypeEnum;
+}
+
+export interface ClubCondition {
+    conditionId: string;
+    clubId: string;
+    conditionName: string;
+    conditionContent: string;
+    description: string;
+}
+
+export interface ClubConditionCreateDTO {
+    clubId: string;
+    conditionName: string;
+    conditionContent: string;
+    description: string;
+}
+
+export interface ClubConditionUpdateDTO {
+    conditionId: string;
+    conditionName: string;
+    conditionContent: string;
+    description: string;
 }
 
 export const GetAllClubsAPI = async (userId: string, status: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
@@ -225,6 +251,91 @@ export const GetTaskInClubsAPI = async (clubId: string, pageSize: number, pageNo
 export const GetEventInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<EventResponse>>> => {
     try {
         const response = await get<ResponseDTO<ResponseData<EventResponse>>>(`/Clubs/${clubId}/events?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetAllClubCondition = async (clubId: string): Promise<ResponseDTO<ClubCondition[]>> => {
+    try {
+        const response = await get<ResponseDTO<ClubCondition[]>>(`/Clubs/${clubId}/conditions`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const CreateClubCondition = async (data: ClubConditionCreateDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await post<ResponseDTO<string>>(`/ClubConditions`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const DeleteClubCondition = async (clubConditionId: string): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await del<ResponseDTO<string>>(`/ClubConditions/${clubConditionId}`);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const UpdateClubCondition = async (data: ClubConditionUpdateDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/ClubConditions/${data.conditionId}`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GetMemberRequestInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(`/Clubs/${clubId}/requests?PageNumber=${pageNo}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

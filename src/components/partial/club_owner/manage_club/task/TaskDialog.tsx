@@ -1,158 +1,122 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import CSS của React Quill
-import { DialogClose } from "@radix-ui/react-dialog";
-import { Task } from "@/models/Task";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import useAuth from "@/hooks/useAuth";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { Button } from "@/components/ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { GetTaskDetailByMember, TaskDetailForStudent } from "@/api/club-owner/TaskAPI";
+import { Task } from "@/models/Task";
 
 interface TaskDetailDialogProps {
-  initialData: Task | null;
+  initialData: Task;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }) => {
-  const form = useForm<Task>({
-    defaultValues: initialData || {
-      taskName: "",
-      description: "",
-      deadline: "",
-      status: false,
-    },
-  });
-  const { user } = useAuth();
-  const [editorContent, setEditorContent] = useState(""); // State lưu nội dung của ReactQuill
+const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData }: TaskDetailDialogProps) => {
+  const [taskDetail, setTaskDetail] = useState<TaskDetailForStudent | null>(null);
+  const [editorContent, setEditorContent] = useState("");
 
-  // Kiểm tra trạng thái Task
-  const isSubmitted = initialData?.status == true;
+  useEffect(() => {
+    async function fetchTask() {
+      try {
+        const response = await GetTaskDetailByMember(initialData.taskId, "2");
+        if (response.data) {
+          setTaskDetail(response.data);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch task detail", error);
+      }
+    }
+    fetchTask();
+  }, [initialData.taskId]);
 
-  // Xử lý submit chỉ gửi `editorContent`
-  const onSubmit = () => {
+  // Nếu task đã được nộp (status === true) thì không cho chỉnh sửa nội dung
+  const isSubmitted = taskDetail?.submissionStatus == "COMPLETED";
+
+  // Xử lý submit: chỉ gửi nội dung từ ReactQuill (bạn có thể tích hợp API submit vào đây)
+  const handleSubmit = () => {
     console.log("Submitted Content:", editorContent);
-    alert(`Submitted Content: ${editorContent}`); // Hiển thị nội dung submit
+    alert(`Submitted Content: ${editorContent}`);
+    // Gọi API submit ở đây nếu cần
   };
+  console.log(taskDetail);
 
   return (
     <div className="max-h-[700px] overflow-y-auto p-4">
-      <h2 className="text-lg font-semibold">Task Detail</h2>
-      <Form {...form}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit();
-          }}
-          className="grid grid-cols-2 gap-4"
-        >
-          {/* Task Name */}
-          <FormField
-            control={form.control}
-            name="taskName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Task Name:</FormLabel>
-                <FormControl>
-                  <textarea
-                    {...field}
-                    disabled
-                    className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300 resize-none"
-                    rows={2}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+      <h2 className="text-lg font-semibold mb-4">Task Detail</h2>
 
-          {/* Description */}
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description:</FormLabel>
-                <FormControl>
-                  <textarea
-                    {...field}
-                    disabled
-                    className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300 resize-none"
-                    rows={2}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Deadline */}
-          <FormField
-            control={form.control}
-            name="deadline"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Deadline:</FormLabel>
-                <FormControl>
-                  <Input
-                    value={format(new Date(field.value), "HH:mm:ss dd/MM/yyyy")}
-                    readOnly
-                    className="bg-gray-100"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Status */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status:</FormLabel>
-                <FormControl>
-                  <p className="bg-gray-100 w-full text-black p-2 rounded-md border border-gray-300">
-                    {field.value ? (
-                      <span className="text-[#3a8f5e] font-bold">Completed</span>
-                    ) : (
-                      <span className="text-[#007BFF] font-bold">In progress</span>
-                    )}
-                  </p>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Rich Text Editor */}
-          <div className="col-span-2">
-            <FormLabel>Task Content:</FormLabel>
-            {isSubmitted ? (
-              <div className="bg-gray-100 p-2 rounded-md border border-gray-300">
-                <p className="text-center">Task is submitted and cannot be edited</p>
-              </div>
-            ) : (
-              <ReactQuill className="max-h-[400px] overflow-y-auto" theme="snow" value={editorContent} onChange={setEditorContent} />
-            )}
+      {taskDetail ? (
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <p className="font-bold">Task Name:</p>
+            <p>{taskDetail.taskName}</p>
           </div>
-
-          {/* Buttons */}
-          <div className="col-span-2 flex justify-end">
-            {isSubmitted ? (
-              <DialogClose asChild>
-                <Button type="button" className=" text-white">Quit</Button>
-              </DialogClose>
-            ) : (
-              user?.roles.includes("club_owner") ? (
-                <DialogClose asChild>
-                  <Button type="button" className=" text-white">Quit</Button>
-                </DialogClose>
+          <div>
+            <p className="font-bold">Description:</p>
+            <p>{taskDetail.description}</p>
+          </div>
+          <div>
+            <p className="font-bold">Start Time:</p>
+            <p>
+              {taskDetail.startTime
+                ? format(new Date(taskDetail.startTime), "HH:mm dd/MM/yyyy")
+                : "Unknown"}
+            </p>
+          </div>
+          <div>
+            <p className="font-bold">Deadline:</p>
+            <p>
+              {taskDetail.deadline
+                ? format(new Date(taskDetail.deadline), "HH:mm:ss dd/MM/yyyy")
+                : "Unknown"}
+            </p>
+          </div>
+          <div>
+            <p className="font-bold">Task Score:</p>
+            <p>{taskDetail.taskScore ? `${taskDetail.taskScore} points` : "Unknown"}</p>
+          </div>
+          <div>
+            <p className="font-bold">Status:</p>
+            <p>
+              {taskDetail.submissionStatus == "COMPLETED" ? (
+                <span className="text-[#3a8f5e] font-bold">Submitted</span>
               ) : (
-                <Button type="submit">Submit</Button>
-              )
-            )}
+                <span className="text-[#007BFF] font-bold">Not submitted</span>
+              )}
+            </p>
           </div>
-        </form>
-      </Form>
+        </div>
+      ) : (
+        <p>Loading task details...</p>
+      )}
+
+      <div className="mt-6">
+        {isSubmitted ? (
+          <div className="bg-gray-100 p-2 rounded-md border border-gray-300">
+            <p className="text-center">Task is submitted and cannot be edited</p>
+          </div>
+        ) : (
+          <ReactQuill
+            theme="snow"
+            value={editorContent}
+            onChange={setEditorContent}
+            className="max-h-[400px] overflow-y-auto"
+          />
+        )}
+      </div>
+
+      <div className="flex justify-end mt-4">
+        {isSubmitted ? (
+          <DialogClose asChild>
+            <Button type="button" className="text-white">
+              Quit
+            </Button>
+          </DialogClose>
+        ) : (
+          <Button onClick={handleSubmit}>Submit</Button>
+        )}
+      </div>
     </div>
   );
 };

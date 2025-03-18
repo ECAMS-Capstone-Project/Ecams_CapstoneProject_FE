@@ -4,9 +4,10 @@ import { ClubMemberDTO, GetMemberInClubsAPI } from "@/api/club-owner/ClubByUser"
 import ActiveMemberListTable from "./A_MemberListTable";
 interface props {
     clubId: string;
+    isClubOwner: boolean
 }
 
-export default function ActiveMemberList({ clubId }: props) {
+export default function ActiveMemberList({ clubId, isClubOwner }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
@@ -34,7 +35,7 @@ export default function ActiveMemberList({ clubId }: props) {
 
     return (
         <div className="space-y-2">
-            <ActiveMemberListTable data={memberList} />
+            <ActiveMemberListTable data={memberList} isClubOwner={isClubOwner} />
             <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}

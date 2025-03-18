@@ -32,25 +32,85 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { EventSchema } from "@/schema/EventSchema"
 import { ArrowLeft, CalendarIcon, Trash2Icon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useEvents } from "@/hooks/staff/Event/useEvent"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import LoadingAnimation from "@/components/ui/loading"
 import { AreaPicker, DatePicker } from "./AreaPicker"
-import { Avatar, Box, Button, Grid2, styled } from "@mui/material"
+import { Button, Grid2 } from "@mui/material"
+import { createEvent } from "@/api/representative/EventAgent"
+import { ring2 } from "ldrs"
 
-type EventFormValues = z.infer<typeof EventSchema> & {
+type EventFormValues = z.infer<typeof EventSchema1> & {
   eventAreas: {
     areaId: string
     startDate: Date
     endDate: Date
   }[]
 }
+const EventSchema1 = z.object({
+  eventId: z.string().uuid().optional(), // Validate UUID cho eventId
+  universityId: z.string().uuid(),
+  representativeName: z.string().optional(), // Có thể là string hoặc null
+  clubId: z.string().optional(), // Có thể là string hoặc null
+  clubName: z.string().optional(), // Có thể là string hoặc null
+  eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
+  // startDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
+  // endDate: z.coerce.date().superRefine((date, ctx) => {
+  //     const parsedDate = Date.parse(date.toString());
+  //     if (isNaN(parsedDate)) {
+  //       ctx.addIssue({ code: "custom", message: "Invalid date format" });
+  //     }
+  //     const startDate = (ctx as any).parent?.startDate ? Date.parse((ctx as any).parent.startDate) : null;
+  //     if (startDate && parsedDate <= startDate) {
+  //       ctx.addIssue({ code: "custom", message: "Ended date must be after created date." });
+  //     }
+  //   }), // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
+  registeredStartDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
+  registeredEndDate: z.coerce.date().superRefine((date, ctx) => {
+    const parsedDate = Date.parse(date.toString());
+    if (isNaN(parsedDate)) {
+      ctx.addIssue({ code: "custom", message: "Invalid date format" });
+    }
+    const registeredStartDate = (ctx as any).parent?.registeredStartDate ? Date.parse((ctx as any).parent.registeredStartDate) : null;
+    if (registeredStartDate && parsedDate <= registeredStartDate) {
+      ctx.addIssue({ code: "custom", message: "Registered end date must be after registered start date", });
+    }
+  }),
 
+  price: z.coerce.number().min(0, { message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
+  maxParticipants: z.coerce.number().int().positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
+  status: z.string().optional(), // Kiểm tra status không rỗng
+  walletId: z.string().optional(),
+  eventAreas: z
+    .array(
+      z.object({
+        areaId: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
+      })
+    )
+    .superRefine((areas, ctx) => {
+      const ids = areas.map((a) => a.areaId);
+      if (new Set(ids).size !== ids.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Area is not allowed to be duplicated.",
+          path: ["_error"], // Đặt lỗi toàn cục của mảng vào _error
+        });
+      }
+    }),
+
+  // eventAreas là mảng tùy chọn, nếu có
+  feedbacks: z.array(z.unknown()).optional(), // feedbacks là mảng tùy chọn, nếu có
+  imageUrl: z.any(),
+  description: z.string(),
+  eventType: z.string()
+
+});
 interface EventDialogProps {
   initialData?: EventFormValues | null
   onSuccess?: () => void // Callback để reload data sau khi tạo area
@@ -63,10 +123,10 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   setOpen,
 }) => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>()
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Preview cho ảnh upload
-  const [preview, setPreview] = useState<string | null>(null)
+  const [, setIsLoading] = useState(false)
+  const location = useLocation()
+  // Lấy dữ liệu state
+  const { clubId } = location.state || {}
 
   // Chỉ fetch thông tin user khi cần thiết
   useEffect(() => {
@@ -76,10 +136,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         if (userInfo) {
           setUserInfo(userInfo.data)
           form.setValue("universityId", userInfo.data?.universityId ?? "")
-          form.setValue(
-            "representativeId",
-            userInfo.data?.representativeId ?? ""
-          )
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error)
@@ -92,15 +148,14 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   }, [initialData])
 
   const { areas } = useAreas(1, 10, userInfo?.universityId) // Lấy mutation từ React Query
-  const { createEvent, isPending } = useEvents()
+  const { isPending } = useEvents()
   const navigate = useNavigate()
 
   const form = useForm<EventFormValues>({
-    resolver: zodResolver(EventSchema),
+    resolver: zodResolver(EventSchema1),
     defaultValues:
       initialData || {
         universityId: "",
-        representativeId: "",
         clubId: "",
         eventName: "",
         imageUrl: "",
@@ -122,8 +177,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
 
   // Lấy errors từ form
   const {
-    register,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form
 
   const { fields, append, remove, update } = useFieldArray({
@@ -131,38 +185,19 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
     name: "eventAreas", // Liên kết với mảng eventAreas
   })
 
-  // Xử lý upload file ảnh
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const fileUrl = URL.createObjectURL(file);
-      setPreview(fileUrl);
-    } else {
-      setPreview(null);
-    }
-  }
-
-  // Tạo styled input ẩn
-  const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-  })
-
   // Xử lý submit
   const onSubmit = async (values: EventFormValues) => {
-    console.log("Form Submitted with values:", values)
+    ring2.register()
     try {
       setIsLoading(true)
-
+      console.log(values.imageUrl);
       const formData = new FormData()
-      formData.append("RepresentativeId", values.representativeId ?? "")
+      if (clubId) {
+        formData.append("ClubId", clubId)
+      } else {
+        toast.error("Club Id is not available")
+      }
+      // formData.append("RepresentativeId", values.representativeId ?? "")
       formData.append("UniversityId", values.universityId)
       formData.append("EventName", values.eventName)
       formData.append("Description", values.description ?? "")
@@ -177,10 +212,8 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       formData.append("Price", values.price.toString())
       formData.append("MaxParticipants", values.maxParticipants.toString())
       formData.append("EventType", values.eventType)
-
-      // Kiểm tra nếu imageUrl là File
       if ((values.imageUrl as any) instanceof File) {
-        formData.append("ImageUrl", values.imageUrl as any)
+        formData.append("ImageUrl", values.imageUrl ?? "");
       }
 
       // Format eventAreas
@@ -197,9 +230,10 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       } else {
         // Tạo event mới
         await createEvent(formData)
+        toast.success("Create successfully")
       }
 
-      navigate("/representative/event")
+      navigate(-1)
       if (!isPending) {
         setOpen?.(false) // Đóng dialog
       }
@@ -223,6 +257,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       toast.error(message)
     }
   }
+  console.log(errors);
 
   return (
     <div className="min-h-[200px] sm:min-h-[300px] h-auto sm:min-w-[300px]">
@@ -541,56 +576,75 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
 
                 {/* File Upload */}
                 <Grid2 size={{ xs: 12 }} className="mt-4">
-                  <Box>
-                    <VisuallyHiddenInput
-                      accept="image/*"
-                      id="upload-button-file"
-                      type="file"
-                      {...register("imageUrl")}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        handleFileChange(e);
-                      }}
-                    />
-                    <label htmlFor="upload-button-file">
-                      <Button
-                        variant="contained"
-                        component="span"
-                        color="primary"
-                        sx={{ textTransform: 'none', background: 'linear-gradient(to right, #136CB5, #49BBBD)' }}
-                      >
-                        Choose image
-                      </Button>
-                      {errors.imageUrl && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Please choose a file
-                        </p>
-                      )}
-                    </label>
-                  </Box>
-                </Grid2>
+                  <FormField
+                    control={form.control}
+                    name="imageUrl"
+                    render={({ field }) => {
+                      // eslint-disable-next-line react-hooks/rules-of-hooks
+                      const [preview, setPreview] = useState<string | null>(
+                        initialData?.imageUrl
+                          ? String(initialData.imageUrl)
+                          : null
+                      );
+                      const handleChange = (
+                        e: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          field.onChange(file);
+                          setPreview(URL.createObjectURL(file));
+                        } else {
+                          field.onChange(null);
+                          setPreview(null);
+                        }
+                      };
 
-                {/* Preview Avatar */}
-                <Grid2 size={{ xs: 12 }} className="mt-2">
-                  {preview && (
-                    <Avatar
-                      src={preview}
-                      variant="square"
-                      alt="Preview"
-                      sx={{ width: 100, height: 100 }}
-                    />
-                  )}
+                      return (
+                        <FormItem>
+                          <FormLabel>Upload Image</FormLabel>
+                          <FormControl>
+                            <div>
+                              {preview && (
+                                <img
+                                  src={preview}
+                                  alt="Preview"
+                                  className="w-32 h-32 object-contain "
+                                />
+                              )}
+                              <div className="flex items-center gap-4">
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleChange}
+                                  className="w-60"
+                                />
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
                 </Grid2>
 
                 {/* Submit Button */}
                 <div className="flex w-full justify-end mt-6">
-                  <Button variant="contained" sx={{ textTransform: "none", background: "black" }} type="submit" disabled={isLoading}>
-                    {isLoading
-                      ? initialData
-                        ? "Updating..."
-                        : "Creating..."
-                      : initialData
-                        ? "Update Event"
-                        : "Create Event"}
+                  <Button variant="contained" sx={{ textTransform: "none", background: "black" }} type="submit"
+                    disabled={isSubmitting}
+                    startIcon={
+                      isSubmitting && (
+                        <l-ring-2
+                          size="40"
+                          stroke="5"
+                          stroke-length="0.25"
+                          bg-opacity="0.1"
+                          speed="0.8"
+                          color="black"
+                        ></l-ring-2>
+                      )
+                    }>
+                    {(isSubmitting) ? "Loading..." : "Create event"}
                   </Button>
                 </div>
               </form>

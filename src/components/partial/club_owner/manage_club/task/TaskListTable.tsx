@@ -7,18 +7,21 @@ import { useNavigate } from "react-router-dom";
 
 interface TaskData {
   data: Task[];
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  isClubOwner: boolean;
 }
-const TaskListTable = ({ data, setFlag }: TaskData) => {
+const TaskListTable = ({ data, setFlag, isClubOwner }: TaskData) => {
   const navigate = useNavigate();
   return (
     <>
       <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <div className="flex justify-end">
-          <Button onClick={() => navigate('/club/create-task')}>Create task</Button>
-        </div>
+        {isClubOwner && (
+          <div className="flex justify-end">
+            <Button onClick={() => navigate('/club/create-task')}>Create task</Button>
+          </div>
+        )}
         <DataTable
-          columns={taskColumn(setFlag)}
+          columns={taskColumn(isClubOwner, setFlag)}
           data={data}
           searchKey={"taskName"}
           placeholder="Search title"

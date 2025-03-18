@@ -25,4 +25,5 @@ export interface ClubResponse {
     clubOwnerName: string;
     clubFields: ClubFieldResponseDTO[];
     socialMediaLinks: SocialMediaLinkResponseDTO[];
+    clubOwnerId: string;
 }

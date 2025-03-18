@@ -5,4 +5,5 @@ export interface Task {
     startTime: string;
     deadline: string;
     status: boolean;
+    taskScore: string;
 }

@@ -1,53 +1,75 @@
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { useEffect, useState } from "react";
-import {
-  ClubMemberDTO,
-  GetMemberInClubsAPI,
-} from "@/api/club-owner/ClubByUser";
+import { ClubMemberDTO, GetMemberRequestInClubsAPI } from "@/api/club-owner/ClubByUser";
 import PendingMemberListTable from "./P_MemberListTable copy";
 interface props {
   clubId: string;
 }
 const clubMembers: ClubMemberDTO[] = [
   {
-    avatar: "https://randomuser.me/api/portraits/men/99.jpg",
+    userId: "a1234567-89ab-cdef-0123-456789abcdef",
+    studentId: "a1234567-89ab-cdef-0123-456789abcdef",
+    clubMemberId: "1",
     clubRoleName: "CLUB_MEMBER",
-    email: "nguyenvanan@example.com",
-    fullname: "Nguyễn Văn An",
-    studentId: "SV825157",
-    userId: "3a22be9b-84af-4029-b6d3-b34aeb8780c3",
+    joinedAt: "2025-03-15T00:00:00",
+    requestedDate: "2025-02-12T00:00:00",
+    clubActivityPoint: 10,
+    leftDate: null,
+    avatar: "https://example.com/avatar1.png",
+    fullname: "John Doe",
+    email: "john.doe@example.com"
   },
   {
-    avatar: "https://randomuser.me/api/portraits/women/83.jpg",
+    userId: "b2345678-90ab-cdef-0123-456789abcdef",
+    studentId: "b2345678-90ab-cdef-0123-456789abcdef",
+    clubMemberId: "2",
     clubRoleName: "CLUB_MEMBER",
-    email: "phamthuha@example.com",
-    fullname: "Phạm Thu Hà",
-    studentId: "SV485081",
-    userId: "1efd05c5-19f2-4625-907b-c6417b2e6ff8",
+    joinedAt: "2025-03-16T00:00:00",
+    requestedDate: "2025-02-13T00:00:00",
+    clubActivityPoint: 20,
+    leftDate: null,
+    avatar: "https://example.com/avatar2.png",
+    fullname: "Jane Smith",
+    email: "jane.smith@example.com"
   },
   {
-    avatar: "https://randomuser.me/api/portraits/men/62.jpg",
-    clubRoleName: "CLUB_OWNER",
-    email: "tranthibich@example.com",
-    fullname: "Trần Thị Bích",
-    studentId: "SV760960",
-    userId: "35dee868-319a-436c-b3de-08810ad4225c",
+    userId: "c3456789-01ab-cdef-0123-456789abcdef",
+    studentId: "c3456789-01ab-cdef-0123-456789abcdef",
+    clubMemberId: "3",
+    clubRoleName: "CLUB_MEMBER",
+    joinedAt: "2025-03-17T00:00:00",
+    requestedDate: "2025-02-14T00:00:00",
+    clubActivityPoint: 30,
+    leftDate: null,
+    avatar: "https://example.com/avatar3.png",
+    fullname: "Alice Johnson",
+    email: "alice.johnson@example.com"
   },
   {
-    avatar: "https://randomuser.me/api/portraits/women/14.jpg",
+    userId: "d4567890-12ab-cdef-0123-456789abcdef",
+    studentId: "d4567890-12ab-cdef-0123-456789abcdef",
+    clubMemberId: "4",
     clubRoleName: "CLUB_MEMBER",
-    email: "leminhtuan@example.com",
-    fullname: "CLUB_MEMBER",
-    studentId: "SV104220",
-    userId: "be12a7a2-4941-4679-abe3-2c1d652ec043",
+    joinedAt: "2025-03-18T00:00:00",
+    requestedDate: "2025-02-15T00:00:00",
+    clubActivityPoint: 40,
+    leftDate: null,
+    avatar: "https://example.com/avatar4.png",
+    fullname: "Bob Brown",
+    email: "bob.brown@example.com"
   },
   {
-    avatar: "https://randomuser.me/api/portraits/men/18.jpg",
+    userId: "e5678901-23ab-cdef-0123-456789abcdef",
+    studentId: "e5678901-23ab-cdef-0123-456789abcdef",
+    clubMemberId: "5",
     clubRoleName: "CLUB_MEMBER",
-    email: "ngobaochau@example.com",
-    fullname: "Ngô Bảo Châu",
-    studentId: "SV404769",
-    userId: "12621bb0-7c8e-422b-9842-820f86fca633",
+    joinedAt: "2025-03-19T00:00:00",
+    requestedDate: "2025-02-16T00:00:00",
+    clubActivityPoint: 50,
+    leftDate: null,
+    avatar: "https://example.com/avatar5.png",
+    fullname: "Charlie Davis",
+    email: "charlie.davis@example.com"
   },
 ];
 export default function PendingMemberList({ clubId }: props) {
@@ -59,12 +81,12 @@ export default function PendingMemberList({ clubId }: props) {
   const loadUniversity = async () => {
     setTotalPages(1);
     try {
-      const clubData = await GetMemberInClubsAPI(clubId, pageSize, pageNo);
+      const clubData = await GetMemberRequestInClubsAPI(clubId, pageSize, pageNo);
       if (clubData) {
         setMemberList(clubData.data?.data || []); // Đảm bảo `data.data` tồn tại
         setTotalPages(clubData.data?.totalPages || 1); // Đặt số trang
       } else {
-        console.warn("UniversityList returned no data");
+        console.warn("Member list returned no data");
       }
     } catch (error) {
       console.error("Error loading data:", error);

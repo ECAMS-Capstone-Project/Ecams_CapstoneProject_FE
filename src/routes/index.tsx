@@ -49,10 +49,10 @@ import { RequestEventDetail } from "@/components/partial/staff/staff-events/Requ
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
 import EventClub from "@/pages/representative/event-club/EventClub";
-import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
-import { CreateTaskClub } from "@/components/partial/representative/representative-task/CreateTaskClub";
 import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRanking";
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
+import CreateTaskClub from "@/components/partial/representative/representative-task/CreateTaskClub";
+import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
 import { StudentEventDetail } from "@/components/partial/student/events/EventDetail/EventDetail";
 import { FreeEventConfirm } from "@/components/partial/student/event-register/FreeConfirmation";
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
@@ -182,9 +182,7 @@ export const router = createBrowserRouter([
   {
     path: "/representative",
     element: (
-      <RoleBasedGuard accessibleRoles={["REPRESENTATIVE"]}>
-        <PrivateRoute />
-      </RoleBasedGuard>
+      <PrivateRoute />
     ),
     children: [
       {

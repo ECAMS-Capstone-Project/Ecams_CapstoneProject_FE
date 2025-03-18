@@ -10,6 +10,7 @@ import { format } from "date-fns";
 // import useAuth from "@/hooks/useAuth";
 
 export const taskColumn = (
+  isClubOwner: boolean,
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<Task>[] => {
   // const { user } = useAuth(); // Get the user from useAuth
@@ -23,6 +24,24 @@ export const taskColumn = (
         </div>
       ),
       cell: ({ row }) => <div >{row.getValue("taskName")}</div>,
+    },
+    {
+      accessorKey: "starttime",
+      header: ({ column }) => (
+        <div >
+          <DataTableColumnHeader column={column} title="Start Date" />
+        </div>
+      ),
+      cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm:ss')}</div>,
+    },
+    {
+      accessorKey: "deadline",
+      header: ({ column }) => (
+        <div >
+          <DataTableColumnHeader column={column} title="Deadline" />
+        </div>
+      ),
+      cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm - dd/MM/yyyy')}</div>,
     },
     {
       accessorKey: "status",
@@ -61,29 +80,10 @@ export const taskColumn = (
       },
     },
     {
-      accessorKey: "starttime",
-      header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Start Date" />
-        </div>
-      ),
-      cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm:ss')}</div>,
-    },
-    {
-      accessorKey: "deadline",
-      header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Deadline" />
-        </div>
-      ),
-      cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm - dd/MM/yyyy')}</div>,
-    },
-    {
       id: "actions",
       header: () => <div>Action</div>,
       cell: ({ row }) => (
         <>
-          {/* {user?.roles == row.getValue("")} */}
           <Dialog>
             <DialogTrigger>
               <div className="flex justify-center">
@@ -91,7 +91,7 @@ export const taskColumn = (
               </div>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
-              <DataTableRowActions row={row} setFlag={setFlag} />
+              <DataTableRowActions row={row} setFlag={setFlag} isClubOwner={isClubOwner} />
             </DialogContent>
           </Dialog>
         </>

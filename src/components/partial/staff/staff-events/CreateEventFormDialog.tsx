@@ -136,6 +136,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       const formData = new FormData();
       formData.append("RepresentativeId", values.representativeId ?? "");
       formData.append("UniversityId", values.universityId);
+      formData.append("ClubId", initialData?.clubId ?? "");
       formData.append("EventName", values.eventName);
       formData.append("Description", values.description ?? "");
       formData.append(
@@ -170,7 +171,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
         // Nếu không có `initialData`, gọi API `createArea`
         await createEvent(formData);
       }
-      navigate("/representative/event");
+      navigate(-1);
       if (!isPending) {
         setOpen && setOpen(false); // Đóng dialog sau khi submit thành công
       }
@@ -616,8 +617,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           ? "Updating..."
                           : "Creating..."
                         : initialData
-                        ? "Update Event"
-                        : "Create Event"}
+                          ? "Update Event"
+                          : "Create Event"}
                     </Button>
                   </div>
                 </form>

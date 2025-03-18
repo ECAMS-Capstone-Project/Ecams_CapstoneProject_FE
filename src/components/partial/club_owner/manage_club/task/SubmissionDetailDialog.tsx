@@ -2,23 +2,19 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Grid2, TextField } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import { format } from "date-fns";
-export interface StudentSubmission {
-    submissionId: number;
-    studentId: number;
-    studentName: string;
-    submittedAt: string;     // hoặc Date
-    submissionText: string;  // Nội dung bài nộp
-    grade: number | null;
-    feedback: string | null; // Nếu null => chưa có feedback
-}
+import { ReviewSubmissionRequest, StudentSubmission } from "@/api/club-owner/TaskAPI";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+import { Input } from "@/components/ui/input";
 
 interface SubmissionDetailDialogProps {
     submission: StudentSubmission;
     open: boolean;
     onClose: () => void;
-    onSaveFeedback: (submissionId: number, newFeedback: string) => void;
+    onSaveFeedback: (data: ReviewSubmissionRequest) => void;
+    taskScore: number;
 }
 
 const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
@@ -26,94 +22,123 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     open,
     onClose,
     onSaveFeedback,
+    taskScore,
 }) => {
+    const { user } = useAuth();
     // Lưu feedback tạm trước khi bấm Save
-    const [tempFeedback, setTempFeedback] = useState(submission.feedback ?? "");
+    const [tempFeedback, setTempFeedback] = useState(submission.comment ?? "");
+    // Lưu điểm tạm (mặc định là submission.submissionScore nếu có, hoặc 0)
+    const [tempScore, setTempScore] = useState<number>(submission.submissionScore ?? 0);
 
     // Nếu đã có feedback => read-only
-    const hasFeedback = submission.feedback !== null;
+    const hasFeedback = submission.comment !== null && submission.comment !== "";
 
-    const handleSave = () => {
-        onSaveFeedback(submission.submissionId, tempFeedback);
-        onClose();
+    const handleSave = async () => {
+        if (user) {
+            // Validate: điểm nhập vào không được vượt quá taskScore
+            if (tempScore > taskScore) {
+                toast.error(`Score must be equal to or less than task score (${taskScore} points).`);
+                return;
+            }
+            const reviewBody: ReviewSubmissionRequest = {
+                taskId: submission.taskId,
+                clubMemberId: submission.clubMemberId,
+                comment: tempFeedback,
+                submissionScore: tempScore,
+                reviewedBy: user.userId,
+            };
+            onSaveFeedback(reviewBody);
+            onClose();
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-lg p-0 overflow-hidden rounded-lg shadow-lg">
-                {/* Phần đầu */}
+                {/* Header */}
                 <DialogHeader className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <DialogTitle className="text-xl font-semibold text-gray-800">
                         Submission Detail
                     </DialogTitle>
                 </DialogHeader>
 
-                {/* Phần nội dung */}
+                {/* Content */}
                 <div className="px-6 py-4">
-                    {/* Thông tin chung */}
+                    {/* General Information */}
                     <div className="space-y-3 text-sm">
                         <Grid2 container mb={2}>
                             <Grid2 size={{ xs: 12, md: 6 }}>
                                 <span className="font-medium text-gray-600">Student Name:</span>{" "}
-                                <span className="text-gray-800 font-semibold">
-                                    {submission.studentName}
-                                </span>
+                                <span className="text-gray-800 font-semibold">{submission.memberName}</span>
                             </Grid2>
                             <Grid2 size={{ xs: 12, md: 6 }}>
                                 <span className="font-medium text-gray-600">Submitted At:</span>{" "}
-                                <span className="text-gray-800">{format(submission.submittedAt, 'HH:mm - dd/mm/yyyy')}</span>
+                                <span className="text-gray-800">
+                                    {format(new Date(submission.submissionDate), 'HH:mm - dd/MM/yyyy')}
+                                </span>
                             </Grid2>
                         </Grid2>
                         <Grid2 container>
                             <Grid2 size={{ xs: 12, md: 6 }}>
                                 <span className="font-medium text-gray-600">Grade:</span>{" "}
                                 <span className="text-gray-800 font-semibold">
-                                    {submission.grade || "Not yet"}
+                                    {submission.submissionScore ? `${submission.submissionScore} points` : "Not yet"}
                                 </span>
                             </Grid2>
                         </Grid2>
                     </div>
 
-                    {/* Nội dung bài nộp */}
+                    {/* Submission Content */}
                     <div className="mt-4">
                         <p className="text-sm font-medium text-gray-600 mb-1">Submission Content:</p>
                         <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
-                            {/* Cuộn nếu quá dài */}
                             <ScrollArea className="max-h-40">
-                                <p className="whitespace-pre-wrap text-justify">{submission.submissionText}</p>
+                                <p className="whitespace-pre-wrap text-justify">{submission.studentSubmission}</p>
                             </ScrollArea>
                         </div>
                     </div>
 
-                    {/* Feedback */}
-                    <div className="mt-4">
-                        <p className="text-sm font-medium text-gray-600 mb-1">Feedback:</p>
-                        {hasFeedback ? (
-                            // Đã có feedback => chỉ đọc
-                            <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
-                                {submission.feedback}
+                    {/* Feedback and Score */}
+                    <div className="mt-4 space-y-4">
+                        {!hasFeedback && (
+                            <div>
+                                <p className="text-sm font-medium text-gray-600 mb-1">
+                                    Score {"<="} {taskScore} points
+                                </p>
+                                <Input
+                                    type="number"
+                                    placeholder={`Enter score (max ${taskScore} points)`}
+                                    value={tempScore}
+                                    onChange={(e) => setTempScore(Number(e.target.value))}
+                                    className="w-full text-sm"
+                                />
                             </div>
-                        ) : (
-                            <TextField
-                                placeholder="Fill in feedback"
-                                multiline
-                                onChange={(e) => setTempFeedback(e.target.value)}
-                                fullWidth
-                                rows={3}
-                            />
                         )}
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Feedback:</p>
+                            {hasFeedback ? (
+                                <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
+                                    {submission.comment}
+                                </div>
+                            ) : (
+                                <textarea
+                                    placeholder="Fill in feedback"
+                                    onChange={(e) => setTempFeedback(e.target.value)}
+                                    className="block w-full rounded-md border border-gray-300 p-2 text-sm"
+                                    rows={3}
+                                ></textarea>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Phần footer */}
+                {/* Footer */}
                 <DialogFooter className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-2">
                     {hasFeedback ? (
-                        // Nếu đã có feedback => chỉ có nút Close
                         <Button variant="secondary" onClick={onClose}>
                             Close
                         </Button>
                     ) : (
-                        // Nếu chưa có => Save hoặc Cancel
                         <>
                             <Button variant="outline" onClick={onClose}>
                                 Cancel

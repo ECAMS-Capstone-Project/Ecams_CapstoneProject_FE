@@ -13,11 +13,13 @@ import { ClubResponse } from "@/models/Club";
 import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
 import { formatDate } from "date-fns";
 import ActiveMemberList from "@/components/partial/club_owner/manage_club/member/ActiveMemberList";
+import useAuth from "@/hooks/useAuth";
+import { ClubConditionView } from "@/components/partial/representative/representative-club/ViewClubCondition";
 
 export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
     const [clubData, setClubData] = useState<ClubResponse | null>(null);
-
+    const { user } = useAuth();
     useEffect(() => {
         async function fetchClubDetail() {
             const response = await GetClubsDetailAPI(clubId);
@@ -25,6 +27,7 @@ export default function ClubDetailPage() {
         }
         fetchClubDetail();
     }, [clubId]);
+    const isClubOwner: boolean = user?.userId == clubData?.clubOwnerId;
     return (
         <div className="max-w-[1700px] mx-auto p-4 pt-0">
             {/* Container chính */}
@@ -145,32 +148,44 @@ export default function ClubDetailPage() {
             </div>
 
             {/* ------------- PHẦN TABS ------------- */}
-            <Tabs defaultValue="events" className="w-full">
+            <Tabs defaultValue="club-condition" className="w-full">
                 {/* TabsList */}
-                <TabsList className="grid w-4/6 grid-cols-4 mb-2">
-                    <TabsTrigger value="events">Event List</TabsTrigger>
-                    <TabsTrigger value="members">Active Members</TabsTrigger>
-                    <TabsTrigger value="member pending">Pending Members</TabsTrigger>
-                    <TabsTrigger value="tasks">Task</TabsTrigger>
-                </TabsList>
-
+                {isClubOwner ? (
+                    <TabsList className="grid w-5/6 grid-cols-5 mb-2">
+                        <TabsTrigger value="club-condition">Club Condition</TabsTrigger>
+                        <TabsTrigger value="events">Event List</TabsTrigger>
+                        <TabsTrigger value="members">Active Members</TabsTrigger>
+                        <TabsTrigger value="member pending">Pending Members</TabsTrigger>
+                        <TabsTrigger value="tasks">Task List</TabsTrigger>
+                    </TabsList>
+                ) : (
+                    <TabsList className="grid w-4/6 grid-cols-4 mb-2">
+                        <TabsTrigger value="club-condition">Club Condition</TabsTrigger>
+                        <TabsTrigger value="events">Event List</TabsTrigger>
+                        <TabsTrigger value="members">Active Members</TabsTrigger>
+                        <TabsTrigger value="tasks">Task List</TabsTrigger>
+                    </TabsList>
+                )}
                 {/* Nội dung tab 1 */}
                 <TabsContent value="events">
-                    <EventList clubId={clubId} />
+                    <EventList clubId={clubId} isClubOwner={isClubOwner} />
                 </TabsContent>
 
                 {/* Nội dung tab 2 */}
                 <TabsContent value="members">
-                    <ActiveMemberList clubId={clubId} />
+                    <ActiveMemberList clubId={clubId} isClubOwner={isClubOwner} />
                 </TabsContent>
-
-                <TabsContent value="member pending">
-                    <PendingMemberList clubId={clubId} />
-                </TabsContent>
-
+                {(isClubOwner) && (
+                    <TabsContent value="member pending">
+                        <PendingMemberList clubId={clubId} />
+                    </TabsContent>
+                )}
                 {/* Nội dung tab 3 */}
                 <TabsContent value="tasks">
-                    <TaskList clubId={clubId} />
+                    <TaskList clubId={clubId} isClubOwner={isClubOwner} />
+                </TabsContent>
+                <TabsContent value="club-condition">
+                    <ClubConditionView clubId={clubId} isClubOwner={isClubOwner} />
                 </TabsContent>
             </Tabs>
         </div>
