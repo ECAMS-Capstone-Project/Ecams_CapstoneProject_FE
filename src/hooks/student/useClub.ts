@@ -5,6 +5,7 @@ import {  EventFilterParams, getAllEventList, getEventClub } from "@/api/represe
 import {   useQuery} from "@tanstack/react-query";
 
 import { getClub } from "@/api/student/ClubAgent";
+import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
 
 export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) => {
 //   const queryClient = useQueryClient();
@@ -34,6 +35,16 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
       enabled: !!uniId, // Chỉ thực hiện khi có uniId
     });
   };
+
+    // Fetch chi tiết detail club theo clubId
+    const getClubDetailQuery = (clubId: string) => {
+      return useQuery({
+        queryKey: ["eventDetail", clubId], // Query key động dựa trên eventId
+        queryFn: () => GetClubsDetailAPI(clubId), // Gọi API lấy chi tiết sự kiện
+        enabled: true, // Chỉ thực hiện khi có eventId
+     
+      });
+    };
     // // Xóa area
     // const {mutateAsync: deleteWalletMutation, isPending: isDeleting} = useMutation({
     //   mutationFn: deactiveWallet,
@@ -64,6 +75,7 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
 
    refetchEvents: refetch,
    getEventClubQuery,
-   getAllEventListQuery
+   getAllEventListQuery,
+   getClubDetailQuery
   };
 };

@@ -56,6 +56,7 @@ import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveLis
 import { StudentEventDetail } from "@/components/partial/student/events/EventDetail/EventDetail";
 import { FreeEventConfirm } from "@/components/partial/student/event-register/FreeConfirmation";
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
+import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -321,6 +322,10 @@ export const router = createBrowserRouter([
       {
         path: "/student/club",
         element: <Clubs />,
+      },
+      {
+        path: "/student/club/:clubId",
+        element: <StudentClubDetail />,
       },
       {
         path: "/student/waiting",
