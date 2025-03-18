@@ -44,15 +44,6 @@ export const taskColumn = (
       cell: ({ row }) => <div >{format(row.getValue("deadline"), 'HH:mm - dd/MM/yyyy')}</div>,
     },
     {
-      accessorKey: "taskScore",
-      header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Task Score" />
-        </div>
-      ),
-      cell: ({ row }) => <div >{row.getValue("taskScore") ? `${row.getValue("taskScore")} points` : "Unknown point"}</div>,
-    },
-    {
       accessorKey: "status",
       header: ({ column }) => (
         <div className="text-center">

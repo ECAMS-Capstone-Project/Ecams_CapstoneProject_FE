@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useRef } from "react"
-import { Checkbox } from "@/components/ui/checkbox"
+import React, { useEffect, useState, useRef } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Kiểu Student
 interface Student {
-    studentId: string
-    fullName: string
+    studentId: string;
+    fullName: string;
+    roleName: string;
 }
 
 // Props từ code bạn
 interface SpecificStudentListProps {
-    students: Student[]          // Danh sách đã filter theo searchTerm
-    selected: string[]           // Mảng studentId đã chọn
-    isAssignAll: boolean         // Nếu true => disable checkbox
-    handleToggleStudent: (studentId: string, checked: boolean) => void
+    students: Student[];          // Danh sách đã filter theo searchTerm
+    selected: string[];           // Mảng studentId đã chọn
+    isAssignAll: boolean;         // Nếu true => disable checkbox
+    handleToggleStudent: (studentId: string, checked: boolean) => void;
 }
 
 const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
@@ -21,53 +22,55 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     isAssignAll,
     handleToggleStudent,
 }) => {
+    // Lọc bỏ các student có roleName là "CLUB_OWNER"
+    const filteredStudents = students.filter(
+        (st) => st.roleName.toUpperCase() !== "CLUB_OWNER"
+    );
+
     // Mỗi lần load 5 sinh viên
-    const CHUNK_SIZE = 5
-    const [page, setPage] = useState(1)
+    const CHUNK_SIZE = 5;
+    const [page, setPage] = useState(1);
 
     // Tham chiếu container
-    const containerRef = useRef<HTMLDivElement | null>(null)
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
-    // Mỗi khi `students` thay đổi (tìm kiếm, data mới, …) => reset về page=1
+    // Khi students thay đổi (tìm kiếm, data mới, …) => reset page về 1
     useEffect(() => {
-        setPage(1)
-    }, [students])
+        setPage(1);
+    }, [students]);
 
-    // Dữ liệu hiển thị
-    const displayed = students.slice(0, page * CHUNK_SIZE)
+    // Dữ liệu hiển thị dựa trên pagination
+    const displayed = filteredStudents.slice(0, page * CHUNK_SIZE);
 
     // Lắng nghe sự kiện scroll
     const handleScroll = () => {
-        if (!containerRef.current) return
-        const { scrollTop, scrollHeight, clientHeight } = containerRef.current
+        if (!containerRef.current) return;
+        const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
 
         // Nếu cuộn gần chạm đáy (cách đáy 10px)
         if (scrollTop + clientHeight >= scrollHeight - 10) {
-            // Còn dữ liệu chưa hiển thị => tăng page
-            if (page * CHUNK_SIZE < students.length) {
-                setPage((prev) => prev + 1)
+            if (page * CHUNK_SIZE < filteredStudents.length) {
+                setPage((prev) => prev + 1);
             }
         }
-    }
+    };
 
-    // Gắn event listener
     useEffect(() => {
-        const div = containerRef.current
-        if (!div) return
-
-        div.addEventListener("scroll", handleScroll)
+        const div = containerRef.current;
+        if (!div) return;
+        div.addEventListener("scroll", handleScroll);
         return () => {
-            div.removeEventListener("scroll", handleScroll)
-        }
-    }, [page, students.length])
+            div.removeEventListener("scroll", handleScroll);
+        };
+    }, [page, filteredStudents.length]);
 
     return (
         <div
             ref={containerRef}
             className="border p-3 rounded space-y-2 max-h-36 overflow-y-auto"
         >
-            {displayed && displayed.map((st) => {
-                const isChecked = selected && selected.includes(st.studentId)
+            {displayed.map((st) => {
+                const isChecked = selected.includes(st.studentId);
                 return (
                     <div key={st.studentId} className="flex items-center space-x-2">
                         <Checkbox
@@ -78,20 +81,19 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                             disabled={isAssignAll}
                         />
                         <label className="text-sm text-foreground">
-                            {st.fullName}
+                            {st.fullName} - {st.roleName}
                         </label>
                     </div>
-                )
+                );
             })}
 
-            {/* Nếu không có kết quả */}
-            {students.length === 0 && (
+            {filteredStudents.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                     No students found.
                 </p>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default SpecificStudentList
+export default SpecificStudentList;
