@@ -4,11 +4,13 @@ import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const ClubsSection = () => {
   const [pageNo] = useState(1);
   const [pageSize] = useState(5);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
 
   return (
@@ -44,7 +46,17 @@ export const ClubsSection = () => {
                 className="w-full h-1/4 aspect-video object-cover rounded-lg"
               />
               <div className="p-4 h-3/4 text-left flex flex-col gap-4">
-                <h3 className="text-2xl font-bold text-[#32aaac]">
+                <h3
+                  className="text-2xl font-bold text-[#32aaac]"
+                  onClick={() =>
+                    navigate(`/student/club/${club.clubId}`, {
+                      state: {
+                        previousPage: location.pathname,
+                        breadcrumb: "Home",
+                      },
+                    })
+                  }
+                >
                   {club.clubName}
                 </h3>
 
