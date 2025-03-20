@@ -43,7 +43,7 @@ export const StudentEventDetail: React.FC = () => {
       />
       <main className="flex-1">
         {event && <HeroSection event={event} />}
-        <section className="container mx-auto grid grid-cols-1 gap-10 px-8 py-8 md:grid-cols-3">
+        <section className="container mx-auto grid grid-cols-1 space-x-20 px-8 py-8 md:grid-cols-2">
           {event && <EventDetailLeft event={event} />}
           {event && <EventDetailRight event={event} />}
         </section>

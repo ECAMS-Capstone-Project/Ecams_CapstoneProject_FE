@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
+import { Calendar, CalendarCheck } from "lucide-react";
 
 interface DateTimeCardProps {
   event: Event;
@@ -12,14 +12,19 @@ interface DateTimeCardProps {
 export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
   const navigate = useNavigate();
   return (
-    <div className="rounded-lg bg-white p-7 shadow space-y-6">
+    <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/4">
       <div className="space-y-4">
         <h3 className="mb-2 text-left text-2xl font-semibold">Date & time</h3>
-        <p className="text-gray-700">
-          {event?.startDate && event?.endDate
-            ? format(new Date(event.startDate), "iiii, PP") +
-              " - " +
-              format(new Date(event.endDate), "iiii, PP")
+        <p className="text-gray-700 flex items-center gap-2">
+          <Calendar size={18} />
+          {event?.startDate
+            ? format(new Date(event.startDate), "iiii, PP")
+            : "Invalid date"}
+        </p>
+        <p className="text-gray-700 flex items-center gap-2">
+          <CalendarCheck size={18} />
+          {event?.endDate
+            ? format(new Date(event.endDate), "iiii, PP")
             : "Invalid date"}
         </p>
       </div>
@@ -53,20 +58,6 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
         >
           Register now
         </Button>
-        <button
-          className="w-full p-3.5 mt-0 font-light text-md text-slate-500"
-          onClick={() =>
-            navigate("/student/events/success", {
-              state: {
-                event: event,
-                previousPage: location.pathname,
-                breadcrumb: event.eventName,
-              },
-            })
-          }
-        >
-          No Refunds
-        </button>
       </div>
     </div>
   );

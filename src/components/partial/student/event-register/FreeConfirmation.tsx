@@ -17,6 +17,7 @@ import {
   CalendarDays,
   CheckCircle2Icon,
   ChevronLeft,
+  DollarSign,
   XCircleIcon,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -121,6 +122,12 @@ export const FreeEventConfirm = () => {
                       .map((area: EventAreas) => area.name)
                       .join(", ")}
                   </CardDescription>
+                  {event.price > 0 && (
+                    <CardDescription className="text-sm text-white flex items-center gap-2">
+                      <DollarSign size={18} />
+                      {event.price.toLocaleString()} VND
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 {/* Giảm width của phần ảnh để không chiếm toàn bộ */}
                 <div className="flex-1 flex justify-end">
@@ -208,6 +215,12 @@ export const FreeEventConfirm = () => {
                       required
                     />
                   </div>
+
+                  {event.price > 0 && (
+                    <button className="w-full p-2 mt-0 font-light text-md text-slate-500 italic">
+                      Please note that this event is non-refundable.
+                    </button>
+                  )}
                 </CardContent>
 
                 <CardFooter className="flex justify-end gap-1 p-0">
