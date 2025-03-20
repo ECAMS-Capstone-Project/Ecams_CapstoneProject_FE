@@ -17,7 +17,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import toast from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { Place } from "@mui/icons-material";
@@ -68,7 +68,7 @@ const FormContainer = styled(Card)({
 });
 
 const EventPaymentConfirmation: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const { event, userInfo } = location.state || {};
   const [confirmationMethod, setConfirmationMethod] = useState<string>("");

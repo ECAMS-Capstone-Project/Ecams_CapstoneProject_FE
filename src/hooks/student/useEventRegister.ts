@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { paymentEvent } from "@/api/student/EventRegistrationAgent";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -15,7 +14,7 @@ export const usePaymentEvent = () => {
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Nếu event miễn phí, hiển thị thông báo thành công
       toast.success("Event registration successful!");
     },

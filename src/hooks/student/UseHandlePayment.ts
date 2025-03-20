@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { handleEventResponse } from "@/api/student/EventRegistrationAgent";
 import { useMutation } from "@tanstack/react-query";// Đảm bảo import hàm handleEventResponse
 import { toast } from "react-hot-toast";
@@ -14,10 +13,10 @@ export const useHandleEventResponse = () => {
         throw error;
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success("Event response processed successfully");
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("An error occurred while processing the event response.");
     }
   });
