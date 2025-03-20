@@ -22,7 +22,7 @@ import ProfilePage from "@/pages/common/Profile";
 import WaitingCheckRepresentativePage from "@/pages/representative/additionRegister/waitingCheckRepresentativePage";
 import PackageList from "@/pages/representative/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
-import WaitingCheckout from "@/components/partial/representative/representative-checkout/WaitingCheckOut";
+// import WaitingCheckout from "@/components/partial/representative/representative-checkout/WaitingCheckOut";
 import PendingUniversity from "@/pages/admin/university/PendingUni";
 import GuestLandingPage from "@/components/partial/landing/LandingPage";
 import HomePage from "@/pages/student/home/HomePage";
@@ -58,6 +58,8 @@ import { FreeEventConfirm } from "@/components/partial/student/event-register/Fr
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
 import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
+import WaitingCheckout from "@/components/partial/student/event-register/WaitingCheckOut";
+import { EventCheckIn } from "@/pages/club-owner/event/EventCheckIn";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -181,9 +183,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/representative",
-    element: (
-      <PrivateRoute />
-    ),
+    element: <PrivateRoute />,
     children: [
       {
         index: true,
@@ -359,6 +359,16 @@ export const router = createBrowserRouter([
       {
         path: "/club/detail/:clubId",
         element: <ClubDetailPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/create-club",
+        element: <RequestClubPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/event-check-in",
+        element: <EventCheckIn />,
         errorElement: <ErrorException />,
       },
       {
