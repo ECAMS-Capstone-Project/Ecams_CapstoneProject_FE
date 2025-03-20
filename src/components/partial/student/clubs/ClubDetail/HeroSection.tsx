@@ -1,6 +1,7 @@
 import React from "react";
 import { ClubResponse } from "@/models/Club";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
   club: ClubResponse;
@@ -33,12 +34,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ club }) => {
               {club.contactEmail}
             </p>
             <div className="flex gap-4">
-              <button className="bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-opacity-90 transition">
+              <Button
+                variant={"custom"}
+                className=" text-white px-10 py-7 rounded-full font-semibold text-base hover:bg-opacity-90 transition"
+              >
                 Join Club
-              </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
+              </Button>
+              {/* <button className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">
                 Learn More
-              </button>
+              </button> */}
             </div>
           </motion.div>
 

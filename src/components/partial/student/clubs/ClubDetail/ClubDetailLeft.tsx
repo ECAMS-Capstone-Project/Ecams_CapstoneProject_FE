@@ -41,10 +41,9 @@ export const ClubDetailLeft: React.FC<ClubDetailLeftProps> = ({ club }) => {
 
       <div className="activities">
         <h3 className="text-2xl font-bold mb-4">Club Purpose</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-semibold mb-2">{club.purpose}</h4>
-            <p className="text-gray-600">{club.purpose}</p>
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          <div className="bg-[#E5F5F8] p-6 rounded-lg">
+            <p className="text-[#0A4C66] text-base">{club.purpose}</p>
           </div>
         </div>
       </div>
