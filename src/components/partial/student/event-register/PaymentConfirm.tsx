@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   IconButton,
   styled,
   Grid2,
-  TextField,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -21,6 +21,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { Place } from "@mui/icons-material";
+import { usePaymentEvent } from "@/hooks/student/useEventRegister";
 
 const BackgroundWrapper = styled(Box)({
   minHeight: "100vh",
@@ -66,40 +67,56 @@ const FormContainer = styled(Card)({
   padding: "24px",
 });
 
-const generateRandomCode = () => {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
-};
-
 const EventPaymentConfirmation: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { event, userInfo } = location.state || {};
-  const [userCaptchaInput, setUserCaptchaInput] = useState<string>("");
-  const [captchaCode, setCaptchaCode] = useState(generateRandomCode());
-  const [confirmationMethod, setConfirmationMethod] = useState("");
+  const [confirmationMethod, setConfirmationMethod] = useState<string>("");
+
+  // Hook sử dụng để gọi API paymentEvent
+  const { mutate: paymentEvent } = usePaymentEvent(); // Lấy hàm mutate từ usePaymentEvent hook
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmationMethod(event.target.value);
   };
 
-  const handleCaptchaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserCaptchaInput(e.target.value);
-  };
-
+  // Xử lý submit form
   const handleSubmit = async () => {
-    toast.dismiss();
-    if (userCaptchaInput !== captchaCode) {
-      toast.error("Invalid CAPTCHA code. Please try again!");
-      setCaptchaCode(generateRandomCode());
-      setUserCaptchaInput("");
-      return;
-    }
     if (!confirmationMethod) {
-      toast.error("Please select a confirmation method");
+      toast.error("Please select a payment method");
       return;
     }
-    toast.success("Event registration successful!");
-    navigate("/events");
+
+    try {
+      // Gọi API paymentEvent thông qua mutate
+      await paymentEvent(
+        {
+          studentId: userInfo.userId,
+          eventId: event.eventId,
+          paymentMethodId: confirmationMethod,
+        },
+        {
+          onSuccess: (response) => {
+            if (
+              response &&
+              response.data &&
+              typeof response.data === "string"
+            ) {
+              toast.success("Event registration successful!");
+
+              window.location.replace(response.data);
+            } else {
+              toast.error("Payment failed. Please try again.");
+            }
+          },
+          onError: () => {
+            toast.error("An error occurred while processing the payment.");
+          },
+        }
+      );
+    } catch (error) {
+      toast.error("An error occurred while processing the payment.");
+    }
   };
 
   if (!event || !userInfo) {
@@ -143,6 +160,8 @@ const EventPaymentConfirmation: React.FC = () => {
         >
           Confirm Event Registration
         </Typography>
+
+        {/* Event Information */}
         <Grid2 container spacing={2} sx={{ background: "white" }}>
           <Grid2 size={{ md: 6, xs: 12 }}>
             <FormContainer>
@@ -199,100 +218,16 @@ const EventPaymentConfirmation: React.FC = () => {
                       variant="body1"
                       sx={{ color: "text.secondary", fontWeight: "bold" }}
                     >
-                      {userInfo.name}
+                      {userInfo.fullname}
                     </Typography>
                   </Grid2>
                 </Grid2>
-                <Grid2
-                  container
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ height: "50px" }}
-                >
-                  <Grid2 size={{ sm: 5 }}>
-                    <Typography variant="body1">Student Code:</Typography>
-                  </Grid2>
-                  <Grid2 size={{ sm: 6 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "text.secondary", fontWeight: "bold" }}
-                    >
-                      {userInfo.studentCode}
-                    </Typography>
-                  </Grid2>
-                </Grid2>
-                <Grid2
-                  container
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ height: "50px" }}
-                >
-                  <Grid2 size={{ sm: 5 }}>
-                    <Typography variant="body1">Email:</Typography>
-                  </Grid2>
-                  <Grid2 size={{ sm: 6 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "text.secondary", fontWeight: "bold" }}
-                    >
-                      {userInfo.email}
-                    </Typography>
-                  </Grid2>
-                </Grid2>
-                <Grid2
-                  container
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ height: "50px" }}
-                >
-                  <Grid2 size={{ sm: 5 }}>
-                    <Typography variant="body1">Phone Number:</Typography>
-                  </Grid2>
-                  <Grid2 size={{ sm: 6 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ color: "text.secondary", fontWeight: "bold" }}
-                    >
-                      {userInfo.phone}
-                    </Typography>
-                  </Grid2>
-                </Grid2>
-                <Grid2
-                  container
-                  justifyContent="space-between"
-                  alignItems="center"
-                  mt={5}
-                  mb={3}
-                >
-                  <Grid2 size={{ sm: 5 }}>
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        padding: "10px",
-                        backgroundColor: "#f0f0f0",
-                        borderRadius: "5px",
-                        fontSize: "1.5rem",
-                        fontWeight: "bold",
-                        letterSpacing: "0.1em",
-                      }}
-                    >
-                      {captchaCode}
-                    </Box>
-                  </Grid2>
-                  <Grid2 size={{ sm: 5 }}>
-                    <TextField
-                      required
-                      style={{ marginBottom: "0px", paddingBottom: "0px" }}
-                      label="CAPTCHA Code"
-                      variant="outlined"
-                      onChange={handleCaptchaChange}
-                      value={userCaptchaInput}
-                    />
-                  </Grid2>
-                </Grid2>
+                {/* Other user info fields */}
               </Box>
             </FormContainer>
           </Grid2>
+
+          {/* Payment Method */}
           <Grid2 size={{ md: 6, xs: 12 }}>
             <FormContainer>
               <Typography
@@ -333,38 +268,14 @@ const EventPaymentConfirmation: React.FC = () => {
                 }}
               >
                 <FormControlLabel
-                  value="VnPay"
+                  value="59b3cf1a-4ed7-469a-a551-5196755a12ad"
                   control={<Radio />}
-                  label={
-                    <Box display="flex" alignItems="center">
-                      <img
-                        className="me-2"
-                        width="30px"
-                        style={{ height: "25px" }}
-                        src="https://cdn-new.topcv.vn/unsafe/150x/https://static.topcv.vn/company_logos/cong-ty-cp-giai-phap-thanh-toan-viet-nam-vnpay-6194ba1fa3d66.jpg"
-                        alt="VNPay logo"
-                      />
-                      VNPay
-                    </Box>
-                  }
-                  style={{ color: "black", marginBottom: "25px" }}
+                  label="VNPay"
                 />
                 <FormControlLabel
-                  value="PayOS"
+                  value="59b3cf1a-4ed7-469a-a551-5196755a12bb"
                   control={<Radio />}
-                  label={
-                    <Box display="flex" alignItems="center">
-                      <img
-                        className="me-2"
-                        width="30px"
-                        style={{ height: "25px" }}
-                        src="https://payos.vn/docs/img/logo.svg"
-                        alt="PayOS logo"
-                      />
-                      PayOS
-                    </Box>
-                  }
-                  style={{ color: "black" }}
+                  label="PayOS"
                 />
               </RadioGroup>
               <Button
@@ -375,9 +286,6 @@ const EventPaymentConfirmation: React.FC = () => {
                 fullWidth
                 sx={{
                   background: "linear-gradient(to right, #136CB5, #49BBBD)",
-                  "&:hover": {
-                    background: "linear-gradient(to right, #0d4f8f, #3a9a9c)",
-                  },
                 }}
               >
                 Confirm Registration

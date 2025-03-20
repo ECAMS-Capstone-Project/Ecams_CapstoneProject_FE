@@ -34,3 +34,10 @@ export interface Transaction {
     type: string; // Enum nếu có danh sách cụ thể
     status: string;
 }
+
+export interface StudentHandleResponse {
+    studentId: string;
+    transactionInfo: string;
+    transactionNumber: string;
+    isSuccess: boolean;
+}

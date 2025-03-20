@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
   Card,
   CardHeader,
@@ -19,70 +22,54 @@ import {
 import { format } from "date-fns";
 import { EventAreas } from "@/models/Area";
 import { Place } from "@mui/icons-material";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import useAuth from "@/hooks/useAuth";
+import { usePaymentEvent } from "@/hooks/student/useEventRegister";
+import { toast } from "react-hot-toast";
 
 export const FreeEventConfirm = () => {
   const location = useLocation();
   const event = location.state?.event;
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState({
-    name: "",
-    studentCode: "",
-    email: "",
-    phone: "",
-  });
-
+  const { user } = useAuth();
+  const { mutate: paymentEvent } = usePaymentEvent();
   if (!event) {
     return <div>No event data found. Please navigate from the event page.</div>;
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUserInfo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = () => {
-    // Check required fields
-    if (
-      !userInfo.name ||
-      !userInfo.studentCode ||
-      !userInfo.email ||
-      !userInfo.phone
-    ) {
-      toast.error("Please fill in all required information");
-      return;
-    }
-
-    // Check email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(userInfo.email)) {
-      toast.error("Invalid email format");
-      return;
-    }
-
-    // Check phone number format
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(userInfo.phone)) {
-      toast.error("Invalid phone number format");
-      return;
-    }
+  const handleSubmit = async () => {
     if (event.price > 0) {
       navigate("/events/payment-confirm", {
         state: {
           event: event,
-          userInfo: userInfo,
+          userInfo: user,
         },
       });
     } else {
-      navigate("/student/events/success", {
-        state: {
-          event: event,
-        },
-      });
+      try {
+        await paymentEvent(
+          {
+            studentId: user?.userId || "",
+            eventId: event.eventId,
+          },
+
+          {
+            onSuccess: () => {
+              toast.success("Event registration successful!");
+              navigate("/student/events/success", {
+                state: {
+                  event: event,
+                },
+              });
+            },
+            onError: (error) => {
+              console.error("Payment failed:", error);
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Payment failed:", error);
+        toast.error("Register event failed!");
+      }
     }
   };
 
@@ -161,13 +148,12 @@ export const FreeEventConfirm = () => {
                       type="text"
                       placeholder="Enter your full name"
                       className="w-full"
-                      value={userInfo.name}
-                      onChange={handleInputChange}
+                      value={user?.fullname}
                       required
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <Label
                       htmlFor="studentCode"
                       className="block mb-1 text-sm font-medium"
@@ -180,11 +166,11 @@ export const FreeEventConfirm = () => {
                       type="text"
                       placeholder="Enter your student code"
                       className="w-full"
-                      value={userInfo.studentCode}
+                      value={user?.}
                       onChange={handleInputChange}
                       required
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <Label
@@ -199,8 +185,8 @@ export const FreeEventConfirm = () => {
                       type="email"
                       placeholder="Enter your email"
                       className="w-full"
-                      value={userInfo.email}
-                      onChange={handleInputChange}
+                      value={user?.email}
+                      // onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -218,8 +204,7 @@ export const FreeEventConfirm = () => {
                       type="text"
                       placeholder="Enter your phone number"
                       className="w-full"
-                      value={userInfo.phone}
-                      onChange={handleInputChange}
+                      value={user?.phonenumber}
                       required
                     />
                   </div>
