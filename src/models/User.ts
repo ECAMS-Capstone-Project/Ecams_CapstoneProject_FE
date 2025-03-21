@@ -51,3 +51,27 @@ export interface Role {
   userRole?: string;
 }
 
+
+export interface UserSchedule{
+  userId: string;
+  email: string;
+  fullname: string;
+  eventSchedules: EventSchedule[];
+  clubSchedules: ClubSchedule[];
+}
+
+export interface EventSchedule{
+  eventId: string;
+  eventName: string;
+  startDate: Date;
+  endDate: Date;      
+      }
+
+export interface ClubSchedule{
+  clubName: string;
+  scheduleName: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  status: boolean;
+}
