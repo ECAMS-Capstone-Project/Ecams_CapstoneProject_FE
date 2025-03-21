@@ -55,7 +55,6 @@ export const FreeEventConfirm = () => {
 
           {
             onSuccess: () => {
-              toast.success("Event registration successful!");
               navigate("/student/events/success", {
                 state: {
                   event: event,
@@ -64,6 +63,7 @@ export const FreeEventConfirm = () => {
             },
             onError: (error) => {
               console.error("Payment failed:", error);
+              toast.error(error?.response?.data?.message || "Payment failed");
             },
           }
         );

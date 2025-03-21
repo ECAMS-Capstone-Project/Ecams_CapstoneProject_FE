@@ -14,10 +14,26 @@ export interface Event {
   price: number;
   maxParticipants: number;
   status: string;
+  registrationStatus: string;
   eventAreas?: EventAreas[];
   feedbacks?: [];
   imageUrl: string;
   description: string;
   walletId?: string;
   eventType:string;
+}
+
+export interface CheckInInfo {
+  email: string;
+  fullname: string;
+  phonenumber: string;
+  universityName: string;
+  purchaseDate: Date;
+  studentDetailId: string;
+  eventName: string;
+  startDate: Date;
+  endDate: Date;
+  price: number;
+  clubName: string;
+  areaName: string[];
 }

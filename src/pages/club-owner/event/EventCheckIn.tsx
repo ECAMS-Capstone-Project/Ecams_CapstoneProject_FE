@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -12,80 +12,53 @@ import {
   QrCode,
   User,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { EventAvailable, PhoneIphone } from "@mui/icons-material";
 import useAuth from "@/hooks/useAuth";
-
-interface TicketInfo {
-  id: string;
-  ticketCode: string;
-  purchaseDate: Date;
-  price: number;
-  status: "pending" | "checked-in";
-  event: {
-    id: string;
-    name: string;
-    date: Date;
-    startTime: string;
-    endTime: string;
-    location: string;
-    organizerName: string;
-  };
-  participant: {
-    id: string;
-    name: string;
-    studentId: string;
-    avatar?: string;
-    email: string;
-    phone: string;
-  };
-}
+import { useEventSchedule } from "@/hooks/student/useEventRegister";
+import { useEffect, useState } from "react";
 
 export const EventCheckIn = () => {
   //   const location = useLocation();
   //   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
+  const { checkInStudent, isCheckingIn, getCheckInInfoQuery } =
+    useEventSchedule(user?.userId || "");
+  const [userId, setUserId] = useState("");
+  const [eventId, setEventId] = useState("");
+
+  useEffect(() => {
+    // Lấy URL hiện tại của trang
+    // const url = window.location.href;
+
+    // Sử dụng URLSearchParams để lấy các tham số
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get("userId");
+    const event = urlParams.get("eventId");
+
+    if (user && event) {
+      setUserId(user);
+      setEventId(event);
+    }
+  }, []);
+  console.log("from url", userId, eventId);
+
   // TODO: Lấy ticketId từ QR code và gọi API để lấy thông tin
-  const mockTicket: TicketInfo = {
-    id: "TICKET123",
-    ticketCode: "EVT-2024-001",
-    purchaseDate: new Date(),
-    price: 50000,
-    status: "pending",
-    event: {
-      id: "1",
-      name: "Workshop: React Advanced Patterns",
-      date: new Date(),
-      startTime: "15:00",
-      endTime: "17:00",
-      location: "Room 305, Building A",
-      organizerName: "F-Code Club",
-    },
-    participant: {
-      id: user?.userId || "",
-      name: user?.fullname || "",
-      studentId: user?.universityName || "",
-      email: user?.email || "",
-      phone: user?.phonenumber || "",
-      avatar: user?.avatar,
-    },
-  };
+  const { data: checkInInfo } = getCheckInInfoQuery(userId, eventId);
 
   const handleCheckIn = async () => {
     try {
-      setIsLoading(true);
-      // TODO: Gọi API check-in với ticketId
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Giả lập API call
-      toast.success("Successfully checked in participant");
+      checkInStudent({
+        eventId: eventId,
+        userId: userId,
+      });
+
       // TODO: Redirect hoặc đóng QR scanner
-    } catch (error) {
-      toast.error("Failed to check in participant");
-    } finally {
-      setIsLoading(false);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Failed to check in participant"
+      );
     }
   };
 
@@ -116,22 +89,13 @@ export const EventCheckIn = () => {
                 <span className="text-xs sm:text-sm font-medium text-gray-900">
                   Ticket ID
                 </span>
-                <span className="text-xs sm:text-sm text-gray-500">
-                  #{mockTicket.ticketCode}
-                </span>
               </div>
             </div>
             <Badge
-              variant={
-                mockTicket.status === "checked-in" ? "default" : "secondary"
-              }
-              className={`${
-                mockTicket.status === "checked-in"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-yellow-100 text-yellow-800"
-              } px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm`}
+              variant={"secondary"}
+              className={`${"bg-yellow-100 text-yellow-800"} px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm`}
             >
-              {mockTicket.status === "checked-in" ? "Checked-in" : "Pending"}
+              Pending
             </Badge>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -147,11 +111,11 @@ export const EventCheckIn = () => {
                 <div className="flex items-center gap-2 mb-2 sm:mb-3">
                   <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#136CB9]" />
                   <h3 className="text-sm sm:text-base font-semibold text-gray-900">
-                    {mockTicket.event.organizerName}
+                    {checkInInfo?.data?.clubName}
                   </h3>
                 </div>
                 <h2 className="text-lg sm:text-xl font-bold text-[#2C8A84] mb-3 sm:mb-4">
-                  {mockTicket.event.name}
+                  {checkInInfo?.data?.eventName}
                 </h2>
                 <div className="space-y-2 sm:space-y-3 text-gray-600">
                   <div className="flex items-center gap-2 sm:gap-3 p-2 bg-white rounded">
@@ -161,9 +125,17 @@ export const EventCheckIn = () => {
                         Date & Time
                       </span>
                       <span className="text-xs sm:text-sm truncate">
-                        {format(mockTicket.event.date, "EEEE, dd MMM yyyy")} |{" "}
-                        {mockTicket.event.startTime} -{" "}
-                        {mockTicket.event.endTime}
+                        {checkInInfo?.data?.startDate &&
+                          format(
+                            checkInInfo?.data?.startDate,
+                            "EEEE, dd MMM yyyy"
+                          )}{" "}
+                        -{" "}
+                        {checkInInfo?.data?.endDate &&
+                          format(
+                            checkInInfo?.data?.endDate,
+                            "EEEE, dd MMM yyyy"
+                          )}
                       </span>
                     </div>
                   </div>
@@ -174,7 +146,9 @@ export const EventCheckIn = () => {
                         Location
                       </span>
                       <span className="text-xs sm:text-sm truncate">
-                        {mockTicket.event.location}
+                        {checkInInfo?.data?.areaName
+                          .map((area) => area)
+                          .join(", ")}
                       </span>
                     </div>
                   </div>
@@ -185,7 +159,11 @@ export const EventCheckIn = () => {
                         Ticket Price
                       </span>
                       <span className="text-xs sm:text-sm">
-                        {mockTicket.price.toLocaleString("en-US")} VND
+                        {checkInInfo?.data?.price &&
+                        checkInInfo?.data?.price > 0
+                          ? checkInInfo?.data?.price.toLocaleString("vi-VN") +
+                            " VND"
+                          : "Free"}
                       </span>
                     </div>
                   </div>
@@ -203,21 +181,12 @@ export const EventCheckIn = () => {
                 </h3>
               </div>
               <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 bg-gray-50 p-3 sm:p-4 rounded-lg">
-                <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-white shadow-sm">
-                  <AvatarImage src={mockTicket.participant.avatar} />
-                  <AvatarFallback className="bg-blue-100 text-[#136CB9] text-sm sm:text-base">
-                    {mockTicket.participant.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
                 <div className="min-w-0">
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
-                    {mockTicket.participant.name}
+                    {checkInInfo?.data?.fullname}
                   </h3>
                   <p className="text-xs sm:text-sm text-gray-500">
-                    {mockTicket.participant.studentId}
+                    {checkInInfo?.data?.studentDetailId}
                   </p>
                 </div>
               </div>
@@ -232,7 +201,7 @@ export const EventCheckIn = () => {
                       Email
                     </label>
                     <p className="text-xs sm:text-sm text-gray-600 truncate">
-                      {mockTicket.participant.email}
+                      {checkInInfo?.data?.email}
                     </p>
                   </div>
                 </div>
@@ -247,7 +216,7 @@ export const EventCheckIn = () => {
                       Phone
                     </label>
                     <p className="text-xs sm:text-sm text-gray-600">
-                      {mockTicket.participant.phone}
+                      {checkInInfo?.data?.phonenumber}
                     </p>
                   </div>
                 </div>
@@ -262,40 +231,32 @@ export const EventCheckIn = () => {
                       Purchase Date
                     </label>
                     <p className="text-xs sm:text-sm text-gray-600">
-                      {format(mockTicket.purchaseDate, "dd MMM yyyy, HH:mm")}
+                      {checkInInfo?.data?.purchaseDate &&
+                        format(
+                          new Date(checkInInfo.data.purchaseDate),
+                          "dd MMM yyyy, HH:mm"
+                        )}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
           {/* Action Button */}
-          {mockTicket.status === "pending" ? (
-            <Button
-              className="w-full hover:scale-[102%] shadow-lg hover:shadow-xl text-white py-4 sm:py-6 text-base sm:text-lg font-medium transition-all duration-200"
-              onClick={handleCheckIn}
-              disabled={isLoading}
-              variant="custom"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent"></div>
-                </div>
-              ) : (
-                "Confirm Check-in"
-              )}
-            </Button>
-          ) : (
-            <div className="text-center">
-              <Button className="w-full py-4 sm:py-6" variant="custom" disabled>
-                Already Checked-in
-              </Button>
-              <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                This ticket has been checked in and cannot be used again
-              </p>
-            </div>
-          )}
+          <Button
+            className="w-full hover:scale-[102%] shadow-lg hover:shadow-xl text-white py-4 sm:py-6 text-base sm:text-lg font-medium transition-all duration-200"
+            onClick={handleCheckIn}
+            disabled={isCheckingIn}
+            variant="custom"
+          >
+            {isCheckingIn ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white border-t-transparent"></div>
+              </div>
+            ) : (
+              "Confirm Check-in"
+            )}
+          </Button>
         </div>
       </Card>
     </div>

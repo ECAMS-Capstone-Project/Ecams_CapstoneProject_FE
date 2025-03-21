@@ -1,48 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PaymentDetails } from "@/models/Payment";
-import { post } from "../agent";
+import { get, post, put } from "../agent";
 import { ResponseDTO } from "../BaseResponse";
 import toast from "react-hot-toast";
-export const paymentEvent = async (data: { studentId: string, eventId: string, paymentMethodId?: string }): Promise<ResponseDTO<PaymentDetails | string>> => {
+import { CheckInInfo } from "@/models/Event";
+export const paymentEvent = async (data: { studentId: string, eventId: string, paymentMethodId?: string }): Promise<ResponseDTO<PaymentDetails | string | undefined>> => {
     try {
-        const response = await post("/Payment/event", data) as { data: ResponseDTO<PaymentDetails | string> };
-        
+        const response = await post("/Payment/event", data) as { data: ResponseDTO<PaymentDetails | string | undefined> };
+
         // Kiểm tra toàn bộ response
         console.log("Full API Response:", response);
 
-        // Kiểm tra nếu response.data thực sự tồn tại
         const apiResponse = response.data;
 
-        // Kiểm tra kiểu dữ liệu của apiResponse.data
+        // Kiểm tra nếu apiResponse tồn tại
         if (apiResponse) {
             console.log("API Response Data:", apiResponse);
-            
-            console.log("API Response type:", typeof apiResponse);
-            // Kiểm tra nếu dữ liệu trả về là một chuỗi (URL thanh toán VNPAY)
+
+            // Kiểm tra kiểu dữ liệu của apiResponse
             if (typeof apiResponse === "string") {
                 console.log("VNPAY response:", apiResponse);
                 // Điều hướng đến URL thanh toán VNPAY
                 window.location.replace(apiResponse);
-                return apiResponse; // Đảm bảo trả về data
+                return apiResponse; // Đảm bảo trả về dữ liệu
             }
 
             // Nếu trả về PaymentDetails (thông tin thanh toán PAYOS)
-            else if (typeof apiResponse.data === "object") {
+            else if (typeof apiResponse === "object" && apiResponse.data) {
                 console.log("PAYOS response:", apiResponse.data);
                 return apiResponse; // Trả về PaymentDetails
             }
         }
 
-        // Nếu không có apiResponse.data, báo lỗi
-        console.error("Unexpected response data format or missing data.");
-        throw new Error(`Unexpected response data format: ${JSON.stringify(apiResponse)}`);
-
+        // Nếu apiResponse là undefined hoặc không có data, coi là thành công
+        console.log("Payment event successful with no additional response data.");
+        return response.data;; // Hoặc trả về dữ liệu mặc định nếu cần
     } catch (error: any) {
         console.error("Error in paymentEvent:", error);
-        // toast.error(error.response.data.message || "API Error");
+        toast.error("An error occurred while processing the payment.");
         throw error; // Để các phần khác xử lý lỗi này
     }
 };
+
 
 
 export const handleEventResponse = async (data: { studentId: string, transactionInfo: string, transactionNumber: string, isSuccess: boolean }): Promise<ResponseDTO<string>> => {
@@ -61,3 +60,26 @@ export const handleEventResponse = async (data: { studentId: string, transaction
         }
     }
 };
+
+export const checkInStudent = async (eventId: string,userId: string): Promise<ResponseDTO<Event>> => {
+    try {
+      const response = await put<ResponseDTO<Event>>(`/Event/checkin`, {eventId,userId});
+      return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+      console.error("Error in UniversityList API call:", error.response || error);
+      throw error;
+    }
+  };
+
+  export const getCheckInInfo = async (userId: string, eventId: string): Promise<ResponseDTO<CheckInInfo>> => {
+    try {
+        const response = await get<ResponseDTO<CheckInInfo>>(`/User/check-in?userId=${userId}&eventId=${eventId}`);
+    
+        
+        return response;
+        
+    } catch (error) {
+        console.error("Error fetching university list:", error);
+    throw error;
+  }
+    }
