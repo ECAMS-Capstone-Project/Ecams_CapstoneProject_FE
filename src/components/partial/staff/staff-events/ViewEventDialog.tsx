@@ -1,4 +1,5 @@
 import { useEvents } from "@/hooks/staff/Event/useEvent";
+import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
 import {
   CheckCircle2Icon,
@@ -11,11 +12,12 @@ export const EventDetail: React.FC = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     data: eventDetail,
     isLoading: isEventDetailLoading,
     error,
-  } = getEventDetailQuery(eventId);
+  } = getEventDetailQuery(eventId, user?.userId || "");
 
   if (isEventDetailLoading) {
     return (
