@@ -1,10 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 // UI Table components của shadcn
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import SubmissionDetailDialog from "./SubmissionDetailDialog";
-import { GetMemberSubmission, GetTaskDetail, ReviewSubmissionRequest, SendReviewSubmission, StudentSubmission, TaskDetailDTO } from "@/api/club-owner/TaskAPI";
+import {
+  GetTaskDetail,
+  GetMemberSubmission,
+  ReviewSubmissionRequest,
+  SendReviewSubmission,
+  StudentSubmission,
+  TaskDetailDTO
+} from "@/api/club-owner/TaskAPI";
 import { Task } from "@/models/Task";
 import { Grid2 } from "@mui/material";
 import toast from "react-hot-toast";
@@ -14,15 +22,22 @@ interface TaskDialogClubOwnerProps {
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData }) => {
+const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, setFlag }) => {
+  // State cho chi tiết task (được load ngay khi component mount)
   const [taskDetail, setTaskDetail] = useState<TaskDetailDTO | null>(null);
+  // State cho danh sách submissions (chỉ load khi người dùng bấm nút)
   const [submissions, setSubmissions] = useState<StudentSubmission[]>([]);
+  // Flag hiển thị bảng submissions
+  const [showSubmissions, setShowSubmissions] = useState(false);
 
-  // State để mở dialog chi tiết submission (chỉ một submission, không phải mảng)
+  // State để đánh dấu đã cache submissions (để tránh gọi API lại nếu đã load)
+  const [submissionsLoaded, setSubmissionsLoaded] = useState(false);
+
+  // State để mở dialog chi tiết submission
   const [selectedSubmission, setSelectedSubmission] = useState<StudentSubmission | null>(null);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
 
-  // Fetch chi tiết task dựa trên taskId
+  // Load chi tiết task ngay khi component mount (chỉ dựa trên initialData.taskId)
   useEffect(() => {
     if (!initialData.taskId) return;
     async function fetchTaskDetail() {
@@ -38,28 +53,47 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData }
     fetchTaskDetail();
   }, [initialData.taskId]);
 
-  // Fetch danh sách student submissions dựa trên taskId
-  useEffect(() => {
+  // Hàm load submissions, nếu đã cache (submissionsLoaded) thì chỉ set showSubmissions
+  const handleLoadSubmissions = async () => {
     if (!initialData.taskId) return;
-    async function fetchSubmissions() {
-      try {
-        const response = await GetMemberSubmission(initialData.taskId);
-        if (response.data) {
-          setSubmissions(response.data.data ?? []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch student submissions", error);
-      }
+    if (submissionsLoaded) {
+      setShowSubmissions(true);
+      return;
     }
-    fetchSubmissions();
-  }, [initialData.taskId]);
+    try {
+      const response = await GetMemberSubmission(initialData.taskId);
+      if (response.data) {
+        setSubmissions(response.data.data ?? []);
+        setSubmissionsLoaded(true);
+        setShowSubmissions(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch student submissions", error);
+    }
+  };
 
-  // Khi club owner lưu feedback cho submission
+  // Sử dụng useEffect để refresh submissions nếu cần (ví dụ khi setFlag thay đổi)
+  // Nếu bạn có 1 flag để refresh, bạn có thể làm như sau:
+  useEffect(() => {
+    if (submissionsLoaded) {
+      handleLoadSubmissions();
+    }
+  }, [setFlag]);
+
+  // Khi lưu feedback cho submission, gọi API rồi refresh danh sách submissions (và cập nhật cache)
   const handleSaveFeedback = async (data: ReviewSubmissionRequest) => {
-    // Cập nhật state cục bộ (có thể gọi API nếu cần)
-    await SendReviewSubmission(data);
-    toast.success("Send feedback successfully")
-    console.log(data);
+    try {
+      await SendReviewSubmission(data);
+      toast.success("Feedback sent successfully");
+      // Sau khi gửi feedback, reload submissions để cập nhật giao diện và cache lại dữ liệu mới
+      const response = await GetMemberSubmission(initialData.taskId);
+      if (response.data) {
+        setSubmissions(response.data.data ?? []);
+        setSubmissionsLoaded(true);
+      }
+    } catch (error) {
+      console.error("Failed to send feedback", error);
+    }
   };
 
   // Mở dialog xem chi tiết submission
@@ -140,35 +174,46 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData }
         <p>Loading task details...</p>
       )}
 
-      <div>
-        <h3 className="text-md font-semibold mb-2">Student Submissions</h3>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Student Name</TableHead>
-              <TableHead>Submitted At</TableHead>
-              <TableHead>Grade</TableHead>
-              <TableHead style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {submissions.map((sub, index) => (
-              <TableRow key={index}>
-                <TableCell>{sub.memberName}</TableCell>
-                <TableCell>{format(new Date(sub.submissionDate), "HH:mm - dd/MM/yyyy")}</TableCell>
-                <TableCell>{sub.submissionScore ? `${sub.submissionScore} points` : "-"}</TableCell>
-                <TableCell style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                  <Button variant="outline" onClick={() => handleViewSubmission(sub)}>
-                    View / Comment
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {/* Nút để load và hiển thị danh sách student submissions */}
+      <div className="mb-4">
+        {!showSubmissions && (
+          <Button onClick={handleLoadSubmissions} variant="outline">
+            View Student Submissions
+          </Button>
+        )}
       </div>
+
+      {showSubmissions && submissions.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-md font-semibold mb-2">Student Submissions</h3>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Student Name</TableHead>
+                <TableHead>Submitted At</TableHead>
+                <TableHead>Grade</TableHead>
+                <TableHead style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  Action
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {submissions.map((sub, index) => (
+                <TableRow key={index}>
+                  <TableCell>{sub.memberName}</TableCell>
+                  <TableCell>{format(new Date(sub.submissionDate), "HH:mm - dd/MM/yyyy")}</TableCell>
+                  <TableCell>{sub.submissionScore ? `${sub.submissionScore} points` : "-"}</TableCell>
+                  <TableCell style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <Button variant="outline" onClick={() => handleViewSubmission(sub)}>
+                      View / Comment
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Dialog chi tiết submission */}
       {selectedSubmission && (
@@ -177,7 +222,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData }
           open={openDetailDialog}
           onClose={() => setOpenDetailDialog(false)}
           onSaveFeedback={handleSaveFeedback}
-          taskScore={taskDetail!.taskScore}
+          taskScore={taskDetail ? taskDetail.taskScore : 0}
         />
       )}
     </div>

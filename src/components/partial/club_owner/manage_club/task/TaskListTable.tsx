@@ -4,10 +4,11 @@ import { taskColumn } from "./task-table/column";
 import { Task } from "@/models/Task";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { taskMemberColumn } from "./task-table/columnTaskMember";
 
 interface TaskData {
   data: Task[];
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  setFlag: React.Dispatch<React.SetStateAction<boolean>>;
   isClubOwner: boolean;
 }
 const TaskListTable = ({ data, setFlag, isClubOwner }: TaskData) => {
@@ -20,12 +21,22 @@ const TaskListTable = ({ data, setFlag, isClubOwner }: TaskData) => {
             <Button onClick={() => navigate('/club/create-task')}>Create task</Button>
           </div>
         )}
-        <DataTable
-          columns={taskColumn(isClubOwner, setFlag)}
-          data={data}
-          searchKey={"taskName"}
-          placeholder="Search title"
-        />
+        {isClubOwner && (
+          <DataTable
+            columns={taskColumn(isClubOwner, setFlag)}
+            data={data}
+            searchKey={"taskName"}
+            placeholder="Search title"
+          />
+        )}
+        {!isClubOwner && (
+          <DataTable
+            columns={taskMemberColumn(isClubOwner, setFlag)}
+            data={data}
+            searchKey={"taskName"}
+            placeholder="Search title"
+          />
+        )}
       </div>
     </>
   );

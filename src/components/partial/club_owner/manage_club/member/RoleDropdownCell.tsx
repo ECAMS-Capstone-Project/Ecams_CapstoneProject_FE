@@ -35,7 +35,7 @@ const RoleDropdownCell: React.FC<RoleDropdownCellProps> = ({ role, row, isClubOw
   }
 
   // Danh sách role thay thế (không bao gồm "CLUB_OWNER")
-  const availableRoles = ["CLUB_MEMBER", "THANH_VIEN", "THU_KY", "THỦ_QUỸ"];
+  const availableRoles = ["CLUB_MEMBER", "CLUB_MANAGER"];
 
   const handleValueChange = (value: string) => {
     setSelectedRole(value);

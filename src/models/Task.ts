@@ -6,4 +6,6 @@ export interface Task {
     deadline: string;
     status: boolean;
     taskScore: string;
+    submissionStatus: string;
+    clubMemberId: string;
 }

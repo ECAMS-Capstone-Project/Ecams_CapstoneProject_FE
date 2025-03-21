@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Row } from "@tanstack/react-table";
-import MemberDetailDialog from "../MemberDialog";
+import MemberActiveDetailDialog from "../MemberActiveDialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
-  clubId: string
 }
 
-export function DataTableRowActions<TData>({
-  row, setFlag, clubId
+export function DataTableRowActiveActions<TData>({
+  row, setFlag
 }: DataTableRowActionsProps<TData>) {
   return (
     <>
-      <MemberDetailDialog
+      <MemberActiveDetailDialog
         initialData={row.original as any}
         setFlag={setFlag}
-        clubId={clubId}
       />
     </>
   );

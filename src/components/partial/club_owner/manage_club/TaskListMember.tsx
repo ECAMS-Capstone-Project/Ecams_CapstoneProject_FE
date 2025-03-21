@@ -1,30 +1,33 @@
 import { useEffect, useState } from "react";
 import TaskListTable from "./task/TaskListTable";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-import { GetTaskInClubsAPI } from "@/api/club-owner/ClubByUser";
 import { Task } from "@/models/Task";
+import { GetTaskMemberInClubsAPI } from "@/api/club-owner/ClubByUser";
+import useAuth from "@/hooks/useAuth";
 
 interface props {
     clubId: string
     isClubOwner: boolean
 }
 
-export default function TaskList({ clubId, isClubOwner }: props) {
+export default function TaskListMember({ clubId, isClubOwner }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
     const [taskList, setTaskList] = useState<Task[]>([]);
     const [, setIsLoading] = useState(true);
+    const { user } = useAuth();
     const [flag, setFlag] = useState<boolean>(false);
     useEffect(() => {
         const loadUniversity = async () => {
+            if (!user) return;
             setTotalPages(1);
             try {
-                const taskData = await GetTaskInClubsAPI(clubId, pageSize, pageNo);
+                const taskData = await GetTaskMemberInClubsAPI(clubId, user.userId, pageSize, pageNo);
 
                 if (taskData) {
                     setTaskList(taskData.data?.data || []); // Đảm bảo `data.data` tồn tại
-                    // setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
+                    setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
                 } else {
                     console.warn("Task returned no data");
                 }
@@ -35,13 +38,13 @@ export default function TaskList({ clubId, isClubOwner }: props) {
             }
         };
         loadUniversity();
-    }, [clubId, pageNo, pageSize, flag]);
+    }, [clubId, pageNo, pageSize, user, flag]);
     return (
         <div className="space-y-2">
             <TaskListTable
                 isClubOwner={isClubOwner}
-                setFlag={setFlag}
-                data={taskList} />
+                data={taskList}
+                setFlag={setFlag} />
             <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}

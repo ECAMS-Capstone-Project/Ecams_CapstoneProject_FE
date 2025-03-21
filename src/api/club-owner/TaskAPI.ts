@@ -53,9 +53,27 @@ export interface ReviewSubmissionRequest {
     reviewedBy: string;
 }
 
+export interface StudentSubmissionRequest {
+    taskId: string;
+    clubMemberId: string;
+    studentSubmission: string;
+}
+
 export interface CreateTaskRequest {
     clubId: string;
     createdBy: string;
+    taskName: string;
+    description: string;
+    startTime: string; // ISO date string
+    deadline: string;  // ISO date string
+    taskScore: number;
+    assignedMembers: AssignedMember[];
+}
+
+export interface UpdateTaskRequest {
+    taskId: string;
+    status: boolean;
+    clubId: string;
     taskName: string;
     description: string;
     startTime: string; // ISO date string
@@ -138,7 +156,7 @@ export const CreateTaskToStudent = async (data: CreateTaskRequest): Promise<Resp
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
         } else if (error.response.status == 404) {
@@ -163,5 +181,55 @@ export const GetTaskDetailByMember = async (taskId: string, memberId: string): P
     } catch (error: any) {
         console.error("Error in UniversityList API call:", error.response || error);
         throw error;
+    }
+};
+
+export const SendStudentSubmission = async (data: StudentSubmissionRequest): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/Tasks/${data.taskId}/submit`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const UpdateTaskAPI = async (data: UpdateTaskRequest): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/Tasks/${data.taskId}`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
     }
 };

@@ -1,16 +1,15 @@
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye } from "lucide-react";
-import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import RoleDropdownCell from "../RoleDropdownCell";
+import { DataTableRowActiveActions } from "./row-actions-active";
 
 export const memberActiveColumn = (
   isClubOwner: boolean,
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<ClubMemberDTO>[] => {
-  // const { user } = useAuth(); // Get the user from useAuth
 
   return [
     {
@@ -72,7 +71,7 @@ export const memberActiveColumn = (
             </div>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
-            <DataTableRowActions row={row} setFlag={setFlag} />
+            <DataTableRowActiveActions row={row} setFlag={setFlag} />
           </DialogContent>
         </Dialog>
       ),

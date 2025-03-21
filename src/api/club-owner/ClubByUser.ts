@@ -97,7 +97,34 @@ export interface ClubConditionUpdateDTO {
     conditionContent: string;
     description: string;
 }
-
+export interface ClubMemberRequestDTO {
+    clubMemberId: string;
+    acceptedBy: string;
+    isAccepted: boolean;
+    reason: string;
+}
+export interface ClubRankingDTO {
+    clubId: string;
+    clubName: string;
+    logoUrl: string;
+    totalScore: number;
+    rank: "EXCELENT" | "GOOD" | "AVERAGE" | "NEED_IMPROVEMENT";
+}
+export interface ClubRankingDetailDTO {
+    clubId: string;
+    clubName: string;
+    logoUrl: string;
+    numOfNewMembers: number;
+    newMemberScore: number;
+    numOfEvents: number;
+    eventScore: number;
+    averageEventRating: number;
+    eventRatingScore: number;
+    averageActivityPoint: number;
+    activityScore: number;
+    totalScore: number;
+    rank: "EXCELENT" | "GOOD" | "AVERAGE" | "NEED_IMPROVEMENT";
+}
 export const GetAllClubsAPI = async (userId: string, status: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
         const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/User/${userId}?Status=${status}&PageNumber=${pageNo}&PageSize=8`);
@@ -336,6 +363,60 @@ export const UpdateClubCondition = async (data: ClubConditionUpdateDTO): Promise
 export const GetMemberRequestInClubsAPI = async (clubId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
     try {
         const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(`/Clubs/${clubId}/requests?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetTaskMemberInClubsAPI = async (clubId: string, userId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Task>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<Task>>>(`/Tasks/clubs/${clubId}/User/${userId}?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const ApproveOrDenyRequestJoinClub = async (clubId: string, memberId: string, data: ClubMemberRequestDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/Clubs/${clubId}/requests/${memberId}`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GetClubRankingAPI = async (universityId: string, month: string): Promise<ResponseDTO<ClubRankingDTO[]>> => {
+    try {
+        const response = await get<ResponseDTO<ClubRankingDTO[]>>(`/Clubs/university/${universityId}/ranking?NumOfMonth=${month}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetClubRankingDetailAPI = async (clubId: string, universityId: string, month: string): Promise<ResponseDTO<ClubRankingDetailDTO>> => {
+    try {
+        const response = await get<ResponseDTO<ClubRankingDetailDTO>>(`/Clubs/${clubId}/university/${universityId}/ranking?months=${month}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

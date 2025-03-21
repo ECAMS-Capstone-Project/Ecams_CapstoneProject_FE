@@ -15,6 +15,7 @@ import { formatDate } from "date-fns";
 import ActiveMemberList from "@/components/partial/club_owner/manage_club/member/ActiveMemberList";
 import useAuth from "@/hooks/useAuth";
 import { ClubConditionView } from "@/components/partial/representative/representative-club/ViewClubCondition";
+import TaskListMember from "@/components/partial/club_owner/manage_club/TaskListMember";
 
 export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
@@ -180,10 +181,15 @@ export default function ClubDetailPage() {
                         <PendingMemberList clubId={clubId} />
                     </TabsContent>
                 )}
-                {/* Nội dung tab 3 */}
-                <TabsContent value="tasks">
-                    <TaskList clubId={clubId} isClubOwner={isClubOwner} />
-                </TabsContent>
+                {isClubOwner ? (
+                    <TabsContent value="tasks">
+                        <TaskList clubId={clubId} isClubOwner={isClubOwner} />
+                    </TabsContent>
+                ) : (
+                    <TabsContent value="tasks">
+                        <TaskListMember clubId={clubId} isClubOwner={isClubOwner} />
+                    </TabsContent>
+                )}
                 <TabsContent value="club-condition">
                     <ClubConditionView clubId={clubId} isClubOwner={isClubOwner} />
                 </TabsContent>

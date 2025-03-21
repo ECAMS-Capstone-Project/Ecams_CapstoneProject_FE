@@ -5,13 +5,8 @@ import { GetStudentByIdAPI } from "@/api/representative/StudentAPI";
 import StudentRequest from "@/models/StudentRequest";
 import { Grid2, Typography } from "@mui/material";
 import LoadingAnimation from "@/components/ui/loading";
-import { Dialog } from "@/components/ui/dialog";
+import { DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { DenyMemberJoinClub } from "./DenialDialog";
-import { ApproveOrDenyRequestJoinClub, ClubMemberDTO } from "@/api/club-owner/ClubByUser";
-import useAuth from "@/hooks/useAuth";
-import toast from "react-hot-toast";
 
 // Interface User
 export interface User {
@@ -27,16 +22,13 @@ export interface User {
 }
 
 interface UserDetailDialogProps {
-  initialData: ClubMemberDTO | null;
+  initialData: User | null;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
-  clubId: string
 }
 
-const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setFlag, clubId }) => {
+const MemberActiveDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData }) => {
   const [member, setMember] = useState<StudentRequest>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { user } = useAuth();
   useEffect(() => {
     const loadStudent = async () => {
       if (!initialData || initialData.userId === undefined) return;
@@ -52,22 +44,6 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
 
     loadStudent();
   }, [initialData]);
-  const handleApprove = async () => {
-    if (!initialData || !user) return;
-    try {
-      setLoading(true);
-      await ApproveOrDenyRequestJoinClub(clubId, initialData.clubMemberId, { acceptedBy: user.userId, clubMemberId: initialData.clubMemberId, isAccepted: true, reason: "" });
-      toast.success("Student approved successfully.");
-      if (setFlag) {
-        setFlag(pre => !pre);
-      }
-    } catch (error: any) {
-      const errorMessage = error.response.data.message || "An error occurred";
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }
   return (
     <div className="p-5 mt-2">
       {loading && <div><LoadingAnimation /></div>}
@@ -159,49 +135,9 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
             </Avatar>
           </div>
           <div className="flex w-full justify-end mt-4 space-x-3">
-            <>
-              <div className="flex justify-center w-full space-x-1 gap-5">
-                <Dialog>
-                  <Button
-                    className={`w-1/4 sm:w-1/4 p-3 transition duration-300 ease-in-out ${loading
-                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                      : "bg-[#D4F8E8] text-[#007B55] hover:bg-[#C2F2DC] hover:text-[#005B40]"
-                      }`}
-                    onClick={() => handleApprove()}
-                  >
-                    {loading ? (
-                      <span className="flex items-center">
-                        <span className="loader mr-2"></span> Processing...
-                      </span>
-                    ) : (
-                      <>
-                        <CheckCircle2 size={18} /> Approve
-                      </>
-                    )}
-                  </Button>
-                </Dialog>
-                <Button
-                  type="button"
-                  onClick={() => setIsDialogOpen(true)}
-                  className="w-1/4 sm:w-1/4 bg-[#F8D7DA] text-[#842029] p-3 hover:bg-[#F4C2C5] hover:text-[#6A1B20] transition duration-300 ease-in-out"
-                >
-                  <XCircle size={18} /> Reject
-                </Button>
-              </div>
-            </>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              {initialData && (
-                <DenyMemberJoinClub
-                  clubId={clubId}
-                  memberId={initialData.userId}
-                  onClose={() => {
-                    setIsDialogOpen(false);
-                  }}
-                  setFlag={setFlag}
-                  open={isDialogOpen}
-                />
-              )}
-            </Dialog>
+            <DialogClose asChild>
+              <Button className="w-fit">Close</Button>
+            </DialogClose>
           </div>
         </>
       )}
@@ -209,4 +145,4 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
   );
 };
 
-export default MemberDetailDialog;
+export default MemberActiveDetailDialog;
