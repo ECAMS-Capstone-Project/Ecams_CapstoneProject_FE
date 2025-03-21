@@ -52,11 +52,11 @@ export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number)
   });
   
   // Fetch chi tiết event theo eventId
-  const getEventDetailQuery = (eventId: string) => {
+  const getEventDetailQuery = (eventId: string, userId: string) => {
     return useQuery({
-      queryKey: ["eventDetail", eventId], // Query key động dựa trên eventId
-      queryFn: () => getEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
-      enabled: true, // Chỉ thực hiện khi có eventId
+      queryKey: ["eventDetail", eventId, userId], // Query key động dựa trên eventId
+      queryFn: () => getEventDetail(eventId, userId), // Gọi API lấy chi tiết sự kiện
+      enabled: !!eventId && !!userId, // Chỉ thực hiện khi có eventId
    
     });
   };

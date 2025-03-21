@@ -7,11 +7,13 @@ import { BreadcrumbNav } from "./BreadcrumbNav";
 import { HeroSection } from "./HeroSection";
 import { EventDetailLeft } from "./EventDetailLeft";
 import { EventDetailRight } from "./EventDetailRight";
+import useAuth from "@/hooks/useAuth";
 
 export const StudentEventDetail: React.FC = () => {
   const [pageNo] = useState(1);
   const [pageSize] = useState(7);
   const { eventId = "" } = useParams();
+  const { user } = useAuth();
   const { getEventDetailQuery, getAllEventListQuery } = useEvents();
   const location = useLocation();
 
@@ -20,7 +22,7 @@ export const StudentEventDetail: React.FC = () => {
   const breadcrumbLabel = location.state?.breadcrumb || "Event";
 
   const { data: eventDetail, isLoading: isEventDetailLoading } =
-    getEventDetailQuery(eventId);
+    getEventDetailQuery(eventId, user?.userId || "");
   const { data: eventData } = getAllEventListQuery(pageNo, pageSize);
 
   if (isEventDetailLoading) {
