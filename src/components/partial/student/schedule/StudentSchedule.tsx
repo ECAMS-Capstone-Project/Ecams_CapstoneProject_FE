@@ -9,6 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import rrulePlugin from "@fullcalendar/rrule";
 import useAuth from "@/hooks/useAuth";
 import { GetScheduleStudentByIdAPI, StudentScheduleData } from "@/api/representative/StudentAPI";
+import LoadingAnimation from "@/components/ui/loading";
 
 // Updated dayMap (includes "Webnesday")
 const dayMap: Record<string, string> = {
@@ -95,8 +96,10 @@ export const StudentSchedule = () => {
 
     if (loading) {
         return (
-            <div className="p-4">
-                <p>Loading schedule...</p>
+            <div className="flex justify-center items-center">
+                <div>
+                    <LoadingAnimation />
+                </div>
             </div>
         );
     }
@@ -165,8 +168,7 @@ export const StudentSchedule = () => {
     const calendarEvents = [...eventEvents, ...clubEvents];
 
     return (
-        <div className="p-4">
-            <h2 className="text-2xl font-bold mb-4">Schedule for {data.fullname}</h2>
+        <div className="p-4 pb-20">
             <div className="mx-auto" style={{ maxWidth: "1350px" }}>
                 <FullCalendar
                     plugins={[

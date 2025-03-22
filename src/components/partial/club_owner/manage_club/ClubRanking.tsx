@@ -15,6 +15,8 @@ import {
 } from "@/api/club-owner/ClubByUser";
 import ClubRankingDetail from "./ClubRankingDetail";
 import useAuth from "@/hooks/useAuth";
+import { Dialog } from "@/components/ui/dialog";
+import { WarningClubDialog } from "./WarningClubDialog";
 
 const rankFilters: string[] = ["All", "EXCELENT", "GOOD", "AVERAGE", "NEED_IMPROVEMENT"];
 
@@ -27,6 +29,8 @@ export default function FancyClubRankingPage() {
   const [visibleCount, setVisibleCount] = useState(10);
   const [selectedRankFilter, setSelectedRankFilter] = useState<string>("All");
   const [selectedClubDetail, setSelectedClubDetail] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [clubId, setClubId] = useState<string>("");
 
   useEffect(() => {
     async function fetchClubRanking() {
@@ -71,6 +75,11 @@ export default function FancyClubRankingPage() {
     setSelectedClubDetail(null);
   };
 
+  const handleClickAlert = (clubId: string) => {
+    setClubId(clubId);
+    setIsDialogOpen(true);
+  }
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-r from-slate-50 to-blue-50 text-gray-900 p-4">
       <div className="max-w-4xl mx-auto">
@@ -105,6 +114,9 @@ export default function FancyClubRankingPage() {
 
           {/* Club Ranking List */}
           <div className="space-y-4">
+            {displayedClubs && displayedClubs.length === 0 && (
+              <div className="text-center text-gray-500">No clubs found</div>
+            )}
             {displayedClubs.map((club, index) => {
               const rankIndex = index + 1;
               const isTop1 = rankIndex === 1;
@@ -135,7 +147,7 @@ export default function FancyClubRankingPage() {
                       <p className="text-sm text-gray-500">Rank: {club.rank}</p>
                     </div>
                     <div>
-                      <Button variant="outline" className="mt-2 sm:mt-0 mr-2">
+                      <Button variant="outline" className="mt-2 sm:mt-0 mr-2" onClick={() => handleClickAlert(club.clubId)}>
                         Alert Club
                       </Button>
                       <Button
@@ -168,6 +180,16 @@ export default function FancyClubRankingPage() {
       {selectedClubDetail && (
         <ClubRankingDetail clubId={selectedClubDetail} month={selectedTab} onClose={handleCloseDetail} />
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <WarningClubDialog
+          clubId={clubId}
+          onClose={() => {
+            setIsDialogOpen(false);
+          }}
+          open={isDialogOpen}
+        />
+      </Dialog>
     </div>
   );
 }

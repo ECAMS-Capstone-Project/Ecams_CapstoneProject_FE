@@ -7,21 +7,50 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Ellipsis } from "lucide-react";
+import toast from "react-hot-toast";
 
-export function PopoverClub() {
+interface props {
+  isClubOwner: boolean;
+}
+
+export function PopoverClub({ isClubOwner }: props) {
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openLeaveDialog, setOpenLeaveDialog] = useState(false);
+  const [reason, setReason] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLeaveClub = () => {
-    // Thực hiện xử lý rời câu lạc bộ, ví dụ gọi API
-    alert("Leave Club clicked!");
+    setOpenLeaveDialog(true)
   };
 
   const handleChangeClubOwner = () => {
     // Thực hiện xử lý thay đổi chủ câu lạc bộ, ví dụ gọi API
     alert("Change Club Owner clicked!");
   };
+
+  async function handleReject(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (!reason.trim()) {
+      toast.error("Reason is required.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      // await DenyClubAPI(clubId, studentId, { clubId: clubId, userId: studentId, reason });
+      toast.success("Rejected successfully.");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error("Error:", error);
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <>
@@ -33,23 +62,27 @@ export function PopoverClub() {
         </PopoverTrigger>
         <PopoverContent>
           <div className="grid gap-2">
-            <button
-              onClick={() => setOpenEditDialog(true)}
-              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
-            >
-              Edit Club
-            </button>
+            {isClubOwner && (
+              <>
+                <button
+                  onClick={() => setOpenEditDialog(true)}
+                  className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
+                >
+                  Edit Club
+                </button>
+                <button
+                  onClick={handleChangeClubOwner}
+                  className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
+                >
+                  Request change club owner
+                </button>
+              </>
+            )}
             <button
               onClick={handleLeaveClub}
               className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
             >
               Leave Club
-            </button>
-            <button
-              onClick={handleChangeClubOwner}
-              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
-            >
-              Change Club Owner
             </button>
           </div>
         </PopoverContent>
@@ -86,6 +119,38 @@ export function PopoverClub() {
                 Save
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openLeaveDialog} onOpenChange={setOpenLeaveDialog}>
+        <DialogContent className="max-w-lg">
+          <div className="flex flex-col gap-4">
+            <DialogHeader>
+              <h2 className="text-lg font-semibold">Leave Club</h2>
+              <DialogDescription>
+                Providing a reason for this action.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleReject}>
+              <div className="flex flex-col gap-4 mb-4">
+                <label className="text-lg font-semibold text-gray-800 mb-2">
+                  Reason
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 p-4 text-gray-700 focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your reason why you want to leave this club"
+                  rows={4}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={isLoading} color="primary">
+                  Reject
+                </Button>
+              </DialogFooter>
+            </form>
           </div>
         </DialogContent>
       </Dialog>

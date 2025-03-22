@@ -127,8 +127,8 @@ export function UserNav() {
                   <Groups2Icon />
                 </DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                Settings
+              <DropdownMenuItem onClick={() => navigate("/student/schedule")}>
+                Schedule
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/student")}>
