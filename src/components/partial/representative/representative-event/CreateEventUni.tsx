@@ -108,8 +108,8 @@ const EventSchema1 = z.object({
   feedbacks: z.array(z.unknown()).optional(), // feedbacks là mảng tùy chọn, nếu có
   imageUrl: z.any(),
   description: z.string(),
-  eventType: z.string()
-
+  eventType: z.string(),
+  trainingPoint: z.coerce.number().min(0, { message: "Training point must be a positive number" })
 });
 interface EventDialogProps {
   initialData?: EventFormValues | null
@@ -172,6 +172,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
           },
         ],
         eventType: "",
+        trainingPoint: 0,
       },
   })
 
@@ -210,6 +211,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         values.registeredEndDate.toISOString()
       )
       formData.append("Price", values.price.toString())
+      formData.append("TrainingPoint", values.trainingPoint.toString())
       formData.append("MaxParticipants", values.maxParticipants.toString())
       formData.append("EventType", values.eventType)
       if ((values.imageUrl as any) instanceof File) {
@@ -454,6 +456,19 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                               />
                             </PopoverContent>
                           </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="trainingPoint"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Training point</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

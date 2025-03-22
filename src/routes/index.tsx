@@ -58,6 +58,7 @@ import { FreeEventConfirm } from "@/components/partial/student/event-register/Fr
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
 import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
+import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -340,6 +341,11 @@ export const router = createBrowserRouter([
         path: "/student/waiting",
         element: <WaitingStudentPage />,
       },
+      {
+        path: "/student/schedule",
+        element: <StudentSchedule />,
+        errorElement: <ErrorException />,
+      }
     ],
     errorElement: <ErrorException />,
   },
@@ -383,5 +389,5 @@ export const router = createBrowserRouter([
       },
     ],
     errorElement: <ErrorException />,
-  },
+  }
 ]);

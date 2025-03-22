@@ -12,6 +12,7 @@ export default function PendingMemberList({ clubId }: props) {
   const [totalPages, setTotalPages] = useState(0);
   const [memberList, setMemberList] = useState<ClubMemberDTO[]>([]);
   const [, setIsLoading] = useState(true);
+  const [flag, setFlag] = useState(false);
   const loadUniversity = async () => {
     setTotalPages(1);
     try {
@@ -30,11 +31,11 @@ export default function PendingMemberList({ clubId }: props) {
   };
   useEffect(() => {
     loadUniversity();
-  }, [clubId, pageNo, pageSize]);
+  }, [clubId, pageNo, pageSize, flag]);
 
   return (
     <div className="space-y-2">
-      <PendingMemberListTable data={memberList} clubId={clubId} />
+      <PendingMemberListTable data={memberList} clubId={clubId} setFlag={setFlag} />
       <DataTablePagination
         currentPage={pageNo}
         totalPages={totalPages}

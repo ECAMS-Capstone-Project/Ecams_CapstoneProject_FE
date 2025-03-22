@@ -83,3 +83,39 @@ export const GetStudentInUniversityAPI = async (uniId: string, pageSize: number,
         throw error;
     }
 };
+
+// Types for API response
+interface EventSchedule {
+    eventId: string;
+    eventName: string;
+    startDate: string;
+    endDate: string;
+}
+
+interface ClubSchedule {
+    clubName: string;
+    scheduleName: string;
+    dayOfWeek: string; // e.g. "Webnesday" (may be misspelled)
+    startTime: string; // e.g. "12" (for 12:00)
+    endTime: string;   // e.g. "13" (for 13:00)
+    status: boolean;
+}
+
+export interface StudentScheduleData {
+    userId: string;
+    email: string;
+    fullname: string;
+    eventSchedules: EventSchedule[];
+    clubSchedules: ClubSchedule[];
+}
+
+export const GetScheduleStudentByIdAPI = async (userId: string): Promise<ResponseDTO<StudentScheduleData>> => {
+    try {
+        const response = await get<ResponseDTO<StudentScheduleData>>(`/User/${userId}/schedule`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};

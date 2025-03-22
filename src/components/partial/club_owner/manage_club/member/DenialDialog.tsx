@@ -10,8 +10,8 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import DialogLoading from "@/components/ui/dialog-loading";
-import { Approve/DenyRequestJoinClub } from "@/api / club - owner / ClubByUser";
 import useAuth from "@/hooks/useAuth";
+import { ApproveOrDenyRequestJoinClub } from "@/api/club-owner/ClubByUser";
 
 interface DenyProps {
   clubId: string
@@ -43,7 +43,7 @@ export const DenyMemberJoinClub: React.FC<DenyProps> = ({
     if (!user) return;
     try {
       setIsLoading(true);
-      await Approve / DenyRequestJoinClub(clubId, memberId, { clubMemberId: memberId, reason: reason, acceptedBy: user?.userId, isAccepted: false });
+      await ApproveOrDenyRequestJoinClub(clubId, memberId, { clubMemberId: memberId, reason: reason, acceptedBy: user?.userId, isAccepted: false });
       toast.success("Rejected successfully.");
       onClose();
       if (onSuccess) onSuccess();
