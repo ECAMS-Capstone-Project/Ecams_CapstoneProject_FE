@@ -10,6 +10,7 @@ import { useAreas } from "@/hooks/staff/Area/useArea";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -21,6 +22,7 @@ export function DataTableRowActions<TData>({
   const [loading, setLoading] = useState(false);
   const { deleteArea, refetchArea } = useAreas();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const onConfirm = async () => {
     setLoading(true);
@@ -44,7 +46,7 @@ export function DataTableRowActions<TData>({
     data: eventDetail,
     isLoading: isEventDetailLoading,
     error,
-  } = getEventDetailQuery(row.getValue("eventId"));
+  } = getEventDetailQuery(row.getValue("eventId"), user?.userId || "");
 
   if (isEventDetailLoading) {
     // Nếu dữ liệu đang tải, có thể thêm loading spinner hoặc trạng thái "Đang tải"
