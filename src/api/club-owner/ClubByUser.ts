@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { del, get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
-import { ClubResponse } from "@/models/Club";
+import { ClubJoinedRequest, ClubResponse } from "@/models/Club";
 import { Task } from "@/models/Task";
 
 export enum ClubStatusEnum {
@@ -341,5 +341,26 @@ export const GetMemberRequestInClubsAPI = async (clubId: string, pageSize: numbe
     } catch (error: any) {
         console.error("Error in UniversityList API call:", error.response || error);
         throw error;
+    }
+};
+
+export const CreateClubJoinedRequest = async (data: ClubJoinedRequest, clubId: string): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await post<ResponseDTO<string>>(`/Clubs/${clubId}/requests`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
     }
 };

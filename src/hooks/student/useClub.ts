@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 
 
-import {  EventFilterParams, getAllEventList, getEventClub } from "@/api/representative/EventAgent";
-import {   useQuery} from "@tanstack/react-query";
+import {  getEventClub } from "@/api/representative/EventAgent";
+import {   useMutation, useQuery} from "@tanstack/react-query";
 
 import { getClub } from "@/api/student/ClubAgent";
-import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
+import { CreateClubJoinedRequest, GetAllClubCondition, GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
+import { ClubJoinedRequest } from "@/models/Club";
+import toast from "react-hot-toast";
 
 export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) => {
 //   const queryClient = useQueryClient();
@@ -20,11 +23,11 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
   });
   
 
-    const getAllEventListQuery = ( pageNumber: number, pageSize: number, filterParams?: EventFilterParams) => {
+    const getAllConditionsQuery = ( clubId: string) => {
       return useQuery({
-        queryKey: ["allEvents",  pageNumber, pageSize, filterParams], // Query key động dựa trên uniId, pageNumber và pageSize
-        queryFn: () => getAllEventList(pageNumber, pageSize, filterParams), // Gọi API lấy thông tin Event Club
-        enabled: true, // Chỉ thực hiện khi có uniId
+        queryKey: ["conditions",  clubId], // Query key động dựa trên uniId, pageNumber và pageSize
+        queryFn: () => GetAllClubCondition(clubId), // Gọi API lấy thông tin Event Club
+        enabled: !!clubId, // Chỉ thực hiện khi có uniId
       });
     };
 
@@ -45,37 +48,30 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
      
       });
     };
-    // // Xóa area
-    // const {mutateAsync: deleteWalletMutation, isPending: isDeleting} = useMutation({
-    //   mutationFn: deactiveWallet,
-    //   onSuccess: () => {
-    //     // refetch();
-    //     toast.success("Wallet deleted successfully!");
-    //     refetch(); 
-    //     queryClient.invalidateQueries({
-    //       queryKey: ["wallets", universityId, token, pageNo || 0, pageSize || 5]
-    //     });
-    //   },
-    //   onError: (error: any) => {
-    //     toast.error(error.response.data.message || "Error deleting area");
-    //   },
-    //   onSettled: () => {
-    //     // Đảm bảo invalidateQueries được gọi sau khi mutation hoàn tất
-    //     queryClient.invalidateQueries({
-    //       queryKey: ["wallets"]
-    //     });
-    //   }
-    // });
-   
+    const {mutateAsync:CreateClubJoinedRequestQuery, isPending} = useMutation({
+      mutationFn: (data: ClubJoinedRequest) => {
+        const clubId = data.clubId;
+        return CreateClubJoinedRequest(data, clubId);
+      },
+      onSuccess: () => {
+
+        toast.success("Successfully registered for the club!");
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        // toast.error(error.response.data.message || "An error occurred");
+      },
+    });
 
   return {
     clubs: data?.data?.data || [],
     totalPages: data?.data?.totalPages || 1,
     isLoading,
-
+   isPending,
    refetchEvents: refetch,
+   createClubJoinedRequest: CreateClubJoinedRequestQuery,
    getEventClubQuery,
-   getAllEventListQuery,
+   getAllConditionsQuery,
    getClubDetailQuery
   };
 };

@@ -12,6 +12,8 @@ import { ClubResponse } from "@/models/Club";
 import toast from "react-hot-toast";
 import ClubRequirements from "./ClubCondition";
 import { XCircleIcon } from "lucide-react";
+import { useClubs } from "@/hooks/student/useClub";
+import useAuth from "@/hooks/useAuth";
 
 interface JoinClubDialogProps {
   club: ClubResponse;
@@ -25,25 +27,25 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
   onClose,
 }) => {
   const [reason, setReason] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { createClubJoinedRequest, isPending } = useClubs();
+  const { user } = useAuth();
   const handleSubmit = async () => {
     if (!reason.trim()) {
       toast.error("Please provide a reason for joining the club!");
       return;
     }
 
-    setIsSubmitting(true);
     try {
       // TODO: Call API to register for club here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await createClubJoinedRequest({
+        clubId: club.clubId,
+        reason: reason,
+        userId: user?.userId || "",
+      });
 
-      toast.success("Successfully registered for the club!");
       onClose();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to join the club!");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -60,7 +62,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
         </DialogHeader>
 
         <div className="mt-4 px-4">
-          <ClubRequirements />
+          <ClubRequirements clubId={club.clubId} />
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -79,7 +81,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
                 variant="outline"
                 onClick={onClose}
                 className="px-4 text-red-800"
-                disabled={isSubmitting}
+                disabled={isPending}
               >
                 <XCircleIcon size={14} /> Cancel
               </Button>
@@ -87,9 +89,9 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
                 variant="custom"
                 className="px-6"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={isPending}
               >
-                {isSubmitting ? "Processing..." : "Submit"}
+                {isPending ? "Processing..." : "Submit"}
               </Button>
             </div>
           </div>
