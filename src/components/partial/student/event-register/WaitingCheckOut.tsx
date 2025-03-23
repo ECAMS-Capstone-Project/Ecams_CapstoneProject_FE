@@ -133,7 +133,7 @@ function WaitingCheckout() {
         if (isSuccess) {
           setTimeout(() => {
             if (isEventReg) {
-              window.location.href = "/student/event";
+              window.location.href = "/student/student-events";
             } else {
               window.location.href = "/representative";
             }

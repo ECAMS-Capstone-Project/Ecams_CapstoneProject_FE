@@ -18,6 +18,8 @@ import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import NotificationDropdown from "../global/Notification";
+import { Event } from "@mui/icons-material";
+import { HomeIcon } from "lucide-react";
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
@@ -89,11 +91,15 @@ export function UserNav() {
                 onClick={() => navigate("/student/student-events")}
               >
                 My Event
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                <DropdownMenuShortcut>
+                  <Event />
+                </DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/student")}>
                 Back to page
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                <DropdownMenuShortcut>
+                  <HomeIcon size={20} />
+                </DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

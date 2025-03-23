@@ -109,9 +109,6 @@ const EventPaymentConfirmation: React.FC = () => {
               toast.error("Payment failed. Please try again.");
             }
           },
-          onError: () => {
-            toast.error("An error occurred while processing the payment.");
-          },
         }
       );
     } catch (error) {
