@@ -3,7 +3,7 @@
 
 
 ;
-import {   useMutation, useQuery} from "@tanstack/react-query";
+import {   useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 import { checkIsInClub, getClub } from "@/api/student/ClubAgent";
 import { CreateClubJoinedRequest, GetAllClubCondition, GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
@@ -11,7 +11,7 @@ import { ClubJoinedRequest } from "@/models/Club";
 import toast from "react-hot-toast";
 
 export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) => {
-//   const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
@@ -55,6 +55,8 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
       onSuccess: () => {
 
         toast.success("Successfully registered for the club!");
+        refetch();
+        queryClient.invalidateQueries({ queryKey: ["clubs", "checkIsInClub"] });
       },
       onError: (error: any) => {
         console.error("Error:", error.response.data.errors);

@@ -22,7 +22,10 @@ export const StudentClubDetail: React.FC = () => {
   const { data: ClubDetail, isLoading: isEventDetailLoading } =
     getClubDetailQuery(clubId);
   // const { data: eventData } = getAllEventListQuery(pageNo, pageSize);
-  const { data: isInClub } = checkIsInClubQuery(user?.userId || "", clubId);
+  const { data: isInClub, refetch } = checkIsInClubQuery(
+    user?.userId || "",
+    clubId
+  );
   if (isEventDetailLoading) {
     return (
       <div className="flex justify-center items-center h-screen text-xl">
@@ -53,6 +56,7 @@ export const StudentClubDetail: React.FC = () => {
             isInClub={
               isInClub?.data || { isMember: false, hasPendingRequest: false }
             }
+            refetch={refetch}
           />
         )}
 

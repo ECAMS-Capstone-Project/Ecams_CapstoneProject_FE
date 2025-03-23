@@ -9,9 +9,14 @@ import { useNavigate } from "react-router-dom";
 interface HeroSectionProps {
   club: ClubResponse;
   isInClub: isInClubResponse;
+  refetch: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ club, isInClub }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({
+  club,
+  isInClub,
+  refetch,
+}) => {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const navigate = useNavigate();
   return (
@@ -93,6 +98,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ club, isInClub }) => {
         club={club}
         isOpen={isJoinDialogOpen}
         onClose={() => setIsJoinDialogOpen(false)}
+        onSuccess={() => {
+          setIsJoinDialogOpen(false);
+          refetch();
+        }}
       />
     </>
   );

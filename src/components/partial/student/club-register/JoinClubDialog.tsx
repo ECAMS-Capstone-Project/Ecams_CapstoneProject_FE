@@ -19,12 +19,14 @@ interface JoinClubDialogProps {
   club: ClubResponse;
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
   club,
   isOpen,
   onClose,
+  onSuccess,
 }) => {
   const [reason, setReason] = useState("");
   const { createClubJoinedRequest, isPending } = useClubs();
@@ -44,6 +46,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
       });
 
       onClose();
+      onSuccess();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to join the club!");
     }

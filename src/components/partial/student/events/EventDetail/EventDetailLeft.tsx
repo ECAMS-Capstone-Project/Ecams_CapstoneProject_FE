@@ -2,8 +2,8 @@ import React from "react";
 import { format } from "date-fns";
 import { TicketCheckIcon } from "lucide-react";
 import { Event } from "@/models/Event";
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { motion } from "framer-motion";
+import InviteFriendPage from "./ShareEvent";
 
 interface EventDetailLeftProps {
   event: Event;
@@ -62,30 +62,7 @@ export const EventDetailLeft: React.FC<EventDetailLeftProps> = ({ event }) => {
         <div className="social-share">
           <h3 className="text-2xl font-bold mb-4">Share with Friends</h3>
           <div className="flex items-center space-x-4">
-            <a
-              href="#"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
-              <FaFacebook size={24} />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 hover:text-pink-600 transition-colors"
-            >
-              <FaInstagram size={24} />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 hover:text-blue-800 transition-colors"
-            >
-              <FaLinkedin size={24} />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 hover:text-blue-400 transition-colors"
-            >
-              <FaTwitter size={24} />
-            </a>
+            <InviteFriendPage />
           </div>
         </div>
       </div>
