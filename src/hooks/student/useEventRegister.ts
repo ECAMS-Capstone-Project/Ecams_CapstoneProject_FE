@@ -5,7 +5,6 @@ import { checkInStudent, getCheckInInfo, paymentEvent } from "@/api/student/Even
 import { getSchedule } from "@/api/student/StudentScheduleAgent";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 export const usePaymentEvent = () => {
   return useMutation({
@@ -33,7 +32,7 @@ export const usePaymentEvent = () => {
 
 export const useEventSchedule = ( userId: string) => {
   // const queryClient = useQueryClient();
-  const navigate = useNavigate();
+
   // Fetch danh sách area theo trang
     const { data, isLoading, refetch } = useQuery({
       queryKey: ["studentEvents"], // Query key động
@@ -59,11 +58,7 @@ export const useEventSchedule = ( userId: string) => {
     { eventId: string; userId: string }
   >({
     mutationFn: ({ eventId, userId }) => checkInStudent(eventId, userId),
-    onSuccess: () => {
-      toast.success("Successfully checked in participant");    
-      navigate("/club/event-participants");
-    },
-
+    
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Error approving event");
     },
