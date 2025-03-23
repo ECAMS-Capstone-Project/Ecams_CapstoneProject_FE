@@ -15,7 +15,13 @@ import {
 } from "lucide-react";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
-import { Event, EventAvailableTwoTone, Diversity3, Pending, Stars } from "@mui/icons-material";
+import {
+  Event,
+  EventAvailableTwoTone,
+  Diversity3,
+  Pending,
+  Stars,
+} from "@mui/icons-material";
 export interface NavLink {
   title: string;
   href: string;
@@ -177,6 +183,12 @@ const SidebarLinks = () => {
         title: "Invitation Club",
         href: "/club/invitation",
         icon: <HowToRegIcon />,
+        id: 21,
+      },
+      {
+        title: "Inter-club Event",
+        href: "/club/inter-club-event",
+        icon: <Event />,
         id: 21,
       }
     );

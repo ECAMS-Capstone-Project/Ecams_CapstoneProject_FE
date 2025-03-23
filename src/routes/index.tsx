@@ -62,6 +62,7 @@ import WaitingCheckout from "@/components/partial/student/event-register/Waiting
 import { EventCheckIn } from "@/pages/club-owner/event/EventCheckIn";
 import { StudentEventSection } from "@/components/partial/student/events/student-events/StudentEventSection";
 import EventParticipants from "@/pages/club-owner/event/EventParticipants";
+import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -405,6 +406,11 @@ export const router = createBrowserRouter([
       {
         path: "/club/create-task",
         element: <CreateTaskClub />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event",
+        element: <InterClubEvent />,
         errorElement: <ErrorException />,
       },
     ],
