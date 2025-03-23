@@ -11,7 +11,7 @@ export const EventAreasSchema = z.object({
 export const EventSchema = z.object({
     eventId: z.string().uuid().optional(), // Validate UUID cho eventId
     universityId: z.string().uuid(),
-    representativeId: z.string().uuid().optional(), // Validate UUID cho representativeId
+    representativeId: z.string().optional(), // Validate UUID cho representativeId
     representativeName: z.string().optional(), // Có thể là string hoặc null
     clubId: z.string().optional(), // Có thể là string hoặc null
     clubName: z.string().optional(), // Có thể là string hoặc null
@@ -73,8 +73,8 @@ export const EventSchema = z.object({
       }).optional(),
     ]),
     description: z.string(),
-    eventType: z.string()
-
+    eventType: z.string(),
+    trainingPoint: z.coerce.number().min(0, { message: "Training point must be a positive number" }).max(30, { message: "Training point must be less than 30" }),
 });
 
 export const EventClubSchema= z.object({

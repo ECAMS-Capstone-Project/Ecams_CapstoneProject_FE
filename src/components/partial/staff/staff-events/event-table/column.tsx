@@ -39,7 +39,11 @@ export const EventColums: ColumnDef<Event>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Event Name" />
     ),
-    cell: ({ row }) => <span>{row.getValue("eventName")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => (
+      <span className="truncate block max-w-[200px]">
+        {row.getValue("eventName")}
+      </span>
+    ), // Hiển thị giá trị "Name"
   },
 
   {
@@ -47,7 +51,11 @@ export const EventColums: ColumnDef<Event>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("description")}</span>,
+    cell: ({ row }) => (
+      <span className="truncate block max-w-[200px]">
+        {row.getValue("description")}
+      </span>
+    ),
   },
   {
     accessorKey: "location",

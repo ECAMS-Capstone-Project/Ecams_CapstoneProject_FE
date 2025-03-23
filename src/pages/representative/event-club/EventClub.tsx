@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { CreateEventClubDialog } from "@/components/partial/representative/representative-eventclub/CreateEventClubForm";
 import EventClubDetail from "@/components/partial/representative/representative-eventclub/EventClubDetail";
@@ -9,36 +8,25 @@ import { Heading } from "@/components/ui/heading";
 import LoadingAnimation from "@/components/ui/loading";
 import { Separator } from "@/components/ui/separator";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
-import { UserAuthDTO } from "@/models/Auth/UserAuth";
+import useAuth from "@/hooks/useAuth";
 import { Plus } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 const EventClub = () => {
-  const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { getEventClubQuery, isLoading } = useEvents();
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await getCurrentUserAPI();
-
-        if (userInfo) {
-          setUserInfo(userInfo.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
-    };
-    fetchUserInfo();
-  }, []);
+  const { user } = useAuth();
   const handleCloseDialog = () => setIsDialogOpen(false);
 
   const { data: eventClub } = getEventClubQuery(
-    userInfo?.universityId || "",
+    user?.universityId || "",
     1,
     10
   );
-  console.log("event club", eventClub?.data?.data);
+  console.log(
+    "event club",
+    eventClub?.data?.data.filter((club) => club.isEventClub)
+  );
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -49,7 +37,7 @@ const EventClub = () => {
           <div className="flex items-center justify-between pt-4">
             <Heading
               title={`University's Event Club`}
-              description={`View information about the event club of ${userInfo?.universityName}`}
+              description={`View information about the event club of ${user?.universityName}`}
             />
           </div>
           <Separator />

@@ -24,13 +24,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
 import EventWalletPicker from "./WalletPicker";
 import { Label } from "@/components/ui/label";
+import useAuth from "@/hooks/useAuth";
 
 export const RequestEventDetail: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const { approveEvent, isApproving, getEventDetailQuery } = useEvents();
-
+  const { user } = useAuth();
   const { eventId = "" } = useParams();
   const navigate = useNavigate();
   async function handleApprove() {
@@ -46,7 +47,10 @@ export const RequestEventDetail: React.FC = () => {
       console.log(errorMessage);
     }
   }
-  const { data: eventDetail } = getEventDetailQuery(eventId);
+  const { data: eventDetail } = getEventDetailQuery(
+    eventId,
+    user?.userId ?? ""
+  );
   const event = eventDetail?.data;
   return (
     <div className="min-h-[200px] sm:min-h-[300px] h-auto sm:min-w-[300px]">
@@ -97,7 +101,11 @@ export const RequestEventDetail: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <p className="text-gray-600">Price:</p>
-                      <p className="font-semibold text-lg">{`${event?.price.toLocaleString()} VND`}</p>
+                      <p className="font-semibold text-lg">{`${
+                        event?.price == 0
+                          ? "FREE"
+                          : event?.price.toLocaleString() + " VND"
+                      }`}</p>
                     </div>
                     <div>
                       <p className="text-gray-600">Max Participants:</p>
@@ -105,7 +113,12 @@ export const RequestEventDetail: React.FC = () => {
                         {event?.maxParticipants} people
                       </p>
                     </div>
-
+                    <div>
+                      <p className="text-gray-600">Training Point:</p>
+                      <p className="font-semibold text-lg">
+                        {event?.trainingPoint} points
+                      </p>
+                    </div>
                     <div>
                       <p className="text-gray-600">Registered Range:</p>
                       <p className="font-semibold text-lg">

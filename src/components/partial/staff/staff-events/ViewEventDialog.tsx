@@ -93,7 +93,12 @@ export const EventDetail: React.FC = () => {
                     {event?.maxParticipants} people
                   </p>
                 </div>
-
+                <div>
+                  <p className="text-gray-600">Training Point:</p>
+                  <p className="font-semibold text-lg">
+                    {event?.trainingPoint} points
+                  </p>
+                </div>
                 <div>
                   <p className="text-gray-600">Registered Range:</p>
                   <p className="font-semibold text-lg">

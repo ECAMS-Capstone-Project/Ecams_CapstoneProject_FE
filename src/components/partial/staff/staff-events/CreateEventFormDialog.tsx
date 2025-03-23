@@ -85,10 +85,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
         if (userInfo) {
           setUserInfo(userInfo.data);
           form.setValue("universityId", userInfo.data?.universityId ?? "");
-          form.setValue(
-            "representativeId",
-            userInfo.data?.representativeId ?? ""
-          );
+          form.setValue("representativeId", userInfo.data?.userId ?? "");
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
@@ -99,10 +96,10 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       fetchUserInfo();
     }
   }, [initialData]);
-
   const { areas } = useAreas(1, 10, userInfo?.universityId); // Lấy mutation từ React Query
   const { createEvent, isPending } = useEvents();
   const navigate = useNavigate();
+
   const form = useForm<EventFormValues>({
     resolver: zodResolver(EventSchema),
     defaultValues: initialData || {
@@ -119,8 +116,11 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       maxParticipants: 0,
       eventAreas: [{ areaId: "", startDate: new Date(), endDate: new Date() }],
       eventType: "",
+      trainingPoint: 0,
     },
   });
+
+  console.log("form error", form.formState.errors);
 
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
@@ -151,7 +151,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       formData.append("Price", values.price.toString());
       formData.append("MaxParticipants", values.maxParticipants.toString());
       formData.append("EventType", values.eventType);
-
+      formData.append("TrainingPoint", values.trainingPoint.toString());
       if ((values.imageUrl as any) instanceof File) {
         formData.append("ImageUrl", values.imageUrl ?? "");
       }
@@ -341,6 +341,19 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                       />
                       <FormField
                         control={form.control}
+                        name="trainingPoint"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Training Point</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
                         name="maxParticipants"
                         render={({ field }) => (
                           <FormItem>
@@ -391,7 +404,24 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           </FormItem>
                         )}
                       />
-
+                      <FormField
+                        control={form.control}
+                        name="walletId"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Wallet</FormLabel>
+                            <FormControl>
+                              <EventWalletPicker
+                                value={field.value}
+                                onChange={(selectedWalletId) =>
+                                  field.onChange(selectedWalletId)
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                       {/* Hiển thị ngày bắt đầu và kết thúc cho mỗi khu vực */}
                       <FormField
                         control={form.control}
@@ -475,24 +505,6 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                               </PopoverContent>
                             </Popover>
 
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="walletId"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Select Wallet</FormLabel>
-                            <FormControl>
-                              <EventWalletPicker
-                                value={field.value}
-                                onChange={(selectedWalletId) =>
-                                  field.onChange(selectedWalletId)
-                                }
-                              />
-                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -617,8 +629,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           ? "Updating..."
                           : "Creating..."
                         : initialData
-                          ? "Update Event"
-                          : "Create Event"}
+                        ? "Update Event"
+                        : "Create Event"}
                     </Button>
                   </div>
                 </form>

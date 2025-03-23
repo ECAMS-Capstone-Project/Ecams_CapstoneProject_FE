@@ -21,6 +21,7 @@ export interface Event {
   description: string;
   walletId?: string;
   eventType:string;
+  trainingPoint: number;
 }
 
 export interface CheckInInfo {

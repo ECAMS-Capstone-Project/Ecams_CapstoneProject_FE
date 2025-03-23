@@ -378,7 +378,7 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/club/event-participants",
+        path: "/club/event-participants/:eventId",
         element: <EventParticipants />,
         errorElement: <ErrorException />,
       },
