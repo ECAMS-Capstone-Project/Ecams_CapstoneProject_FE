@@ -12,6 +12,7 @@ interface ClubCardProps {
   field: FieldDTO[];
   clubId: string;
   clubOwnerId?: string;
+  status: string;
 }
 
 const ClubCard: React.FC<ClubCardProps> = ({
@@ -20,6 +21,7 @@ const ClubCard: React.FC<ClubCardProps> = ({
   field,
   clubId,
   clubOwnerId,
+  status
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -86,21 +88,23 @@ const ClubCard: React.FC<ClubCardProps> = ({
                   />
                 ))}
             </div>
-            <div className="flex w-full justify-center align-middle mt-7">
-              <Button
-                variant="custom"
-                className="rounded-xl"
-                style={{
-                  borderRadius: "30px",
-                  height: "35px",
-                  textTransform: "none",
-                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                }}
-                onClick={() => navigate(`/club/detail/${clubId}`)}
-              >
-                View more
-              </Button>
-            </div>
+            {status != "INACTIVE" && (
+              <div className="flex w-full justify-center align-middle mt-7">
+                <Button
+                  variant="custom"
+                  className="rounded-xl"
+                  style={{
+                    borderRadius: "30px",
+                    height: "35px",
+                    textTransform: "none",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                  }}
+                  onClick={() => navigate(`/club/detail/${clubId}`)}
+                >
+                  View more
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </MagicCard>

@@ -126,7 +126,7 @@ const ClubListPage: React.FC = () => {
                                         display="flex"
                                         justifyContent="center"
                                     >
-                                        <ClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} clubId={club.clubId} clubOwnerId={club.clubOwnerId} />
+                                        <ClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} clubId={club.clubId} clubOwnerId={club.clubOwnerId} status={status} />
                                     </Grid2>
                                 ))}
                             </Grid2>

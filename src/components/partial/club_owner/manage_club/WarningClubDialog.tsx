@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import DialogLoading from "@/components/ui/dialog-loading";
 import useAuth from "@/hooks/useAuth";
+import { AlertClubAPI } from "@/api/club-owner/ClubByUser";
 
 interface DenyProps {
   clubId: string
@@ -38,9 +39,8 @@ export const WarningClubDialog: React.FC<DenyProps> = ({
     if (!user) return;
     try {
       setIsLoading(true);
-      console.log(clubId);
-      // await ApproveOrDenyRequestJoinClub(clubId, { reason: reason });
-      toast.success("Rejected successfully.");
+      await AlertClubAPI(clubId, { warningMessage: reason });
+      toast.success("Alert club successfully.");
       onClose();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

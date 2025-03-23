@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { ClubResponseDTO, GetAllClubsAPI } from "@/api/club-owner/ClubByUser";
+import { ClubResponseDTO, GetAllActiveClubsAPI } from "@/api/club-owner/ClubByUser";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
@@ -35,7 +35,7 @@ const ClubActiveListPage: React.FC = () => {
         const loadClubs = async () => {
             setLoading(true);
             try {
-                const response = await GetAllClubsAPI(user.userId, "ACTIVE", page);
+                const response = await GetAllActiveClubsAPI(user.userId, "ACTIVE", page, pageSize);
                 const newClubs = response.data?.data || [];
 
                 // Lưu vào cache
