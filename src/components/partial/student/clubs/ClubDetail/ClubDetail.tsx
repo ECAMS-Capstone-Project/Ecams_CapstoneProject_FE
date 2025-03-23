@@ -6,14 +6,15 @@ import { HeroSection } from "./HeroSection";
 import { useClubs } from "@/hooks/student/useClub";
 import { ClubDetailLeft } from "./ClubDetailLeft";
 import { ClubDetailRight } from "./ClubDetailRight";
+import useAuth from "@/hooks/useAuth";
 
 export const StudentClubDetail: React.FC = () => {
   // const [pageNo] = useState(1);
   // const [pageSize] = useState(7);
   const { clubId = "" } = useParams();
-  const { getClubDetailQuery } = useClubs();
+  const { getClubDetailQuery, checkIsInClubQuery } = useClubs();
   const location = useLocation();
-
+  const { user } = useAuth();
   // Lấy thông tin trang trước (truyền qua state khi navigate)
   const previousPage = location.state?.previousPage || "/student/event";
   const breadcrumbLabel = location.state?.breadcrumb || "Event";
@@ -21,7 +22,7 @@ export const StudentClubDetail: React.FC = () => {
   const { data: ClubDetail, isLoading: isEventDetailLoading } =
     getClubDetailQuery(clubId);
   // const { data: eventData } = getAllEventListQuery(pageNo, pageSize);
-
+  const { data: isInClub } = checkIsInClubQuery(user?.userId || "", clubId);
   if (isEventDetailLoading) {
     return (
       <div className="flex justify-center items-center h-screen text-xl">
@@ -29,7 +30,7 @@ export const StudentClubDetail: React.FC = () => {
       </div>
     );
   }
-
+  console.log(isInClub?.data?.isMember);
   const club = ClubDetail?.data;
   // const events = eventData?.data?.data;
 
@@ -46,7 +47,14 @@ export const StudentClubDetail: React.FC = () => {
       </div>
 
       <main className="relative">
-        {club && <HeroSection club={club} />}
+        {club && (
+          <HeroSection
+            club={club}
+            isInClub={
+              isInClub?.data || { isMember: false, hasPendingRequest: false }
+            }
+          />
+        )}
 
         <div className="container mx-auto px-4 -mt-20 relative z-10">
           <div className="bg-white rounded-xl shadow-lg p-8">

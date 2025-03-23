@@ -1,16 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useState } from "react";
-import { ClubResponse } from "@/models/Club";
+import { ClubResponse, isInClubResponse } from "@/models/Club";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { JoinClubDialog } from "../../club-register/JoinClubDialog";
+import { useNavigate } from "react-router-dom";
 
 interface HeroSectionProps {
   club: ClubResponse;
+  isInClub: isInClubResponse;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ club }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ club, isInClub }) => {
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <>
       <section className="relative h-[600px] overflow-hidden">
@@ -39,11 +42,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ club }) => {
               </p>
               <div className="flex gap-4">
                 <Button
-                  variant={"custom"}
-                  className="text-white px-10 py-7 rounded-full font-semibold text-base hover:bg-opacity-90 transition"
-                  onClick={() => setIsJoinDialogOpen(true)}
+                  variant={
+                    isInClub.isMember || isInClub.hasPendingRequest
+                      ? "outline"
+                      : "custom"
+                  }
+                  className={`text-white px-10 py-7 rounded-full font-semibold text-base hover:bg-opacity-90 transition ${
+                    isInClub.isMember || isInClub.hasPendingRequest
+                      ? "border-2 border-white text-black"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    {
+                      isInClub.isMember
+                        ? navigate(`/club/detail/${club.clubId}`)
+                        : isInClub.hasPendingRequest
+                        ? () => {}
+                        : setIsJoinDialogOpen(true);
+                    }
+                  }}
                 >
-                  Join Club
+                  {isInClub.isMember
+                    ? "View your club"
+                    : isInClub.hasPendingRequest
+                    ? "Pending"
+                    : "Join Club"}
                 </Button>
                 {/* <Button
                   variant="outline"

@@ -30,7 +30,7 @@ export const ClubDetailRight: React.FC<ClubDetailRightProps> = ({ club }) => {
               <div>
                 <h4 className="text-sm text-gray-500 uppercase">Members</h4>
                 <p className="text-gray-900 font-medium">
-                  {club.numOfMems} member
+                  {club.numOfMems} members
                 </p>
               </div>
 

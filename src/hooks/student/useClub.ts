@@ -2,10 +2,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
 
-import {  getEventClub } from "@/api/representative/EventAgent";
+;
 import {   useMutation, useQuery} from "@tanstack/react-query";
 
-import { getClub } from "@/api/student/ClubAgent";
+import { checkIsInClub, getClub } from "@/api/student/ClubAgent";
 import { CreateClubJoinedRequest, GetAllClubCondition, GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
 import { ClubJoinedRequest } from "@/models/Club";
 import toast from "react-hot-toast";
@@ -31,18 +31,17 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
       });
     };
 
-  const getEventClubQuery = (uniId: string, pageNumber: number, pageSize: number) => {
+
+  const checkIsInClubQuery = (userId: string, clubId: string) => {
     return useQuery({
-      queryKey: ["clubs", uniId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
-      queryFn: () => getEventClub(uniId, pageNumber, pageSize), // Gọi API lấy thông tin Event Club
-      enabled: !!uniId, // Chỉ thực hiện khi có uniId
+      queryKey: ["checkIsInClub", userId, clubId], // Query key động dựa trên userId và clubId
+      queryFn: () => checkIsInClub(userId, clubId), // Gọi API lấy thông tin checkIsInClub
     });
   };
-
     // Fetch chi tiết detail club theo clubId
     const getClubDetailQuery = (clubId: string) => {
       return useQuery({
-        queryKey: ["eventDetail", clubId], // Query key động dựa trên eventId
+        queryKey: ["clubDetail", clubId], // Query key động dựa trên eventId
         queryFn: () => GetClubsDetailAPI(clubId), // Gọi API lấy chi tiết sự kiện
         enabled: true, // Chỉ thực hiện khi có eventId
      
@@ -70,7 +69,7 @@ export const useClubs = (uniId?: string,pageNumber?: number, pageSize?: number) 
    isPending,
    refetchEvents: refetch,
    createClubJoinedRequest: CreateClubJoinedRequestQuery,
-   getEventClubQuery,
+   checkIsInClubQuery,
    getAllConditionsQuery,
    getClubDetailQuery
   };

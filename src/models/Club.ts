@@ -33,3 +33,8 @@ export interface ClubJoinedRequest {
     reason: string; 
     userId: string;
 }
+
+export interface isInClubResponse {
+    isMember: boolean;
+    hasPendingRequest: boolean;
+}
