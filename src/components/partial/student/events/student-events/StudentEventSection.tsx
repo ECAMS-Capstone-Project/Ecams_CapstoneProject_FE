@@ -32,23 +32,24 @@ export const StudentEventSection = () => {
       <EventStatistics events={events} />
 
       <section className="py-12 container mx-auto px-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">
-            <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-              Events{" "}
-            </span>
-            you have registered
-          </h2>
-          <div className="flex justify-center items-center gap-2">
-            <Input
-              placeholder="Search for event"
-              className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        {events.length > 0 && (
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800">
+              <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
+                Events{" "}
+              </span>
+              you have registered
+            </h2>
+            <div className="flex justify-center items-center gap-2">
+              <Input
+                placeholder="Search for event"
+                className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-
+        )}
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <LoadingAnimation />
@@ -68,6 +69,18 @@ export const StudentEventSection = () => {
             <p className="text-gray-500">
               Try adjusting your search or filters
             </p>
+          </div>
+        ) : !isLoading && events.length === 0 ? (
+          <div className="flex justify-center items-center h-full mt-10">
+            <AnimatedGradientText>
+              <span
+                className={
+                  "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+                }
+              >
+                You have not registered for any event yet!
+              </span>
+            </AnimatedGradientText>
           </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-7 w-full">
