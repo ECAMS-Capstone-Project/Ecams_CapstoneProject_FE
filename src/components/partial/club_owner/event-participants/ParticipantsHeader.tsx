@@ -3,7 +3,7 @@ import ExportToExcel from "./ExportParticipants";
 import { Participant } from "@/models/Participants";
 
 interface ParticipantsHeaderProps {
-  universityName?: string;
+  eventName?: string;
   totalParticipants: number;
   checkedInCount: number;
   waitingCount: number;
@@ -11,7 +11,7 @@ interface ParticipantsHeaderProps {
 }
 
 const ParticipantsHeader = ({
-  universityName,
+  eventName,
   totalParticipants,
   checkedInCount,
   waitingCount,
@@ -25,7 +25,7 @@ const ParticipantsHeader = ({
             Event Participants
           </h2>
           <p className="text-gray-500">
-            View and manage all participants of {universityName}
+            View and manage all participants of {eventName}
           </p>
         </div>
         <ExportToExcel data={participants} />

@@ -146,10 +146,16 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                     <Button
                       variant={"custom"}
                       className="z-[1000] w-fit"
-                      onClick={() => navigate("/club/event-participants")}
+                      onClick={() =>
+                        navigate(`/club/event-participants/${evt.eventId}`, {
+                          state: {
+                            eventName: evt.eventName,
+                          },
+                        })
+                      }
                     >
                       <Link
-                        to={`/club/event-participants`}
+                        to={`/club/event-participants/${evt.eventId}`}
                         className="w-fit flex items-center gap-2"
                       >
                         <EyeIcon size={16} /> View participants

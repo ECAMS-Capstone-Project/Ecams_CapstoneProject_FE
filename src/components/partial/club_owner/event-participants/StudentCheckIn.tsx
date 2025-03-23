@@ -18,15 +18,17 @@ import { EventAvailable, PhoneIphone } from "@mui/icons-material";
 import useAuth from "@/hooks/useAuth";
 import { useEventSchedule } from "@/hooks/student/useEventRegister";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const StudentEventCheckIn = () => {
-  //   const location = useLocation();
-  //   const navigate = useNavigate();
+  // const location = useLocation();
+  // const navigate = useNavigate();
   const { user } = useAuth();
   const { checkInStudent, isCheckingIn, getCheckInInfoQuery } =
     useEventSchedule(user?.userId || "");
   const [userId, setUserId] = useState("");
   const [eventId, setEventId] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Lấy URL hiện tại của trang
@@ -49,10 +51,22 @@ export const StudentEventCheckIn = () => {
 
   const handleCheckIn = async () => {
     try {
-      checkInStudent({
-        eventId: eventId,
-        userId: userId,
-      });
+      checkInStudent(
+        {
+          eventId: eventId,
+          userId: userId,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Successfully checked in participant");
+            navigate(`/club/event-participants/${eventId}`, {
+              state: {
+                previousPath: "/club/event-check-in",
+              },
+            });
+          },
+        }
+      );
 
       // TODO: Redirect hoặc đóng QR scanner
     } catch (error: any) {

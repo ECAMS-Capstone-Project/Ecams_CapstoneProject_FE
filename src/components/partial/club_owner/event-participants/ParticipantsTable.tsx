@@ -1,29 +1,18 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { EyeIcon, Mail, Phone, User } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  BookAIcon,
+  EyeIcon,
+  GraduationCap,
+  Mail,
+  Phone,
+  University,
+} from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
 import { MagicCard } from "@/components/magicui/magic-card";
-
-type ParticipantStatus = "CHECKED_IN" | "WAITING";
-
-interface Participant {
-  id: string;
-  fullname: string;
-  email: string;
-  phone: string;
-  studentId: string;
-  avatar?: string;
-  registrationDate: Date;
-  status: ParticipantStatus;
-}
+import { Participant, ParticipantStatus } from "@/models/Participants";
+import { Badge } from "@/components/ui/badge";
 
 interface ParticipantsListProps {
   participants: Participant[];
@@ -45,7 +34,7 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {participants.map((participant) => (
         <MagicCard
-          key={participant.id}
+          key={participant.userId}
           className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:border-[#136CB9] hover:scale-[1.02]"
           gradientColor="rgba(19, 108, 185, 0.1)"
         >
@@ -54,7 +43,7 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
           <div className="flex items-center justify-between mb-4 relative">
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12 ring-2 ring-[#136CB9] ring-offset-2 transition-transform duration-300 group-hover:scale-110">
-                <AvatarImage src={participant.avatar} />
+                <AvatarImage src={participant.major} />
                 <AvatarFallback className="bg-gradient-to-br from-[#136CB9] to-[#49BBBD] text-white">
                   {participant.fullname.charAt(0).toUpperCase()}
                 </AvatarFallback>
@@ -63,7 +52,9 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
                 <h3 className="font-semibold text-gray-900 group-hover:text-[#136CB9] transition-colors duration-300">
                   {participant.fullname}
                 </h3>
-                <p className="text-sm text-gray-500">{participant.studentId}</p>
+                <p className="text-sm text-gray-500">
+                  {participant.studentDetailId}
+                </p>
               </div>
             </div>
             <Badge
@@ -82,41 +73,26 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600 group-hover:text-[#136CB9] transition-colors duration-300">
               <Phone className="h-4 w-4 text-[#136CB9]" />
-              <span>{participant.phone}</span>
+              <span>{participant.phonenumber}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600 group-hover:text-[#136CB9] transition-colors duration-300">
-              <User className="h-4 w-4 text-[#136CB9]" />
-              <span>
-                Registered:{" "}
-                {format(new Date(participant.registrationDate), "MMM dd, yyyy")}
-              </span>
-            </div>
+
             <div className="flex justify-end pt-2">
               <Dialog>
                 <DialogTrigger asChild>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-2 text-[#136CB9] hover:text-[#49BBBD] hover:bg-[#136CB9]/10 transition-all duration-300"
-                        >
-                          <EyeIcon className="h-4 w-4" />
-                          View Details
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>View detailed information</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 text-[#136CB9] hover:text-[#49BBBD] hover:bg-[#136CB9]/10 transition-all duration-300"
+                  >
+                    <EyeIcon className="h-4 w-4" />
+                    View Details
+                  </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-lg">
                   <div className="space-y-4">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-20 w-20 ring-2 ring-[#136CB9] ring-offset-2">
-                        <AvatarImage src={participant.avatar} />
+                        <AvatarImage src={participant.major} />
                         <AvatarFallback className="bg-gradient-to-br from-[#136CB9] to-[#49BBBD] text-white text-2xl">
                           {participant.fullname.charAt(0).toUpperCase()}
                         </AvatarFallback>
@@ -125,7 +101,9 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
                         <h3 className="text-xl font-semibold text-gray-900">
                           {participant.fullname}
                         </h3>
-                        <p className="text-gray-500">{participant.studentId}</p>
+                        <p className="text-gray-500">
+                          {participant.studentDetailId}
+                        </p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -140,26 +118,31 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
                           </div>
                           <div className="flex items-center gap-2 text-gray-600">
                             <Phone className="h-4 w-4 text-[#136CB9]" />
-                            <span>{participant.phone}</span>
+                            <span>{participant.phonenumber}</span>
                           </div>
                         </div>
                       </div>
                       <div>
                         <h4 className="font-medium mb-2 text-[#136CB9]">
-                          Registration Details
+                          Academic Details
                         </h4>
                         <div className="space-y-2">
-                          <div className="text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <University className="h-4 w-4 text-[#136CB9]" />
+                            <span>{participant.universityName}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <GraduationCap className="h-4 w-4 text-[#136CB9]" />
+                            <span>{participant.major}</span>
+                          </div>
+                          <div className="text-gray-600 flex items-center gap-2">
+                            <BookAIcon className="h-4 w-4 text-[#136CB9]" />
                             <span className="text-gray-500">
-                              Registration Date:
+                              Year of Study:
                             </span>{" "}
-                            {format(
-                              new Date(participant.registrationDate),
-                              "MMM dd, yyyy HH:mm"
-                            )}
+                            {participant.yearOfStudy}
                           </div>
                           <div>
-                            <span className="text-gray-500">Status:</span>{" "}
                             <Badge
                               className={getStatusColor(participant.status)}
                             >
