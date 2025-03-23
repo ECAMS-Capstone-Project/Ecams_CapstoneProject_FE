@@ -145,9 +145,9 @@ export const GetAllClubsAPI = async (userId: string, status: string, pageNo: num
     }
 };
 
-export const GetAllActiveClubsAPI = async (userId: string, status: string, pageNo: number, pageSize: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
+export const GetAllActiveClubsAPI = async (universityId: string, status: string, pageNo: number, pageSize: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/User/${userId}?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
+        const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/university/${universityId}?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
