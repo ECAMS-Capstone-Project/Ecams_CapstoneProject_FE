@@ -80,6 +80,20 @@ export default function FancyClubRankingPage() {
     setIsDialogOpen(true);
   }
 
+  const getRankClass = (rank: string) => {
+    switch (rank.toLowerCase()) {
+      case "good":
+        return "text-green-700 bg-green-100 px-2 py-1 rounded";
+      case "excellent":
+        return "text-blue-700 bg-blue-100 px-2 py-1 rounded";
+      case "average":
+        return "text-yellow-700 bg-yellow-100 px-2 py-1 rounded";
+      case "need improve":
+        return "text-red-700 bg-red-100 px-2 py-1 rounded";
+      default:
+        return "text-gray-700 bg-gray-100 px-2 py-1 rounded";
+    }
+  };
   return (
     <div className="min-h-screen w-full bg-gradient-to-r from-slate-50 to-blue-50 text-gray-900 p-4">
       <div className="max-w-4xl mx-auto">
@@ -127,7 +141,7 @@ export default function FancyClubRankingPage() {
                   key={club.clubId}
                   className="hover:shadow-xl transition-all border border-gray-200"
                 >
-                  <CardHeader className="flex flex-row items-center justify-between">
+                  <CardHeader className="flex flex-row items-center justify-between pb-1">
                     <div className="flex items-center gap-2">
                       <div className="text-xl font-bold">#{rankIndex}</div>
                       {isTop1 && <Crown className="text-yellow-500" size={24} />}
@@ -138,16 +152,16 @@ export default function FancyClubRankingPage() {
                     <img
                       src={club.logoUrl}
                       alt={club.clubName}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-24 h-20 object-cover"
                     />
                   </CardHeader>
-                  <CardContent className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <CardContent className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
                     <div>
-                      <p className="text-sm text-gray-500">Total Score: {club.totalScore}</p>
-                      <p className="text-sm text-gray-500">Rank: {club.rank}</p>
+                      <p className="text-base text-gray-500">Total Score: <span className="font-bold">{club.totalScore}</span></p>
+                      <p className={`text-base mt-1 ${getRankClass(club.rank)}`}>Rank: {club.rank}</p>
                     </div>
                     <div>
-                      <Button variant="outline" className="mt-2 sm:mt-0 mr-2" onClick={() => handleClickAlert(club.clubId)}>
+                      <Button variant="destructive" className="mt-2 sm:mt-0 mr-2 bg-red-500 text-white" onClick={() => handleClickAlert(club.clubId)}>
                         Alert Club
                       </Button>
                       <Button

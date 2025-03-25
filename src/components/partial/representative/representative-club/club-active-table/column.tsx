@@ -35,7 +35,7 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
       accessorKey: "contactEmail",
       header: ({ column }) => (
         <div >
-          <DataTableColumnHeader column={column} title="contactEmail" />
+          <DataTableColumnHeader column={column} title="Contact Email" />
         </div>
       ),
       cell: ({ row }) => <div >{row.getValue("contactEmail")}</div>,
@@ -59,7 +59,7 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
 
         return (
           <div
-            className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${row.getValue("status") == "INATIVE"
+            className={`flex items-center justify-center gap-2 p-2 rounded-md w-2/4 ${row.getValue("status") == "INACTIVE"
               ? "bg-[#D6E4FF] text-[#007BFF]"
               : row.getValue("status") == "ACTIVE"
                 ? "bg-[#CBF2DA] text-[#2F4F4F]"
@@ -67,9 +67,9 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
               }`}
             style={{ margin: "0 auto" }}
           >
-            {row.getValue("status") == "INATIVE" && <Clock size={20} className="text-[#007BFF]" />}
+            {row.getValue("status") == "INACTIVE" && <Clock size={20} className="text-[#007BFF]" />}
             {row.getValue("status") == "ACTIVE" && <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />}
-            <span>{status ? "Completed" : "In progress"}</span>
+            <span>{status ? "Active" : "In Active"}</span>
           </div>
         );
       },

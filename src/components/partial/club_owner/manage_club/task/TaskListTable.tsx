@@ -10,15 +10,16 @@ interface TaskData {
   data: Task[];
   setFlag: React.Dispatch<React.SetStateAction<boolean>>;
   isClubOwner: boolean;
+  clubId: string;
 }
-const TaskListTable = ({ data, setFlag, isClubOwner }: TaskData) => {
+const TaskListTable = ({ data, setFlag, isClubOwner, clubId }: TaskData) => {
   const navigate = useNavigate();
   return (
     <>
       <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
         {isClubOwner && (
           <div className="flex justify-end">
-            <Button onClick={() => navigate('/club/create-task')}>Create task</Button>
+            <Button onClick={() => navigate('/club/create-task', { state: { clubId } })}>Create task</Button>
           </div>
         )}
         {isClubOwner && (

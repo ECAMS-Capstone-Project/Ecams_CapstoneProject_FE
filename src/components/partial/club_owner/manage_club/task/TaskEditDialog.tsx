@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "react-hot-toast";
 
 // Các API và interface
-import { GetMemberInClubsAPI } from "@/api/club-owner/ClubByUser";
+import { GetMemberInClubsByStatusAPI } from "@/api/club-owner/ClubByUser";
 import {
   TaskDetailDTO,
   MemberInTaskDTO,
@@ -44,6 +44,8 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
   const [selectedMembers, setSelectedMembers] = useState<MemberInTaskDTO[]>([]);
   // Danh sách available members trong club
   const [availableMembers, setAvailableMembers] = useState<MemberInTaskDTO[]>([]);
+  // State lưu từ khóa search
+  const [memberSearch, setMemberSearch] = useState("");
 
   // Fetch task detail dựa trên taskId
   useEffect(() => {
@@ -74,7 +76,7 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
   useEffect(() => {
     async function fetchAvailableMembers() {
       try {
-        const response = await GetMemberInClubsAPI(clubId, 100, 1);
+        const response = await GetMemberInClubsByStatusAPI(clubId, 100, 1, "ACTIVE");
         if (response.data) {
           const filteredMembers = response.data.data.filter(
             (member) => member.clubRoleName !== "CLUB_OWNER"
@@ -88,6 +90,11 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
     }
     fetchAvailableMembers();
   }, [clubId]);
+
+  // Tìm kiếm thành viên theo fullname
+  const filteredMembers = availableMembers.filter((member) =>
+    member.fullname.toLowerCase().includes(memberSearch.toLowerCase())
+  );
 
   // Kiểm tra member đã được chọn hay chưa
   const isMemberSelected = (member: MemberInTaskDTO) => {
@@ -132,8 +139,7 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
       // Đóng form
       onClose();
     } catch (error) {
-      console.error("Failed to update task", error);
-      toast.error("Failed to update task");
+      toast.error("Failed to update task" + error);
     }
   };
 
@@ -223,18 +229,31 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
           {/* Assigned Members */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Members</label>
+            {/* Search input */}
+            <Input
+              type="text"
+              placeholder="Search members"
+              value={memberSearch}
+              onChange={(e) => setMemberSearch(e.target.value)}
+              className="mb-2 w-2/4"
+            />
+            {/* Danh sách thành viên có auto scroll */}
             <div className="space-y-2 max-h-64 overflow-y-auto border p-2 rounded">
-              {availableMembers.map((member) => (
-                <div key={member.userId} className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={isMemberSelected(member)}
-                    onCheckedChange={(checked) => handleToggleMember(member, !!checked)}
-                  />
-                  <span className="text-sm">
-                    {member.fullname} ({member.clubRoleName})
-                  </span>
-                </div>
-              ))}
+              {filteredMembers.length > 0 ? (
+                filteredMembers.map((member) => (
+                  <div key={member.userId} className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={isMemberSelected(member)}
+                      onCheckedChange={(checked) => handleToggleMember(member, !!checked)}
+                    />
+                    <span className="text-sm">
+                      {member.fullname} ({member.clubRoleName})
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No members found</p>
+              )}
             </div>
           </div>
 

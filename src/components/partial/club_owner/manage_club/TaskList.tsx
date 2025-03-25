@@ -39,6 +39,7 @@ export default function TaskList({ clubId, isClubOwner }: props) {
     return (
         <div className="space-y-2">
             <TaskListTable
+                clubId={clubId}
                 isClubOwner={isClubOwner}
                 setFlag={setFlag}
                 data={taskList} />

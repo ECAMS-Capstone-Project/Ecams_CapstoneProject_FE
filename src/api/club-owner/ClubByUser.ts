@@ -488,3 +488,14 @@ export const AlertClubAPI = async (clubId: string, data: AlertClubDTO): Promise<
         }
     }
 };
+
+export const GetMemberInClubsByStatusAPI = async (clubId: string, pageSize: number, pageNo: number, status: string): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(`/Clubs/${clubId}/members?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
