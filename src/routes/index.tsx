@@ -59,6 +59,7 @@ import { EventConfirmSuccess } from "@/components/partial/student/event-register
 import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
 import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
+import RepresentativeRequestsPage from "@/pages/representative/club-owner-request/RepresentativeOwnerRequestsPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -255,6 +256,10 @@ export const router = createBrowserRouter([
         element: <ClubActiveListPage />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/test-ne",
+        element: <RepresentativeRequestsPage />
+      }
     ],
     errorElement: <ErrorException />,
   },

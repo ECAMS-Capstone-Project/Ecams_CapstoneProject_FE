@@ -21,6 +21,7 @@ interface props {
 export function PopoverClub({ isClubOwner, clubId }: props) {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openLeaveDialog, setOpenLeaveDialog] = useState(false);
+  const [openRequestDialog, setOpenRequestDialog] = useState(false);
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
@@ -30,8 +31,7 @@ export function PopoverClub({ isClubOwner, clubId }: props) {
   };
 
   const handleChangeClubOwner = () => {
-    // Thực hiện xử lý thay đổi chủ câu lạc bộ, ví dụ gọi API
-    alert("Change Club Owner clicked!");
+    setOpenRequestDialog(true)
   };
 
   async function handleReject(event: React.FormEvent) {
@@ -53,6 +53,11 @@ export function PopoverClub({ isClubOwner, clubId }: props) {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function handleRequest(event: React.FormEvent) {
+    console.log(event);
+
   }
 
   return (
@@ -136,6 +141,38 @@ export function PopoverClub({ isClubOwner, clubId }: props) {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleReject}>
+              <div className="flex flex-col gap-4 mb-4">
+                <label className="text-lg font-semibold text-gray-800 mb-2">
+                  Reason
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 p-4 text-gray-700 focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your reason why you want to leave this club"
+                  rows={4}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={isLoading} color="primary">
+                  Submit
+                </Button>
+              </DialogFooter>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openRequestDialog} onOpenChange={setOpenRequestDialog}>
+        <DialogContent className="max-w-lg">
+          <div className="flex flex-col gap-4">
+            <DialogHeader>
+              <h2 className="text-lg font-semibold">Change club owner</h2>
+              <DialogDescription>
+                Providing a reason for this action.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRequest}>
               <div className="flex flex-col gap-4 mb-4">
                 <label className="text-lg font-semibold text-gray-800 mb-2">
                   Reason
