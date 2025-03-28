@@ -499,3 +499,24 @@ export const GetMemberInClubsByStatusAPI = async (clubId: string, pageSize: numb
         throw error;
     }
 };
+
+export const ChangeClubOwnerAPI = async (clubId: string, clubOwnerId: string): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await post<ResponseDTO<string>>(`/Clubs/${clubId}/owner/${clubOwnerId}/change`);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};

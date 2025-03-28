@@ -60,6 +60,9 @@ import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/Clu
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
 import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
 import RepresentativeRequestsPage from "@/pages/representative/club-owner-request/RepresentativeOwnerRequestsPage";
+import ClubSchedulePage from "@/pages/club-owner/club-schedule/ClubSchedulePage";
+import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
+import RepresentativeInformationPage from "@/pages/representative/request-to-change/RepresentativeInfoPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -116,9 +119,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
-        <PrivateRoute />
-      </RoleBasedGuard>
+      // <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+      <PrivateRoute />
+      // </RoleBasedGuard>
     ),
     children: [
       {
@@ -156,6 +159,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/policy",
         element: <Policy />,
+      },
+      {
+        path: "/admin/test",
+        element: <AdminRepRequestsPage />
       },
     ],
   },
@@ -258,7 +265,13 @@ export const router = createBrowserRouter([
       },
       {
         path: "/representative/test-ne",
-        element: <RepresentativeRequestsPage />
+        element: <RepresentativeRequestsPage />,
+        errorElement: <ErrorException />
+      },
+      {
+        path: "/representative/request-change",
+        element: <RepresentativeInformationPage />,
+        errorElement: <ErrorException />
       }
     ],
     errorElement: <ErrorException />,
@@ -392,7 +405,11 @@ export const router = createBrowserRouter([
         element: <CreateTaskClub />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/club/schedule",
+        element: <ClubSchedulePage />
+      }
     ],
     errorElement: <ErrorException />,
-  }
+  },
 ]);

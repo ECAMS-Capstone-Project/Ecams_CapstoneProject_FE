@@ -201,7 +201,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
               {submissions.map((sub, index) => (
                 <TableRow key={index}>
                   <TableCell>{sub.memberName}</TableCell>
-                  <TableCell>{format(new Date(sub.submissionDate), "HH:mm - dd/MM/yyyy")}</TableCell>
+                  <TableCell>{sub.submissionDate == '0001-01-01T00:00:00' ? "Haven't submitted " : format(sub.submissionDate, "HH:mm - dd/MM/yyyy")}</TableCell>
                   <TableCell>{sub.submissionScore ? `${sub.submissionScore} points` : "-"}</TableCell>
                   <TableCell style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                     <Button variant="outline" onClick={() => handleViewSubmission(sub)}>

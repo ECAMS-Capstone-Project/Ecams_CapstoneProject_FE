@@ -50,7 +50,7 @@ export default function ClubDetailPage() {
                         </Badge>
                     </div>
                     <div>
-                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} />
+                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} />
                     </div>
                 </div>
 

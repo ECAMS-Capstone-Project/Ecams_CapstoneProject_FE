@@ -75,7 +75,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                         <div className="border p-4 rounded-lg">
                             <h3 className="text-xl font-semibold mb-2">New Members</h3>
                             <div className="flex justify-between">
-                                <span className="text-gray-700">Number of members:</span>
+                                <span className="text-gray-700">Number of Members:</span>
                                 <span className="text-gray-900">{clubDetail.numOfNewMembers}</span>
                             </div>
                             <div className="flex justify-between">
