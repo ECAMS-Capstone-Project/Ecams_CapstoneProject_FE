@@ -55,9 +55,9 @@ export const useEventSchedule = ( userId: string) => {
     const { mutateAsync: checkInStudentEvent, isPending: isCheckingIn } = useMutation<
     ResponseDTO<Event>,
     unknown,
-    { eventId: string; userId: string }
+    { eventId: string; userId: string, token: string }
   >({
-    mutationFn: ({ eventId, userId }) => checkInStudent(eventId, userId),
+    mutationFn: ({ eventId, userId, token }) => checkInStudent(eventId, userId, token),
     
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Error approving event");

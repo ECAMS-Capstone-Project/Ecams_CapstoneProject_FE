@@ -48,13 +48,15 @@ export const StudentEventCheckIn = () => {
 
   // TODO: Lấy ticketId từ QR code và gọi API để lấy thông tin
   const { data: checkInInfo } = getCheckInInfoQuery(userId, eventId);
-
+  const token = localStorage.getItem("accessToken");
+  console.log("token", token);
   const handleCheckIn = async () => {
     try {
       checkInStudent(
         {
-          eventId: eventId,
-          userId: userId,
+          eventId: eventId || "",
+          userId: userId || "",
+          token: token || "",
         },
         {
           onSuccess: () => {

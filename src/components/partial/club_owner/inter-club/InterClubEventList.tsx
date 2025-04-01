@@ -1,86 +1,85 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Calendar, Users, Building2 } from "lucide-react";
+import { Search, Calendar, Building2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
+import useAuth from "@/hooks/useAuth";
+import { InterClubEventDTO } from "@/models/Event";
+import { useClubs } from "@/hooks/student/useClub";
+import { useNavigate } from "react-router-dom";
+import { useEventDetail } from "@/hooks/club/useEventDetail";
 
-interface InterClubEventListProps {
-  onEventSelect: (event: InterClubEvent) => void;
-}
-
-export const InterClubEventList = ({
-  onEventSelect,
-}: InterClubEventListProps) => {
-  const [events, setEvents] = useState<InterClubEvent[]>([]);
+export const InterClubEventList = () => {
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
-    InterClubEvent["status"] | "ALL"
+    InterClubEventDTO["status"] | "ALL"
   >("ALL");
+  const navigate = useNavigate();
 
-  // TODO: Implement API call to fetch events
-  useEffect(() => {
-    // Mock data
-    const mockEvents: InterClubEvent[] = [
-      {
-        id: "1",
-        name: "Tech Workshop 2024",
-        description:
-          "A collaborative workshop between tech clubs A collaborative workshop between tech clubs A collaborative workshop between tech clubs A collaborative workshop between tech clubs",
-        startDate: new Date("2024-04-01"),
-        endDate: new Date("2024-04-03"),
-        maxParticipants: 100,
-        price: 0,
-        participatingClubs: ["Tech Club A", "Tech Club B", "Innovation Club"],
-        status: "UPCOMING",
-      },
-      {
-        id: "2",
-        name: "Sports Tournament",
-        description: "Annual sports competition between clubs",
-        startDate: new Date("2024-03-15"),
-        endDate: new Date("2024-03-20"),
-        maxParticipants: 200,
-        price: 10,
-        participatingClubs: ["Sports Club", "Fitness Club", "Athletics Club"],
-        status: "ONGOING",
-      },
-      {
-        id: "3",
-        name: "Art Exhibition",
-        description: "Showcasing artworks from various art clubs",
-        startDate: new Date("2024-02-01"),
-        endDate: new Date("2024-02-05"),
-        maxParticipants: 150,
-        price: 5,
-        participatingClubs: ["Art Club", "Photography Club", "Design Club"],
-        status: "COMPLETED",
-      },
-    ];
+  const handleEventSelect = (clubEventId: string) => {
+    navigate(`/club/inter-club-event/${clubEventId}`);
+  };
+  const { user } = useAuth();
+  const { clubs } = useClubs(user?.universityId, 1, 20);
+  console.log("clubs", clubs);
 
-    setEvents(mockEvents);
-  }, []);
+  const club = clubs?.filter((club) =>
+    club.clubMembers?.some(
+      (member) =>
+        member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
+    )
+  );
 
-  const getStatusColor = (status: InterClubEvent["status"]) => {
+  console.log("club", club);
+
+  const { GetInterClubEvent } = useEventDetail();
+  const { data: interEvents } = GetInterClubEvent(
+    club?.[0]?.clubId || "",
+    pageSize,
+    pageNo
+  );
+  const events = interEvents?.data?.data || [];
+  // const { GetInterClubEventRequest } = useEventDetail();
+  // const { data: interEventRequest } = GetInterClubEventRequest(
+  //   clubId || "",
+  //   pageSize,
+  //   pageNo
+  // );
+
+  const getStatusColor = (status: InterClubEventDTO["status"]) => {
     switch (status) {
-      case "UPCOMING":
+      case "WAITING":
         return "bg-blue-100 text-blue-800";
-      case "ONGOING":
+      case "ACTIVE":
         return "bg-green-100 text-green-800";
-      case "COMPLETED":
+      case "INACTIVE":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const filteredEvents = events.filter(
-    (event) =>
-      event.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (selectedStatus === "ALL" || event.status === selectedStatus)
-  );
+  const filteredEvents = events.filter((event) => {
+    // Filter theo search query
+    const matchesSearch = event.eventName
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+
+    // Filter theo status của clubs
+    const matchesStatus =
+      selectedStatus === "ALL" ||
+      event.clubs.some(
+        (eventClub) =>
+          eventClub.status === selectedStatus &&
+          eventClub.clubId === club?.[0]?.clubId
+      );
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="space-y-4">
@@ -95,21 +94,19 @@ export const InterClubEventList = ({
           />
         </div>
         <div className="flex gap-2">
-          {(["ALL", "UPCOMING", "ONGOING", "COMPLETED"] as const).map(
-            (status) => (
-              <Button
-                key={status}
-                variant={selectedStatus === status ? "custom" : "outline"}
-                onClick={() => setSelectedStatus(status)}
-                className={cn(
-                  "transition-all duration-200",
-                  selectedStatus === status && " hover:bg-[#136cb9]/90"
-                )}
-              >
-                {status}
-              </Button>
-            )
-          )}
+          {(["ALL", "PENDING", "ACTIVE"] as const).map((status) => (
+            <Button
+              key={status}
+              variant={selectedStatus === status ? "custom" : "outline"}
+              onClick={() => setSelectedStatus(status)}
+              className={cn(
+                "transition-all duration-200",
+                selectedStatus === status && " hover:bg-[#136cb9]/90"
+              )}
+            >
+              {status === "PENDING" ? "Requests" : status}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -117,14 +114,14 @@ export const InterClubEventList = ({
         <div className="space-y-4">
           {filteredEvents.map((event) => (
             <div
-              key={event.id}
+              key={event.eventId}
               className="bg-white rounded-xl border border-[#e5e7eb] p-4 hover:border-[#136cb9] transition-all duration-200 cursor-pointer"
-              onClick={() => onEventSelect(event)}
+              onClick={() => handleEventSelect(event.clubEventId)}
             >
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-[#136cb9] mb-1">
-                    {event.name}
+                    {event.eventName}
                   </h3>
                   <p className="text-muted-foreground mb-4">
                     {event.description}
@@ -133,7 +130,7 @@ export const InterClubEventList = ({
                 <span
                   className={cn(
                     "px-3 py-1 rounded-full text-sm font-medium",
-                    getStatusColor(event.status)
+                    getStatusColor(event.status as InterClubEventDTO["status"])
                   )}
                 >
                   {event.status}
@@ -144,28 +141,27 @@ export const InterClubEventList = ({
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[#136cb9]" />
                   <span className="text-sm text-muted-foreground">
-                    {format(event.startDate, "MMM d")} -{" "}
-                    {format(event.endDate, "MMM d")}
+                    {format(event.registeredEndDate, "MMM d")} -{" "}
+                    {format(event.registeredEndDate, "MMM d")}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-[#136cb9]" />
-                  <span className="text-sm text-muted-foreground">
-                    {event.maxParticipants} participants
-                  </span>
-                </div>
+
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-[#136cb9]" />
                   <span className="text-sm text-muted-foreground">
-                    {event.participatingClubs.length} clubs
+                    {event.clubs.length} clubs
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {event.price === 0 ? "Free" : `$${event.price}`}
+                    {event.price === 0
+                      ? "Free"
+                      : `${event.price.toLocaleString()} VND`}
                   </span>
                 </div>
               </div>
+
+              {/* Hiển thị câu lạc bộ tạo sự kiện */}
             </div>
           ))}
         </div>

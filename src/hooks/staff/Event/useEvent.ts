@@ -12,7 +12,7 @@ export const useEvents = (uniId?: string,pageNumber?: number, pageSize?: number)
   // Fetch danh sách area theo trang
     const { data, isLoading, refetch } =  useQuery({
       queryKey: ["events",uniId, pageNumber, pageSize], // Query key động
-      queryFn:  () =>  getEventList(uniId || "",pageNumber || 1, pageSize || 5),
+      queryFn:  () =>  getEventList(uniId || "",pageNumber || 1, pageSize || 20),
       refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
       refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
     enabled:!!uniId, 

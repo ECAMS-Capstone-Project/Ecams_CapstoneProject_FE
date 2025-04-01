@@ -61,9 +61,9 @@ export const handleEventResponse = async (data: { studentId: string, transaction
     }
 };
 
-export const checkInStudent = async (eventId: string,userId: string): Promise<ResponseDTO<Event>> => {
+export const checkInStudent = async (eventId: string,userId: string, token: string): Promise<ResponseDTO<Event>> => {
     try {
-      const response = await put<ResponseDTO<Event>>(`/Event/checkin`, {eventId,userId});
+      const response = await put<ResponseDTO<Event>>(`/Event/checkin`, {eventId,userId, token});
       return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
       console.error("Error in UniversityList API call:", error.response || error);

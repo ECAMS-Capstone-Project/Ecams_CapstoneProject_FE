@@ -33,7 +33,7 @@ export const ChatMessages = ({ messages }: ChatMessagesProps) => {
                   : "bg-white text-[#333] rounded-bl-none border border-[#e5e7eb]"
               )}
             >
-              {/* <p
+              <p
                 className={cn(
                   "text-sm font-medium mb-1",
                   msg.senderId === "currentUser"
@@ -42,7 +42,7 @@ export const ChatMessages = ({ messages }: ChatMessagesProps) => {
                 )}
               >
                 {msg.senderName}
-              </p> */}
+              </p>
               <p className="text-[15px] leading-relaxed">{msg.content}</p>
               <p
                 className={cn(

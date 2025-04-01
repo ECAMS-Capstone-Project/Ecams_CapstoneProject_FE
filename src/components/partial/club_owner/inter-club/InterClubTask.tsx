@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InterClubEventDTO } from "@/models/Event";
 
 interface Task {
   id: string;
@@ -33,23 +34,11 @@ interface Task {
 interface Club {
   id: string;
   name: string;
-  members: string[];
-}
-
-interface InterClubEvent {
-  id: string;
-  name: string;
-  description: string;
-  startDate: Date;
-  endDate: Date;
-  maxParticipants: number;
-  price: number;
-  participatingClubs: string[];
-  status: "UPCOMING" | "ONGOING" | "COMPLETED";
+  // members: string[];
 }
 
 interface InterClubTaskProps {
-  selectedEvent: InterClubEvent | null;
+  selectedEvent: InterClubEventDTO | null;
 }
 
 export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
@@ -73,33 +62,31 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
     // Fetch tasks and clubs
     const fetchData = async () => {
       // Mock data
-      const mockClubs: Club[] = selectedEvent.participatingClubs.map(
-        (clubName) => ({
-          id: clubName.toLowerCase().replace(/\s+/g, "-"),
-          name: clubName,
-          members: ["Member 1", "Member 2", "Member 3"], // TODO: Replace with actual members
-        })
-      );
+      const mockClubs: Club[] = selectedEvent.clubs.map((club) => ({
+        id: club.clubId,
+        name: club.clubName,
+        // members: club., // TODO: Replace with actual members
+      }));
 
       const mockTasks: Task[] = [
         {
           id: "1",
-          title: `Setup for ${selectedEvent.name}`,
+          title: `Setup for ${selectedEvent.eventName}`,
           description: "Prepare the venue and equipment",
-          assignedClub: selectedEvent.participatingClubs[0],
+          assignedClub: selectedEvent.clubs[0].clubName,
           assignedMembers: ["Member 1"],
           status: "TODO",
-          deadline: selectedEvent.startDate,
+          deadline: new Date(),
           createdBy: "Your Club",
         },
         {
           id: "2",
-          title: `Marketing for ${selectedEvent.name}`,
+          title: `Marketing for ${selectedEvent.eventName}`,
           description: "Create and distribute promotional materials",
-          assignedClub: selectedEvent.participatingClubs[1],
+          assignedClub: selectedEvent.clubs[1].clubName,
           assignedMembers: ["Member 4"],
           status: "IN_PROGRESS",
-          deadline: selectedEvent.startDate,
+          deadline: new Date(),
           createdBy: "Your Club",
         },
       ];

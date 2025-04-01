@@ -69,7 +69,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Reason for joining the club:
+                Why do you want to join our club?
               </label>
               <textarea
                 placeholder="Share why you want to join this club..."

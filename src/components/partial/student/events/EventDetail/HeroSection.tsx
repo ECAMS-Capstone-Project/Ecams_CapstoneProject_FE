@@ -26,7 +26,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ event }) => {
             <h1 className="mb-2 text-5xl font-bold leading-tight w-fit">
               {event?.eventName}
             </h1>
-            <p className="text-2xl font-semibold">{event?.clubName}</p>
+            <p className="text-2xl font-semibold">
+              {Array.isArray(event?.clubs)
+                ? event?.clubs.map((club) => club.clubName).join(", ")
+                : ""}
+            </p>
           </motion.div>
         </div>
         <motion.div

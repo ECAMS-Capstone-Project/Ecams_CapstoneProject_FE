@@ -63,6 +63,8 @@ import { EventCheckIn } from "@/pages/club-owner/event/EventCheckIn";
 import { StudentEventSection } from "@/components/partial/student/events/student-events/StudentEventSection";
 import EventParticipants from "@/pages/club-owner/event/EventParticipants";
 import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
+import { CreateInterClubEventPage } from "@/pages/club-owner/inter-club-event/CreateInterClubEvent";
+import { EventDetailPage } from "@/pages/club-owner/inter-club-event/EventDetail";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -411,6 +413,16 @@ export const router = createBrowserRouter([
       {
         path: "/club/inter-club-event",
         element: <InterClubEvent />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/create",
+        element: <CreateInterClubEventPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/:clubEventId",
+        element: <EventDetailPage />,
         errorElement: <ErrorException />,
       },
     ],

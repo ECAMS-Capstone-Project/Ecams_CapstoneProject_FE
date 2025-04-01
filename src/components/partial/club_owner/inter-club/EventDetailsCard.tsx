@@ -1,99 +1,124 @@
-import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
 import { format } from "date-fns";
-import { Calendar, Users, Building2, Clock } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
+  Building2,
+  ArrowLeft,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { InterClubEventDTO } from "@/models/Event";
+import { useNavigate } from "react-router-dom";
 
 interface EventDetailsCardProps {
-  selectedEvent: InterClubEvent;
+  selectedEvent: InterClubEventDTO;
 }
 
 export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
-  const getStatusColor = (status: InterClubEvent["status"]) => {
-    switch (status) {
-      case "UPCOMING":
-        return "bg-[#136CB9]/10 text-[#136CB9] border border-[#136CB9]/20";
-      case "ONGOING":
-        return "bg-[#49BBBD]/10 text-[#49BBBD] border border-[#49BBBD]/20";
-      case "COMPLETED":
-        return "bg-gray-100 text-gray-800 border border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border border-gray-200";
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="p-6 border border-[#e5e7eb] rounded-lg bg-gradient-to-br from-[#136CB9]/5 via-[#49BBBD]/5 to-[#136CB9]/5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-[#136cb9]">
-          {selectedEvent.name}
-        </h2>
-        <span
-          className={cn(
-            "px-3 py-1 rounded-full text-sm font-medium",
-            getStatusColor(selectedEvent.status)
-          )}
+    <div className="bg-[#136cb9]/10 rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb] p-6">
+      {/* Header với nút back */}
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-white rounded-full transition-colors"
         >
-          {selectedEvent.status}
-        </span>
+          <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-[#136cb9]">
+            {selectedEvent.eventName}
+          </h1>
+          <p className="text-gray-600 mt-1">{selectedEvent.description}</p>
+        </div>
       </div>
-      <p className="text-muted-foreground mb-4">{selectedEvent.description}</p>
-      <div className="rounded-lg bg-white/50 border border-[#e5e7eb]">
-        <div className="flex items-center gap-3 p-2 ">
-          <Calendar className="h-5 w-5 text-[#136cb9]" />
-          <div>
-            <p className="text-sm font-medium">Event Period</p>
-            <p className="text-sm text-muted-foreground">
-              {format(selectedEvent.startDate, "MMM d, yyyy")} -{" "}
-              {format(selectedEvent.endDate, "MMM d, yyyy")}
-            </p>
+
+      {/* Badge loại event */}
+      <div className="mb-6">
+        <Badge
+          variant="outline"
+          className="bg-white text-[#136cb9] border-[#136cb9]/20"
+        >
+          {selectedEvent.eventType}
+        </Badge>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Thông tin cơ bản */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <Calendar className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-gray-700">
+              {format(
+                new Date(selectedEvent.registeredStartDate),
+                "dd/MM/yyyy"
+              )}{" "}
+              -{format(new Date(selectedEvent.registeredEndDate), "dd/MM/yyyy")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <Clock className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-gray-700">
+              {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -
+              {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <Users className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-gray-700">
+              {selectedEvent.numOfParticipants}/{selectedEvent.maxParticipants}{" "}
+              participants
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-2">
-          <Users className="h-5 w-5 text-[#136cb9]" />
-          <div>
-            <p className="text-sm font-medium">Max Participants</p>
-            <p className="text-sm text-muted-foreground">
-              {selectedEvent.maxParticipants} people
-            </p>
+        {/* Thông tin bổ sung */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <MapPin className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-gray-700">
+              Areas:{" "}
+              {selectedEvent.eventAreas?.map((area) => area.name).join(", ")}
+            </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 p-2">
-          <Building2 className="h-5 w-5 text-[#136cb9]" />
-          <div>
-            <p className="text-sm font-medium">Participating Clubs</p>
-            <p className="text-sm text-muted-foreground">
-              {selectedEvent.participatingClubs.length} clubs
-            </p>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <Building2 className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-gray-700">
+              {selectedEvent.clubs?.length || 0} clubs
+            </span>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 p-2 ">
-          <Clock className="h-5 w-5 text-[#136cb9]" />
-          <div>
-            <p className="text-sm font-medium">Price</p>
-            <p className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
+            <span className="text-gray-700">Price: </span>
+            <span className="font-medium text-[#136cb9]">
               {selectedEvent.price === 0 ? "Free" : `$${selectedEvent.price}`}
-            </p>
+            </span>
           </div>
         </div>
       </div>
+
+      {/* Danh sách club tham gia */}
       <div className="mt-6">
-        <h3 className="text-sm font-medium mb-2">Participating Clubs</h3>
-        <div className="space-y-2">
-          {selectedEvent.participatingClubs.map((club) => (
-            <div
-              key={club}
-              className="flex items-center gap-2 p-2 rounded-lg bg-white/50 border border-[#e5e7eb] hover:bg-white hover:border-[#136cb9]/20 transition-all duration-200"
+        <h3 className="text-lg font-semibold mb-3 text-[#136cb9]">
+          Participating Clubs
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {selectedEvent.clubs?.map((club) => (
+            <Badge
+              key={club.clubId}
+              variant={club.status === "ACTIVE" ? "default" : "secondary"}
+              className={cn(
+                "text-xs",
+                club.status === "ACTIVE"
+                  ? "bg-green-100 text-green-800 border-green-200"
+                  : "bg-yellow-100 text-yellow-800 border-yellow-200"
+              )}
             >
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#136CB9]/10 to-[#49BBBD]/10 flex items-center justify-center border border-[#136cb9]/20">
-                <span className="text-sm font-medium text-[#136cb9]">
-                  {club.charAt(0)}
-                </span>
-              </div>
-              <span className="text-sm">{club}</span>
-            </div>
+              {club.clubName} ({club.status})
+            </Badge>
           ))}
         </div>
       </div>

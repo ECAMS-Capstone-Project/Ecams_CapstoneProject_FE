@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable react-hooks/rules-of-hooks */
 import {
   Card,
   CardHeader,
@@ -52,18 +49,13 @@ export const FreeEventConfirm = () => {
             studentId: user?.userId || "",
             eventId: event.eventId,
           },
-
           {
             onSuccess: () => {
-              navigate("/student/events/success", {
-                state: {
-                  event: event,
-                },
-              });
+              navigate("/student/student-events");
             },
             onError: (error) => {
               console.error("Payment failed:", error);
-              toast.error(error?.response?.data?.message || "Payment failed");
+              toast.error(error?.response?.data?.message);
             },
           }
         );
