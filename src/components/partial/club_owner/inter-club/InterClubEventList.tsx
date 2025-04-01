@@ -25,7 +25,6 @@ export const InterClubEventList = () => {
   };
   const { user } = useAuth();
   const { clubs } = useClubs(user?.universityId, 1, 20);
-  console.log("clubs", clubs);
 
   const club = clubs?.filter((club) =>
     club.clubMembers?.some(
@@ -33,8 +32,6 @@ export const InterClubEventList = () => {
         member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
     )
   );
-
-  console.log("club", club);
 
   const { GetInterClubEvent } = useEventDetail();
   const { data: interEvents } = GetInterClubEvent(

@@ -47,19 +47,13 @@ export const EventDetailPage = () => {
     )
   );
 
-  console.log("Current Club:", currentClub);
-  console.log("Event Data:", event?.data);
-
   // Tìm club hiện tại trong danh sách clubs của event
   const currentClubInEvent = event?.data?.clubs?.find(
     (club) => club.clubId === currentClub?.clubId
   );
 
-  console.log("Current Club In Event:", currentClubInEvent);
-
   // Lấy status của club trong event
   const clubStatus = currentClubInEvent?.status;
-  console.log("Club Status:", clubStatus);
 
   // Kiểm tra xem club hiện tại có phải là club tạo event không
   const isCreatorClub = !currentClubInEvent;

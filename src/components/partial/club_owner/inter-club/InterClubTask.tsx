@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { InterClubEventDTO } from "@/models/Event";
+import { useInterTask } from "@/hooks/club/useInterTask";
 
 interface Task {
   id: string;
@@ -42,10 +43,12 @@ interface InterClubTaskProps {
 }
 
 export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [, setTaskList] = useState<Task[]>([]);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(5);
   const [newTask, setNewTask] = useState<Partial<Task>>({
     title: "",
     description: "",
@@ -92,15 +95,15 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
       ];
 
       setClubs(mockClubs);
-      setTasks(mockTasks);
+      setTaskList(mockTasks);
     };
 
     fetchData();
   }, [selectedEvent]);
+  const { tasks } = useInterTask(selectedEvent?.eventId, pageSize, pageNo);
 
   const handleCreateTask = async () => {
     if (!newTask.title || !newTask.assignedClub || !selectedEvent) return;
-
     const task: Task = {
       id: Date.now().toString(),
       title: newTask.title,
@@ -112,7 +115,7 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
       createdBy: "Your Club", // TODO: Replace with actual club name
     };
 
-    setTasks((prev) => [...prev, task]);
+    setTaskList((prev) => [...prev, task]);
     setIsCreateDialogOpen(false);
     setNewTask({
       title: "",
@@ -127,7 +130,7 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
   };
 
   const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    task.taskName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (!selectedEvent) {
@@ -230,36 +233,34 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
         <div className="space-y-4">
           {filteredTasks.map((task) => (
             <div
-              key={task.id}
+              key={task.taskId}
               className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="font-semibold">{task.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {task.description}
-                  </p>
+                  <h3 className="font-semibold">{task.taskName}</h3>
+
                   <div className="flex items-center gap-2 mt-2 text-sm">
                     <span className="text-muted-foreground">
-                      Assigned to: {task.assignedClub}
+                      Assigned to: {task.clubId}
                     </span>
                     <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">
+                    {/* <span className="text-muted-foreground">
                       Created by: {task.createdBy}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
-                      task.status === "TODO"
+                      task.status === true
                         ? "bg-yellow-100 text-yellow-800"
-                        : task.status === "IN_PROGRESS"
+                        : task.status === false
                         ? "bg-blue-100 text-blue-800"
                         : "bg-green-100 text-green-800"
                     }`}
                   >
-                    {task.status}
+                    {task.status ? "Done" : "Not Done"}
                   </span>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4" />
