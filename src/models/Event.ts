@@ -20,9 +20,9 @@ export interface Event {
   imageUrl: string;
   description: string;
   walletId?: string;
-  eventType:string;
+  eventType: string;
   trainingPoint: number;
-  eventField: FieldDTO[]
+  eventField: FieldDTO[];
 }
 
 export interface CheckInInfo {
@@ -40,7 +40,6 @@ export interface CheckInInfo {
   areaName: string[];
 }
 
-
 interface InterClub {
   clubId: string;
   clubName: string;
@@ -50,7 +49,8 @@ interface InterClub {
   foundingDate: string;
   contactEmail: string;
   isEventClub: boolean;
-  status: string; 
+  status: string;
+  isHost: boolean;
 }
 
 // Model cho Club Event
