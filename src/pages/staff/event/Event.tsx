@@ -119,7 +119,7 @@ const Events = () => {
               <EventTable
                 data={events.filter(
                   (events) =>
-                    events.clubId != null &&
+                    events.clubs.length > 0 &&
                     events.status != "PENDING" &&
                     events.representativeId == null
                 )}

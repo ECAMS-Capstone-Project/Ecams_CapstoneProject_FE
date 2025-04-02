@@ -9,9 +9,26 @@ class SignalRService {
       .withAutomaticReconnect()
       .build();
 
-    this.connection.on("ReceiveMessage", (messageId: string, fullName: string, content: string, createdDate: Date, eventId: string, userId: string) => {
-      console.log("Received message from server:", { messageId, fullName, content, createdDate, eventId, userId });
-    });
+    this.connection.on(
+      "ReceiveMessage",
+      (
+        messageId: string,
+        fullName: string,
+        content: string,
+        createdDate: Date,
+        eventId: string,
+        userId: string
+      ) => {
+        console.log("Received message from server:", {
+          messageId,
+          fullName,
+          content,
+          createdDate,
+          eventId,
+          userId,
+        });
+      }
+    );
 
     this.connection.on("ReceiveError", (error: string) => {
       console.error("Error from server:", error);
@@ -51,10 +68,19 @@ class SignalRService {
     }
   }
 
-  public async updateMessage(userId: string, messageId: string, content: string) {
+  public async updateMessage(
+    userId: string,
+    messageId: string,
+    content: string
+  ) {
     try {
       console.log("Updating message:", { userId, messageId, content });
-      await this.connection?.invoke("UpdateMessage", userId, messageId, content);
+      await this.connection?.invoke(
+        "UpdateMessage",
+        userId,
+        messageId,
+        content
+      );
       console.log("Message updated successfully");
     } catch (err) {
       console.error("Error updating message: ", err);
@@ -62,18 +88,37 @@ class SignalRService {
     }
   }
 
-  public onMessageReceived(callback: (messageId: string, senderName: string, content: string, createdDate: Date, userId: string) => void) {
+  public onMessageReceived(
+    callback: (
+      messageId: string,
+      senderName: string,
+      content: string,
+      createdDate: Date,
+      userId: string
+    ) => void
+  ) {
     console.log("Setting up message listener");
-    this.connection?.on("ReceiveMessage", (messageId: string, senderName: string, content: string, createdDate: Date, eventId: string, userId: string) => {
-      callback(messageId, senderName, content, createdDate, userId);
-    });
+    this.connection?.on(
+      "ReceiveMessage",
+      (
+        messageId: string,
+        senderName: string,
+        content: string,
+        createdDate: Date,
+        userId: string
+      ) => {
+        callback(messageId, senderName, content, createdDate, userId);
+      }
+    );
   }
 
   public onMessageDeleted(callback: (messageId: string) => void) {
     this.connection?.on("MessageDeleted", callback);
   }
 
-  public onMessageUpdated(callback: (messageId: string, content: string) => void) {
+  public onMessageUpdated(
+    callback: (messageId: string, content: string) => void
+  ) {
     this.connection?.on("MessageUpdated", callback);
   }
 
@@ -86,4 +131,4 @@ class SignalRService {
   }
 }
 
-export const signalRService = new SignalRService(); 
+export const signalRService = new SignalRService();
