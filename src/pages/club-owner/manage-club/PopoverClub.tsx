@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,8 +10,9 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Ellipsis, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import { ChangeClubOwnerAPI, LeaveClubAPI } from "@/api/club-owner/ClubByUser";
+import { ChangeClubOwnerAPI, ClubMemberDTO, GetMemberInClubsByStatusAPI, LeaveClubAPI } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 interface props {
   isClubOwner: boolean;
@@ -26,7 +27,10 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
-
+  const [members, setMembers] = useState<ClubMemberDTO[]>([]);
+  const [selectedMember, setSelectedMember] = useState<ClubMemberDTO | null>();
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>();
   const handleLeaveClub = () => {
     setOpenLeaveDialog(true)
   };
@@ -59,9 +63,12 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
   async function handleRequest(event: React.FormEvent) {
     event.preventDefault();
     if (clubOwnerId == undefined || !clubOwnerId) return
+    if (!selectedMember) {
+      toast.error('Please select a new club owner from the list.');
+    }
     try {
       setIsLoading(true);
-      await ChangeClubOwnerAPI(clubId, clubOwnerId);
+      await ChangeClubOwnerAPI(clubId, clubOwnerId, { leaveReason: reason, requestedMemberId: selectedMember!.userId });
       toast.success("Request to change successfully.");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -70,6 +77,30 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       setIsLoading(false);
     }
   }
+
+  // Gọi API danh sách member theo searchQuery
+  useEffect(() => {
+    const fetchMembers = async () => {
+      setIsLoadingMembers(true);
+      try {
+        const response = await GetMemberInClubsByStatusAPI(clubId, 1000, 1, "ACTIVE");
+        setMembers((response.data?.data || []).filter(
+          (member) => member.clubRoleName !== "CLUB_OWNER"
+        ));
+        console.log((response.data?.data || []).filter(
+          (member) => member.clubRoleName !== "CLUB_OWNER"
+        ));
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoadingMembers(false);
+      }
+    };
+
+    // Gọi API luôn ngay cả khi searchQuery rỗng (để load danh sách mặc định)
+    fetchMembers();
+  }, [clubId]);
+
 
   return (
     <>
@@ -97,12 +128,14 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
                 </button>
               </>
             )}
-            <button
-              onClick={handleLeaveClub}
-              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
-            >
-              Leave Club
-            </button>
+            {!isClubOwner && (
+              <button
+                onClick={handleLeaveClub}
+                className="px-4 py-2 text-left hover:bg-gray-100 rounded-md w-full"
+              >
+                Leave Club
+              </button>
+            )}
           </div>
         </PopoverContent>
       </Popover>
@@ -181,12 +214,15 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
             <h2 className="text-lg font-semibold">Change New Club Owner</h2>
           </DialogHeader>
           <DialogDescription>
-            Your current club owner's information is below and you can request to change new club-owner.
+            <h2 className="text-lg font-semibold text-black">Information</h2>
+            Your current club owner's information is below
           </DialogDescription>
-          <div className="flex items-center gap-4 my-4 p-4 border border-gray-200 rounded-md">
+
+          {/* Thông tin chủ hiện tại */}
+          <div className="flex items-center gap-4  p-4 border border-gray-200 rounded-md">
             <img
               src={user?.avatar || 'https://github.com/shadcn.png'}
-              alt={'Club Owner'}
+              alt="Club Owner"
               className="h-12 w-12 rounded-full"
             />
             <div>
@@ -198,8 +234,84 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
               </p>
             </div>
           </div>
+          <div className="flex flex-col gap-4 mb-1">
+            <label className="text-lg font-semibold text-gray-800">
+              Reason
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="w-full rounded-md border border-gray-300 p-4 text-gray-700"
+              placeholder="Enter your reason why you want to leave this club"
+              rows={2}
+            />
+          </div>
+          <div className="mb-2 mt-1">
+            <h2 className="text-lg font-semibold">Recommendation</h2>
+            <DialogDescription style={{ marginBottom: "20px" }}>
+              Search and select a new member to become the club owner.
+            </DialogDescription>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full text-left">
+                  {selectedMember ? (
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={selectedMember.avatar || 'https://github.com/shadcn.png'}
+                        alt={selectedMember.fullname || 'Member'}
+                        className="h-8 w-8 rounded-full"
+                      />
+                      <span>{selectedMember.fullname}</span>
+                    </div>
+                  ) : (
+                    "Choose Recommend Member"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" forceMount>
+                <Command>
+                  <CommandInput
+                    placeholder="Search New Member"
+                    value={searchQuery}
+                    onValueChange={setSearchQuery}
+                    className="pl-10"
+                  />
+                  <div className="max-h-24 overflow-y-auto" onWheel={(e) => e.stopPropagation()}>
+                    <CommandList>
+                      {isLoadingMembers ? (
+                        <CommandEmpty>Loading...</CommandEmpty>
+                      ) : members.length === 0 ? (
+                        <CommandEmpty>No members found.</CommandEmpty>
+                      ) : (
+                        members.map((member) => (
+                          <CommandItem
+                            key={member.clubMemberId}
+                            onSelect={() => {
+                              setSelectedMember(member);
+                            }}
+                            className="flex items-center gap-3"
+                          >
+                            <img
+                              src={member.avatar || 'https://github.com/shadcn.png'}
+                              alt={member.fullname || 'Member'}
+                              className="h-8 w-8 rounded-full"
+                            />
+                            <div>
+                              <p className="font-semibold text-gray-800">{member.fullname}</p>
+                              <p className="text-gray-600 text-sm">{member.email}</p>
+                            </div>
+                          </CommandItem>
+                        ))
+                      )}
+                    </CommandList>
+                  </div>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <DialogFooter>
-            <Button type="button" onClick={handleRequest} disabled={isLoading} color="primary">
+            <Button type="button" onClick={handleRequest} disabled={!selectedMember} color="primary">
               Request Change
             </Button>
           </DialogFooter>

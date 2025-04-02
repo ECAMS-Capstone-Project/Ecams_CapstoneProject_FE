@@ -63,6 +63,7 @@ import RepresentativeRequestsPage from "@/pages/representative/club-owner-reques
 import ClubSchedulePage from "@/pages/club-owner/club-schedule/ClubSchedulePage";
 import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
 import RepresentativeInformationPage from "@/pages/representative/request-to-change/RepresentativeInfoPage";
+import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -161,7 +162,7 @@ export const router = createBrowserRouter([
         element: <Policy />,
       },
       {
-        path: "/admin/test",
+        path: "/admin/request-representative",
         element: <AdminRepRequestsPage />
       },
     ],
@@ -264,13 +265,18 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/representative/test-ne",
+        path: "/representative/request-change-owner",
         element: <RepresentativeRequestsPage />,
         errorElement: <ErrorException />
       },
       {
         path: "/representative/request-change",
         element: <RepresentativeInformationPage />,
+        errorElement: <ErrorException />
+      },
+      {
+        path: "/representative/history-representative",
+        element: <UniversityRepresentativeHistory />,
         errorElement: <ErrorException />
       }
     ],

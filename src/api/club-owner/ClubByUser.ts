@@ -500,14 +500,16 @@ export const GetMemberInClubsByStatusAPI = async (clubId: string, pageSize: numb
     }
 };
 
-export const ChangeClubOwnerAPI = async (clubId: string, clubOwnerId: string): Promise<ResponseDTO<string>> => {
+export const ChangeClubOwnerAPI = async (clubId: string, clubOwnerId: string, data: { leaveReason: string, requestedMemberId: string }): Promise<ResponseDTO<string>> => {
     try {
-        const response = await post<ResponseDTO<string>>(`/Clubs/${clubId}/owner/${clubOwnerId}/change`);
+        const response = await put<ResponseDTO<string>>(`/Clubs/${clubId}/owner/${clubOwnerId}/change`, data);
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error("Something went wrong. Please try again.");
         } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
         }
         if (error.response) {

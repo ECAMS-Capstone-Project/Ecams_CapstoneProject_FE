@@ -8,88 +8,94 @@ import {
     DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FieldDTO, GetAllFields } from "@/api/club-owner/RequestClubAPI";
+import { UpdateUserPreferenceAPI } from "@/api/student/UserPreference";
+import useAuth from "@/hooks/useAuth";
 
 const UserPreferencePopup: React.FC = () => {
-    // State để điều khiển mở/đóng popup
-    const [open, setOpen] = useState(true);
-    // State lưu các lựa chọn của người dùng
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
-
-    // Danh sách các danh mục và phong cách mẫu
-    const categories = ["Music", "Art", "Sports", "Tech", "Travel"];
-    const styles = ["Casual", "Formal", "Trendy", "Vintage"];
-
+    const [open, setOpen] = useState(false);
+    const [fields, setFields] = useState<FieldDTO[]>([]);
+    const [selectedFieldIds, setSelectedFieldIds] = useState<string[]>([]);
+    const [doNotShowAgain, setDoNotShowAgain] = useState<boolean>(false);
+    const { user } = useAuth();
     useEffect(() => {
         const submitted = localStorage.getItem("hasSubmittedPreferences");
-        if (!submitted) {
+        const suppressed = localStorage.getItem("suppressPreferencePopup");
+
+        if (!submitted && suppressed !== "true") {
             setOpen(true);
         }
+
+        const fetchFields = async () => {
+            try {
+                const response = await GetAllFields();
+                setFields(response.data || []);
+            } catch (error) {
+                console.error("Failed to fetch fields", error);
+            }
+        };
+
+        fetchFields();
     }, []);
 
-    // Hàm toggle để thêm/bỏ lựa chọn
-    const toggleSelection = (
-        value: string,
-        currentSelections: string[],
-        setSelections: React.Dispatch<React.SetStateAction<string[]>>
-    ) => {
-        if (currentSelections.includes(value)) {
-            setSelections(currentSelections.filter((item) => item !== value));
-        } else {
-            setSelections([...currentSelections, value]);
-        }
+    const toggleFieldSelection = (fieldId: string) => {
+        setSelectedFieldIds((prev) =>
+            prev.includes(fieldId)
+                ? prev.filter((id) => id !== fieldId)
+                : [...prev, fieldId]
+        );
     };
 
-    // Xử lý lưu các lựa chọn (có thể gọi API lưu vào backend nếu cần)
-    const handleSave = () => {
-        console.log("Selected Categories:", selectedCategories);
-        console.log("Selected Styles:", selectedStyles);
-        localStorage.setItem("hasSubmittedPreferences", "true");
-
-        // Sau khi lưu, đóng popup
-        setOpen(false);
+    const handleSave = async () => {
+        try {
+            if (!user?.userId) return;
+            await UpdateUserPreferenceAPI(user.userId, { fieldIds: selectedFieldIds });
+            localStorage.setItem("hasSubmittedPreferences", "true");
+            if (doNotShowAgain) {
+                localStorage.setItem("suppressPreferencePopup", "true");
+            }
+            setOpen(false);
+        } catch (error) {
+            console.error("Failed to save preferences", error);
+        }
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Customize Your Recommendations</DialogTitle>
+                    <DialogTitle>Customize Your Interests</DialogTitle>
                     <DialogDescription>
-                        Choose your favorite categories and styles so we can recommend events and clips tailored for you.
+                        Select the fields you're interested in to personalize your experience.
                     </DialogDescription>
                 </DialogHeader>
 
-                {/* Favorite Categories */}
                 <div className="mt-4">
-                    <p className="font-medium">Favorite Categories</p>
+                    <p className="font-medium">Available Fields</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                        {categories.map((category) => (
+                        {fields.map((field) => (
                             <Button
-                                key={category}
-                                variant={selectedCategories.includes(category) ? "default" : "outline"}
-                                onClick={() => toggleSelection(category, selectedCategories, setSelectedCategories)}
+                                key={field.fieldId}
+                                variant={selectedFieldIds.includes(field.fieldId) ? "default" : "outline"}
+                                onClick={() => toggleFieldSelection(field.fieldId)}
                             >
-                                {category}
+                                {field.fieldName}
                             </Button>
                         ))}
                     </div>
                 </div>
 
-                {/* Preferred Styles */}
-                <div className="mt-4">
-                    <p className="font-medium">Preferred Styles</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                        {styles.map((style) => (
-                            <Button
-                                key={style}
-                                variant={selectedStyles.includes(style) ? "default" : "outline"}
-                                onClick={() => toggleSelection(style, selectedStyles, setSelectedStyles)}
-                            >
-                                {style}
-                            </Button>
-                        ))}
-                    </div>
+                <div className="mt-4 flex items-center space-x-2">
+                    <input
+                        type="checkbox"
+                        id="doNotShowAgain"
+                        checked={doNotShowAgain}
+                        onChange={(e) => setDoNotShowAgain(e.target.checked)}
+                        className="w-4 h-4"
+                    />
+                    <label htmlFor="doNotShowAgain" className="text-sm text-gray-600">
+                        Don't show this again
+                    </label>
                 </div>
 
                 <DialogFooter>

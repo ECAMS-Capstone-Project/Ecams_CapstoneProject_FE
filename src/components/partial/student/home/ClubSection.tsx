@@ -12,7 +12,7 @@ export const ClubsSection = () => {
   const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
 
   return (
-    <section className="py-12">
+    <section className="py-12 pt-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-gray-800">
           Trending{" "}

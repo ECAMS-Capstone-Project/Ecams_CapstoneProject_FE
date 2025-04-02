@@ -4,6 +4,7 @@ import { Grid2, Typography } from "@mui/material";
 import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 import { formatDate } from "date-fns";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
+import ClubOwnerHistoryDialog from "../../representative-history-owner/ClubOwnerHistoryDialog";
 
 
 interface ClubDetailDialogProps {
@@ -95,7 +96,7 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
           </div>
         </Grid2>
       </Grid2>
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-6 mb-6">
         <Avatar className="w-72 h-52 rounded-lg">
           <AvatarImage
             src={initialData?.logoUrl || "https://github.com/shadcn.png"}
@@ -104,6 +105,7 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
           />
         </Avatar>
       </div>
+      <ClubOwnerHistoryDialog clubId={initialData!.clubId} />
     </div>
   );
 };

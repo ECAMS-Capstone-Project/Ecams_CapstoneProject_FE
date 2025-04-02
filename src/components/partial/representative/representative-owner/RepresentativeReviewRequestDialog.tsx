@@ -7,31 +7,12 @@ import {
     CardContent,
     CardFooter,
 } from "@/components/ui/card";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
-
-export interface ReviewRequest {
-    requestId: string;
-    clubId: string;
-    clubName: string;
-    currentOwner: string;
-    requestedCandidate: { id: string; name: string };
-    requestReason: string;
-}
+import { ClubOwnerChangeResponseDTO } from "@/api/representative/RequestChangeOwner";
+import { UserCircleIcon } from "lucide-react";
 
 interface RepresentativeReviewRequestDialogProps {
-    request: ReviewRequest;
-    // Danh sách thành viên hiện có trong club (để chọn khi approve)
-    memberList: { id: string; name: string }[];
+    request: ClubOwnerChangeResponseDTO;
     onClose: () => void;
-    // Khi representative ra quyết định:
-    // - "approve" kèm id thành viên được chọn để làm club-owner mới.
-    // - "deny" kèm lý do từ chối.
     onSubmit: (
         decision: "approve" | "deny",
         options: { denyReason?: string; selectedMemberId?: string }
@@ -40,47 +21,56 @@ interface RepresentativeReviewRequestDialogProps {
 
 const RepresentativeReviewRequestDialog: React.FC<RepresentativeReviewRequestDialogProps> = ({
     request,
-    memberList,
     onClose,
     onSubmit,
 }) => {
     const [decision, setDecision] = useState<"approve" | "deny" | "">("");
     const [denyReason, setDenyReason] = useState<string>("");
-    const [selectedMember, setSelectedMember] = useState<string>(
-        memberList[0]?.id || ""
-    );
 
     const handleSubmit = () => {
         if (decision === "deny") {
             onSubmit("deny", { denyReason });
         } else if (decision === "approve") {
-            onSubmit("approve", { selectedMemberId: selectedMember });
+            onSubmit("approve", { selectedMemberId: request.requestedPerson?.clubMemberId });
         }
     };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <Card className="max-w-xl w-full">
-                <CardHeader>
-                    <CardTitle>Review Change Request</CardTitle>
+            <Card className="max-w-2xl w-full rounded-xl shadow-xl">
+                <CardHeader className="border-b p-6">
+                    <CardTitle className="text-xl font-bold">Review Change Request</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="mb-2">
-                        <strong>Club:</strong> {request.clubName}
+                <CardContent className="p-6 space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="flex items-center gap-4">
+                            <UserCircleIcon className="h-8 w-8 text-gray-600" />
+                            <div>
+                                <p className="text-sm text-gray-500">Current Owner</p>
+                                <p className="font-medium">{request.owner?.fullname}</p>
+                                <p className="text-xs text-gray-500">{request.owner?.email}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 bg-purple-50 p-3 rounded-lg">
+                            <UserCircleIcon className="h-8 w-8 text-purple-600" />
+                            <div>
+                                <p className="text-sm text-gray-500">Requested Candidate</p>
+                                <p className="font-medium text-purple-700">{request.requestedPerson?.fullname}</p>
+                                <p className="text-xs text-gray-500">{request.requestedPerson?.email}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mb-2">
-                        <strong>Current Owner:</strong> {request.currentOwner}
+                    <div>
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Request Reason</p>
+                        <p className="text-sm text-gray-700 bg-gray-100 p-3 rounded-md leading-relaxed">
+                            {request.requestedPerson?.reason}
+                        </p>
                     </div>
-                    <div className="mb-2">
-                        <strong>Requested Candidate:</strong> {request.requestedCandidate.name}
-                    </div>
-                    <div className="mb-4">
-                        <strong>Request Reason:</strong> {request.requestReason}
-                    </div>
-                    {/* Decision Buttons - hiển thị luôn */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium mb-1">Decision</label>
-                        <div className="flex space-x-4">
+
+                    {/* Decision Selection */}
+                    <div>
+                        <p className="text-sm font-medium mb-2">Your Decision</p>
+                        <div className="flex gap-4">
                             <Button
                                 variant={decision === "approve" ? "default" : "outline"}
                                 onClick={() => setDecision("approve")}
@@ -95,51 +85,29 @@ const RepresentativeReviewRequestDialog: React.FC<RepresentativeReviewRequestDia
                             </Button>
                         </div>
                     </div>
-                    {/* Các trường nhập liệu xuất hiện khi có quyết định */}
+
                     {decision === "deny" && (
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">
-                                Deny Reason
-                            </label>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Reason for Denial</label>
                             <textarea
-                                placeholder="Enter reason for denial"
+                                placeholder="Enter reason..."
                                 value={denyReason}
                                 onChange={(e) => setDenyReason(e.target.value)}
+                                className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                rows={3}
                             />
                         </div>
                     )}
-                    {decision === "approve" && (
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-1">
-                                Select Member to Promote
-                            </label>
-                            <Select
-                                value={selectedMember}
-                                onValueChange={(val) => setSelectedMember(val)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select member" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {memberList.map((member) => (
-                                        <SelectItem key={member.id} value={member.id}>
-                                            {member.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
                 </CardContent>
-                {/* Chỉ hiển thị CardFooter nếu đã có quyết định */}
-                {decision !== "" && (
-                    <CardFooter className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={onClose}>
-                            Cancel
-                        </Button>
+
+                <CardFooter className="flex justify-end gap-2 border-t p-4">
+                    <Button variant="outline" onClick={onClose}>
+                        Cancel
+                    </Button>
+                    {decision && (
                         <Button onClick={handleSubmit}>Submit Decision</Button>
-                    </CardFooter>
-                )}
+                    )}
+                </CardFooter>
             </Card>
         </div>
     );

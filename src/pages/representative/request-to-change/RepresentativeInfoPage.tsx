@@ -5,27 +5,11 @@ import { Users, Edit3, Mail, Phone, School } from "lucide-react";
 import ChangeRepresentativeDialog from "@/components/partial/representative/ChangeRepresentativeDialog";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-
-// Fake current representative data
-const currentRep = {
-    id: "rep1",
-    name: "Alice Johnson",
-    email: "alice.johnson@example.com",
-    phone: "123-456-7890",
-};
+import useAuth from "@/hooks/useAuth";
 
 const RepresentativeInformationPage: React.FC = () => {
     const [openDialog, setOpenDialog] = useState<boolean>(false);
-
-    const handleSubmitChangeRequest = (data: {
-        candidateName: string;
-        candidateEmail: string;
-    }) => {
-        // Here you would call an API to create the change request.
-        console.log("Change request submitted:", data);
-        setOpenDialog(false);
-    };
-
+    const { user } = useAuth();
     return (
         <div className="mx-auto p-4">
             <div className="flex items-center justify-between pt-4">
@@ -39,7 +23,7 @@ const RepresentativeInformationPage: React.FC = () => {
                 <Card className="overflow-hidden shadow-lg rounded-xl">
                     <CardHeader className="flex items-center space-x-4 bg-gradient-to-br from-[#197dd4] to-[#49BBBD] p-4 mb-6">
                         <Users size={24} className="ml-3 text-white" />
-                        <CardTitle className="text-white text-lg">{currentRep.name} - Representative</CardTitle>
+                        <CardTitle className="text-white text-lg">{user?.fullname} - Representative</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="p-4 border border-gray-200 rounded-md mb-5">
@@ -51,17 +35,17 @@ const RepresentativeInformationPage: React.FC = () => {
                                 <p className="flex items-center space-x-2">
                                     <Mail size={16} className="text-gray-500" />
                                     <span>
-                                        <strong>Email:</strong> {currentRep.email}
+                                        <strong>Email:</strong> {user?.email}
                                     </span>
                                 </p>
                                 <p className="flex items-center space-x-2 mt-2">
                                     <Phone size={16} className="text-gray-500" />
                                     <span>
-                                        <strong>Phone:</strong> {currentRep.phone}
+                                        <strong>Phone:</strong> {user?.phonenumber}
                                     </span>
                                 </p>
                                 <p className="text-sm text-gray-600 mt-2">
-                                    This is your current representative assigned for the club.
+                                    This is your current info.
                                 </p>
                             </div>
                         </div>
@@ -72,10 +56,10 @@ const RepresentativeInformationPage: React.FC = () => {
                             </h3>
                             <div className="space-y-2">
                                 <p className="flex items-center space-x-2">
-                                    <strong className="mr-2">University Name:</strong> {'FPT University'}
+                                    <strong className="mr-2">University Name:</strong> {user?.universityName}
                                 </p>
                                 <p className="flex items-center space-x-2">
-                                    <strong className="mr-2">University Email:</strong> {'fpt-education.edu.vn'}
+                                    <strong className="mr-2">University Role:</strong> {user?.roles}
                                 </p>
                                 <p className="text-sm text-gray-600">
                                     This is the university associated with the club.
@@ -94,7 +78,6 @@ const RepresentativeInformationPage: React.FC = () => {
             {openDialog && (
                 <ChangeRepresentativeDialog
                     onClose={() => setOpenDialog(false)}
-                    onSubmit={handleSubmitChangeRequest}
                 />
             )}
         </div>
