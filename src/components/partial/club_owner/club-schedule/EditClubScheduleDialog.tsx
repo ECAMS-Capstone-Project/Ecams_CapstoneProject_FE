@@ -16,15 +16,15 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 
-// Interface theo schema của ClubSchedule
 export interface ClubSchedule {
-    ClubScheduleId: string;
-    ClubId: string;
-    ScheduleName: string;
-    DayOfWeek: string;
-    StartTime: string; // "HH:MM" format
-    EndTime: string;   // "HH:MM" format
-    Status: boolean;
+    clubScheduleId: string;
+    clubId: string;
+    scheduleName: string;
+    dayOfWeek: string;
+    startTime: string; // "HH:mm"
+    endTime: string;   // "HH:mm"
+    startDate: string; // ISO
+    endDate: string;   // ISO
 }
 
 interface EditClubScheduleDialogProps {
@@ -38,21 +38,22 @@ const EditClubScheduleDialog: React.FC<EditClubScheduleDialogProps> = ({
     onClose,
     onSubmit,
 }) => {
-    // Khởi tạo state từ dữ liệu schedule hiện có.
-    const [scheduleName, setScheduleName] = useState(schedule.ScheduleName);
-    const [dayOfWeek, setDayOfWeek] = useState(schedule.DayOfWeek);
-    const [startTime, setStartTime] = useState(schedule.StartTime);
-    const [endTime, setEndTime] = useState(schedule.EndTime);
-    const [status, setStatus] = useState(schedule.Status);
+    const [scheduleName, setScheduleName] = useState(schedule.scheduleName);
+    const [dayOfWeek, setDayOfWeek] = useState(schedule.dayOfWeek);
+    const [startTime, setStartTime] = useState(schedule.startTime);
+    const [endTime, setEndTime] = useState(schedule.endTime);
+    const [startDate, setStartDate] = useState(schedule.startDate.split("T")[0]);
+    const [endDate, setEndDate] = useState(schedule.endDate.split("T")[0]);
 
     const handleSubmit = () => {
         onSubmit({
             ...schedule,
-            ScheduleName: scheduleName,
-            DayOfWeek: dayOfWeek,
-            StartTime: startTime,
-            EndTime: endTime,
-            Status: status,
+            scheduleName,
+            dayOfWeek,
+            startTime,
+            endTime,
+            startDate: new Date(startDate).toISOString(),
+            endDate: new Date(endDate).toISOString(),
         });
     };
 
@@ -62,6 +63,7 @@ const EditClubScheduleDialog: React.FC<EditClubScheduleDialogProps> = ({
                 <DialogHeader>
                     <DialogTitle>Edit Club Schedule</DialogTitle>
                 </DialogHeader>
+
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Schedule Name</label>
@@ -71,6 +73,7 @@ const EditClubScheduleDialog: React.FC<EditClubScheduleDialogProps> = ({
                             placeholder="Enter schedule name"
                         />
                     </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-1">Day of Week</label>
                         <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
@@ -78,42 +81,37 @@ const EditClubScheduleDialog: React.FC<EditClubScheduleDialogProps> = ({
                                 <SelectValue placeholder="Select day" />
                             </SelectTrigger>
                             <SelectContent>
-                                {[
-                                    "Monday",
-                                    "Tuesday",
-                                    "Wednesday",
-                                    "Thursday",
-                                    "Friday",
-                                    "Saturday",
-                                    "Sunday",
-                                ].map((day) => (
-                                    <SelectItem key={day} value={day}>
-                                        {day}
-                                    </SelectItem>
+                                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
+                                    <SelectItem key={day} value={day}>{day}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex space-x-4">
-                        <div className="flex-1">
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
                             <label className="block text-sm font-medium mb-1">Start Time</label>
                             <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
                         </div>
-                        <div className="flex-1">
+                        <div>
                             <label className="block text-sm font-medium mb-1">End Time</label>
                             <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
                         </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            checked={status}
-                            onChange={(e) => setStatus(e.target.checked)}
-                            className="form-checkbox"
-                        />
-                        <span className="text-sm">Active</span>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Start Date</label>
+                            <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">End Date</label>
+                            <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                        </div>
                     </div>
+
                 </div>
+
                 <DialogFooter className="flex justify-end space-x-2 mt-4">
                     <Button variant="outline" onClick={onClose}>
                         Cancel

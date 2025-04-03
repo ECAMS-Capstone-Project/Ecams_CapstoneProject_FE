@@ -92,12 +92,26 @@ interface EventSchedule {
     endDate: string;
 }
 
-interface ClubSchedule {
+export interface ClubSchedule {
+    clubScheduleId: string;
+    clubId: string;
+    scheduleName: string;
+    dayOfWeek: string;
+    startTime: string;
+    endTime: string;
+    startDate: string;
+    endDate: string;
+    status?: boolean;
+}
+
+export interface ClubSchedule2 {
     clubName: string;
     scheduleName: string;
-    dayOfWeek: string; // e.g. "Webnesday" (may be misspelled)
-    startTime: string; // e.g. "12" (for 12:00)
-    endTime: string;   // e.g. "13" (for 13:00)
+    dayOfWeek: string;
+    startTime: string;
+    endTime: string;
+    startDate: string;
+    endDate: string;
     status: boolean;
 }
 
@@ -106,12 +120,23 @@ export interface StudentScheduleData {
     email: string;
     fullname: string;
     eventSchedules: EventSchedule[];
-    clubSchedules: ClubSchedule[];
+    clubSchedules: ClubSchedule2[];
 }
 
 export const GetScheduleStudentByIdAPI = async (userId: string): Promise<ResponseDTO<StudentScheduleData>> => {
     try {
         const response = await get<ResponseDTO<StudentScheduleData>>(`/User/${userId}/schedule`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetScheduleClubAPI = async (clubId: string): Promise<ResponseDTO<ResponseData<ClubSchedule>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<ClubSchedule>>>(`/ClubSchedules/Club/${clubId}?PageNumber=1&PageSize=1000`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

@@ -14,7 +14,9 @@ import { AcceptOrDenyOwnerRequestAPI, ClubOwnerChangeResponseDTO, GetRequestChan
 import { ArrowLeftIcon, ArrowRightIcon, ChevronRightIcon, UserCircleIcon } from "lucide-react";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import toast from "react-hot-toast";
+import LoadingAnimation from "@/components/ui/loading";
 const ITEMS_PER_PAGE = 4;
 
 const RepresentativeRequestsPage: React.FC = () => {
@@ -24,48 +26,15 @@ const RepresentativeRequestsPage: React.FC = () => {
     const [selectedRequest, setSelectedRequest] = useState<ClubOwnerChangeResponseDTO | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const { user } = useAuth();
-
+    const [flag, setFlag] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false);
     useEffect(() => {
         async function fetchRequests() {
             try {
                 if (!user?.universityId) return;
                 setLoading(true);
                 const response = await GetRequestChangeClubOwnerAPI(user.universityId);
-                console.log("Response:", response);
                 setRequests(response.data || []);
-                // const fakeData: ClubOwnerChangeResponseDTO[] = Array.from({ length: 10 }, (_, i) => ({
-                //     clubId: `club-${i + 1}`,
-                //     clubName: `CLB Số ${i + 1}`,
-                //     owner: {
-                //         userId: `user-owner-${i}`,
-                //         studentId: `S${1000 + i}`,
-                //         clubMemberId: `cm-owner-${i}`,
-                //         clubRoleName: ClubRoleEnum.CLUB_MEMBER,
-                //         fullname: `Nguyễn Văn A${i}`,
-                //         email: `owner${i}@university.edu.vn`,
-                //         avatar: "",
-                //         phoneNumber: "0900000000",
-                //         dateOfBirth: "2000-01-01",
-                //         reason: "Lý do đảm nhiệm vị trí trước đó",
-                //         clubActivityPoint: 85,
-                //         status: ClubMemberStatusEnum.ACTIVE,
-                //     },
-                //     requestedPerson: {
-                //         userId: `user-requested-${i}`,
-                //         studentId: `S${2000 + i}`,
-                //         clubMemberId: `cm-request-${i}`,
-                //         clubRoleName: ClubRoleEnum.CLUB_MEMBER,
-                //         fullname: `Trần Thị B${i}`,
-                //         email: `requested${i}@university.edu.vn`,
-                //         avatar: "",
-                //         phoneNumber: "0900111222",
-                //         dateOfBirth: "2001-02-02",
-                //         reason: `Tôi muốn tiếp quản câu lạc bộ vì tôi đã có nhiều kinh nghiệm trong ban điều hành.`,
-                //         clubActivityPoint: 92,
-                //         status: ClubMemberStatusEnum.ACTIVE,
-                //     },
-                // }));
-                // setRequests(fakeData);
             } catch (err: any) {
                 setError(err.message || "Error fetching requests");
             } finally {
@@ -73,18 +42,38 @@ const RepresentativeRequestsPage: React.FC = () => {
             }
         }
         fetchRequests();
-    }, [user]);
+    }, [user, flag]);
 
     const totalPages = Math.ceil(requests.length / ITEMS_PER_PAGE);
     const currentRequests = requests.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     const handleReview = (req: ClubOwnerChangeResponseDTO) => setSelectedRequest(req);
     const handleCloseDialog = () => setSelectedRequest(null);
-    const handleSubmitDecision = async (decision: "approve" | "deny", options: { denyReason?: string; selectedMemberId?: string }) => {
-        console.log("Decision:", decision, options, "for request", selectedRequest?.clubId);
-        await AcceptOrDenyOwnerRequestAPI(selectedRequest!.clubId, { isAccepted: decision === "approve", rejectReason: options.denyReason || "" });
-        setRequests((prev) => prev.filter((req) => req.clubId !== selectedRequest?.clubId));
-        setSelectedRequest(null);
+    const handleSubmitDecision = async (
+        decision: "approve" | "deny",
+        options: { denyReason?: string; selectedMemberId?: string }
+    ) => {
+        setIsSubmitting(true);
+
+        try {
+            await AcceptOrDenyOwnerRequestAPI(selectedRequest!.clubId, {
+                isAccepted: decision === "approve",
+                rejectReason: options.denyReason || "",
+            });
+
+            toast.success(
+                decision === "approve"
+                    ? "Approve request successfully"
+                    : "Reject request successfully"
+            );
+
+            setFlag((pre) => !pre);
+            setSelectedRequest(null);
+        } catch (error: any) {
+            console.error("Approval error:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
     const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -99,7 +88,7 @@ const RepresentativeRequestsPage: React.FC = () => {
             </div>
             <Separator className="mt-2 mb-4" />
             {loading ? (
-                <p className="text-center">Loading requests...</p>
+                <LoadingAnimation />
             ) : error ? (
                 <p className="text-center text-red-500">Error: {error}</p>
             ) : requests.length === 0 ? (
@@ -134,9 +123,9 @@ const RepresentativeRequestsPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-2">
-                                        <UserCircleIcon className="h-5 w-5 text-gray-400 mt-1" />
+                                        <ContentPasteIcon className="h-5 w-5 text-gray-400" />
                                         <p className="text-sm text-gray-600">
-                                            <strong>Reason:</strong> {req.owner?.reason}
+                                            <strong>Reason:</strong> {req.owner?.leaveReason}
                                         </p>
                                     </div>
                                 </CardContent>
@@ -165,6 +154,7 @@ const RepresentativeRequestsPage: React.FC = () => {
                     request={selectedRequest}
                     onClose={handleCloseDialog}
                     onSubmit={handleSubmitDecision}
+                    isSubmitting={isSubmitting}
                 />
             )}
         </div>

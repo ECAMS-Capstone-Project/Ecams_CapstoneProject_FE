@@ -1,9 +1,21 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
+import toast from "react-hot-toast";
 
 interface CreateClubScheduleDialogProps {
     onClose: () => void;
@@ -12,19 +24,65 @@ interface CreateClubScheduleDialogProps {
         dayOfWeek: string;
         startTime: string;
         endTime: string;
-        status: boolean;
+        startDate: string;
+        endDate: string;
     }) => void;
 }
 
-const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({ onClose, onSubmit }) => {
-    const [scheduleName, setScheduleName] = useState<string>("");
-    const [dayOfWeek, setDayOfWeek] = useState<string>("Monday");
-    const [startTime, setStartTime] = useState<string>("09:00");
-    const [endTime, setEndTime] = useState<string>("10:00");
-    const [status, setStatus] = useState<boolean>(true);
+const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
+    onClose,
+    onSubmit,
+}) => {
+    const [scheduleName, setScheduleName] = useState("");
+    const [dayOfWeek, setDayOfWeek] = useState("Monday");
+    const [startTime, setStartTime] = useState("09:00");
+    const [endTime, setEndTime] = useState("10:00");
+    const [startDate, setStartDate] = useState(
+        new Date().toISOString().split("T")[0]
+    );
+    const [endDate, setEndDate] = useState(
+        new Date().toISOString().split("T")[0]
+    );
 
     const handleSubmit = () => {
-        onSubmit({ scheduleName, dayOfWeek, startTime, endTime, status });
+        const startTimeValue = parseTime(startTime);
+        const endTimeValue = parseTime(endTime);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        // Check: End time must be after start time
+        if (endTimeValue <= startTimeValue) {
+            toast.error("End time must be after start time");
+            return;
+        }
+
+        // Check: Start date must be >= today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Clear time
+        if (start < today) {
+            toast.error("Start date must be today or later");
+            return;
+        }
+
+        // Check: End date must be >= start date
+        if (end < start) {
+            toast.error("End date must be after or equal to start date");
+            return;
+        }
+
+        onSubmit({
+            scheduleName,
+            dayOfWeek,
+            startTime,
+            endTime,
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
+        });
+    };
+
+    const parseTime = (timeStr: string) => {
+        const [h, m] = timeStr.split(":").map(Number);
+        return h * 60 + m;
     };
 
     return (
@@ -33,6 +91,7 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({ onC
                 <DialogHeader>
                     <DialogTitle>Create Club Schedule</DialogTitle>
                 </DialogHeader>
+
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Schedule Name</label>
@@ -42,6 +101,7 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({ onC
                             placeholder="Enter schedule name"
                         />
                     </div>
+
                     <div>
                         <label className="block text-sm font-medium mb-1">Day of Week</label>
                         <Select value={dayOfWeek} onValueChange={setDayOfWeek}>
@@ -49,7 +109,15 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({ onC
                                 <SelectValue placeholder="Select day" />
                             </SelectTrigger>
                             <SelectContent>
-                                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+                                {[
+                                    "Monday",
+                                    "Tuesday",
+                                    "Wednesday",
+                                    "Thursday",
+                                    "Friday",
+                                    "Saturday",
+                                    "Sunday",
+                                ].map((day) => (
                                     <SelectItem key={day} value={day}>
                                         {day}
                                     </SelectItem>
@@ -57,24 +125,48 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({ onC
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex space-x-4">
-                        <div className="flex-1">
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
                             <label className="block text-sm font-medium mb-1">Start Time</label>
-                            <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+                            <Input
+                                type="time"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                            />
                         </div>
-                        <div className="flex-1">
+                        <div>
                             <label className="block text-sm font-medium mb-1">End Time</label>
-                            <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+                            <Input
+                                type="time"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                            />
                         </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox
-                            checked={status}
-                            onCheckedChange={(val) => setStatus(val as boolean)}
-                        />
-                        <span className="text-sm">Active</span>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Start Date</label>
+                            <Input
+                                type="date"
+                                value={startDate}
+                                min={new Date().toISOString().split("T")[0]}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">End Date</label>
+                            <Input
+                                type="date"
+                                value={endDate}
+                                min={startDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
+
                 <DialogFooter className="flex justify-end space-x-2 mt-4">
                     <Button variant="outline" onClick={onClose}>
                         Cancel

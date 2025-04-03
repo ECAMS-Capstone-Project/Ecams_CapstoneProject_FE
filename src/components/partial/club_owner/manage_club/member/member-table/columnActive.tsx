@@ -44,7 +44,7 @@ export const memberActiveColumn = (
       accessorKey: "clubRoleName",
       header: ({ column }) => (
         <div className="text-center" >
-          <DataTableColumnHeader column={column} title="Role" />
+          <DataTableColumnHeader column={column} title="Position" />
         </div>
       ),
       cell: ({ row }) => {

@@ -22,7 +22,7 @@ export interface User {
 }
 
 interface UserDetailDialogProps {
-  initialData: User | null;
+  initialData: StudentRequest | null;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -58,7 +58,7 @@ const MemberActiveDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData
                   Student ID
                 </Typography>
                 <Typography variant="body2" className="text-gray-700">
-                  {member?.studentId}
+                  {initialData?.studentId}
                 </Typography>
               </div>
               <div className="mb-3">

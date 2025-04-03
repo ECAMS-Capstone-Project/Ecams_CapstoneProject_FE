@@ -8,46 +8,16 @@ import { Button } from "@/components/ui/button";
 import CreateClubScheduleDialog from "@/components/partial/club_owner/club-schedule/CreateClubScheduleDialog";
 import EditClubScheduleDialog from "@/components/partial/club_owner/club-schedule/EditClubScheduleDialog";
 import toast from "react-hot-toast";
+import { ClubSchedule, GetScheduleClubAPI } from "@/api/representative/StudentAPI";
+import { Divider } from "@mui/material";
 
-// Fake data theo schema: ClubScheduleId, ClubId, ScheduleName, DayOfWeek, StartTime, EndTime, Status.
-interface ClubSchedule {
-    ClubScheduleId: string;
-    ClubId: string;
-    ScheduleName: string;
-    DayOfWeek: string;
-    StartTime: string; // format: "HH:MM", ví dụ "12:00"
-    EndTime: string;   // format: "HH:MM", ví dụ "13:00"
-    Status: boolean;
-}
-
-const fakeClubSchedules: ClubSchedule[] = [
-    {
-        ClubScheduleId: "cs1",
-        ClubId: "club1",
-        ScheduleName: "Weekly Meeting",
-        DayOfWeek: "Wednesday",
-        StartTime: "12:00",
-        EndTime: "13:00",
-        Status: true,
-    },
-    {
-        ClubScheduleId: "cs2",
-        ClubId: "club1",
-        ScheduleName: "Workshop",
-        DayOfWeek: "Friday",
-        StartTime: "14:00",
-        EndTime: "16:00",
-        Status: true,
-    },
-];
-
-// Mapping day names to rrule weekday abbreviations.
 const dayMap: Record<string, string> = {
     Monday: "MO",
     Tuesday: "TU",
     Wednesday: "WE",
     Webnesday: "WE",
     Thursday: "TH",
+    Thurday: "TH",
     Friday: "FR",
     Saturday: "SA",
     Sunday: "SU",
@@ -61,26 +31,19 @@ const dayMap: Record<string, string> = {
     sunday: "SU",
 };
 
-// Helper: Tính dtstart dựa trên một ngày cố định (ví dụ 2025-03-17 là thứ Hai) cộng thêm offset của ngày.
-function getDtStartForWeekday(weekday: string): string {
-    const baseDate = new Date("2025-03-17"); // 2025-03-17 là thứ Hai.
-    const weekdayOffset: Record<string, number> = {
-        Monday: 0,
-        Tuesday: 1,
-        Wednesday: 2,
-        Webnesday: 2,
-        Thursday: 3,
-        Friday: 4,
-        Saturday: 5,
-        Sunday: 6,
-    };
-    const offset = weekdayOffset[weekday] ?? 0;
-    const dt = new Date(baseDate);
-    dt.setDate(dt.getDate() + offset);
-    const year = dt.getFullYear();
-    const month = (dt.getMonth() + 1).toString().padStart(2, "0");
-    const day = dt.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
+function getFirstWeekdayFromStart(startDateStr: string, dayOfWeek: string): string {
+    const dayCode = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+    const targetDay = dayCode.indexOf(dayMap[dayOfWeek]);
+    if (targetDay === -1) return startDateStr;
+
+    const start = new Date(startDateStr);
+    if (isNaN(start.getTime())) return "2025-01-01";
+
+    const startDay = start.getDay();
+    const diff = (targetDay - startDay + 7) % 7;
+    start.setDate(start.getDate() + diff);
+
+    return start.toISOString().split("T")[0];
 }
 
 const ClubSchedulePage: React.FC = () => {
@@ -89,64 +52,71 @@ const ClubSchedulePage: React.FC = () => {
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
     const [openEditDialog, setOpenEditDialog] = useState<ClubSchedule | null>(null);
 
-    // Giả lập fetch dữ liệu từ API
     useEffect(() => {
         async function fetchSchedules() {
             await new Promise((resolve) => setTimeout(resolve, 500));
-            setSchedules(fakeClubSchedules);
+            const response = await GetScheduleClubAPI("b2fa90e4-3479-4351-9862-9d2266fc442b");
+            setSchedules(response.data?.data || []);
             setLoading(false);
         }
         fetchSchedules();
     }, []);
 
-    // Chuyển các lịch club sang dạng event của FullCalendar (sử dụng rrule cho sự lặp lại hàng tuần).
     const calendarEvents = schedules
-        .filter((sch) => sch.Status)
+        .filter((sch) => sch.status)
         .map((sch) => {
-            const weekdayAbbrev = dayMap[sch.DayOfWeek] || "MO";
-            const dtstart = getDtStartForWeekday(sch.DayOfWeek);
-            // Giả sử StartTime và EndTime có format "HH:MM"
-            const [startH, startM] = sch.StartTime.split(":").map(Number);
-            const [endH, endM] = sch.EndTime.split(":").map(Number);
-            const startDecimal = startH + startM / 60;
-            const endDecimal = endH + endM / 60;
-            const durationHours = endDecimal - startDecimal;
-            const durationISO = `PT${durationHours}H`;
+            const weekdayAbbrev = dayMap[sch.dayOfWeek] || "MO";
+            const dtStartDate = getFirstWeekdayFromStart(sch.startDate, sch.dayOfWeek);
+
+            const startHour = String(sch.startTime).padStart(2, "0");
+            const endHour = String(sch.endTime).padStart(2, "0");
+
+            const startDateTime = new Date(`${dtStartDate}T${startHour}:00:00`);
+            const endDateTime = new Date(`${dtStartDate}T${endHour}:00:00`);
+
+            const untilDate = new Date(sch.endDate);
+            const validUntil = isNaN(untilDate.getTime()) || untilDate.getFullYear() <= 1900
+                ? new Date(new Date().getFullYear(), 11, 31, 23, 59, 59).toISOString()
+                : untilDate.toISOString();
+
             return {
-                id: sch.ClubScheduleId,
-                title: sch.ScheduleName,
+                id: sch.clubScheduleId,
+                title: sch.scheduleName,
                 rrule: {
                     freq: "weekly",
                     byweekday: [weekdayAbbrev],
-                    dtstart: `${dtstart}T${sch.StartTime}:00`,
-                    until: "2025-12-31T00:00:00",
+                    dtstart: startDateTime.toISOString(),
+                    until: validUntil,
                 },
-                duration: durationISO,
+                start: startDateTime,
+                end: endDateTime,
                 backgroundColor: "#28a745",
                 extendedProps: {
-                    dayOfWeek: sch.DayOfWeek,
-                    startTime: sch.StartTime,
-                    endTime: sch.EndTime,
+                    dayOfWeek: sch.dayOfWeek,
+                    startTime: sch.startTime,
+                    endTime: sch.endTime,
                     schedule: sch,
                 },
             };
-        });
+        })
 
-    // Custom render cho event trong list view.
+
+
     const renderEventContent = (eventInfo: any) => {
+        const start = String(eventInfo.event.extendedProps.startTime).padStart(2, "0");
+        const end = String(eventInfo.event.extendedProps.endTime).padStart(2, "0");
+
         return (
             <div className="p-2 border-b">
                 <div className="font-bold text-lg">{eventInfo.event.title}</div>
-                <div className="text-sm">
-                    Day: {eventInfo.event.extendedProps.dayOfWeek} | Time:{" "}
-                    {eventInfo.event.extendedProps.startTime} -{" "}
-                    {eventInfo.event.extendedProps.endTime}
+                <div className="text-sm text-muted-foreground">
+                    Day: {eventInfo.event.extendedProps.dayOfWeek} | Time: {start}:00 - {end}:00
                 </div>
             </div>
         );
     };
 
-    // Xử lý click vào event: Nếu event có ngày bắt đầu từ hôm nay trở đi thì mở dialog chỉnh sửa.
+
     const handleEventClick = (info: any) => {
         info.jsEvent.preventDefault();
         const eventStart = info.event.start;
@@ -162,10 +132,9 @@ const ClubSchedulePage: React.FC = () => {
     return (
         <div className="p-6">
             <h2 className="text-3xl font-bold mb-6 text-left">Club Schedules</h2>
-            <div className="flex justify-end mb-10">
-                <Button onClick={() => setOpenCreateDialog(true)}>
-                    Create Club Schedule
-                </Button>
+            <Divider />
+            <div className="flex justify-end mb-10 mt-3">
+                <Button onClick={() => setOpenCreateDialog(true)}>Create Club Schedule</Button>
             </div>
             {loading ? (
                 <p className="text-center">Loading schedules...</p>
@@ -173,11 +142,16 @@ const ClubSchedulePage: React.FC = () => {
                 <div className="mx-auto" style={{ maxWidth: "1200px" }}>
                     <FullCalendar
                         plugins={[listPlugin, interactionPlugin, rrulePlugin]}
-                        initialView="listWeek"
+                        initialView="listMonth"
                         headerToolbar={{
                             left: "prev,next today",
                             center: "title",
                             right: "listMonth,listWeek,listDay",
+                        }}
+                        eventTimeFormat={{
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
                         }}
                         views={{
                             listMonth: { buttonText: "Month" },
@@ -188,6 +162,7 @@ const ClubSchedulePage: React.FC = () => {
                         eventContent={renderEventContent}
                         height="auto"
                         eventClick={handleEventClick}
+                        timeZone="local"
                     />
                 </div>
             )}
@@ -196,13 +171,15 @@ const ClubSchedulePage: React.FC = () => {
                     onClose={() => setOpenCreateDialog(false)}
                     onSubmit={(data) => {
                         const newSchedule: ClubSchedule = {
-                            ClubScheduleId: `cs-${Date.now()}`,
-                            ClubId: "club1",
-                            ScheduleName: data.scheduleName,
-                            DayOfWeek: data.dayOfWeek,
-                            StartTime: data.startTime,
-                            EndTime: data.endTime,
-                            Status: data.status,
+                            clubScheduleId: `cs-${Date.now()} `,
+                            clubId: "club1",
+                            scheduleName: data.scheduleName,
+                            dayOfWeek: data.dayOfWeek,
+                            startTime: data.startTime,
+                            endTime: data.endTime,
+                            startDate: data.startDate,
+                            endDate: data.endDate,
+                            status: true,
                         };
                         setSchedules((prev) => [...prev, newSchedule]);
                         setOpenCreateDialog(false);
@@ -216,7 +193,7 @@ const ClubSchedulePage: React.FC = () => {
                     onSubmit={(updatedSchedule) => {
                         setSchedules((prev) =>
                             prev.map((sch) =>
-                                sch.ClubScheduleId === updatedSchedule.ClubScheduleId
+                                sch.clubScheduleId === updatedSchedule.clubScheduleId
                                     ? updatedSchedule
                                     : sch
                             )

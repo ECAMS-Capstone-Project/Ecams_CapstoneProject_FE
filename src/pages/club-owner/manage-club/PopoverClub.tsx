@@ -39,7 +39,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
     setOpenRequestDialog(true)
   };
 
-  async function handleReject(event: React.FormEvent) {
+  async function handleLeave(event: React.FormEvent) {
     event.preventDefault();
 
     if (!reason.trim()) {
@@ -52,6 +52,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       setIsLoading(true);
       await LeaveClubAPI(clubId, user.userId, { reason });
       toast.success("Leave club successfully.");
+      setOpenLeaveDialog(false)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
@@ -70,6 +71,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       setIsLoading(true);
       await ChangeClubOwnerAPI(clubId, clubOwnerId, { leaveReason: reason, requestedMemberId: selectedMember!.userId });
       toast.success("Request to change successfully.");
+      setOpenRequestDialog(false)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
@@ -85,9 +87,6 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       try {
         const response = await GetMemberInClubsByStatusAPI(clubId, 1000, 1, "ACTIVE");
         setMembers((response.data?.data || []).filter(
-          (member) => member.clubRoleName !== "CLUB_OWNER"
-        ));
-        console.log((response.data?.data || []).filter(
           (member) => member.clubRoleName !== "CLUB_OWNER"
         ));
       } catch (error) {
@@ -184,7 +183,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
                 Providing a reason for this action.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleReject}>
+            <form onSubmit={handleLeave}>
               <div className="flex flex-col gap-4 mb-4">
                 <label className="text-lg font-semibold text-gray-800 mb-2">
                   Reason
@@ -211,7 +210,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
         <DialogContent className="max-w-lg">
           <DialogHeader className="flex items-center gap-2">
             <UserCheck className="h-6 w-6 text-blue-500" />
-            <h2 className="text-lg font-semibold">Change New Club Owner</h2>
+            <h2 className="text-lg font-semibold">Request change new club owner</h2>
           </DialogHeader>
           <DialogDescription>
             <h2 className="text-lg font-semibold text-black">Information</h2>

@@ -156,8 +156,8 @@ const UniversityRepresentativeHistory: React.FC = () => {
                                                 {rep.status}
                                             </span>
                                         </div>
-                                        <div className="pt-2 text-right">
-                                            <Button size="sm" variant="outline" onClick={() => {
+                                        <div className="pt-2 mt-2 text-right">
+                                            <Button size="sm" variant="custom" onClick={() => {
                                                 setSelectedRep(rep);
                                                 setFormEdit({
                                                     fullName: rep.fullname,
@@ -175,7 +175,7 @@ const UniversityRepresentativeHistory: React.FC = () => {
                             ))}
                         </div>
 
-                        <div className="flex justify-center items-center gap-4 mt-6">
+                        <div className="flex justify-center items-center gap-4 mt-8">
                             <Button variant="outline" onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))} disabled={pageNumber === 1}>Previous</Button>
                             <span>Page {pageNumber} of {totalPages}</span>
                             <Button variant="outline" onClick={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))} disabled={pageNumber === totalPages}>Next</Button>

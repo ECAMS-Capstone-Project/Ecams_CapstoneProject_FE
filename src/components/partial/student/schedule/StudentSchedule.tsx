@@ -11,45 +11,41 @@ import useAuth from "@/hooks/useAuth";
 import { GetScheduleStudentByIdAPI, StudentScheduleData } from "@/api/representative/StudentAPI";
 import LoadingAnimation from "@/components/ui/loading";
 
-// Updated dayMap (includes "Webnesday")
 const dayMap: Record<string, string> = {
     Monday: "MO",
     Tuesday: "TU",
     Wednesday: "WE",
-    Webnesday: "WE",
     Thursday: "TH",
+    Thurday: "TH",
     Friday: "FR",
     Saturday: "SA",
     Sunday: "SU",
+    // lowercase
     monday: "MO",
     tuesday: "TU",
     wednesday: "WE",
-    webnesday: "WE",
     thursday: "TH",
+    thurday: "TH",
     friday: "FR",
     saturday: "SA",
     sunday: "SU",
 };
 
+
 // Helper function: get a dtstart for a given weekday using a fixed base date.
-function getDtStartForWeekday(weekday: string): string {
-    const baseDate = new Date("2025-03-17"); // 2025-03-17 is a Monday.
-    const weekdayMap: Record<string, number> = {
-        Monday: 0,
-        Tuesday: 1,
-        Wednesday: 2,
-        Thursday: 3,
-        Friday: 4,
-        Saturday: 5,
-        Sunday: 6,
-    };
-    const offset = weekdayMap[weekday] ?? 0;
-    const dt = new Date(baseDate);
-    dt.setDate(dt.getDate() + offset);
-    const year = dt.getFullYear();
-    const month = (dt.getMonth() + 1).toString().padStart(2, "0");
-    const day = dt.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
+function getFirstWeekdayFromStart(startDateStr: string, dayOfWeek: string): string {
+    const dayCode = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+    const targetDay = dayCode.indexOf(dayMap[dayOfWeek]);
+    if (targetDay === -1) return startDateStr;
+
+    const start = new Date(startDateStr);
+    const startDay = start.getDay();
+
+    const diff = (targetDay - startDay + 7) % 7;
+    start.setDate(start.getDate() + diff);
+
+    const date = start.toISOString().split("T")[0];
+    return date;
 }
 
 // Helper function: split a multi‑day event into one event per day.
@@ -136,40 +132,68 @@ export const StudentSchedule = () => {
         });
     }
 
-    // Process club schedules (recurring events).
     const clubEvents = Array.isArray(data.clubSchedules)
         ? data.clubSchedules
             .filter((club) => club.status)
             .map((club, index) => {
                 const weekdayAbbrev = dayMap[club.dayOfWeek] || "MO";
-                const dtstart = getDtStartForWeekday(club.dayOfWeek);
-                const durationHours = Number(club.endTime) - Number(club.startTime);
-                const durationISO = `PT${durationHours}H`;
+
+                const baseDate = getFirstWeekdayFromStart(club.startDate, club.dayOfWeek);
+
+                const formatTime = (time: string) => {
+                    if (time.includes(":")) return time.padStart(5, "0");
+                    return `${time.padStart(2, "0")}:00`;
+                };
+
+                const startTimeFormatted = formatTime(club.startTime);
+                const endTimeFormatted = formatTime(club.endTime);
+
+                const startDateTime = new Date(`${baseDate}T${startTimeFormatted}:00`);
+                const endDateTime = new Date(`${baseDate}T${endTimeFormatted}:00`);
+
+                if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+                    console.warn("⛔ Invalid datetime for:", club);
+                    return null;
+                }
+
+                const untilDate = new Date(club.endDate);
+                const validUntil = isNaN(untilDate.getTime())
+                    ? new Date().toISOString()
+                    : untilDate.toISOString();
+
                 return {
                     id: `club-${index}`,
                     title: `${club.clubName}: ${club.scheduleName}`,
                     rrule: {
                         freq: "weekly",
                         byweekday: [weekdayAbbrev],
-                        dtstart: `${dtstart}T${club.startTime.padStart(2, "0")}:00:00`,
-                        until: "2025-12-31T00:00:00",
+                        dtstart: startDateTime.toISOString(),
+                        until: validUntil,
                     },
-                    duration: durationISO,
+                    start: startDateTime,
+                    end: endDateTime,
                     backgroundColor: "#28a745",
                     extendedProps: {
                         type: "club",
-                        link: `/student/club/${encodeURIComponent(club.clubName)}`,
+                        startTime: startTimeFormatted,
+                        endTime: endTimeFormatted,
+                        schedule: club,
+                        link: `/student/club/${club.clubName}`
                     },
                 };
             })
+            .filter(Boolean)
         : [];
+
+
+
 
     // Combine events.
     const calendarEvents = [...eventEvents, ...clubEvents];
 
     return (
         <div className="p-4 pb-20">
-            <div className="mx-auto" style={{ maxWidth: "1350px" }}>
+            <div className="mx-auto" style={{ maxWidth: "1550px" }}>
                 <FullCalendar
                     plugins={[
                         dayGridPlugin,
@@ -179,21 +203,51 @@ export const StudentSchedule = () => {
                         rrulePlugin,
                     ]}
                     initialView="dayGridMonth"
-                    initialDate="2025-03-21"
+                    initialDate={new Date()}
                     headerToolbar={{
                         left: "prev,next today",
                         center: "title",
                         right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
                     }}
                     events={calendarEvents}
+                    eventTimeFormat={{
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false
+                    }}
                     height="auto"
-                    displayEventTime={false}
+                    displayEventTime={true}
                     eventClick={(info) => {
                         info.jsEvent.preventDefault();
                         const link = info.event.extendedProps.link;
                         if (link) {
                             window.location.href = link;
                         }
+                    }}
+                    slotEventOverlap={false}
+                    eventContent={(arg) => {
+                        const { event, timeText } = arg;
+                        const isClub = event.extendedProps.type === "club";
+                        return (
+                            <div
+                                style={{
+                                    whiteSpace: "normal",
+                                    wordBreak: "break-word",
+                                    padding: "4px 6px",
+                                    borderRadius: "6px",
+                                    background: isClub ? "#eafaf1" : "#e8f0fe",
+                                    borderLeft: `4px solid ${isClub ? "#28a745" : "#1a73e8"}`,
+                                    fontSize: "12.5px",
+                                    lineHeight: 1.3,
+                                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                                }}
+                            >
+                                <div style={{ fontWeight: 600, color: "#333" }}>
+                                    ⏰ {timeText}
+                                </div>
+                                <div style={{ color: "#444" }}>{event.title}</div>
+                            </div>
+                        );
                     }}
                 />
             </div>
