@@ -1,6 +1,8 @@
 export interface InterTask {
   eventTaskId: string;
   clubEventId: string;
+  clubId: string;
+  clubName: string;
   taskName: string;
   description: string;
   startTime: Date;
@@ -36,4 +38,24 @@ export interface CreateInterTaskDetailRequest {
   description: string;
   startTime: Date;
   deadline: Date;
+}
+
+export interface UpdateInterTaskRequest {
+  eventTaskId: string;
+  clubId: string;
+  eventId: string;
+  taskName: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  status: string;
+  eventTaskDetails: UpdateInterTaskDetailRequest[];
+}
+export interface UpdateInterTaskDetailRequest {
+  eventTaskDetailId: string;
+  detailName: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  status: string;
 }

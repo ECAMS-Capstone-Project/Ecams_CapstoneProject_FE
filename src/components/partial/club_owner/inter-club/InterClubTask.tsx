@@ -69,6 +69,7 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
         member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
     )
   );
+  const isHost = isHostClub?.clubId === club?.[0]?.clubId;
 
   return (
     <div className="h-[calc(100vh-200px)]">
@@ -89,7 +90,12 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
       <ScrollArea className="h-[calc(100vh-300px)]">
         <div className="space-y-4">
           {filteredTasks.map((task) => (
-            <TaskItem key={task.eventTaskId} task={task} />
+            <TaskItem
+              key={task.eventTaskId}
+              task={task}
+              isHost={isHost}
+              selectedEvent={selectedEvent}
+            />
           ))}
         </div>
       </ScrollArea>

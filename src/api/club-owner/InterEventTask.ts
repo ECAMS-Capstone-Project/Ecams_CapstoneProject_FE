@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CreateInterTaskRequest, InterTask } from "@/models/InterTask";
-import { get, post } from "../agent";
+import {
+  CreateInterTaskRequest,
+  InterTask,
+  UpdateInterTaskRequest,
+} from "@/models/InterTask";
+import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 
 export const GetInterTask = async (
@@ -31,6 +35,24 @@ export const CreateInterTask = async (
   } catch (error: any) {
     console.error(
       "Error in CreateInterTask API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const UpdateInterTask = async (
+  task: UpdateInterTaskRequest
+): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
+  try {
+    const response = await put<ResponseDTO<UpdateInterTaskRequest>>(
+      `/EventTask/${task.eventTaskId}`,
+      task
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in UpdateInterTask API call:",
       error.response || error
     );
     throw error;

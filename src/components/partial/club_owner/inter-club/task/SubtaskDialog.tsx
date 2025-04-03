@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -27,35 +29,59 @@ import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const subtaskSchema = z.object({
   detailName: z.string().min(1, "Subtask name is required"),
   description: z.string().min(1, "Description is required"),
   startTime: z.date(),
   deadline: z.date(),
+  status: z.string(),
 });
 
 interface SubtaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: z.infer<typeof subtaskSchema>) => void;
-  defaultValues?: z.infer<typeof subtaskSchema>;
+  initialValues?: {
+    detailName: string;
+    description: string;
+    startTime: Date;
+    deadline: Date;
+    status?: string;
+  };
 }
 
 export const SubtaskDialog = ({
   isOpen,
   onClose,
   onSubmit,
-  defaultValues = {
-    detailName: "",
-    description: "",
-    startTime: new Date(),
-    deadline: new Date(),
-  },
+  initialValues,
 }: SubtaskDialogProps) => {
+  useEffect(() => {
+    if (initialValues) {
+      form.reset(initialValues);
+    }
+  }, [initialValues]);
+
   const form = useForm<z.infer<typeof subtaskSchema>>({
     resolver: zodResolver(subtaskSchema),
-    defaultValues,
+    defaultValues: initialValues
+      ? initialValues
+      : {
+          detailName: "",
+          description: "",
+          startTime: new Date(),
+          deadline: new Date(),
+          status: "ON_GOING",
+        },
   });
 
   const handleSubmit = (values: z.infer<typeof subtaskSchema>) => {
@@ -69,8 +95,13 @@ export const SubtaskDialog = ({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[#136CB9]">
-            Add Subtask
+            {initialValues ? "Edit Subtask" : "Add Subtask"}
           </DialogTitle>
+          <DialogDescription>
+            {initialValues
+              ? "Edit the subtask details below"
+              : "Add a new subtask to the task"}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -190,6 +221,32 @@ export const SubtaskDialog = ({
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="ON_GOING">On Going</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                      <SelectItem value="REVIEWING">Reviewing</SelectItem>
+                      <SelectItem value="OVERDUE">Overdue</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end gap-4">
               <Button type="button" variant="outline" onClick={onClose}>
@@ -199,7 +256,7 @@ export const SubtaskDialog = ({
                 type="submit"
                 className="bg-[#136CB9] hover:bg-[#136CB9]/90"
               >
-                Add Subtask
+                {initialValues ? "Update Subtask" : "Add Subtask"}
               </Button>
             </div>
           </form>

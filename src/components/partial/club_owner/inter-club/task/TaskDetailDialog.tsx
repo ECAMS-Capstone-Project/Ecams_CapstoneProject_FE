@@ -1,5 +1,11 @@
 import { format } from "date-fns";
-import { Calendar, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Users,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -84,21 +90,28 @@ export const TaskDetailDialog = ({
                     </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <h4 className="font-medium flex items-center gap-2 text-[#136CB9]">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Status
-                </h4>
-                <span
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-sm font-medium",
-                    getStatusColor(task.status, task.completionPercentage)
-                  )}
-                >
-                  {getStatusText(task.status, task.completionPercentage)}
-                </span>
+                <div className="space-y-2">
+                  <h4 className="font-medium mb-1 flex items-center gap-2 text-[#136CB9]">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Status
+                  </h4>
+                  <span
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium",
+                      getStatusColor(task.status, task.completionPercentage)
+                    )}
+                  >
+                    {getStatusText(task.status, task.completionPercentage)}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-medium flex items-center gap-2 text-[#136CB9]">
+                    <Users className="h-4 w-4" />
+                    Assign to
+                  </h4>
+                  <span>{task.clubName}</span>
+                </div>
               </div>
             </div>
           </div>

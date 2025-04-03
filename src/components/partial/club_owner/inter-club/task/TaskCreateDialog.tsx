@@ -70,6 +70,7 @@ export const TaskCreateDialog = ({
       clubId: "",
     },
   });
+  console.log(form.formState.errors);
 
   const onSubmit = async (values: z.infer<typeof InterTaskSchema>) => {
     try {
@@ -78,6 +79,14 @@ export const TaskCreateDialog = ({
         ...values,
         eventId,
         createdBy: user?.userId || "",
+        clubId: values.clubId || "",
+        startTime: values.startTime || new Date(),
+        deadline: values.deadline || new Date(),
+        listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
+          ...detail,
+          startTime: detail.startTime || new Date(),
+          deadline: detail.deadline || new Date(),
+        })),
       };
       await onCreateTask(taskData);
       setIsOpen(false);
@@ -108,7 +117,7 @@ export const TaskCreateDialog = ({
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-[#136CB9] hover:bg-[#136CB9]/90">
+          <Button variant="custom" className=" hover:bg-[#136CB9]/90">
             <Plus className="h-4 w-4 mr-2" />
             Create Task
           </Button>
@@ -332,8 +341,8 @@ export const TaskCreateDialog = ({
                               {subtask.description}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {format(subtask.startTime, "PPP")} -{" "}
-                              {format(subtask.deadline, "PPP")}
+                              {format(subtask.startTime || new Date(), "PPP")} -{" "}
+                              {format(subtask.deadline || new Date(), "PPP")}
                             </p>
                           </div>
                           <Button

@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { CreateInterTask, GetInterTask } from "@/api/club-owner/InterEventTask";
+import {
+  CreateInterTask,
+  GetInterTask,
+  UpdateInterTask,
+} from "@/api/club-owner/InterEventTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -31,6 +35,18 @@ export const useInterTask = (
       toast.error(error.response.data.message || "An error occurred");
     },
   });
+  const { mutateAsync: updateInterEventTaskMutation, isPending: isUpdating } =
+    useMutation({
+      mutationFn: UpdateInterTask,
+      onSuccess: () => {
+        toast.success("Inter Event Task updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
 
   // const GetInterClubEvent = (clubId: string, pageNumber: number, pageSize: number) => {
   //   return useQuery({
@@ -84,5 +100,7 @@ export const useInterTask = (
     refetchEvents: refetch,
     createInterEventTask: createInterEventTaskMutation,
     isPending,
+    updateInterEventTask: updateInterEventTaskMutation,
+    isUpdating,
   };
 };
