@@ -81,26 +81,31 @@ export function UserNav() {
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/club")}>
-                My club
-                <DropdownMenuShortcut>
-                  <Groups2Icon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => navigate("/student/student-events")}
-              >
-                My Event
-                <DropdownMenuShortcut>
-                  <Event />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/student")}>
-                Back to page
-                <DropdownMenuShortcut>
-                  <HomeIcon size={20} />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
+              {!userInfo?.roles.includes("REPRESENTATIVE") &&
+                !userInfo?.roles.includes("ADMIN") && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/club")}>
+                      My club
+                      <DropdownMenuShortcut>
+                        <Groups2Icon />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/student/student-events")}
+                    >
+                      My Event
+                      <DropdownMenuShortcut>
+                        <Event />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/student")}>
+                      Back to page
+                      <DropdownMenuShortcut>
+                        <HomeIcon size={20} />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </>
+                )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
