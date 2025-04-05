@@ -87,8 +87,9 @@ export const RequestEventDetail: React.FC = () => {
                     {event?.eventName}
                   </h1>
                   <p className="mt-2 text-lg text-gray-200 drop-shadow-md">
-                    {event?.clubs.map((club) => club.clubName).join(", ") ||
-                      event?.representativeName}
+                    {Array.isArray(event?.clubs)
+                      ? event?.clubs.map((club) => club.clubName).join(", ")
+                      : event?.representativeName}
                   </p>
                 </div>
               </div>

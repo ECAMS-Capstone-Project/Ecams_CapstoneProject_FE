@@ -17,7 +17,7 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 const Events = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(20);
   // const [, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();

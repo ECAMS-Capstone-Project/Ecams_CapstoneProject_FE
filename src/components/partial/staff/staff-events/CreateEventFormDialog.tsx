@@ -54,6 +54,7 @@ import { Heading } from "@/components/ui/heading";
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
 import EventWalletPicker from "./WalletPicker";
+import FieldPicker from "./FieldPicker";
 
 type EventFormValues = z.infer<typeof EventSchema> & {
   eventAreas: {
@@ -61,6 +62,7 @@ type EventFormValues = z.infer<typeof EventSchema> & {
     startDate: Date;
     endDate: Date;
   }[];
+  fieldIds: string[];
 };
 
 interface EventDialogProps {
@@ -117,6 +119,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       eventAreas: [{ areaId: "", startDate: new Date(), endDate: new Date() }],
       eventType: "",
       trainingPoint: 0,
+      fieldIds: [],
     },
   });
 
@@ -163,6 +166,10 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
         EndDate: area.endDate,
       }));
       formData.append("EventArea", JSON.stringify(formattedEventAreas));
+
+      values.fieldIds.forEach((fieldId, index) => {
+        formData.append(`FieldIds[${index}]`, fieldId);
+      });
 
       if (initialData) {
         // Nếu có `initialData`, gọi API `updateArea`
@@ -354,6 +361,22 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                       />
                       <FormField
                         control={form.control}
+                        name="fieldIds"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Field</FormLabel>
+                            <FormControl>
+                              <FieldPicker
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
                         name="maxParticipants"
                         render={({ field }) => (
                           <FormItem>
@@ -427,7 +450,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                         control={form.control}
                         name="registeredStartDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
+                          <FormItem className="flex flex-col justify-end">
                             <FormLabel>Registered Start Date</FormLabel>
                             <Popover>
                               <PopoverTrigger asChild>
