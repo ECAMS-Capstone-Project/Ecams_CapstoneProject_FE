@@ -7,6 +7,7 @@ import { BreadcrumbNav } from "./BreadcrumbNav";
 import { HeroSection } from "./HeroSection";
 import { EventDetailLeft } from "./EventDetailLeft";
 import { EventDetailRight } from "./EventDetailRight";
+import { EventFeedback } from "./EventFeedback";
 import useAuth from "@/hooks/useAuth";
 
 export const StudentEventDetail: React.FC = () => {
@@ -36,6 +37,11 @@ export const StudentEventDetail: React.FC = () => {
   const event = eventDetail?.data;
   const events = eventData?.data?.data;
 
+  // Kiểm tra xem sự kiện đã kết thúc chưa
+  const isEventEnded = event?.endDate
+    ? new Date(event.endDate) < new Date()
+    : false;
+
   return (
     <div className="flex min-h-screen flex-col px-14 py-5">
       <BreadcrumbNav
@@ -49,6 +55,16 @@ export const StudentEventDetail: React.FC = () => {
           {event && <EventDetailLeft event={event} />}
           {event && <EventDetailRight event={event} />}
         </section>
+
+        {event && user && (
+          <div className="p-8">
+            <EventFeedback
+              eventId={eventId}
+              studentId={user.userId}
+              isEventEnded={isEventEnded}
+            />
+          </div>
+        )}
         <OtherEvents
           events={events || []}
           curEventId={eventId}
