@@ -14,7 +14,6 @@ import { getContractDetail } from "@/api/agent/ContractAgent";
 import { TransactionTable } from "./TransactionTable";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { CornerUpLeft } from "lucide-react";
 
 export default function ContractDetail() {
@@ -124,29 +123,20 @@ export default function ContractDetail() {
                 >
                   {contract.status ? "Active ✅" : "Inactive ❌"}
                 </span>
-                <Dialog>
-                  <DialogTrigger>
-                    {" "}
-                    <Button
-                      className="mt-4 hover:scale-105 transition duration-300 shadow-md hover:shadow-lg"
-                      variant="custom"
-                    >
-                      <a
-                        // onClick={handleDownload}
-                        className="text-white hover:underline"
-                      >
-                        📄 View Contract
-                      </a>
-                    </Button>
-                  </DialogTrigger>
 
-                  <DialogContent className="bg-white p-4 rounded-lg max-w-3xl max-h-screen w-[90%] h-[95%] flex flex-col">
-                    <iframe
-                      src={contract.contractUrl}
-                      className="w-full h-full mt-2"
-                    />
-                  </DialogContent>
-                </Dialog>
+                <Button
+                  className="mt-4 hover:scale-105 transition duration-300 shadow-md hover:shadow-lg"
+                  variant="custom"
+                >
+                  <a
+                    // onClick={handleDownload}
+                    className="text-white hover:underline"
+                    href={contract.contractUrl}
+                    target="_blank"
+                  >
+                    📄 View Contract
+                  </a>
+                </Button>
 
                 <Button
                   className="mt-4 hover:scale-105 transition duration-300 shadow-md hover:shadow-lg"

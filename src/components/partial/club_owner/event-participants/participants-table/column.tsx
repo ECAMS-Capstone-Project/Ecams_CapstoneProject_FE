@@ -27,7 +27,7 @@ export const AreaColums: ColumnDef<Area>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex flex-wrap gap-2 justify-start">
           <img
             src={row.original.imageUrl}
             alt={"Product Image"}
