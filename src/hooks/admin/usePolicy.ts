@@ -1,13 +1,11 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { createPolicy, getPolicyList } from "@/api/agent/PolicyAgent";
-import {  useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 export const usePolicy = (pageSize?: number, pageNo?: number) => {
   const queryClient = useQueryClient();
-
 
   // Fetch danh sách packages theo trang
   const { data, isLoading, refetch } = useQuery({
@@ -18,22 +16,18 @@ export const usePolicy = (pageSize?: number, pageNo?: number) => {
   });
 
   // Tạo mới package
-  const { mutateAsync: createPolicyMutation, isPending: isCreating } = useMutation({
-    mutationFn: createPolicy,
-    onSuccess: () => {
-    //   toast.success("Not created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["notifications"] }); // Tự động refetch danh sách ✅
-    },
-    onError: (error: any) => {
-      console.error("Error:", error.response.data.errors);
-      toast.error(error.response.data.message || "An error occurred");
-    },
-  });
-
-  
-
-
-
+  const { mutateAsync: createPolicyMutation, isPending: isCreating } =
+    useMutation({
+      mutationFn: createPolicy,
+      onSuccess: () => {
+        //   toast.success("Not created successfully!");
+        queryClient.invalidateQueries({ queryKey: ["policies"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
 
   return {
     policies: data?.data?.data || [],

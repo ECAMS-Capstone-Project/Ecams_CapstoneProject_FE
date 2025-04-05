@@ -33,11 +33,13 @@ type PolicyFormValues = z.infer<typeof PolicySchema>;
 interface PolicyDialogProps {
   initialData: PolicyFormValues | null;
   onClose?: () => void;
+  setIsDialogOpen?: (open: boolean) => void;
 }
 
 export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
   initialData,
   onClose,
+  setIsDialogOpen,
 }) => {
   const form = useForm<PolicyFormValues>({
     resolver: zodResolver(PolicySchema),
@@ -60,6 +62,7 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
       await createPolicy(values);
       toast.success("Policy created successfully.");
       setOpen(false);
+      setIsDialogOpen && setIsDialogOpen(false);
       onClose && onClose();
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
@@ -239,7 +242,7 @@ export const EditPolicyDialog: React.FC<PolicyDialogProps> = ({
                           <FormControl>
                             <textarea
                               {...field}
-                              className="border p-2 rounded w-full h-20"
+                              className="border p-2 rounded w-full"
                               readOnly={!!initialData}
                             />
                           </FormControl>
