@@ -40,7 +40,7 @@ export interface CheckInInfo {
   areaName: string[];
 }
 
-interface InterClub {
+export interface InterClub {
   clubId: string;
   clubName: string;
   logoUrl: string;

@@ -340,7 +340,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           <FormItem>
                             <FormLabel>Price</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" {...field} min={0} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -353,7 +353,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           <FormItem>
                             <FormLabel>Training Point</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" {...field} min={0} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -366,7 +366,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           <FormItem>
                             <FormLabel>Max Particitipant</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" {...field} min={0} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

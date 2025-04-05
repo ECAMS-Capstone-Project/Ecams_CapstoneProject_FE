@@ -13,14 +13,21 @@ import {
 import { TaskEditDialog } from "./TaskEditDialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
+import { EventClubDTO } from "@/api/representative/EventAgent";
 
 interface TaskItemProps {
   task: InterTask;
   isHost: boolean;
   selectedEvent: InterClubEventDTO;
+  currentClub: EventClubDTO;
 }
 
-export const TaskItem = ({ task, isHost, selectedEvent }: TaskItemProps) => {
+export const TaskItem = ({
+  task,
+  isHost,
+  selectedEvent,
+  currentClub,
+}: TaskItemProps) => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const getStatusColor = (status: string, percentage: number) => {
@@ -101,7 +108,10 @@ export const TaskItem = ({ task, isHost, selectedEvent }: TaskItemProps) => {
                 <DropdownMenuItem onClick={() => setIsDetailOpen(true)}>
                   View
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() => setIsEditOpen(true)}
+                  disabled={currentClub.clubId !== task.clubId}
+                >
                   Edit
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -123,6 +133,7 @@ export const TaskItem = ({ task, isHost, selectedEvent }: TaskItemProps) => {
         onClose={() => setIsEditOpen(false)}
         isLoading={isUpdating}
         selectedEvent={selectedEvent}
+        currentClub={currentClub}
       />
     </>
   );

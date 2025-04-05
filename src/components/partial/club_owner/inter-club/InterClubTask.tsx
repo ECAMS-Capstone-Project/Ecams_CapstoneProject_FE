@@ -95,6 +95,7 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
               task={task}
               isHost={isHost}
               selectedEvent={selectedEvent}
+              currentClub={club?.[0]}
             />
           ))}
         </div>

@@ -160,7 +160,10 @@ export const TaskCreateDialog = ({
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
+                        <PopoverContent
+                          className="w-[calc(var(--radix-popover-trigger-width)*0.75)] p-0"
+                          align="start"
+                        >
                           <Command>
                             <CommandInput placeholder="Search club..." />
                             <CommandEmpty>No club found.</CommandEmpty>

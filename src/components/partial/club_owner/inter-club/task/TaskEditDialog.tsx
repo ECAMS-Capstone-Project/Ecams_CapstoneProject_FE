@@ -48,6 +48,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import { EventClubDTO } from "@/api/representative/EventAgent";
 
 interface TaskEditDialogProps {
   task: InterTask;
@@ -60,6 +61,7 @@ interface TaskEditDialogProps {
   isHost?: boolean;
   isLoading?: boolean;
   selectedEvent: InterClubEventDTO;
+  currentClub: EventClubDTO;
 }
 
 interface SubtaskData {
@@ -78,6 +80,7 @@ export const TaskEditDialog = ({
   isHost,
   isLoading,
   selectedEvent,
+  currentClub,
 }: TaskEditDialogProps) => {
   const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
   const [editingSubtaskIndex, setEditingSubtaskIndex] = useState<number | null>(
@@ -205,7 +208,7 @@ export const TaskEditDialog = ({
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-4 h-[calc(100vh-200px)] overflow-y-auto">
+              <div className="space-y-4 h-[calc(100vh-250px)] overflow-y-auto">
                 <FormField
                   control={form.control}
                   name="taskName"
@@ -372,8 +375,12 @@ export const TaskEditDialog = ({
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
+                          <PopoverContent
+                            className="w-[calc(var(--radix-popover-trigger-width)*0.75)] p-0"
+                            align="start"
+                            sideOffset={4}
+                          >
+                            <Command className="w-full">
                               <CommandInput placeholder="Search club..." />
                               <CommandEmpty>No club found.</CommandEmpty>
                               <CommandGroup>
@@ -415,6 +422,7 @@ export const TaskEditDialog = ({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={currentClub.clubId !== task.clubId}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -434,7 +442,7 @@ export const TaskEditDialog = ({
                   />
                 </div>
 
-                {isHost && (
+                {isHost && currentClub.clubId === task.clubId && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
@@ -540,6 +548,9 @@ export const TaskEditDialog = ({
                                       <Select
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
+                                        disabled={
+                                          currentClub.clubId !== task.clubId
+                                        }
                                       >
                                         <FormControl>
                                           <SelectTrigger className="h-8">
