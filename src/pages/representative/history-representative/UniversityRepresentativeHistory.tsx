@@ -131,7 +131,7 @@ const UniversityRepresentativeHistory: React.FC = () => {
                                             className="w-16 h-16 rounded-full object-cover border-2 border-blue-500 shadow-sm"
                                         />
                                         <div>
-                                            <CardTitle className="text-xl font-bold text-gray-800">{rep.fullname}</CardTitle>
+                                            <CardTitle className="text-xl font-bold text-gray-800 text-center">{rep.fullname}</CardTitle>
                                             <p className="text-md text-gray-600">{rep.email}</p>
                                         </div>
                                     </CardHeader>

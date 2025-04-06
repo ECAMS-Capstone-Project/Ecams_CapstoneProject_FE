@@ -1,9 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import EventCard from "./eventCard";
 import Slider from "react-slick";
 import "./arrow.css"
+import RecentEventCard from "./recentEventCard";
 import { ArrowRight } from "lucide-react";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ interface EventSliderProps {
     title: string;
 }
 
-const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
+const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
     const settings = {
         dots: true,
         infinite: false,
@@ -53,7 +53,7 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
             <Slider {...settings}>
                 {events.map((event, index) => (
                     <Box key={index} display={'flex'} justifyContent={'center'} sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}>
-                        <EventCard event={event} />
+                        <RecentEventCard event={event} />
                     </Box>
                 ))}
             </Slider>
@@ -61,4 +61,4 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
     );
 };
 
-export default EventSlider;
+export default EventSlider2;

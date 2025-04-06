@@ -1,28 +1,68 @@
+import { GetStudentInUniversityAPI } from "@/api/representative/StudentAPI";
 import Overview from "@/components/partial/representative/representative-dashboard/overView";
 import EventSlider from "@/components/partial/representative/representative-dashboard/Slider";
+import EventSlider2 from "@/components/partial/representative/representative-dashboard/Slider2";
+import EventSlider3 from "@/components/partial/representative/representative-dashboard/Slider3";
+import LoadingAnimation from "@/components/ui/loading";
+import { useEvents } from "@/hooks/staff/Event/useEvent";
+import useAuth from "@/hooks/useAuth";
+import StudentRequest from "@/models/StudentRequest";
 import { Typography } from "@mui/material";
-const events = [
-    { title: "Marketing 101", date: "April 27 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", img: "/public/image/test.png", status: "active" },
-    { title: "Data Science Bootcamp", date: "May 10 2024", free: false, startTime: "8:00 AM", endTime: "10:00 AM", img: "/public/image/test.png", status: "active" },
-    { title: "Data Science Bootcamp", date: "May 10 2024", free: false, startTime: "8:00 AM", endTime: "10:00 AM", img: "/public/image/test.png", status: "active" },
-];
-const events2 = [
-    { title: "UX/UI Workshop", date: "June 15 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
-    { title: "Python for Beginners", date: "July 1 2024", free: false, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
-    { title: "ReactJS Masterclass", date: "July 20 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
-    { title: "Startup Pitch Night", date: "August 5 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
-    { title: "Startup Pitch Night", date: "August 5 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
-    { title: "Startup Pitch Night", date: "August 5 2024", free: true, startTime: "8:00 AM", endTime: "10:00 AM", status: "pending" },
+import { useEffect, useState } from "react";
 
-]
 const DashboardRepresentative = () => {
+    const { user } = useAuth();
+    const [pageNo] = useState(1);
+    const [pageSize] = useState(10);
+    const [loading, setLoading] = useState(false);
+    const { events, isLoading } = useEvents(
+        user?.universityId,
+        pageNo,
+        pageSize
+    );
+    const [stuList, setStuList] = useState<StudentRequest[]>([]);
+    useEffect(() => {
+        const loadRequestStudent = async () => {
+            try {
+                if (!user?.universityId) {
+                    throw new Error("University ID is undefined");
+                }
+
+                setLoading(true);
+
+                // Xác định status theo tab
+                const status = "CHECKING";
+
+                // Gọi API với status tương ứng
+                const uniData = await GetStudentInUniversityAPI(
+                    user.universityId,
+                    pageSize,
+                    pageNo,
+                    status
+                );
+
+                if (uniData) {
+                    setStuList(uniData.data?.data || []);
+                } else {
+                    console.warn("Student returned no data");
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadRequestStudent();
+    }, [pageNo, pageSize, user]);
     return (
         <div className="p-4 pt-1">
             <Typography variant="h4" fontWeight="bold" mb={2}>Overview</Typography>
             <Overview />
-            <EventSlider events={events} title="Recent Event" />
-            <EventSlider events={events2} title="Pending Event" />
-            <EventSlider events={events2} title="Pending Request" />
+            <EventSlider2 events={events} title="Recent Event" />
+            {(isLoading || loading) ? <div><LoadingAnimation /></div> : (
+                <EventSlider events={events.filter(a => a.status.toLowerCase() == "pending")} title="Pending Event" />
+            )}
+            <EventSlider3 students={stuList} title="Student Request" />
         </div>
 
     );

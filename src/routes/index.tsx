@@ -60,7 +60,6 @@ import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/Clu
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
 import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
 import RepresentativeRequestsPage from "@/pages/representative/club-owner-request/RepresentativeOwnerRequestsPage";
-import ClubSchedulePage from "@/pages/club-owner/club-schedule/ClubSchedulePage";
 import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
 import RepresentativeInformationPage from "@/pages/representative/request-to-change/RepresentativeInfoPage";
 import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
@@ -410,10 +409,6 @@ export const router = createBrowserRouter([
         path: "/club/create-task",
         element: <CreateTaskClub />,
         errorElement: <ErrorException />,
-      },
-      {
-        path: "/club/schedule",
-        element: <ClubSchedulePage />
       }
     ],
     errorElement: <ErrorException />,

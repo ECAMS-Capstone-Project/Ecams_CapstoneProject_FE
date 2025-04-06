@@ -130,7 +130,7 @@ const RepresentativeRequestsPage: React.FC = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex justify-end bg-gray-50 p-4">
-                                    <Button onClick={() => handleReview(req)} className="flex items-center space-x-1 hover:bg-purple-600 hover:text-white">
+                                    <Button onClick={() => handleReview(req)} className="flex items-center space-x-1 hover:text-white">
                                         <span>Review</span>
                                         <ChevronRightIcon className="h-5 w-5" />
                                     </Button>

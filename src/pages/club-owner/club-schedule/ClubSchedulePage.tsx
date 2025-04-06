@@ -9,7 +9,6 @@ import CreateClubScheduleDialog from "@/components/partial/club_owner/club-sched
 import EditClubScheduleDialog from "@/components/partial/club_owner/club-schedule/EditClubScheduleDialog";
 import toast from "react-hot-toast";
 import { ClubSchedule, CreateClubScheduleAPI, GetScheduleClubAPI, ScheduleRequest } from "@/api/representative/StudentAPI";
-import { Divider } from "@mui/material";
 
 const dayMap: Record<string, string> = {
     Monday: "MO",
@@ -46,7 +45,11 @@ function getFirstWeekdayFromStart(startDateStr: string, dayOfWeek: string): stri
     return start.toISOString().split("T")[0];
 }
 
-const ClubSchedulePage: React.FC = () => {
+interface props {
+    clubId: string;
+}
+
+const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
     const [schedules, setSchedules] = useState<ClubSchedule[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
@@ -55,12 +58,12 @@ const ClubSchedulePage: React.FC = () => {
 
     useEffect(() => {
         async function fetchSchedules() {
-            const response = await GetScheduleClubAPI("b2fa90e4-3479-4351-9862-9d2266fc442b");
+            const response = await GetScheduleClubAPI(clubId);
             setSchedules(response.data?.data || []);
             setLoading(false);
         }
         fetchSchedules();
-    }, [flag]);
+    }, [flag, clubId]);
 
     const calendarEvents = schedules
         .filter((sch) => sch.status)
@@ -131,7 +134,7 @@ const ClubSchedulePage: React.FC = () => {
 
     const handleSubmit = async (data: ScheduleRequest) => {
         const newSchedule: ScheduleRequest = {
-            clubId: data.clubId,
+            clubId: clubId,
             scheduleName: data.scheduleName,
             dayOfWeek: data.dayOfWeek,
             startTime: data.startTime,
@@ -146,10 +149,8 @@ const ClubSchedulePage: React.FC = () => {
 
     return (
         <div className="p-6">
-            <h2 className="text-3xl font-bold mb-6 text-left">Club Schedules</h2>
-            <Divider />
             <div className="flex justify-end mb-10 mt-3">
-                <Button onClick={() => setOpenCreateDialog(true)}>Create Club Schedule</Button>
+                <Button variant={'custom'} onClick={() => setOpenCreateDialog(true)}>Create Club Schedule</Button>
             </div>
             {loading ? (
                 <p className="text-center">Loading schedules...</p>
@@ -157,7 +158,7 @@ const ClubSchedulePage: React.FC = () => {
                 <div className="mx-auto" style={{ maxWidth: "1200px" }}>
                     <FullCalendar
                         plugins={[listPlugin, interactionPlugin, rrulePlugin]}
-                        initialView="listMonth"
+                        initialView="listWeek"
                         headerToolbar={{
                             left: "prev,next today",
                             center: "title",

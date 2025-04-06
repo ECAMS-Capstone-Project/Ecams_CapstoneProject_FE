@@ -1,23 +1,23 @@
 import { Box, Button, Typography } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import EventCard from "./eventCard";
 import Slider from "react-slick";
 import "./arrow.css"
 import { ArrowRight } from "lucide-react";
-import { Event } from "@/models/Event";
+import StudentRequest from "@/models/StudentRequest";
+import RequestStudentCard from "./requestStudentCard";
 import { useNavigate } from "react-router-dom";
 interface EventSliderProps {
-    events: Event[];
+    students: StudentRequest[];
     title: string;
 }
 
-const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
+const EventSlider3: React.FC<EventSliderProps> = ({ students, title }) => {
     const settings = {
         dots: true,
         infinite: false,
         speed: 500,
-        slidesToShow: 4,
+        slidesToShow: 3,
         slidesToScroll: 1,
         autoplay: false,
         autoplaySpeed: 3000,
@@ -46,14 +46,14 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
         <div className="mt-16 mb-7" >
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h5" fontWeight="bold">{title}</Typography>
-                <Button onClick={() => navigate('/representative/event')} variant="contained" sx={{ gap: 1, textTransform: "none", background: 'linear-gradient(to right, #136CB5, #49BBBD)', fontWeight: "600" }}>
+                <Button variant="contained" onClick={() => navigate('/representative/request-student')} sx={{ gap: 1, textTransform: "none", background: 'linear-gradient(to right, #136CB5, #49BBBD)', fontWeight: "600" }}>
                     View More <ArrowRight size={18} />
                 </Button>
             </Box>
             <Slider {...settings}>
-                {events.map((event, index) => (
+                {students.map((student, index) => (
                     <Box key={index} display={'flex'} justifyContent={'center'} sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}>
-                        <EventCard event={event} />
+                        <RequestStudentCard student={student} />
                     </Box>
                 ))}
             </Slider>
@@ -61,4 +61,4 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
     );
 };
 
-export default EventSlider;
+export default EventSlider3;

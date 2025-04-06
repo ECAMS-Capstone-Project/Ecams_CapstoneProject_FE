@@ -16,6 +16,7 @@ import ActiveMemberList from "@/components/partial/club_owner/manage_club/member
 import useAuth from "@/hooks/useAuth";
 import { ClubConditionView } from "@/components/partial/representative/representative-club/ViewClubCondition";
 import TaskListMember from "@/components/partial/club_owner/manage_club/TaskListMember";
+import ClubSchedulePage from "../club-schedule/ClubSchedulePage";
 
 export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
@@ -152,12 +153,13 @@ export default function ClubDetailPage() {
             <Tabs defaultValue="club-condition" className="w-full">
                 {/* TabsList */}
                 {isClubOwner ? (
-                    <TabsList className="grid w-5/6 grid-cols-5 mb-2">
+                    <TabsList className="grid w-full grid-cols-6 mb-2">
                         <TabsTrigger value="club-condition">Club Condition</TabsTrigger>
                         <TabsTrigger value="events">Event List</TabsTrigger>
                         <TabsTrigger value="members">Active Members</TabsTrigger>
                         <TabsTrigger value="member pending">Pending Members</TabsTrigger>
                         <TabsTrigger value="tasks">Task List</TabsTrigger>
+                        <TabsTrigger value="schedule">Schedule Club</TabsTrigger>
                     </TabsList>
                 ) : (
                     <TabsList className="grid w-4/6 grid-cols-4 mb-2">
@@ -188,6 +190,11 @@ export default function ClubDetailPage() {
                 ) : (
                     <TabsContent value="tasks">
                         <TaskListMember clubId={clubId} isClubOwner={isClubOwner} />
+                    </TabsContent>
+                )}
+                {(isClubOwner) && (
+                    <TabsContent value="schedule">
+                        <ClubSchedulePage clubId={clubId} />
                     </TabsContent>
                 )}
                 <TabsContent value="club-condition">
