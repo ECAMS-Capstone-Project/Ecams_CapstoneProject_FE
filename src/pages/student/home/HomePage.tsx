@@ -8,7 +8,7 @@ import { EventRecommendedSection } from "@/components/partial/student/home/Event
 const HomePage = () => {
   const { user } = useAuth();
 
-  if (!user) return null; // Đợi user có dữ liệu
+  if (!user) return null;
 
   return (
     <>
@@ -16,7 +16,7 @@ const HomePage = () => {
       <div className="px-4 py-6">
         <Hero />
         <div className="container mx-auto px-4">
-          {!user?.isRecommended ? (
+          {user?.isRecommended !== true ? (
             <EventsSection />
           ) : (
             <EventRecommendedSection userId={user.userId} />

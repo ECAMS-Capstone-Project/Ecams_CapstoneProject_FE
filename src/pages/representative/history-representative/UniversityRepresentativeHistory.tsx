@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { GetHistoryChangeRepresentativeAPI, GetRepresentativeHistoryDTO, RepresentativeChangeInfo } from "@/api/representative/RequestChangeRepresentative";
 import { Heading } from "@/components/ui/heading";
 import toast from "react-hot-toast";
+import { Grid2 } from "@mui/material";
 
 const UniversityRepresentativeHistory: React.FC = () => {
     const { user } = useAuth();
@@ -27,11 +28,7 @@ const UniversityRepresentativeHistory: React.FC = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [flag, setFlag] = useState<boolean>(false);
     const [formEdit, setFormEdit] = useState({
-        fullName: "",
         email: "",
-        phoneNumber: "",
-        address: "",
-        gender: "MALE" as "MALE" | "FEMALE",
     });
 
     useEffect(() => {
@@ -79,11 +76,7 @@ const UniversityRepresentativeHistory: React.FC = () => {
         await RepresentativeChangeInfo(user.universityId || "", {
             type: "DELETE",
             updateInfo: {
-                fullName: "",
                 email: "",
-                phoneNumber: "",
-                address: "",
-                gender: "MALE",
             }
         });
         toast.success("Delete information successfully")
@@ -130,42 +123,48 @@ const UniversityRepresentativeHistory: React.FC = () => {
                     <>
                         <div className="grid md:grid-cols-2 gap-6">
                             {history.slice((pageNumber - 1) * pageSize, pageNumber * pageSize).map((rep) => (
-                                <Card key={rep.userId} className="shadow-md hover:shadow-lg transition duration-300 border border-gray-200 rounded-xl">
-                                    <CardHeader className="flex items-center gap-4">
+                                <Card key={rep.userId} className="shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 rounded-2xl p-4 bg-white">
+                                    <CardHeader className="flex items-center gap-5">
                                         <img
                                             src={rep.avatar || `https://api.dicebear.com/6.x/initials/svg?seed=${rep.fullname}`}
                                             alt={rep.fullname}
-                                            className="w-14 h-14 rounded-full object-cover border"
+                                            className="w-16 h-16 rounded-full object-cover border-2 border-blue-500 shadow-sm"
                                         />
                                         <div>
-                                            <CardTitle className="text-lg text-center font-semibold text-gray-800">{rep.fullname}</CardTitle>
-                                            <p className="text-sm text-gray-600">{rep.email}</p>
+                                            <CardTitle className="text-xl font-bold text-gray-800">{rep.fullname}</CardTitle>
+                                            <p className="text-md text-gray-600">{rep.email}</p>
                                         </div>
                                     </CardHeader>
-                                    <CardContent className="text-sm text-gray-700 space-y-1 pt-1">
-                                        <div className="flex justify-between"><span className="font-medium">Phone:</span><span>{rep.phoneNumber}</span></div>
-                                        <div className="flex justify-between"><span className="font-medium">Start Date:</span><span>{displayDate(rep.startDate)}</span></div>
-                                        <div className="flex justify-between"><span className="font-medium">End Date:</span><span>{displayDate(rep.endDate)}</span></div>
-                                        <div className="flex justify-between">
-                                            <span className="font-medium">Status:</span>
-                                            <span className={
-                                                rep.status === "PENDING" ? "text-yellow-500"
-                                                    : rep.status === "ACTIVE" ? "text-green-600"
-                                                        : "text-red-500"
-                                            }>
-                                                {rep.status}
-                                            </span>
-                                        </div>
-                                        <div className="pt-2 mt-2 text-right">
-                                            <Button size="sm" variant="custom" onClick={() => {
+                                    <CardContent className="text-base text-gray-700 space-y-2 pt-2">
+                                        <Grid2 container spacing={2}>
+                                            <Grid2 size={6}>
+                                                <div className="flex gap-2"><span className="font-semibold">Phone:</span><span>{rep.phoneNumber}</span></div>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <div className="flex justify-end gap-2"><span className="font-semibold">Start Date:</span><span>{displayDate(rep.startDate)}</span></div>
+                                            </Grid2>
+                                        </Grid2>
+                                        <Grid2 container spacing={2}>
+                                            <Grid2 size={6}>
+                                                <div className="flex gap-2"><span className="font-semibold">End Date:</span><span>{displayDate(rep.endDate)}</span></div>
+                                            </Grid2>
+                                            <Grid2 size={6}>
+                                                <div className="flex justify-end gap-2">
+                                                    <span className="font-semibold">Status:</span>
+                                                    <span className={
+                                                        rep.status === "PENDING" ? "text-yellow-600 font-semibold"
+                                                            : rep.status === "ACTIVE" ? "text-green-600 font-semibold"
+                                                                : "text-red-500 font-semibold"
+                                                    }>
+                                                        {rep.status}
+                                                    </span>
+                                                </div>
+                                            </Grid2>
+                                        </Grid2>
+                                        <div className="pt-3 text-right">
+                                            <Button size="sm" variant="custom" className="px-4 py-1 text-sm font-medium" onClick={() => {
                                                 setSelectedRep(rep);
-                                                setFormEdit({
-                                                    fullName: rep.fullname,
-                                                    email: rep.email,
-                                                    phoneNumber: rep.phoneNumber,
-                                                    gender: rep.gender,
-                                                    address: "string"
-                                                });
+                                                setFormEdit({ email: rep.email });
                                             }}>
                                                 View Detail
                                             </Button>
@@ -189,38 +188,53 @@ const UniversityRepresentativeHistory: React.FC = () => {
                             <DialogHeader className="mb-4">
                                 <DialogTitle className="text-center text-2xl font-bold">Representative Detail</DialogTitle>
                             </DialogHeader>
-                            <div className="flex flex-col items-center gap-4">
-                                <img
-                                    src={selectedRep.avatar || `https://api.dicebear.com/6.x/initials/svg?seed=${selectedRep.fullname}`}
-                                    alt={selectedRep.fullname}
-                                    className="w-24 h-24 rounded-full object-cover border shadow"
-                                />
-                                <div className="w-full text-sm text-gray-700 space-y-2">
+                            <div className="flex flex-col items-center gap-4 bg-gradient-to-br from-white to-slate-100 p-6 rounded-xl shadow-md">
+                                <div className="relative">
+                                    <img
+                                        src={
+                                            selectedRep.avatar ||
+                                            `https://api.dicebear.com/6.x/initials/svg?seed=${selectedRep.fullname}`
+                                        }
+                                        alt={selectedRep.fullname}
+                                        className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg"
+                                    />
+                                </div>
+
+                                <div className="w-full text-base text-gray-800 space-y-3">
                                     {isEditing ? (
-                                        <>
-                                            <Input name="fullName" value={formEdit.fullName} onChange={handleEditChange} placeholder="Full Name" />
-                                            <Input name="email" value={formEdit.email} onChange={handleEditChange} placeholder="Email" />
-                                            <Input name="phoneNumber" value={formEdit.phoneNumber} onChange={handleEditChange} placeholder="Phone Number" />
-                                            <select name="gender" value={formEdit.gender} onChange={handleEditChange} className="border rounded-md px-3 py-2 w-full">
-                                                <option value="MALE">Male</option>
-                                                <option value="FEMALE">Female</option>
-                                            </select>
-                                        </>
+                                        <Input
+                                            name="email"
+                                            value={formEdit.email}
+                                            onChange={handleEditChange}
+                                            placeholder="Email"
+                                            className="text-base p-3 rounded-lg border-gray-300 shadow-sm"
+                                        />
                                     ) : (
                                         <>
-                                            <div className="flex justify-between"><span className="font-medium">Full Name:</span><span>{selectedRep.fullname}</span></div>
-                                            <div className="flex justify-between"><span className="font-medium">Email:</span><span>{selectedRep.email}</span></div>
-                                            <div className="flex justify-between"><span className="font-medium">Phone:</span><span>{selectedRep.phoneNumber}</span></div>
-                                            <div className="flex justify-between"><span className="font-medium">Gender:</span><span>{selectedRep.gender}</span></div>
-                                            <div className="flex justify-between"><span className="font-medium">Start Date:</span><span>{displayDate(selectedRep.startDate)}</span></div>
-                                            <div className="flex justify-between"><span className="font-medium">End Date:</span><span>{displayDate(selectedRep.endDate)}</span></div>
-                                            <div className="flex justify-between">
-                                                <span className="font-medium">Status:</span>
-                                                <span className={
-                                                    selectedRep.status === "PENDING" ? "text-yellow-500"
-                                                        : selectedRep.status === "ACTIVE" ? "text-green-600"
+                                            {[
+                                                ["Full Name", selectedRep.fullname],
+                                                ["Email", selectedRep.email],
+                                                ["Phone", selectedRep.phoneNumber],
+                                                ["Gender", selectedRep.gender],
+                                                ["Start Date", displayDate(selectedRep.startDate)],
+                                                ["End Date", displayDate(selectedRep.endDate)],
+                                            ].map(([label, value]) => (
+                                                <div className="flex justify-between items-center" key={label}>
+                                                    <span className="font-semibold text-gray-600">{label}:</span>
+                                                    <span className="text-right font-medium">{value}</span>
+                                                </div>
+                                            ))}
+
+                                            <div className="flex justify-between items-center">
+                                                <span className="font-semibold text-gray-600">Status:</span>
+                                                <span
+                                                    className={`text-right font-semibold ${selectedRep.status === "PENDING"
+                                                        ? "text-yellow-500"
+                                                        : selectedRep.status === "ACTIVE"
+                                                            ? "text-green-600"
                                                             : "text-red-500"
-                                                }>
+                                                        }`}
+                                                >
                                                     {selectedRep.status}
                                                 </span>
                                             </div>

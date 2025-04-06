@@ -16,17 +16,11 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 import toast from "react-hot-toast";
+import { ScheduleRequest } from "@/api/representative/StudentAPI";
 
 interface CreateClubScheduleDialogProps {
     onClose: () => void;
-    onSubmit: (data: {
-        scheduleName: string;
-        dayOfWeek: string;
-        startTime: string;
-        endTime: string;
-        startDate: string;
-        endDate: string;
-    }) => void;
+    onSubmit: (data: ScheduleRequest) => void;
 }
 
 const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
@@ -70,14 +64,17 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
             return;
         }
 
-        onSubmit({
+        const data: ScheduleRequest = {
+            clubId: "b2fa90e4-3479-4351-9862-9d2266fc442b",
             scheduleName,
             dayOfWeek,
             startTime,
             endTime,
             startDate: start.toISOString(),
             endDate: end.toISOString(),
-        });
+        }
+
+        onSubmit(data);
     };
 
     const parseTime = (timeStr: string) => {

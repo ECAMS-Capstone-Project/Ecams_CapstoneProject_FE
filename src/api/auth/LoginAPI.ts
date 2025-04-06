@@ -9,11 +9,15 @@ import toast from "react-hot-toast";
 
 export const loginAPI = async (data: LoginRequest): Promise<ResponseDTO<LoginResponseDTO>> => {
     try {
+        if (data.password.length < 8) {
+            toast.error("Password must be greater than or equal to 8 digits.");
+            return Promise.reject("Password must be greater than or equal to 8 digits.");
+        }
         const response = await post<ResponseDTO<LoginResponseDTO>>("/Auth/login", data);
         return response;
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
         }

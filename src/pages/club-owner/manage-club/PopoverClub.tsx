@@ -72,6 +72,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       await ChangeClubOwnerAPI(clubId, clubOwnerId, { leaveReason: reason, requestedMemberId: selectedMember!.userId });
       toast.success("Request to change successfully.");
       setOpenRequestDialog(false)
+      setSelectedMember(null)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
@@ -245,11 +246,13 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
               rows={2}
             />
           </div>
-          <div className="mb-2 mt-1">
+          <div className="mb-2 mt-1 ">
             <h2 className="text-lg font-semibold">Recommendation</h2>
-            <DialogDescription style={{ marginBottom: "20px" }}>
+            <DialogDescription className="mb-0">
               Search and select a new member to become the club owner.
             </DialogDescription>
+          </div>
+          <div className="max-w-xs">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full text-left">
@@ -267,7 +270,8 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0" forceMount>
+
+              <PopoverContent className="w-72 p-0" forceMount>
                 <Command>
                   <CommandInput
                     placeholder="Search New Member"
@@ -275,7 +279,10 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
                     onValueChange={setSearchQuery}
                     className="pl-10"
                   />
-                  <div className="max-h-24 overflow-y-auto" onWheel={(e) => e.stopPropagation()}>
+                  <div
+                    className="max-h-32 overflow-y-auto"
+                    onWheel={(e) => e.stopPropagation()}
+                  >
                     <CommandList>
                       {isLoadingMembers ? (
                         <CommandEmpty>Loading...</CommandEmpty>
@@ -296,7 +303,9 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
                               className="h-8 w-8 rounded-full"
                             />
                             <div>
-                              <p className="font-semibold text-gray-800">{member.fullname}</p>
+                              <p className="font-semibold text-gray-800">
+                                {member.fullname}
+                              </p>
                               <p className="text-gray-600 text-sm">{member.email}</p>
                             </div>
                           </CommandItem>

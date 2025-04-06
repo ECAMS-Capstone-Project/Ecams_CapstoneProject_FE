@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Card, Container, Typography, Grid2 } from "@mui/material";
@@ -36,8 +37,8 @@ const WalletRepresentative = () => {
     setLoading(true);
     try {
       const [packData, contractData] = await Promise.all([
-        PackageCurrent(user.representativeId),
-        GetContractCurrentAPI(user.representativeId),
+        PackageCurrent(user.userId),
+        GetContractCurrentAPI(user.userId),
       ]);
 
       setCurPackage(packData.data || null);
@@ -48,7 +49,6 @@ const WalletRepresentative = () => {
       setLoading(false);
     }
   };
-  console.log(curPackage);
 
   // Gọi lại khi user hoặc flag thay đổi
   useEffect(() => {
@@ -104,7 +104,6 @@ const WalletRepresentative = () => {
           <Grid2 size={{ xs: 12, md: 6 }} boxShadow={1} p={2}>
             {curPackage ? (
               <>
-                {console.log(curPackage)}
                 <Typography
                   variant="h6"
                   fontWeight="bold"
@@ -173,7 +172,7 @@ const WalletRepresentative = () => {
                   📌 Package Details:
                 </Typography>
                 {curPackage?.packageDetails?.map((detail, index) => (
-                  <ul className="flex gap-2">
+                  <ul key={index} className="flex gap-2">
                     <div className="flex justify-center w-full">
                       <li
                         key={index + 1}

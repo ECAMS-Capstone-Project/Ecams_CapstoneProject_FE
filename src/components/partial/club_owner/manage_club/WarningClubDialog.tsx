@@ -45,8 +45,6 @@ export const WarningClubDialog: React.FC<DenyProps> = ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
-      const errorMessage = error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

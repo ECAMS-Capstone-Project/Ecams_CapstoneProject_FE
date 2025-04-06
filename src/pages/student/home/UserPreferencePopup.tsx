@@ -19,10 +19,9 @@ const UserPreferencePopup: React.FC = () => {
     const [doNotShowAgain, setDoNotShowAgain] = useState<boolean>(false);
     const { user } = useAuth();
     useEffect(() => {
-        const submitted = localStorage.getItem("hasSubmittedPreferences");
         const suppressed = localStorage.getItem("suppressPreferencePopup");
 
-        if (!submitted && suppressed !== "true") {
+        if (user?.isRecommended !== true && suppressed !== "true") {
             setOpen(true);
         }
 
@@ -36,7 +35,7 @@ const UserPreferencePopup: React.FC = () => {
         };
 
         fetchFields();
-    }, []);
+    }, [user?.isRecommended]);
 
     const toggleFieldSelection = (fieldId: string) => {
         setSelectedFieldIds((prev) =>
@@ -50,7 +49,6 @@ const UserPreferencePopup: React.FC = () => {
         try {
             if (!user?.userId) return;
             await UpdateUserPreferenceAPI(user.userId, { fieldIds: selectedFieldIds });
-            localStorage.setItem("hasSubmittedPreferences", "true");
             if (doNotShowAgain) {
                 localStorage.setItem("suppressPreferencePopup", "true");
             }

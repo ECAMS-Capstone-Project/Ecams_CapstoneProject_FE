@@ -15,21 +15,22 @@ interface Props {
 }
 export const EventRecommendedSection = ({ userId }: Props) => {
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(6);
   const navigate = useNavigate();
   const location = useLocation();
   const [scopeFilter, setScopeFilter] = useState<string[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { user } = useAuth();
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchEvents = async () => {
     if (!user?.userId) return;
     setIsLoading(true);
     try {
       const response = await GetRecommendedEventsAPI(userId, pageNo, pageSize, scopeFilter.join(","));
-      console.log(response);
       setEvents(response.data?.data || []);
+      setTotalPages(response.data?.totalPages || 1);
     } catch (error) {
       console.error("Error fetching events:", error);
       setEvents([]);
@@ -147,6 +148,25 @@ export const EventRecommendedSection = ({ userId }: Props) => {
           </MagicCard>
         ))}
       </div>
+      {!isLoading && events.length > 0 && (
+        <div className="flex justify-center mt-8 gap-4">
+          <button
+            disabled={pageNo === 1}
+            onClick={() => setPageNo(pageNo - 1)}
+            className="px-4 py-2 text-sm bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-700 mt-2">Page {pageNo} of {totalPages}</span>
+          <button
+            disabled={pageNo === totalPages}
+            onClick={() => setPageNo(pageNo + 1)}
+            className="px-4 py-2 text-sm bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </section>
   );
 };

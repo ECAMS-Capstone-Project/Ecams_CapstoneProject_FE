@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import CreateClubScheduleDialog from "@/components/partial/club_owner/club-schedule/CreateClubScheduleDialog";
 import EditClubScheduleDialog from "@/components/partial/club_owner/club-schedule/EditClubScheduleDialog";
 import toast from "react-hot-toast";
-import { ClubSchedule, GetScheduleClubAPI } from "@/api/representative/StudentAPI";
+import { ClubSchedule, CreateClubScheduleAPI, GetScheduleClubAPI, ScheduleRequest } from "@/api/representative/StudentAPI";
 import { Divider } from "@mui/material";
 
 const dayMap: Record<string, string> = {
@@ -51,16 +51,16 @@ const ClubSchedulePage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
     const [openEditDialog, setOpenEditDialog] = useState<ClubSchedule | null>(null);
+    const [flag, setFlag] = useState<boolean>(false);
 
     useEffect(() => {
         async function fetchSchedules() {
-            await new Promise((resolve) => setTimeout(resolve, 500));
             const response = await GetScheduleClubAPI("b2fa90e4-3479-4351-9862-9d2266fc442b");
             setSchedules(response.data?.data || []);
             setLoading(false);
         }
         fetchSchedules();
-    }, []);
+    }, [flag]);
 
     const calendarEvents = schedules
         .filter((sch) => sch.status)
@@ -129,6 +129,21 @@ const ClubSchedulePage: React.FC = () => {
         }
     };
 
+    const handleSubmit = async (data: ScheduleRequest) => {
+        const newSchedule: ScheduleRequest = {
+            clubId: data.clubId,
+            scheduleName: data.scheduleName,
+            dayOfWeek: data.dayOfWeek,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            startDate: data.startDate,
+            endDate: data.endDate,
+        };
+        await CreateClubScheduleAPI(newSchedule)
+        toast.success("Create schedule successfully!");
+        setFlag((prev) => !prev);
+    }
+
     return (
         <div className="p-6">
             <h2 className="text-3xl font-bold mb-6 text-left">Club Schedules</h2>
@@ -169,21 +184,7 @@ const ClubSchedulePage: React.FC = () => {
             {openCreateDialog && (
                 <CreateClubScheduleDialog
                     onClose={() => setOpenCreateDialog(false)}
-                    onSubmit={(data) => {
-                        const newSchedule: ClubSchedule = {
-                            clubScheduleId: `cs-${Date.now()} `,
-                            clubId: "club1",
-                            scheduleName: data.scheduleName,
-                            dayOfWeek: data.dayOfWeek,
-                            startTime: data.startTime,
-                            endTime: data.endTime,
-                            startDate: data.startDate,
-                            endDate: data.endDate,
-                            status: true,
-                        };
-                        setSchedules((prev) => [...prev, newSchedule]);
-                        setOpenCreateDialog(false);
-                    }}
+                    onSubmit={(data) => handleSubmit(data)}
                 />
             )}
             {openEditDialog && (

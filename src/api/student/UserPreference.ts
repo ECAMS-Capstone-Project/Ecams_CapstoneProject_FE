@@ -18,7 +18,7 @@ export const UpdateUserPreferenceAPI = async (userId: string, data: { fieldIds: 
             toast.error(error.response.data.message);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {

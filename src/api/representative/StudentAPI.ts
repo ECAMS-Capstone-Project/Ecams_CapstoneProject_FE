@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import toast from "react-hot-toast";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
-import { get, patch } from "../agent";
+import { get, patch, post } from "../agent";
 import StudentRequest from "@/models/StudentRequest";
 
 export const GetStudentAPI = async (pageSize: number, pageNo: number, status?: boolean): Promise<ResponseDTO<ResponseData<StudentRequest>>> => {
@@ -123,6 +124,17 @@ export interface StudentScheduleData {
     clubSchedules: ClubSchedule2[];
 }
 
+export interface ScheduleRequest {
+    clubId: string;
+    scheduleName: string;
+    dayOfWeek: string;
+    startTime: string;
+    endTime: string;
+    startDate: string;
+    endDate: string;
+}
+
+
 export const GetScheduleStudentByIdAPI = async (userId: string): Promise<ResponseDTO<StudentScheduleData>> => {
     try {
         const response = await get<ResponseDTO<StudentScheduleData>>(`/User/${userId}/schedule`);
@@ -142,5 +154,28 @@ export const GetScheduleClubAPI = async (clubId: string): Promise<ResponseDTO<Re
     } catch (error: any) {
         console.error("Error in UniversityList API call:", error.response || error);
         throw error;
+    }
+};
+
+export const CreateClubScheduleAPI = async (data: ScheduleRequest): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await post<ResponseDTO<string>>(`/ClubSchedules/requests`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error("Something went wrong. Please try again.");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
+        if (error.response) {
+            console.log(error.response.data.errors);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
     }
 };

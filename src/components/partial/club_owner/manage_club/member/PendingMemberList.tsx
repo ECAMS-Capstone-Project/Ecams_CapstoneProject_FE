@@ -35,7 +35,7 @@ export default function PendingMemberList({ clubId }: props) {
 
   return (
     <div className="space-y-2">
-      <PendingMemberListTable data={memberList} clubId={clubId} setFlag={setFlag} />
+      <PendingMemberListTable data={memberList.filter(a => a.clubRoleName != "CLUB_OWNER")} clubId={clubId} setFlag={setFlag} />
       <DataTablePagination
         currentPage={pageNo}
         totalPages={totalPages}

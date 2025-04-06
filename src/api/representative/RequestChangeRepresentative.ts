@@ -4,11 +4,7 @@ import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 
 interface RepresentativeInfo {
-    fullName: string;
     email: string;
-    phoneNumber: string;
-    address?: string;
-    gender: "MALE" | "FEMALE" | "OTHER";
 }
 
 interface University {
@@ -46,7 +42,7 @@ export const CreateRequestChangeRepresentativeAPI = async (universityId: string,
             toast.error(error.response.data.message);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -80,7 +76,7 @@ export const RepresentativeChangeInfo = async (universityId: string, data: Unive
             toast.error(error.response.data.message);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {

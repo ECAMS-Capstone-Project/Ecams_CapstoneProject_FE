@@ -20,7 +20,7 @@ const ContractRepresentativePage = () => {
       if (user) {
         try {
           //   // Tải cả component lười biếng và dữ liệu API song song
-          const contractData = await ContractRepresentative(pageSize, pageNo, user.representativeId);
+          const contractData = await ContractRepresentative(pageSize, pageNo, user.userId);
           setContractList(contractData.data?.data || []);
           setTotalPages(contractData.data?.totalPages || 1);
         } catch (error) {

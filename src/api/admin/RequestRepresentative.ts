@@ -40,14 +40,17 @@ export const AcceptRepresentativeRequestAPI = async (universityId: string): Prom
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.errors);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.errors);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {

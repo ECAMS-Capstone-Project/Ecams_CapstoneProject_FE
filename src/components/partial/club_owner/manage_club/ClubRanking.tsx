@@ -129,7 +129,7 @@ export default function FancyClubRankingPage() {
           {/* Club Ranking List */}
           <div className="space-y-4">
             {displayedClubs && displayedClubs.length === 0 && (
-              <div className="text-center text-gray-500">No clubs found</div>
+              <div className="text-center text-gray-500">No club yet</div>
             )}
             {displayedClubs.map((club, index) => {
               const rankIndex = index + 1;

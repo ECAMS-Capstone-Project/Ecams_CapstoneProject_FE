@@ -1,6 +1,7 @@
 import { ConfirmEmailRequest, ForgotPasswordRequest, ResetPasswordRequest, VerifyEmailRequest } from "@/models/Auth/VerifyModel";
 import { ResponseDTO } from "../BaseResponse";
 import { patch, post } from "../agent";
+import toast from "react-hot-toast";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const VerifyEmailAPI = async (data: VerifyEmailRequest): Promise<ResponseDTO<string>> => {
@@ -38,6 +39,13 @@ export const ForgotPasswordAPI = async (data: ForgotPasswordRequest): Promise<Re
         const response = await post<ResponseDTO<string>>("/Auth/forgot-pass", data);
         return response;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
         if (error.response) {
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
@@ -53,6 +61,13 @@ export const ResetPasswordAPI = async (data: ResetPasswordRequest): Promise<Resp
         const response = await patch<ResponseDTO<string>>("/Auth/reset-pass", data);
         return response;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
         if (error.response) {
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");

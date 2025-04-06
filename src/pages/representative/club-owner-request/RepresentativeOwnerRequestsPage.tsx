@@ -82,8 +82,8 @@ const RepresentativeRequestsPage: React.FC = () => {
         <div className="p-6">
             <div className="flex items-center justify-between bg-white rounded-lg shadow-lg w-full p-3 mb-5">
                 <Heading
-                    title={`Representative Change Requests`}
-                    description={`View list request of representative.`}
+                    title={`Club Owner Change Requests`}
+                    description={`View list request of club owner.`}
                 />
             </div>
             <Separator className="mt-2 mb-4" />
@@ -101,7 +101,7 @@ const RepresentativeRequestsPage: React.FC = () => {
                                 key={req.clubId}
                                 className="border shadow-md hover:shadow-xl cursor-pointer transition-all duration-300 rounded-xl hover:scale-[1.02]"
                             >
-                                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4">
+                                <CardHeader className="p-4" style={{ background: "linear-gradient(to right, #136CB5, #49BBBD)" }}>
                                     <div className="flex items-center gap-3 text-white">
                                         <img src="https://cdn-icons-png.flaticon.com/512/3990/3990804.png" className="h-6 w-6" alt="Club" />
                                         <CardTitle className="text-lg font-semibold">{req.clubName}</CardTitle>
@@ -111,15 +111,15 @@ const RepresentativeRequestsPage: React.FC = () => {
                                     <div className="flex items-center gap-3">
                                         <UserCircleIcon className="h-5 w-5 text-gray-500" />
                                         <div>
-                                            <p className="text-xs text-gray-500">Current Owner</p>
+                                            <p className="text-xs text-black">Current Owner</p>
                                             <p className="font-medium">{req.owner?.fullname}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <UserCircleIcon className="h-5 w-5 text-purple-600" />
+                                        <UserCircleIcon className="h-5 w-5 text-[#136CB5]" />
                                         <div>
-                                            <p className="text-xs text-gray-500">Requested Candidate</p>
-                                            <p className="font-medium text-purple-700">{req.requestedPerson?.fullname}</p>
+                                            <p className="text-xs text-[#136CB5]">Requested Candidate</p>
+                                            <p className="font-medium text-[#136CB5]">{req.requestedPerson?.fullname}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-2">

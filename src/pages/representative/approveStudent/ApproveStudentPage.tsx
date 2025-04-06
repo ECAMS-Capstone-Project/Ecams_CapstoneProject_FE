@@ -73,7 +73,7 @@ const ApproveStudentPage = () => {
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title="Manage Request Student"
+              title="Manage student's request"
               description="Approve request student in the system"
             />
           </div>
