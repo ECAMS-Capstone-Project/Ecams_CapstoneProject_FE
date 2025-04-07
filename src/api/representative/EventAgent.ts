@@ -67,7 +67,7 @@ export const getAllEventList = async (
     Type: filterParams?.type,
     StartDate: filterParams?.startDate,
     EndDate: filterParams?.endDate,
-    Status: filterParams?.status,
+    Status: "ACTIVE",
     // ... các filter khác nếu có
   }
 
@@ -84,9 +84,9 @@ export const getAllEventList = async (
 }
 
 
-    export const getEventDetail = async (eventId: string): Promise<ResponseDTO<Event>> => {
+    export const getEventDetail = async (eventId: string, userId: string): Promise<ResponseDTO<Event>> => {
         try {
-            const response = await get<ResponseDTO<Event>>(`/Event/${eventId}`);
+            const response = await get<ResponseDTO<Event>>(`/Event/${eventId}?userId=${userId}`);
         
             
             return response;

@@ -1,7 +1,6 @@
 import React from "react";
 import { ClubResponse } from "@/models/Club";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 
 interface ClubDetailRightProps {
@@ -23,13 +22,15 @@ export const ClubDetailRight: React.FC<ClubDetailRightProps> = ({ club }) => {
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm text-gray-500 uppercase">Club Owner</h4>
-                <p className="text-gray-900 font-medium">{club.clubName}</p>
+                <p className="text-gray-900 font-medium">
+                  {club.clubOwnerName}
+                </p>
               </div>
 
               <div>
                 <h4 className="text-sm text-gray-500 uppercase">Members</h4>
                 <p className="text-gray-900 font-medium">
-                  {club.numOfMems}+ active members
+                  {club.numOfMems} members
                 </p>
               </div>
 
@@ -58,15 +59,6 @@ export const ClubDetailRight: React.FC<ClubDetailRightProps> = ({ club }) => {
                 className="w-full h-full object-cover"
               />
             </div>
-          </div>
-
-          <div className="p-6">
-            <Button
-              variant={"custom"}
-              className="w-full  text-white py-5 rounded-lg font-semibold hover:opacity-90 transition"
-            >
-              Join This Club
-            </Button>
           </div>
         </div>
       </div>

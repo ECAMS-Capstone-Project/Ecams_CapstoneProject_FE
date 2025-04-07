@@ -8,7 +8,6 @@ import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
 import { useAreas } from "@/hooks/staff/Area/useArea";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { useNavigate } from "react-router-dom";
 
 interface DataTableRowActionsProps<TData> {
@@ -38,24 +37,6 @@ export function DataTableRowActions<TData>({
     }
   };
 
-  // Lấy chi tiết event
-  const { getEventDetailQuery } = useEvents();
-  const {
-    data: eventDetail,
-    isLoading: isEventDetailLoading,
-    error,
-  } = getEventDetailQuery(row.getValue("eventId"));
-
-  if (isEventDetailLoading) {
-    // Nếu dữ liệu đang tải, có thể thêm loading spinner hoặc trạng thái "Đang tải"
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    // Xử lý lỗi khi lấy chi tiết event
-    return <div>Error loading event details: {error.message}</div>;
-  }
-
   return (
     <>
       <AlertModal
@@ -67,11 +48,11 @@ export function DataTableRowActions<TData>({
       <button
         className="bg-transparent border-none"
         onClick={() => {
-          eventDetail?.data?.status === "PENDING"
+          row.getValue("status") === "PENDING"
             ? navigate(
-                `/representative/event/request/${eventDetail?.data?.eventId}`
+                `/representative/event/request/${row.getValue("eventId")}`
               )
-            : navigate(`/representative/event/${eventDetail?.data?.eventId}`);
+            : navigate(`/representative/event/${row.getValue("eventId")}`);
         }}
       >
         <EyeIcon className="mr-2 h-4 w-4 cursor-pointer text-black" />

@@ -8,7 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
-import { CheckCircle2Icon, XCircleIcon, CircleEllipsis } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  XCircleIcon,
+  CircleEllipsis,
+  CircleCheck,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Event } from "@/models/Event";
@@ -39,7 +44,11 @@ export const EventColums: ColumnDef<Event>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Event Name" />
     ),
-    cell: ({ row }) => <span>{row.getValue("eventName")}</span>, // Hiển thị giá trị "Name"
+    cell: ({ row }) => (
+      <span className="truncate block max-w-[200px]">
+        {row.getValue("eventName")}
+      </span>
+    ), // Hiển thị giá trị "Name"
   },
 
   {
@@ -47,7 +56,11 @@ export const EventColums: ColumnDef<Event>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("description")}</span>,
+    cell: ({ row }) => (
+      <span className="truncate block max-w-[200px]">
+        {row.getValue("description")}
+      </span>
+    ),
   },
   {
     accessorKey: "location",
@@ -90,6 +103,8 @@ export const EventColums: ColumnDef<Event>[] = [
             { label: "Active", value: "ACTIVE" },
             { label: "Inactive", value: "INACTIVE" },
             { label: "Pending", value: "PENDING" },
+            { label: "Ended", value: "ENDED" },
+            { label: "Waiting", value: "WAITING" },
           ]}
         />
       </div>
@@ -122,6 +137,10 @@ export const EventColums: ColumnDef<Event>[] = [
                     ? "bg-[#FFF5BA] text-[#5A3825]"
                     : currentStatus === "PENDING"
                     ? "bg-[#FFE6CC] text-[#CC6600]"
+                    : currentStatus === "ENDED"
+                    ? "bg-[#D1E7F3] text-[#1E4A7D]"
+                    : currentStatus === "WAITING"
+                    ? "bg-[#F9E3D1] text-[#9E5C3F]"
                     : ""
                 } w-auto`}
               >
@@ -133,6 +152,12 @@ export const EventColums: ColumnDef<Event>[] = [
                 )}
                 {currentStatus === "PENDING" && (
                   <CircleEllipsis size={12} className=" text-[#CC6600]" />
+                )}
+                {currentStatus === "ENDED" && (
+                  <CircleCheck size={12} className=" text-[#2F4F4F]" />
+                )}
+                {currentStatus === "WAITING" && (
+                  <CircleEllipsis size={12} className=" text-[#2F4F4F]" />
                 )}
                 <span>{currentStatus}</span>
                 {/* <ChevronDown size={16} /> */}

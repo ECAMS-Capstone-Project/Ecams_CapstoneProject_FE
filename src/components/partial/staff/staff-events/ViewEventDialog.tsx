@@ -1,4 +1,5 @@
 import { useEvents } from "@/hooks/staff/Event/useEvent";
+import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
 import {
   CheckCircle2Icon,
@@ -11,11 +12,12 @@ export const EventDetail: React.FC = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const {
     data: eventDetail,
     isLoading: isEventDetailLoading,
     error,
-  } = getEventDetailQuery(eventId);
+  } = getEventDetailQuery(eventId, user?.userId || "");
 
   if (isEventDetailLoading) {
     return (
@@ -64,7 +66,9 @@ export const EventDetail: React.FC = () => {
                 {event?.eventName}
               </h1>
               <p className="mt-2 text-lg text-gray-200 drop-shadow-md">
-                {event?.clubName || event?.representativeName}
+                {Array.isArray(event?.clubs)
+                  ? event?.clubs.map((club) => club.clubName).join(", ")
+                  : event?.representativeName}
               </p>
             </div>
           </div>
@@ -91,7 +95,12 @@ export const EventDetail: React.FC = () => {
                     {event?.maxParticipants} people
                   </p>
                 </div>
-
+                <div>
+                  <p className="text-gray-600">Training Point:</p>
+                  <p className="font-semibold text-lg">
+                    {event?.trainingPoint} points
+                  </p>
+                </div>
                 <div>
                   <p className="text-gray-600">Registered Range:</p>
                   <p className="font-semibold text-lg">

@@ -39,7 +39,11 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("description")}</span>,
+    cell: ({ row }) => (
+      <span className="max-w-[200px] truncate block">
+        {row.getValue("description")}
+      </span>
+    ),
   },
 
   {
@@ -65,9 +69,10 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const isActive = status == "1";
-      const isInactive = status == "0";
+      const status = row.getValue("status") as boolean; // Lấy giá trị boolean trực tiếp
+      console.log("status", status);
+      const isActive = status === true;
+      const isInactive = status === false;
       const [currentStatus, setCurrentStatus] = useState(status);
 
       const reactivateUni = async () => {
@@ -75,7 +80,7 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
           // Gửi API để cập nhật trạng thái
           // await reactiveUni(row.original.universityId); // Hàm này là một giả định
           toast.success("Reactivate University Successfully.");
-          setCurrentStatus("1");
+          setCurrentStatus(true); // Đặt lại trạng thái là true
         } catch (error) {
           console.error("Failed to update status:", error);
           toast.error("Failed to update status.");
@@ -102,7 +107,7 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
                   <XCircleIcon size={12} className=" text-[#5A3825]" />
                 )}
 
-                <span>{currentStatus == "1" ? "Active" : "Inactive"}</span>
+                <span>{currentStatus ? "Active" : "Inactive"}</span>
                 <ChevronDown size={16} />
               </div>
             </DropdownMenuTrigger>
@@ -110,7 +115,7 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
               <DropdownMenuItem
                 onClick={() => reactivateUni()}
                 className={`${
-                  currentStatus === "1" ? "bg-[#CBF2DA]" : ""
+                  currentStatus === true ? "bg-[#CBF2DA]" : ""
                 } cursor-pointer`}
               >
                 <CheckCircle2Icon size={18} className=" text-[#2F4F4F]" />{" "}
@@ -118,28 +123,13 @@ export const PolicyColumns: ColumnDef<Policy>[] = [
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                onClick={
-                  // (e) => {
-                  // e.preventDefault();
-                  // setIsDialogOpen(true);
-                  () => setCurrentStatus("0")
-                }
+                onClick={() => setCurrentStatus(false)} // Cập nhật lại status thành false
                 className={`${
-                  currentStatus === "0" ? "bg-[#FFF5BA]" : ""
+                  currentStatus === false ? "bg-[#FFF5BA]" : ""
                 } cursor-pointer`}
               >
                 <XCircleIcon size={18} className=" text-[#5A3825]" /> Inactive
               </DropdownMenuItem>
-              {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DenyRequest
-                  universityId={row.original.universityId}
-                  onClose={() => {
-                    setIsDialogOpen(false);
-                  }}
-                  dialogAction={"deactive"}
-                  onSuccess={() => setCurrentStatus("INACTIVE")}
-                />
-              </Dialog> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

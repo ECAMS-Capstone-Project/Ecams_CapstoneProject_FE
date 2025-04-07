@@ -103,11 +103,7 @@ export const ViewNotiDialog: React.FC<NotiDialogProps> = ({
                         <FormItem>
                           <FormLabel>Type</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              readOnly={!!initialData}
-                            />
+                            <Input type="text" {...field} readOnly />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

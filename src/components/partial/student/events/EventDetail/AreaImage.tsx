@@ -6,12 +6,10 @@ interface AreaImageProps {
 }
 
 const AreaImageCarousel = ({ area }: AreaImageProps) => {
-  // Chuyển đổi image nếu cần
-
   // Cấu hình của React Slick
   const settings = {
-    dots: true,
-    infinite: true,
+    dots: area.length > 1, // Chỉ hiển thị dots nếu có nhiều hơn 1 area
+    infinite: area.length > 1, // Nếu có 1 area thì không infinite
     speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -31,7 +29,7 @@ const AreaImageCarousel = ({ area }: AreaImageProps) => {
         },
       },
     ],
-    autoplay: true,
+    autoplay: area.length > 1, // Nếu có nhiều hơn 1 area thì autoplay
     autoplaySpeed: 1000,
   };
 
@@ -41,7 +39,7 @@ const AreaImageCarousel = ({ area }: AreaImageProps) => {
         {area.map((area) => (
           <div
             key={area.areaId}
-            className="w-full  flex flex-col items-center justify-center"
+            className="w-full flex flex-col items-center justify-center"
           >
             <img
               src={area.imageUrl}

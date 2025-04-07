@@ -13,8 +13,8 @@ const StudentTable = ({ data }: StudentData) => {
         <DataTable
           columns={StudentColumns}
           data={data}
-          searchKey={"studentId"}
-          placeholder="Search student's ID"
+          searchKey={"fullname"}
+          placeholder="Search student's name"
         />
       </div>
     </>

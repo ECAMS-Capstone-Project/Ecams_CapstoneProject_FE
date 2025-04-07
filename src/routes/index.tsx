@@ -22,7 +22,7 @@ import ProfilePage from "@/pages/common/Profile";
 import WaitingCheckRepresentativePage from "@/pages/representative/additionRegister/waitingCheckRepresentativePage";
 import PackageList from "@/pages/representative/package/packageListPage";
 import { createBrowserRouter } from "react-router-dom";
-import WaitingCheckout from "@/components/partial/representative/representative-checkout/WaitingCheckOut";
+// import WaitingCheckout from "@/components/partial/representative/representative-checkout/WaitingCheckOut";
 import PendingUniversity from "@/pages/admin/university/PendingUni";
 import GuestLandingPage from "@/components/partial/landing/LandingPage";
 import HomePage from "@/pages/student/home/HomePage";
@@ -58,6 +58,13 @@ import { FreeEventConfirm } from "@/components/partial/student/event-register/Fr
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
 import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
 import EventPaymentConfirmation from "@/components/partial/student/event-register/PaymentConfirm";
+import WaitingCheckout from "@/components/partial/student/event-register/WaitingCheckOut";
+import { EventCheckIn } from "@/pages/club-owner/event/EventCheckIn";
+import { StudentEventSection } from "@/components/partial/student/events/student-events/StudentEventSection";
+import EventParticipants from "@/pages/club-owner/event/EventParticipants";
+import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
+import { CreateInterClubEventPage } from "@/pages/club-owner/inter-club-event/CreateInterClubEvent";
+import { EventDetailPage } from "@/pages/club-owner/inter-club-event/EventDetail";
 import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
 import RepresentativeRequestsPage from "@/pages/representative/club-owner-request/RepresentativeOwnerRequestsPage";
 import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
@@ -338,6 +345,10 @@ export const router = createBrowserRouter([
         element: <StudentEventDetail />,
       },
       {
+        path: "/student/student-events",
+        element: <StudentEventSection />,
+      },
+      {
         path: "/student/events/free-confirmation",
         element: <FreeEventConfirm />,
       },
@@ -394,6 +405,26 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
+        path: "/club/event-check-in",
+        element: <EventCheckIn />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/event-participants/:eventId",
+        element: <EventParticipants />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/event-check-in",
+        element: <EventCheckIn />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/create-club",
+        element: <RequestClubPage />,
+        errorElement: <ErrorException />,
+      },
+      {
         path: "/club/invitation",
         element: <InvitationClubPage />,
         errorElement: <ErrorException />,
@@ -406,6 +437,21 @@ export const router = createBrowserRouter([
       {
         path: "/club/create-task",
         element: <CreateTaskClub />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event",
+        element: <InterClubEvent />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/create",
+        element: <CreateInterClubEventPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/:clubEventId",
+        element: <EventDetailPage />,
         errorElement: <ErrorException />,
       },
     ],

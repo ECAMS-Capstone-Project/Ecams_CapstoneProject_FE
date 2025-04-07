@@ -34,11 +34,11 @@ DataTableRowActionsProps<TData>) {
     setLoading(true);
     try {
       // await agent.Products.delete(data.productId);
-      toast.success("Package delete successfully.");
+      toast.success("Policy delete successfully.");
     } catch (error: any) {
       const errorMessage = error.data?.message || "An error occurred";
       toast.error(errorMessage);
-      console.error("Error deleting package:", error);
+      console.error("Error deleting policy:", error);
     } finally {
       setLoading(false);
       setOpen(false);
@@ -85,7 +85,11 @@ DataTableRowActionsProps<TData>) {
       {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
-          <EditPolicyDialog initialData={row.original as any} />
+          <EditPolicyDialog
+            initialData={row.original as any}
+            onClose={() => setIsDialogOpen(false)}
+            setIsDialogOpen={setIsDialogOpen}
+          />
         </DialogContent>
       </Dialog>
     </>

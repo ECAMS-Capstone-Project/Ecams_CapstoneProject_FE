@@ -27,3 +27,14 @@ export interface ClubResponse {
     socialMediaLinks: SocialMediaLinkResponseDTO[];
     clubOwnerId: string;
 }
+
+export interface ClubJoinedRequest {
+    clubId: string;
+    reason: string; 
+    userId: string;
+}
+
+export interface isInClubResponse {
+    isMember: boolean;
+    hasPendingRequest: boolean;
+}

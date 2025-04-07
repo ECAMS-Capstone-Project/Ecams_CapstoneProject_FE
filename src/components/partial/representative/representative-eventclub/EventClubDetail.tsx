@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Edit2Icon, EyeIcon, Mail, Phone } from "lucide-react";
 import MemberTable from "./MemberList";
+import { format } from "date-fns";
 
 interface EventClubProps {
   club: EventClubDTO;
@@ -126,7 +127,7 @@ const EventClubDetail = ({ club }: EventClubProps) => {
                 Founded Date
               </h3>
               <p className="mt-2 text-gray-600">
-                {new Date(club?.foundingDate).toLocaleDateString()}
+                {format(new Date(club?.foundingDate), "dd/MM/yyyy")}
               </p>
             </div>
           </div>

@@ -3,7 +3,12 @@
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2Icon, Eye, XCircleIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  CircleEllipsis,
+  Eye,
+  XCircleIcon,
+} from "lucide-react";
 // import { DataTableRowActions } from "./row-actions";
 import { useEffect, useState } from "react";
 import {
@@ -66,6 +71,7 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
           options={[
             { label: "Active", value: "ACTIVE" },
             { label: "Inactive", value: "INACTIVE" },
+            { label: "Checking", value: "CHECKING" },
           ]}
         />
       </div>
@@ -95,6 +101,8 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
                   ? "bg-[#CBF2DA] text-[#2F4F4F]"
                   : currentStatus === "INACTIVE"
                   ? "bg-[#FFF5BA] text-[#5A3825]"
+                  : currentStatus === "CHECKING"
+                  ? "bg-[#FFE6CC] text-[#CC6600]"
                   : ""
               } w-3/4`}
             >
@@ -103,6 +111,9 @@ export const StaffColumns: ColumnDef<getStaff>[] = [
               )}
               {currentStatus === "INACTIVE" && (
                 <XCircleIcon size={12} className=" text-[#5A3825]" />
+              )}
+              {currentStatus === "CHECKING" && (
+                <CircleEllipsis size={12} className=" text-[#CC6600]" />
               )}
 
               <span>{currentStatus}</span>
