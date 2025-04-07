@@ -86,34 +86,39 @@ export function UserNav() {
               {userInfo?.roles &&
                 !userInfo?.roles.includes("REPRESENTATIVE") &&
                 !userInfo?.roles.includes("ADMIN") && (
-                  <DropdownMenuItem onClick={() => navigate("/club")}>
-                    My club
-                    <DropdownMenuShortcut>
-                      <Groups2Icon />
-                    </DropdownMenuShortcut>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => navigate("/club")}>
+                      My club
+                      <DropdownMenuShortcut>
+                        <Groups2Icon />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/student/student-events")}
+                    >
+                      My Event
+                      <DropdownMenuShortcut>
+                        <Event />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/student/schedule")}
+                    >
+                      Schedule
+                      <DropdownMenuShortcut>
+                        <CalendarCheck />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/student")}>
+                      Back to page
+                      <DropdownMenuShortcut>
+                        <House />
+                      </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </>
                 )}
-              <DropdownMenuItem
-                onClick={() => navigate("/student/student-events")}
-              >
-                My Event
-                <DropdownMenuShortcut>
-                  <Event />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/student/schedule")}>
-                Schedule
-                <DropdownMenuShortcut>
-                  <CalendarCheck />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/student")}>
-                Back to page
-                <DropdownMenuShortcut>
-                  <House />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               Log out
