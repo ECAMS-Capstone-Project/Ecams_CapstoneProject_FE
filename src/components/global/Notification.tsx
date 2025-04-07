@@ -78,7 +78,7 @@ const NotificationDropdown = () => {
 
       newConnection.on(
         "ReceiveNotification",
-        (notificationId, notificationType, message, isRead) => {
+        async (notificationId, notificationType, message, isRead) => {
           console.log("=== SignalR Notification Received ===");
           console.log("Connection state:", newConnection.state);
           console.log("Connection ID:", newConnection.connectionId);
