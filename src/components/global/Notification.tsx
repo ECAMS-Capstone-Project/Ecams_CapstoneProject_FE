@@ -16,6 +16,8 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import toast from "react-hot-toast";
 import { useNotification } from "@/hooks/useNotification";
+import useAuth from "@/hooks/useAuth";
+import Swal from "sweetalert2";
 
 const NotificationDropdown = () => {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
@@ -26,6 +28,7 @@ const NotificationDropdown = () => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
+  const { logout } = useAuth();
 
   // Tự động kết nối SignalR ngay khi load component
   useEffect(() => {
@@ -103,16 +106,61 @@ const NotificationDropdown = () => {
           }
 
           if (message) {
-            toast.success(message);
+            const isDuplicateMessage = notifications.some(
+              (noti) => noti.message === message
+            );
+            if (!isDuplicateMessage) {
+              toast.custom(
+                () => (
+                  <div className="bg-white border-l-4 border-blue-500 shadow-md rounded-md p-4 w-96 text-sm text-gray-800">
+                    <div className="flex items-start space-x-2">
+                      <div className="text-xl">
+                        {notificationType === "SYSTEM" ? "🚨" : "ℹ️"}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">Thông báo</p>
+                        <p className="mt-1">{message}</p>
+                      </div>
+                    </div>
+                  </div>
+                ),
+                {
+                  position: "top-right",
+                  duration: 4000,
+                }
+              );
+            }
+          }
+
+          if (
+            message.includes("New club owner has been add! You are kicked!") ||
+            message.includes("New representative has been add! You are kicked!")
+          ) {
+            try {
+              // Hiển thị popup đẹp với 1 nút OK
+              const result = await Swal.fire({
+                title: "Alert",
+                text: message,
+                icon: "error", // Có thể là 'warning', 'success', 'error'
+                confirmButtonText: "OK",
+                allowOutsideClick: false, // Không cho click ra ngoài để tắt
+                allowEscapeKey: false, // Không cho bấm ESC để tắt
+              });
+
+              // Sau khi bấm OK thì logout
+              if (result.isConfirmed) {
+                await logout();
+                window.location.href = "/login"; // Chuyển hướng sau khi logout thành công
+              }
+            } catch (error) {
+              console.error("Error during logout", error);
+            }
           }
         }
       );
 
       try {
         await newConnection.start();
-        console.log("Connected to SignalR Hub successfully");
-        console.log("Connection state:", newConnection.state);
-        console.log("Connection ID:", newConnection.connectionId);
         setConnection(newConnection);
       } catch (error) {
         console.error("Error connecting to SignalR", error);

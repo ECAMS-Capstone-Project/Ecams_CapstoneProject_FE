@@ -33,7 +33,7 @@ import useAuth from "@/hooks/useAuth";
 import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
 import { University } from "@/models/University";
 import { UniversityList } from "@/api/agent/UniversityAgent";
-import { ring2 } from 'ldrs'
+import { ring2 } from "ldrs";
 import toast from "react-hot-toast";
 import PoliciesDialog from "./policiesDiablog";
 
@@ -90,7 +90,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const RegisterForm: React.FC = () => {
-  ring2.register()
+  ring2.register();
   const [preview, setPreview] = useState<string | null>(null);
   const [date, setDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
@@ -127,7 +127,7 @@ const RegisterForm: React.FC = () => {
       agreeToTerms: false,
       gender: "",
       yearStudy: "",
-      universityId: ""
+      universityId: "",
     },
     resolver: zodResolver(schema),
   });
@@ -310,7 +310,7 @@ const RegisterForm: React.FC = () => {
                 />
               </Grid2>
 
-              <Grid2 size={{ xs: 12, md: 4 }}>
+              <Grid2 size={{ xs: 12, md: 12 }}>
                 <Controller
                   name="universityId"
                   control={control}
@@ -320,9 +320,15 @@ const RegisterForm: React.FC = () => {
                       <Autocomplete
                         options={listUniversity || []}
                         getOptionLabel={(option) => option.universityName}
-                        isOptionEqualToValue={(option, value) => option.universityId === value.universityId}
+                        isOptionEqualToValue={(option, value) =>
+                          option.universityId === value.universityId
+                        }
                         disableClearable
-                        onChange={(_, selectedOption) => field.onChange(selectedOption ? selectedOption.universityId : "")}
+                        onChange={(_, selectedOption) =>
+                          field.onChange(
+                            selectedOption ? selectedOption.universityId : ""
+                          )
+                        }
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -338,7 +344,7 @@ const RegisterForm: React.FC = () => {
                 />
               </Grid2>
 
-              <Grid2 size={{ xs: 12, md: 4 }}>
+              <Grid2 size={{ xs: 12, md: 6 }}>
                 <FormControl fullWidth error={!!errors.yearStudy}>
                   <InputLabel>Year of study</InputLabel>
                   <Select
@@ -360,7 +366,7 @@ const RegisterForm: React.FC = () => {
                 </FormControl>
               </Grid2>
 
-              <Grid2 size={{ xs: 12, md: 4 }}>
+              <Grid2 size={{ xs: 12, md: 6 }}>
                 <TextField
                   {...register("major")}
                   type="string"
@@ -381,8 +387,9 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
-                        }`}
+                      className={`w-full justify-start text-left font-normal ${
+                        !date ? "text-muted-foreground" : ""
+                      }`}
                     >
                       <CalendarIcon />
                       {date ? (
@@ -418,8 +425,9 @@ const RegisterForm: React.FC = () => {
                         textTransform: "none",
                         color: "#838385",
                       }}
-                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
-                        }`}
+                      className={`w-full justify-start text-left font-normal ${
+                        !date ? "text-muted-foreground" : ""
+                      }`}
                     >
                       <CalendarIcon />
                       {endDate ? (
@@ -461,13 +469,16 @@ const RegisterForm: React.FC = () => {
                       sx={{
                         "&.Mui-disabled": {
                           color: "#1565C0",
-                        }
+                        },
                       }}
                       checked={agreeToTerms}
                     />
                   }
                   label={
-                    <Typography onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                    <Typography
+                      onClick={() => setOpen(true)}
+                      style={{ cursor: "pointer" }}
+                    >
                       I agree to all the terms and{" "}
                       <span
                         className="text-red-400"
@@ -548,7 +559,7 @@ const RegisterForm: React.FC = () => {
                     )
                   }
                 >
-                  {(isSubmitting) ? "Loading..." : "Create account"}
+                  {isSubmitting ? "Loading..." : "Create account"}
                 </Button>
               </Grid2>
 
@@ -594,7 +605,13 @@ const RegisterForm: React.FC = () => {
           </form>
         </Grid2>
       </Grid2>
-      <PoliciesDialog open={open} setOpen={setOpen} handleAccept={handleAccept} handleDeny={handleDeny} type='student' />
+      <PoliciesDialog
+        open={open}
+        setOpen={setOpen}
+        handleAccept={handleAccept}
+        handleDeny={handleDeny}
+        type="student"
+      />
     </Box>
   );
 };

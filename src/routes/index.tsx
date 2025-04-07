@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import ErrorException from "@/components/global/ErrorException";
 import AppShell from "@/components/layout/AppShell";
 import PaymentConfirmation from "@/components/partial/representative/confirm-payment";
@@ -70,14 +71,30 @@ import RepresentativeRequestsPage from "@/pages/representative/club-owner-reques
 import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
 import RepresentativeInformationPage from "@/pages/representative/request-to-change/RepresentativeInfoPage";
 import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
+import useAuth from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
-  // const { isLoggedIn } = useAuth();
+  const { user, logout } = useAuth();
+  const userStatus = user?.status;
 
-  // if (!isLoggedIn) {
-  //   return <Navigate to="/" replace />;
-  // }
+  useEffect(() => {
+    const handleLogout = async () => {
+      
+      if (
+        (user?.email !== "ecams@admin.com" && (user?.roles.includes("REPRESENTATIVE") || user?.roles.includes("ADMIN"))) &&
+        userStatus !== "ACTIVE"
+      ) {
+        await logout();
+        window.location.href = "/login";
+      } else {
+        return;
+      }
+      
+    };
+    handleLogout();
+  }, [userStatus, logout, user?.roles, user?.email]);
 
   return <AppShell {...rest}>{element}</AppShell>;
 };
