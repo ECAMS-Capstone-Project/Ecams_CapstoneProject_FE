@@ -49,12 +49,27 @@ const InvitationClubPage: React.FC = () => {
     return (
         <>
             <Box sx={{ padding: 4, paddingTop: 0 }}>
-                <Typography variant="h5" sx={{ textAlign: "left", marginBottom: 4 }}>
-                    <Typography component="span" sx={{ color: "blue", fontWeight: "bold" }}>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    sx={{ textAlign: "left", mb: 4 }}
+                >
+                    <Box
+                        component="span"
+                        sx={{
+                            background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            fontWeight: "bold",
+                        }}
+                    >
                         Clubs
-                    </Typography>{" "}
-                    Invitation
+                    </Box>{" "}
+                    <Box component="span" sx={{ color: "#444" }}>
+                        Invitation
+                    </Box>
                 </Typography>
+
 
                 {loading ? (
                     <DialogLoading />

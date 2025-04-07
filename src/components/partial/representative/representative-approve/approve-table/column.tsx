@@ -51,12 +51,12 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
         <DataTableColumnHeader column={column} title="Left Date" />
       </div>
     ),
-    cell: ({ row }) => <div >{String(row.getValue("endDate") || "Not yet").split("T")[0]}</div>,
+    cell: ({ row }) => <div>{String(row.getValue("endDate") || "Not yet").split("T")[0]}</div>,
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div >
+      <div className="text-center" >
         <DataTableFacetedFilter
           column={column}
           title="Status"

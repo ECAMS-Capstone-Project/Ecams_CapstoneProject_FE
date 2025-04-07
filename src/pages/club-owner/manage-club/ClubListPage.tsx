@@ -106,21 +106,15 @@ const ClubListPage: React.FC = () => {
         {/* Danh sách Clubs */}
         <TabsContent value={status}>
           <Box sx={{ padding: 4, paddingTop: 0 }}>
-            <Typography
-              variant="h5"
-              sx={{ textAlign: "left", marginBottom: 4 }}
-            >
-              <Typography
-                component="span"
-                sx={{ color: "blue", fontWeight: "bold" }}
-              >
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>
                 Clubs
-              </Typography>{" "}
+              </Box>{" "}
               {status === "ACTIVE"
-                ? "Participated"
+                ? "you’re participating in"
                 : status === "INACTIVE"
-                  ? "History"
-                  : "Pending"}
+                  ? "you’ve been part of"
+                  : "awaiting approval"}
             </Typography>
 
             {loading ? (
