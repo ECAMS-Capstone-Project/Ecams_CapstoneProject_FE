@@ -25,7 +25,7 @@ export default function ConfirmDialog({ open, setOpen }: confirmDialog) {
   useEffect(() => {
     async function fetchContractDetail() {
       if (user) {
-        const response = await PackageCurrent(user.representativeId);
+        const response = await PackageCurrent(user.userId);
         setPlan(response.data);
       }
     }

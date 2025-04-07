@@ -5,17 +5,18 @@ import MemberDetailDialog from "../MemberDialog";
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  clubId: string
 }
 
 export function DataTableRowActions<TData>({
-  row, setFlag
+  row, setFlag, clubId
 }: DataTableRowActionsProps<TData>) {
   return (
     <>
       <MemberDetailDialog
         initialData={row.original as any}
         setFlag={setFlag}
-        mode={row.getValue("status") !== "CHECKING" ? "pending" : "view"}
+        clubId={clubId}
       />
     </>
   );

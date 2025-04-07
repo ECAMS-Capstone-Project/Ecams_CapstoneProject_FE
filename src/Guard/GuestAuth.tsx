@@ -15,7 +15,7 @@ export default function GuestAuth({ children }: GuestAuthProps) {
       user.roles.includes("REPRESENTATIVE") &&
       user.universityId != null &&
       user.universityId != undefined &&
-      user.universityStatus != "PENDING"
+      (user.universityStatus != "PENDING" && user.universityStatus != "INACTIVE")
     ) {
       return <Navigate to="/representative" />;
     }
@@ -39,7 +39,7 @@ export default function GuestAuth({ children }: GuestAuthProps) {
     if (
       user &&
       user.roles.includes("STUDENT") &&
-      user.status.toUpperCase() != "CHECKING"
+      (user.status.toUpperCase() != "CHECKING" || user.status.toUpperCase() != "INACTIVE")
     ) {
       return <Navigate to="/student" />;
     }

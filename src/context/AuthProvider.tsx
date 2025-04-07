@@ -238,7 +238,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         toast.success("Registration successful");
         setTimeout(() => {
           window.location.replace("/login");
-        }, 500);
+        }, 600);
       } else {
         toast.error("Registration failed");
       }
@@ -256,7 +256,9 @@ function AuthProvider({ children }: AuthProviderProps) {
           type: "REGISTER",
         });
         toast.success("Registration successful");
-        window.location.replace("/login");
+        setTimeout(() => {
+          window.location.replace("/login");
+        }, 600);
       } else {
         toast.error("Registration failed");
       }

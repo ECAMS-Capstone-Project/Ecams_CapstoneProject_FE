@@ -9,7 +9,7 @@ export const logoutAPI = async (): Promise<ResponseDTO<string>> => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
         }

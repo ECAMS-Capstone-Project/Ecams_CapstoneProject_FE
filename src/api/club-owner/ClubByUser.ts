@@ -24,6 +24,8 @@ export interface ClubMemberDTO {
     avatar: string;
     fullname: string;
     email: string;
+    status: string;
+    leaveReason: string | null;
 }
 
 export interface ClubResponseDTO {
@@ -97,10 +99,57 @@ export interface ClubConditionUpdateDTO {
     conditionContent: string;
     description: string;
 }
+export interface ClubMemberRequestDTO {
+    clubMemberId: string;
+    acceptedBy: string;
+    isAccepted: boolean;
+    reason: string;
+}
+export interface ClubRankingDTO {
+    clubId: string;
+    clubName: string;
+    logoUrl: string;
+    totalScore: number;
+    rank: "EXCELENT" | "GOOD" | "AVERAGE" | "NEED_IMPROVEMENT";
+}
+export interface ClubRankingDetailDTO {
+    clubId: string;
+    clubName: string;
+    logoUrl: string;
+    numOfNewMembers: number;
+    newMemberScore: number;
+    numOfEvents: number;
+    eventScore: number;
+    averageEventRating: number;
+    eventRatingScore: number;
+    averageActivityPoint: number;
+    activityScore: number;
+    totalScore: number;
+    rank: "EXCELENT" | "GOOD" | "AVERAGE" | "NEED_IMPROVEMENT";
+}
+
+interface DenyDTO {
+    reason: string;
+}
+
+interface AlertClubDTO {
+    warningMessage: string;
+}
 
 export const GetAllClubsAPI = async (userId: string, status: string, pageNo: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
     try {
         const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/User/${userId}?Status=${status}&PageNumber=${pageNo}&PageSize=8`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetAllActiveClubsAPI = async (universityId: string, status: string, pageNo: number, pageSize: number): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(`/Clubs/university/${universityId}?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -126,9 +175,11 @@ export const ApproveClubAPI = async (clubId: string, userId: string): Promise<Re
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.errors);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
             console.log(error.response.data.errors);
@@ -147,12 +198,14 @@ export const DenyClubAPI = async (clubId: string, userId: string, stu: any): Pro
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -179,12 +232,14 @@ export const DenyClubCheckingAPI = async (clubId: string, stu: any): Promise<Res
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.errors);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -200,12 +255,14 @@ export const ApproveClubCheckingAPI = async (clubId: string): Promise<ResponseDT
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -276,12 +333,17 @@ export const CreateClubCondition = async (data: ClubConditionCreateDTO): Promise
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -297,12 +359,17 @@ export const DeleteClubCondition = async (clubConditionId: string): Promise<Resp
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -318,12 +385,17 @@ export const UpdateClubCondition = async (data: ClubConditionUpdateDTO): Promise
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -341,5 +413,150 @@ export const GetMemberRequestInClubsAPI = async (clubId: string, pageSize: numbe
     } catch (error: any) {
         console.error("Error in UniversityList API call:", error.response || error);
         throw error;
+    }
+};
+
+export const GetTaskMemberInClubsAPI = async (clubId: string, userId: string, pageSize: number, pageNo: number): Promise<ResponseDTO<ResponseData<Task>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<Task>>>(`/Tasks/clubs/${clubId}/User/${userId}?PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const ApproveOrDenyRequestJoinClub = async (clubId: string, memberId: string, data: ClubMemberRequestDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/Clubs/${clubId}/requests/${memberId}`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GetClubRankingAPI = async (universityId: string, month: string): Promise<ResponseDTO<ClubRankingDTO[]>> => {
+    try {
+        const response = await get<ResponseDTO<ClubRankingDTO[]>>(`/Clubs/university/${universityId}/ranking?NumOfMonth=${month}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetClubRankingDetailAPI = async (clubId: string, universityId: string, month: string): Promise<ResponseDTO<ClubRankingDetailDTO>> => {
+    try {
+        const response = await get<ResponseDTO<ClubRankingDetailDTO>>(`/Clubs/${clubId}/university/${universityId}/ranking?months=${month}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const LeaveClubAPI = async (clubId: string, userId: string, data: DenyDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await patch<ResponseDTO<string>>(`/Clubs/${clubId}/users/${userId}/leave`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 409) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const AlertClubAPI = async (clubId: string, data: AlertClubDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await patch<ResponseDTO<string>>(`/Clubs/${clubId}/warning`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GetMemberInClubsByStatusAPI = async (clubId: string, pageSize: number, pageNo: number, status: string): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(`/Clubs/${clubId}/members?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const ChangeClubOwnerAPI = async (clubId: string, clubOwnerId: string, data: { leaveReason: string, requestedMemberId: string }): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/Clubs/${clubId}/owner/${clubOwnerId}/change`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
     }
 };

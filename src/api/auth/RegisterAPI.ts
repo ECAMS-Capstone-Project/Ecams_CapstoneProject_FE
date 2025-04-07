@@ -12,13 +12,19 @@ export const registerRepresentativeAPI = async (data: RepresentativeRegisterRequ
         const response = await post<ResponseDTO<string>>("/Auth/sign-up-representative", data);
         return response;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
         if (error.response) {
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
-            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
-            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }
@@ -30,13 +36,19 @@ export const registerStudentAPI = async (formData: FormData): Promise<ResponseDT
         const apiResponse = response.data as ResponseDTO<string>;
         return apiResponse;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
         if (error.response) {
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
-            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
-            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }
@@ -48,13 +60,19 @@ export const additionInfoUniversityAPI = async (formData: FormData): Promise<Res
         const apiResponse = response.data as ResponseDTO<string>;
         return apiResponse;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+        }
         if (error.response) {
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
-            toast.error(error.response.data.message || "API Error");
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
-            toast.error("Network error. Please try again later");
             throw new Error("Network error. Please try again later.");
         }
     }

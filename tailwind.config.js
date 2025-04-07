@@ -75,6 +75,9 @@ module.exports = {
         meteor: "meteor 5s linear infinite",
         gradient: "gradient 4s linear infinite",
       },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

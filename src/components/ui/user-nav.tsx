@@ -18,6 +18,7 @@ import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import NotificationDropdown from "../global/Notification";
+import { CalendarCheck, CircleUser, House, LogOut } from "lucide-react";
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
@@ -119,27 +120,29 @@ export function UserNav() {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => navigate("/common/profile")}>
                 Profile
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                <DropdownMenuShortcut><CircleUser /></DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/club")}>
-                My club
-                <DropdownMenuShortcut>
-                  <Groups2Icon />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Settings
-                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+              {userInfo?.roles && !userInfo?.roles.includes("REPRESENTATIVE") && (
+                <DropdownMenuItem onClick={() => navigate("/club")}>
+                  My club
+                  <DropdownMenuShortcut>
+                    <Groups2Icon />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => navigate("/student/schedule")}>
+                Schedule
+                <DropdownMenuShortcut><CalendarCheck /></DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate("/student")}>
                 Back to page
-                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                <DropdownMenuShortcut><House /></DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               Log out
-              <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+              <DropdownMenuShortcut><LogOut /></DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

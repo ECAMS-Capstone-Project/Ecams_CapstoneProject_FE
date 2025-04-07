@@ -35,7 +35,7 @@ export default function ActiveMemberList({ clubId, isClubOwner }: props) {
 
     return (
         <div className="space-y-2">
-            <ActiveMemberListTable data={memberList} isClubOwner={isClubOwner} />
+            <ActiveMemberListTable data={isClubOwner ? memberList.filter(a => a.clubRoleName != "CLUB_OWNER" && a.status == "ACTIVE") : memberList.filter(a => a.status == "ACTIVE")} isClubOwner={isClubOwner} />
             <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}

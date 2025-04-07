@@ -14,7 +14,7 @@ const ClubActiveListTable = ({ data }: ClubData) => {
         <DataTable
           columns={clubColumn()}
           data={data}
-          searchKey={"taskName"}
+          searchKey={"clubName"}
           placeholder="Search title"
         />
       </div>

@@ -5,14 +5,15 @@ import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 
 interface MemberData {
   data: ClubMemberDTO[];
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  clubId: string
 }
-const PendingMemberListTable = ({ data, setFlag }: MemberData) => {
+const PendingMemberListTable = ({ data, setFlag, clubId }: MemberData) => {
   return (
     <>
       <div className="-mx-4 mt-5 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0">
         <DataTable
-          columns={memberColumn(setFlag)}
+          columns={memberColumn(clubId, setFlag)}
           data={data}
           searchKey={"fullname"}
           placeholder="Search student by name"

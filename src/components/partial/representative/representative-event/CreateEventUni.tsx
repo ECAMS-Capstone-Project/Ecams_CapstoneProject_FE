@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -40,9 +40,10 @@ import { format } from "date-fns"
 import { useLocation, useNavigate } from "react-router-dom"
 import LoadingAnimation from "@/components/ui/loading"
 import { AreaPicker, DatePicker } from "./AreaPicker"
-import { Button, Grid2 } from "@mui/material"
+import { Autocomplete, Button, Grid2, TextField } from "@mui/material"
 import { createEvent } from "@/api/representative/EventAgent"
 import { ring2 } from "ldrs"
+import { FieldDTO, GetAllFields } from "@/api/club-owner/RequestClubAPI"
 
 type EventFormValues = z.infer<typeof EventSchema1> & {
   eventAreas: {
@@ -51,66 +52,81 @@ type EventFormValues = z.infer<typeof EventSchema1> & {
     endDate: Date
   }[]
 }
-const EventSchema1 = z.object({
-  eventId: z.string().uuid().optional(), // Validate UUID cho eventId
-  universityId: z.string().uuid(),
-  representativeName: z.string().optional(), // Có thể là string hoặc null
-  clubId: z.string().optional(), // Có thể là string hoặc null
-  clubName: z.string().optional(), // Có thể là string hoặc null
-  eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
-  // startDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
-  // endDate: z.coerce.date().superRefine((date, ctx) => {
-  //     const parsedDate = Date.parse(date.toString());
-  //     if (isNaN(parsedDate)) {
-  //       ctx.addIssue({ code: "custom", message: "Invalid date format" });
-  //     }
-  //     const startDate = (ctx as any).parent?.startDate ? Date.parse((ctx as any).parent.startDate) : null;
-  //     if (startDate && parsedDate <= startDate) {
-  //       ctx.addIssue({ code: "custom", message: "Ended date must be after created date." });
-  //     }
-  //   }), // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
-  registeredStartDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
-  registeredEndDate: z.coerce.date().superRefine((date, ctx) => {
-    const parsedDate = Date.parse(date.toString());
-    if (isNaN(parsedDate)) {
-      ctx.addIssue({ code: "custom", message: "Invalid date format" });
-    }
-    const registeredStartDate = (ctx as any).parent?.registeredStartDate ? Date.parse((ctx as any).parent.registeredStartDate) : null;
-    if (registeredStartDate && parsedDate <= registeredStartDate) {
-      ctx.addIssue({ code: "custom", message: "Registered end date must be after registered start date", });
-    }
-  }),
+const EventSchema1 = z
+  .object({
+    eventId: z.string().uuid().optional(),
+    universityId: z.string().uuid(),
+    representativeName: z.string().optional(),
+    clubId: z.string().optional(),
+    clubName: z.string().optional(),
+    eventName: z.string().min(1, { message: "Event name is required" }),
 
-  price: z.coerce.number().min(0, { message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
-  maxParticipants: z.coerce.number().int().positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
-  status: z.string().optional(), // Kiểm tra status không rỗng
-  walletId: z.string().optional(),
-  eventAreas: z
-    .array(
-      z.object({
-        areaId: z.string(),
-        startDate: z.date(),
-        endDate: z.date(),
-      })
-    )
-    .superRefine((areas, ctx) => {
-      const ids = areas.map((a) => a.areaId);
-      if (new Set(ids).size !== ids.length) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Area is not allowed to be duplicated.",
-          path: ["_error"], // Đặt lỗi toàn cục của mảng vào _error
+    registeredStartDate: z.coerce.date(),
+    registeredEndDate: z.coerce.date(),
+
+    fieldIds: z.array(z.string()).min(1, "At least one field is required"),
+
+    price: z.coerce.number().min(0, { message: "Price must be a positive number" }),
+    maxParticipants: z.coerce.number().int().positive({ message: "Max participants must be a positive integer" }),
+
+    status: z.string().optional(),
+    walletId: z.string().optional(),
+
+    eventAreas: z
+      .array(
+        z.object({
+          areaId: z.string(),
+          startDate: z.date(),
+          endDate: z.date(),
+        })
+      )
+      .superRefine((areas, ctx) => {
+        const ids = areas.map((a) => a.areaId);
+        if (new Set(ids).size !== ids.length) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Area is not allowed to be duplicated.",
+            path: ["_error"],
+          });
+        }
+
+        areas.forEach((area, index) => {
+          if (area.endDate < area.startDate) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "End date must be after start date.",
+              path: [index, "endDate"],
+            });
+          }
         });
-      }
+      }),
+
+    feedbacks: z.array(z.unknown()).optional(),
+    imageUrl: z
+      .any()
+      .refine(
+        (val) => {
+          if (typeof val === "string") return true; // URL string hợp lệ
+          if (val instanceof File) return val.type.startsWith("image/");
+          return false;
+        },
+        {
+          message: "Image must be a valid image file or URL",
+        }
+      ),
+    description: z.string(),
+    eventType: z.string().min(1, "Event Type Require"),
+    trainingPoint: z.coerce.number().min(0, {
+      message: "Training point must be a positive number",
     }),
+  })
+  .refine((data) => {
+    return data.registeredEndDate >= data.registeredStartDate;
+  }, {
+    path: ["registeredEndDate"],
+    message: "Registered end date must be after or equal to start date",
+  });
 
-  // eventAreas là mảng tùy chọn, nếu có
-  feedbacks: z.array(z.unknown()).optional(), // feedbacks là mảng tùy chọn, nếu có
-  imageUrl: z.any(),
-  description: z.string(),
-  eventType: z.string()
-
-});
 interface EventDialogProps {
   initialData?: EventFormValues | null
   onSuccess?: () => void // Callback để reload data sau khi tạo area
@@ -123,6 +139,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   setOpen,
 }) => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>()
+  const [fieldOptions, setFieldOptions] = useState<FieldDTO[]>([]);
   const [, setIsLoading] = useState(false)
   const location = useLocation()
   // Lấy dữ liệu state
@@ -130,22 +147,31 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
 
   // Chỉ fetch thông tin user khi cần thiết
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchInitialData = async () => {
+      setIsLoading(true);
       try {
-        const userInfo = await getCurrentUserAPI()
-        if (userInfo) {
-          setUserInfo(userInfo.data)
-          form.setValue("universityId", userInfo.data?.universityId ?? "")
-        }
-      } catch (error) {
-        console.error("Failed to fetch user info:", error)
-      }
-    }
+        const [userInfoRes, fieldsRes] = await Promise.all([
+          !initialData ? getCurrentUserAPI() : Promise.resolve(null),
+          GetAllFields(),
+        ]);
 
-    if (!initialData) {
-      fetchUserInfo()
-    }
-  }, [initialData])
+        if (userInfoRes?.data) {
+          const data = userInfoRes.data;
+          setUserInfo(data);
+          form.setValue("universityId", data.universityId ?? "");
+        }
+
+        setFieldOptions(fieldsRes.data || []);
+      } catch (err) {
+        console.error("Failed to fetch user info or fields:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialData();
+  }, [initialData]);
+
 
   const { areas } = useAreas(1, 10, userInfo?.universityId) // Lấy mutation từ React Query
   const { isPending } = useEvents()
@@ -158,7 +184,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         universityId: "",
         clubId: "",
         eventName: "",
-        imageUrl: "",
         description: "",
         registeredStartDate: new Date(),
         registeredEndDate: new Date(),
@@ -172,6 +197,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
           },
         ],
         eventType: "",
+        trainingPoint: 0,
       },
   })
 
@@ -210,12 +236,13 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         values.registeredEndDate.toISOString()
       )
       formData.append("Price", values.price.toString())
+      formData.append("TrainingPoint", values.trainingPoint.toString())
       formData.append("MaxParticipants", values.maxParticipants.toString())
       formData.append("EventType", values.eventType)
       if ((values.imageUrl as any) instanceof File) {
         formData.append("ImageUrl", values.imageUrl ?? "");
       }
-
+      values.fieldIds.forEach((id) => formData.append("FieldIds", id));
       // Format eventAreas
       const formattedEventAreas = values.eventAreas.map((area) => ({
         AreaId: area.areaId,
@@ -248,15 +275,27 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
 
   // Xử lý lỗi validation
   const onError = (errors: any) => {
-    // Nếu lỗi validation từ zod được gắn vào eventAreas, hiển thị toast.error
-    if (errors.eventAreas) {
-      const message =
-        errors.eventAreas._error?.message ||
-        errors.eventAreas.message ||
-        "Area is not allowed to be duplicated."
-      toast.error(message)
+    const areaErrors = errors.eventAreas;
+
+    // ❗Lỗi toàn mảng (duplicate area)
+    if (areaErrors?._error) {
+      toast.error(areaErrors._error.message);
+      return;
     }
-  }
+
+    // ❗Lỗi từng phần tử bên trong mảng
+    if (Array.isArray(areaErrors)) {
+      areaErrors.forEach((err: any, index: number) => {
+        if (err?.endDate?.message) {
+          toast.error(`Area ${index + 1}: ${err.endDate.message}`);
+        }
+        if (err?.areaId?.message) {
+          toast.error(`Area ${index + 1}: ${err.areaId.message}`);
+        }
+      });
+    }
+  };
+
   console.log(errors);
 
   return (
@@ -284,12 +323,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
           </div>
           <div className="p-4 mx-7">
             <Form {...form}>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  form.handleSubmit(onSubmit, onError)()
-                }}
-              >
+              <form onSubmit={form.handleSubmit(onSubmit, onError)}>
                 <div className="space-y-2">
                   {/* Row 1 */}
                   <div className="grid grid-cols-2 gap-5">
@@ -457,6 +491,81 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                           <FormMessage />
                         </FormItem>
                       )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="trainingPoint"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Training point</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Controller
+                      name="fieldIds"
+                      control={form.control}
+                      render={({ field }) => {
+                        const currentValue = fieldOptions?.filter((fo) =>
+                          field.value?.includes(fo.fieldId)
+                        );
+
+                        return (
+                          <div className="mt-2 space-y-1">
+                            {/* Label giống FormLabel */}
+                            <label className={!errors.fieldIds ? "block text-sm font-medium text-gray-800" : "block text-sm font-medium text-red-600"}>
+                              Fields
+                            </label>
+
+                            <Autocomplete
+                              multiple
+                              options={fieldOptions}
+                              value={currentValue}
+                              onChange={(_, newVal) => {
+                                const finalIds: string[] = newVal.map((item) => item.fieldId);
+                                field.onChange(finalIds);
+                              }}
+                              isOptionEqualToValue={(option, val) => option.fieldId === val.fieldId}
+                              getOptionLabel={(option) =>
+                                typeof option === "string" ? option : option.fieldName
+                              }
+                              sx={{
+                                "& .MuiOutlinedInput-root": {
+                                  "&:hover": {
+                                    borderColor: "#000",
+                                  },
+                                  "&:hover .MuiAutocomplete-tag": {
+                                    color: "#000",
+                                  },
+                                  "&.Mui-focused fieldset": {
+                                    borderColor: "#000",
+                                  },
+                                },
+                                "& .MuiInputBase-input": {
+                                  fontSize: "0.875rem",
+                                },
+                                "& .MuiAutocomplete-tag": {
+                                  fontSize: "0.75rem",
+                                },
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="Search and select"
+                                  className="text-sm"
+                                  error={!!errors.fieldIds}
+                                  helperText={errors.fieldIds?.message}
+                                  size="small"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          </div>
+                        );
+                      }}
                     />
                   </div>
 

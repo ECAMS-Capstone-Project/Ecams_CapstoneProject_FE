@@ -11,4 +11,5 @@ export interface UserAuthDTO {
     universityName: string
     phonenumber: string;
     status: string;
+    isRecommended: boolean;
 }
