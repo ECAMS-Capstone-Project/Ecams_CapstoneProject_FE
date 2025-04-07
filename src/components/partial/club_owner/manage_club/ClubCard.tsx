@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
+import { ClubStatusEnum } from "@/api/club-owner/ClubByUser";
 
 interface ClubCardProps {
   image: string;
@@ -12,6 +13,7 @@ interface ClubCardProps {
   field: FieldDTO[];
   clubId: string;
   clubOwnerId?: string;
+  status: ClubStatusEnum;
 }
 
 const ClubCard: React.FC<ClubCardProps> = ({
@@ -20,6 +22,7 @@ const ClubCard: React.FC<ClubCardProps> = ({
   field,
   clubId,
   clubOwnerId,
+  status,
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -86,21 +89,23 @@ const ClubCard: React.FC<ClubCardProps> = ({
                   />
                 ))}
             </div>
-            <div className="flex w-full justify-center align-middle mt-7">
-              <Button
-                variant="custom"
-                className="rounded-xl"
-                style={{
-                  borderRadius: "30px",
-                  height: "35px",
-                  textTransform: "none",
-                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                }}
-                onClick={() => navigate(`/club/detail/${clubId}`)}
-              >
-                View more
-              </Button>
-            </div>
+            {status != ClubStatusEnum.Inactive && (
+              <div className="flex w-full justify-center align-middle mt-7">
+                <Button
+                  variant="custom"
+                  className="rounded-xl"
+                  style={{
+                    borderRadius: "30px",
+                    height: "35px",
+                    textTransform: "none",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                  }}
+                  onClick={() => navigate(`/club/detail/${clubId}`)}
+                >
+                  View more
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </MagicCard>

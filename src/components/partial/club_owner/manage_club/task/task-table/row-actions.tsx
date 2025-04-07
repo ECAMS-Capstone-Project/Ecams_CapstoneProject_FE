@@ -5,7 +5,7 @@ import TaskDialogClubOwner from "../TaskDialogClubOwner";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
-  setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
+  setFlag: React.Dispatch<React.SetStateAction<boolean>>;
   isClubOwner: boolean
 }
 

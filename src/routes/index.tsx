@@ -65,6 +65,11 @@ import EventParticipants from "@/pages/club-owner/event/EventParticipants";
 import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
 import { CreateInterClubEventPage } from "@/pages/club-owner/inter-club-event/CreateInterClubEvent";
 import { EventDetailPage } from "@/pages/club-owner/inter-club-event/EventDetail";
+import { StudentSchedule } from "@/components/partial/student/schedule/StudentSchedule";
+import RepresentativeRequestsPage from "@/pages/representative/club-owner-request/RepresentativeOwnerRequestsPage";
+import AdminRepRequestsPage from "@/pages/admin/request-representative/AdminRepRequestsPage";
+import RepresentativeInformationPage from "@/pages/representative/request-to-change/RepresentativeInfoPage";
+import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -121,9 +126,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
-        <PrivateRoute />
-      </RoleBasedGuard>
+      // <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+      <PrivateRoute />
+      // </RoleBasedGuard>
     ),
     children: [
       {
@@ -161,6 +166,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/policy",
         element: <Policy />,
+      },
+      {
+        path: "/admin/request-representative",
+        element: <AdminRepRequestsPage />,
       },
     ],
   },
@@ -259,6 +268,21 @@ export const router = createBrowserRouter([
         element: <ClubActiveListPage />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/request-change-owner",
+        element: <RepresentativeRequestsPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/request-change",
+        element: <RepresentativeInformationPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/history-representative",
+        element: <UniversityRepresentativeHistory />,
+        errorElement: <ErrorException />,
+      },
     ],
     errorElement: <ErrorException />,
   },
@@ -291,7 +315,7 @@ export const router = createBrowserRouter([
     path: "/common",
     element: (
       <RoleBasedGuard
-        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}
+        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB_OWNER"]}
       >
         <PrivateRoute />
       </RoleBasedGuard>
@@ -348,6 +372,11 @@ export const router = createBrowserRouter([
       {
         path: "/student/waiting",
         element: <WaitingStudentPage />,
+      },
+      {
+        path: "/student/schedule",
+        element: <StudentSchedule />,
+        errorElement: <ErrorException />,
       },
     ],
     errorElement: <ErrorException />,

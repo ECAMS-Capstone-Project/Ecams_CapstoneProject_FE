@@ -25,7 +25,7 @@ interface EventClubProps {
 const EventClubDetail = ({ club }: EventClubProps) => {
   return (
     <div className="max-w-4xl mx-auto p-7 mt-1">
-      <Card className="overflow-hidden shadow-lg rounded-xl ">
+      <Card className="overflow-hidden shadow-lg rounded-xl">
         <CardHeader className="flex items-center space-x-4 bg-gradient-to-br from-[#197dd4] to-[#49BBBD] p-4">
           <img
             src={club?.logoUrl}
@@ -84,9 +84,9 @@ const EventClubDetail = ({ club }: EventClubProps) => {
                 </div>
               </div>
               {club?.clubMembers &&
-              club.clubMembers.filter(
-                (member) => member.clubRoleName === "CLUB_OWNER"
-              ).length > 0 ? (
+                club.clubMembers.filter(
+                  (member) => member.clubRoleName === "CLUB_OWNER"
+                ).length > 0 ? (
                 <ul className="mt-4 space-y-4">
                   {club.clubMembers
                     .filter((member) => member.clubRoleName === "CLUB_OWNER")

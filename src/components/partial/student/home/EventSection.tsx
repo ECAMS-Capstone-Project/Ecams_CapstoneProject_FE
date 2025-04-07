@@ -1,5 +1,4 @@
 import { MagicCard } from "@/components/magicui/magic-card";
-import { Button } from "@/components/ui/button";
 import { EventCategoryFilter } from "../events/EventFilter";
 // import { Input } from "@/components/ui/input";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
@@ -159,15 +158,6 @@ export const EventsSection = () => {
             </div>
           </MagicCard>
         ))}
-      </div>
-      <div className="flex w-full justify-center items-center mt-5">
-        <Button
-          variant="custom"
-          className=" p-5 text-white text-md font-normal rounded shadow-lg hover:opacity-95 hover:scale-105 hover:shadow-xl transition duration-300"
-          onClick={() => navigate("/student/event")}
-        >
-          View More...
-        </Button>
       </div>
     </section>
   );

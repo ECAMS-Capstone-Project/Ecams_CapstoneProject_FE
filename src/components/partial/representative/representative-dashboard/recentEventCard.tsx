@@ -1,28 +1,30 @@
-import { Card, CardContent, IconButton, Typography, Box } from "@mui/material";
-import { ArrowRight } from "lucide-react";
+import { Event } from "@/models/Event";
+import { Card, CardContent, Typography, Box, Icon } from "@mui/material";
+import { format } from "date-fns";
 
 interface EventCardProps {
-    title: string;
-    date: string;
-    free: boolean;
-    startTime: string;
-    endTime: string;
-    img?: string;
+    event: Event;
 }
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
-const RecentEventCard: React.FC<EventCardProps> = ({ title, date, free, startTime, img }) => {
-    const handleClick = () => {
-        console.log('Icon button clicked');
-    };
+const RecentEventCard: React.FC<EventCardProps> = ({ event }: EventCardProps) => {
+    // const handleClick = () => {
+    //     console.log('Icon button clicked');
+    // };
 
     return (
-        <Card sx={{ borderRadius: 4, height: "100%", position: "relative", boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }}>
+        <Card sx={{
+            borderRadius: 4, height: "100%", position: "relative", boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', transition: "transform 0.3s ease-in-out",
+            "&:hover": {
+                transform: "scale(1.02)",
+            },
+        }} >
             <Box sx={{ position: "relative", width: "100%", display: "flex", justifyContent: "center" }}>
-                {img && (
+                {event.imageUrl && (
                     <Box sx={{ position: "relative", width: "100%" }}>
-                        <img src={img} alt="event" style={{ width: "100%", borderRadius: 8 }} />
+                        <img src={event.imageUrl} alt="event" style={{ width: "100%", height: "200px", borderRadius: 8 }} />
 
-                        {free ? (
+                        {event.price <= 0 ? (
                             <Box sx={{
                                 position: "absolute",
                                 top: 10,
@@ -53,25 +55,77 @@ const RecentEventCard: React.FC<EventCardProps> = ({ title, date, free, startTim
                     </Box>
                 )}
             </Box>
-            <CardContent sx={{ padding: 2, height: "100%", paddingTop: 0 }}>
-
-                <Typography sx={{ fontSize: "14px", fontWeight: 600, mt: 3, height: "50px" }} textAlign={"center"}>
-                    {title}
+            <CardContent
+                sx={{
+                    padding: 3,
+                    height: "100%",
+                    paddingTop: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    background: "linear-gradient(to bottom right, #f0f4ff, #ffffff)",
+                    borderRadius: "12px",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                }}
+            >
+                <Typography
+                    sx={{
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        mt: 3,
+                        color: "#1e3a8a",
+                        height: "50px",
+                    }}
+                    textAlign="center"
+                >
+                    {event.eventName}
                 </Typography>
 
-                <Typography style={{ alignItems: "center" }} sx={{ fontSize: "14.5px", color: "#7848F4", mt: 0, display: "flex" }}>
-                    {date + ", " + startTime}
+                <Typography
+                    sx={{
+                        fontSize: "14.5px",
+                        color: "#555",
+                        mt: 2,
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <Icon component={CalendarTodayIcon} sx={{ color: "#3b82f6", mr: 1 }} />
+                    <span className="font-medium text-gray-800">Start:</span>&nbsp;
+                    {format(new Date(event.startDate), "dd/MM/yyyy")}
                 </Typography>
 
-                <Typography textAlign={"justify"} style={{ alignItems: "center" }} sx={{ fontSize: "14.5px", color: "#7E7E7E", mt: 3, display: "flex", mb: 0 }}>
-                    Online Event
+                <Typography
+                    sx={{
+                        fontSize: "14.5px",
+                        color: "#555",
+                        mt: 1.5,
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    <Icon component={CalendarTodayIcon} sx={{ color: "#3b82f6", mr: 1 }} />
+                    <span className="font-medium text-gray-800">End:</span>&nbsp;
+                    {format(new Date(event.endDate), "dd/MM/yyyy")}
                 </Typography>
 
-                <div style={{ display: "flex", justifyContent: "end", width: "100%" }}>
-                    <IconButton onClick={handleClick} sx={{ mt: 1, pb: 0, color: "black" }}>
-                        <ArrowRight size={18} />
-                    </IconButton>
-                </div>
+                <Typography
+                    textAlign="center"
+                    sx={{
+                        fontSize: "15px",
+                        color: "#1f2937",
+                        mt: 3,
+                        fontWeight: 500,
+                        background: "#e0f2fe",
+                        borderRadius: "8px",
+                        padding: "6px 12px",
+                        display: "inline-block",
+                    }}
+                >
+                    {event.representativeId != null
+                        ? `University - ${event.eventType.charAt(0).toUpperCase() + event.eventType.slice(1).toLowerCase()}`
+                        : `Club - ${event.eventType.charAt(0).toUpperCase() + event.eventType.slice(1).toLowerCase()}`}
+                </Typography>
             </CardContent>
         </Card>
     );

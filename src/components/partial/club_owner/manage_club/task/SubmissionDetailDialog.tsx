@@ -52,6 +52,8 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
         }
     };
 
+    const isSubmitted = submission.submissionDate == "0001-01-01T00:00:00"
+
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-lg p-0 overflow-hidden rounded-lg shadow-lg">
@@ -74,7 +76,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                             <Grid2 size={{ xs: 12, md: 6 }}>
                                 <span className="font-medium text-gray-600">Submitted At:</span>{" "}
                                 <span className="text-gray-800">
-                                    {format(new Date(submission.submissionDate), 'HH:mm - dd/MM/yyyy')}
+                                    {isSubmitted ? "Haven't submitted " : format(submission.submissionDate, "HH:mm - dd/MM/yyyy")}
                                 </span>
                             </Grid2>
                         </Grid2>
@@ -93,7 +95,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                         <p className="text-sm font-medium text-gray-600 mb-1">Submission Content:</p>
                         <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
                             <ScrollArea className="max-h-40">
-                                <p className="whitespace-pre-wrap text-justify">{submission.studentSubmission}</p>
+                                <p className="whitespace-pre-wrap text-justify">{submission.studentSubmission == "" ? "Student hasn't submitted" : submission.studentSubmission}</p>
                             </ScrollArea>
                         </div>
                     </div>
@@ -107,6 +109,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                 </p>
                                 <Input
                                     type="number"
+                                    disabled={isSubmitted}
                                     placeholder={`Enter score (max ${taskScore} points)`}
                                     value={tempScore}
                                     onChange={(e) => setTempScore(Number(e.target.value))}
@@ -122,6 +125,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                 </div>
                             ) : (
                                 <textarea
+                                    disabled={isSubmitted}
                                     placeholder="Fill in feedback"
                                     onChange={(e) => setTempFeedback(e.target.value)}
                                     className="block w-full rounded-md border border-gray-300 p-2 text-sm"
@@ -134,7 +138,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
 
                 {/* Footer */}
                 <DialogFooter className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-2">
-                    {hasFeedback ? (
+                    {hasFeedback || isSubmitted ? (
                         <Button variant="secondary" onClick={onClose}>
                             Close
                         </Button>

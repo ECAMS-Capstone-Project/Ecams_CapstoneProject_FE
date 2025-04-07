@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
-import { ClubResponseDTO, GetAllClubsAPI } from "@/api/club-owner/ClubByUser";
+import { ClubResponseDTO, GetAllActiveClubsAPI } from "@/api/club-owner/ClubByUser";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
@@ -16,7 +16,7 @@ const ClubActiveListPage: React.FC = () => {
 
     // Pagination
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
     const [flag, setFlag] = useState<boolean>(false);
     // Cache dữ liệu theo từng page
@@ -27,7 +27,7 @@ const ClubActiveListPage: React.FC = () => {
 
     // Gọi API lấy danh sách CLB ACTIVE
     useEffect(() => {
-        if (!user) return;
+        if (!user || !user.universityId) return;
 
         // Nếu dữ liệu trang này đã có trong cache thì không gọi API nữa
         if (clubsCache[page]) return;
@@ -35,7 +35,7 @@ const ClubActiveListPage: React.FC = () => {
         const loadClubs = async () => {
             setLoading(true);
             try {
-                const response = await GetAllClubsAPI(user.userId, "ACTIVE", page);
+                const response = await GetAllActiveClubsAPI(user.universityId ?? "", "ACTIVE", page, pageSize);
                 const newClubs = response.data?.data || [];
 
                 // Lưu vào cache

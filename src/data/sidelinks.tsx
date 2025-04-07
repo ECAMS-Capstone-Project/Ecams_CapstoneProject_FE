@@ -4,6 +4,7 @@ import {
   BellRingIcon,
   DollarSignIcon,
   FileText,
+  History,
   LayoutDashboardIcon,
   Package2Icon,
   ReceiptText,
@@ -11,6 +12,7 @@ import {
   UniversityIcon,
   UserCheck,
   UserIcon,
+  UserPen,
   Wallet,
 } from "lucide-react";
 import Groups2Icon from "@mui/icons-material/Groups2";
@@ -82,6 +84,12 @@ const SidebarLinks = () => {
         href: "/admin/policy",
         icon: <FileText size={18} />,
         id: 7,
+      },
+      {
+        title: "Request Representative",
+        href: "/admin/request-representative",
+        icon: <UserCheck size={18} />,
+        id: 88
       }
     );
   }
@@ -130,7 +138,6 @@ const SidebarLinks = () => {
         icon: <Event />,
         id: 26,
       },
-
       {
         title: "Manage Club",
         href: "/representative/club",
@@ -153,15 +160,33 @@ const SidebarLinks = () => {
             title: "Active-Club",
             href: "/representative/active-club",
             icon: <Diversity3 />,
-            id: 30,
+            id: 31,
+          },
+          {
+            title: "Request Change Owner",
+            href: "/representative/request-change-owner",
+            icon: <UserCheck />,
+            id: 33,
           },
           {
             title: "Ranking-Club",
             href: "/representative/club-ranking",
             icon: <Stars />,
-            id: 30,
+            id: 32,
           },
         ],
+      },
+      {
+        title: "Change Representative",
+        href: "/representative/request-change",
+        icon: <UserPen />,
+        id: 26,
+      },
+      {
+        title: "History Representative",
+        href: "/representative/history-representative",
+        icon: <History />,
+        id: 27,
       }
     );
   }

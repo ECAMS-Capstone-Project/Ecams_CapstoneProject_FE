@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { ProfileForm } from "@/components/global/setting/ProfileForm";
+import UserFavoritesPage from "../student/home/UserFavoritesPage";
 
 const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +57,7 @@ const ProfilePage = () => {
           <ProfileForm initialData={userInfo || null} />
         </TabsContent>
         <TabsContent value="account">
+          <UserFavoritesPage />
         </TabsContent>
       </Tabs>
     </>

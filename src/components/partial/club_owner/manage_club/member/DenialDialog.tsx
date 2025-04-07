@@ -10,10 +10,12 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import DialogLoading from "@/components/ui/dialog-loading";
-import { DenyClubCheckingAPI } from "@/api/club-owner/ClubByUser";
+import useAuth from "@/hooks/useAuth";
+import { ApproveOrDenyRequestJoinClub } from "@/api/club-owner/ClubByUser";
 
 interface DenyProps {
-  userId: string;
+  clubId: string
+  memberId: string;
   onClose: () => void;
   onSuccess?: () => void;
   open: boolean;
@@ -21,7 +23,8 @@ interface DenyProps {
 }
 
 export const DenyMemberJoinClub: React.FC<DenyProps> = ({
-  userId,
+  clubId,
+  memberId,
   onClose,
   onSuccess,
   open,
@@ -29,7 +32,7 @@ export const DenyMemberJoinClub: React.FC<DenyProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
-
+  const { user } = useAuth();
   async function handleReject(event: React.FormEvent) {
     event.preventDefault();
 
@@ -37,10 +40,10 @@ export const DenyMemberJoinClub: React.FC<DenyProps> = ({
       toast.error("Reason is required.");
       return;
     }
-
+    if (!user) return;
     try {
       setIsLoading(true);
-      await DenyClubCheckingAPI(userId, { clubId: userId, reason });
+      await ApproveOrDenyRequestJoinClub(clubId, memberId, { clubMemberId: memberId, reason: reason, acceptedBy: user?.userId, isAccepted: false });
       toast.success("Rejected successfully.");
       onClose();
       if (onSuccess) onSuccess();

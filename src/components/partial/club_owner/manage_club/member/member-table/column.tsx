@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 
 export const memberColumn = (
+  clubId: string,
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<ClubMemberDTO>[] => [
     {
@@ -40,13 +41,13 @@ export const memberColumn = (
       accessorKey: "clubRoleName",
       header: ({ column }) => (
         <div className="text-center" >
-          <DataTableColumnHeader column={column} title="Role" />
+          <DataTableColumnHeader column={column} title="Position" />
         </div>
       ),
       cell: ({ row }) => {
         const role = row.getValue("clubRoleName") || "CLUB_MEMBER";
-        const isClubOwner = role === "CLUB_OWNER";
-        const isMember = role === "CLUB_MEMBER";
+        const isClubOwner = role as string === "CLUB_OWNER";
+        const isMember = role as string === "CLUB_MEMBER";
 
         return (
           <div
@@ -54,7 +55,7 @@ export const memberColumn = (
               ? "bg-slate-700 text-white"
               : isMember
                 ? "bg-[#88f0b0]  text-[#2F4F4F]"
-                : ""
+                : "bg-[#88f0b0]  text-[#2F4F4F]"
               }`}
             style={{ margin: "0 auto" }}
           >
@@ -74,7 +75,7 @@ export const memberColumn = (
             </div>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
-            <DataTableRowActions row={row} setFlag={setFlag} />
+            <DataTableRowActions row={row} setFlag={setFlag} clubId={clubId} />
           </DialogContent>
         </Dialog>
       ),
