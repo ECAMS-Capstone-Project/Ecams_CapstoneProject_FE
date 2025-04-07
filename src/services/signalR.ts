@@ -5,7 +5,7 @@ class SignalRService {
 
   constructor() {
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(import.meta.env.VITE_ECAMS_API_URL + "/chatHub") // URL của hub
+      .withUrl("https://ecams.duckdns.org/chatHub") // URL của hub
       .withAutomaticReconnect()
       .build();
 
