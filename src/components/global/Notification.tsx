@@ -66,7 +66,7 @@ const NotificationDropdown = () => {
       }
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("https://ecams.duckdns.org/notificationHub", {
+        .withUrl("https://localhost:7021/notificationHub", {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Thêm Bearer token vào header
           },
