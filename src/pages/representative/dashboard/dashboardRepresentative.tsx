@@ -46,7 +46,20 @@ const DashboardRepresentative = () => {
     }, [pageNo, user]);
     return (
         <div className="p-4 pt-1">
-            <Typography variant="h4" fontWeight="bold" mb={2}>Overview</Typography>
+            <Typography
+                variant="h4"
+                fontWeight={700}
+                mb={2}
+                sx={{
+                    background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    display: "inline-block"
+                }}
+            >
+                Overview
+            </Typography>
+
             <Overview />
             <EventSlider2 events={events} title="Event Upcoming" />
             {(isLoading || loading) ? <div><LoadingAnimation /></div> : (

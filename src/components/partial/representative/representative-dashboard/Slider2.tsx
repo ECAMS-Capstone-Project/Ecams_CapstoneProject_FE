@@ -45,7 +45,19 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
     return (
         <div className="mt-16 mb-7">
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h5" fontWeight="bold">{title}</Typography>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    mb={2}
+                    sx={{
+                        background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block"
+                    }}
+                >
+                    {title}
+                </Typography>
             </Box>
 
             <Slider {...settings}>
