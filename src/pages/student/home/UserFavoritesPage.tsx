@@ -3,7 +3,6 @@ import {
     Card,
     CardHeader,
     CardTitle,
-    CardContent,
 } from "@/components/ui/card";
 import { GetUserFavoriteAPI, UpdateUserPreferenceAPI } from "@/api/student/UserPreference";
 import useAuth from "@/hooks/useAuth";
@@ -140,15 +139,12 @@ const UserFavoritesPage: React.FC = () => {
                                 key={field.fieldId}
                                 className="transition-all hover:shadow-lg border border-blue-100 rounded-xl"
                             >
-                                <CardHeader className="pb-2">
+                                <CardHeader>
                                     <CardTitle className="text-lg text-blue-800 flex items-center gap-2">
                                         <Heart size={18} className="text-red-500" />
-                                        {field.fieldName}
+                                        Field: {field.fieldName}
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-sm text-gray-500">Field ID: {field.fieldId}</p>
-                                </CardContent>
                             </Card>
                         ))}
                     </div>

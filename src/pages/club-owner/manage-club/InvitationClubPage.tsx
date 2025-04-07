@@ -77,9 +77,27 @@ const InvitationClubPage: React.FC = () => {
                         ))}
                     </Grid2>
                 ) : (
-                    <Typography align="center" color="gray">
-                        No clubs yet.
-                    </Typography>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        py={6}
+                        px={2}
+                    >
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/9131/9131510.png"
+                            alt="No invitations"
+                            style={{ width: 100, height: 100, opacity: 0.9, marginBottom: 16 }}
+                        />
+                        <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
+                            No invitations at the moment
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            Once a club sends you an invitation, it’ll show up here 🚀
+                        </Typography>
+                    </Box>
+
                 )}
             </Box>
 
