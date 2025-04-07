@@ -22,7 +22,7 @@ const NotificationDropdown = () => {
     null
   );
   const [notifications, setNotifications] = useState<Noti[]>([]);
-  // const accessToken = localStorage.getItem("accessToken") || "";
+  const accessToken = localStorage.getItem("accessToken") || "";
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
@@ -66,12 +66,9 @@ const NotificationDropdown = () => {
       }
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("https://localhost:7021//notificationHub", {
-          accessTokenFactory: () => {
-            const token = localStorage.getItem("accessToken");
-            return token || "";
-          },
-        })
+        .withUrl(
+          `https://ecams.duckdns.org/notificationHub?access_token=${accessToken}`
+        )
         .configureLogging(signalR.LogLevel.Information)
         .withAutomaticReconnect()
         .build();
@@ -106,11 +103,7 @@ const NotificationDropdown = () => {
           }
 
           if (message) {
-            toast.custom(message, {
-              position: "top-right",
-              icon: notificationType === "SYSTEM" ? "🚨" : "Infor",
-              duration: 5000,
-            });
+            toast.success(message);
           }
         }
       );

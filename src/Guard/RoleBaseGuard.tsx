@@ -19,13 +19,20 @@ const useCurrentRole = (): string[] => {
 };
 
 // ----------------------------------------------------------------------
-
+const useCurrentStatus = () => {
+  // Logic here to get current user role
+  const { user } = useAuth();
+  const status = user?.status;
+  return status || "Pending";
+};
 export default function RoleBasedGuard({
   accessibleRoles,
   children,
+  status = "ACTIVE",
 }: RoleBasedGuardProps): JSX.Element {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -39,11 +46,17 @@ export default function RoleBasedGuard({
     navigate("/staff");
   };
 
+  const handleNavigateLogin = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   const handleNavigateHomePage = () => {
     navigate("/");
   };
 
   const currentRole = useCurrentRole();
+  const currentStatus = useCurrentStatus();
 
   if (loading) {
     return (
@@ -65,7 +78,10 @@ export default function RoleBasedGuard({
   //   return <HomePage />;
   // }
 
-  if (!accessibleRoles.includes(currentRole[0])) {
+  if (
+    !currentRole.some((role) => accessibleRoles.includes(role)) ||
+    currentStatus !== status
+  ) {
     return (
       <div
         style={{
@@ -88,6 +104,11 @@ export default function RoleBasedGuard({
             {currentRole && currentRole.includes("REPRESENTATIVE") && (
               <Button onClick={handleNavigateDashboard}>Back to Staff</Button>
             )}
+            {currentRole &&
+              currentRole.includes("STUDENT") &&
+              currentStatus == "CHECKING" && (
+                <Button onClick={handleNavigateLogin}>Back to Log in</Button>
+              )}
             {(!currentRole || currentRole.includes("null")) && (
               <Button onClick={handleNavigateHomePage}>
                 Back to home page

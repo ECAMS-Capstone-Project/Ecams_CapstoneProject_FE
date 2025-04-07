@@ -45,7 +45,7 @@ export default function ConfirmCancelDialog({
       setIsLoading(true);
       await CancelContractRepresentative(
         contract.contractId,
-        user.representativeId,
+        user.userId,
         reason
       );
       toast.success("Cancel contract successfully.");
@@ -53,8 +53,6 @@ export default function ConfirmCancelDialog({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
-      const errorMessage = error.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
       window.location.reload();
