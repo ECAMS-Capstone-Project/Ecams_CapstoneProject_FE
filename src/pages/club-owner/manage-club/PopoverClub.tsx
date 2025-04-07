@@ -88,7 +88,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       try {
         const response = await GetMemberInClubsByStatusAPI(clubId, 1000, 1, "ACTIVE");
         setMembers((response.data?.data || []).filter(
-          (member) => member.clubRoleName !== "CLUB_OWNER"
+          (member) => member.clubRoleName != "CLUB_OWNER"
         ));
       } catch (error) {
         console.error(error);

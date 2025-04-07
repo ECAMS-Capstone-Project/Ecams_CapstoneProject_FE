@@ -7,13 +7,13 @@ import { CalendarDays, SearchXIcon } from "lucide-react";
 import LoadingAnimation from "@/components/ui/loading";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import HomePage from "@/pages/student/home/HomePage";
-import useAuth from "@/hooks/useAuth";
 import { GetRecommendedEventsAPI } from "@/api/student/UserPreference";
 import { Event } from "@/models/Event";
 interface Props {
-  userId: string;
+  userId?: string;
+  flag: boolean;
 }
-export const EventRecommendedSection = ({ userId }: Props) => {
+export const EventRecommendedSection = ({ userId, flag }: Props) => {
   const [pageNo, setPageNo] = useState(1);
   const [pageSize] = useState(6);
   const navigate = useNavigate();
@@ -21,11 +21,10 @@ export const EventRecommendedSection = ({ userId }: Props) => {
   const [scopeFilter, setScopeFilter] = useState<string[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { user } = useAuth();
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchEvents = async () => {
-    if (!user?.userId) return;
+    if (!userId) return;
     setIsLoading(true);
     try {
       const response = await GetRecommendedEventsAPI(userId, pageNo, pageSize, scopeFilter.join(","));
@@ -42,7 +41,7 @@ export const EventRecommendedSection = ({ userId }: Props) => {
   useEffect(() => {
     fetchEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNo, scopeFilter]);
+  }, [pageNo, scopeFilter, flag]);
 
   return (
     <section className="py-12">
