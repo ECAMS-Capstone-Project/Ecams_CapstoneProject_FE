@@ -41,8 +41,7 @@ export const GetRequestChangeClubOwnerAPI = async (
   universityId: string
 ): Promise<ResponseDTO<ClubOwnerChangeResponseDTO[]>> => {
   try {
-    const response = await get<ResponseDTO<ClubOwnerChangeResponseDTO[]>>(`
-https://ecams.duckdns.org/University/${universityId}/owner-requests`);
+    const response = await get<ResponseDTO<ClubOwnerChangeResponseDTO[]>>(`https://ecams.duckdns.org/University/${universityId}/owner-requests`);
     return response; // Trả về toàn bộ phản hồi
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

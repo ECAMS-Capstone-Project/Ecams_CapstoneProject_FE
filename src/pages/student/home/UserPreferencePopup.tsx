@@ -10,19 +10,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { FieldDTO, GetAllFields } from "@/api/club-owner/RequestClubAPI";
 import { UpdateUserPreferenceAPI } from "@/api/student/UserPreference";
-import useAuth from "@/hooks/useAuth";
-
-const UserPreferencePopup: React.FC = () => {
+import { UserAuthDTO } from "@/models/Auth/UserAuth";
+interface props{
+    setFlag: React.Dispatch<React.SetStateAction<boolean>>;
+    flag: boolean
+    user: UserAuthDTO | undefined
+}
+const UserPreferencePopup: React.FC<props> = ({ setFlag, flag, user }) => {
     const [open, setOpen] = useState(false);
     const [fields, setFields] = useState<FieldDTO[]>([]);
     const [selectedFieldIds, setSelectedFieldIds] = useState<string[]>([]);
     const [doNotShowAgain, setDoNotShowAgain] = useState<boolean>(false);
-    const { user } = useAuth();
     useEffect(() => {
         const suppressed = localStorage.getItem("suppressPreferencePopup");
 
         if (user?.isRecommended !== true && suppressed !== "true") {
             setOpen(true);
+        }else{
+            setOpen(false);
         }
 
         const fetchFields = async () => {
@@ -35,7 +40,7 @@ const UserPreferencePopup: React.FC = () => {
         };
 
         fetchFields();
-    }, [user?.isRecommended]);
+    }, [user?.isRecommended, flag]);
 
     const toggleFieldSelection = (fieldId: string) => {
         setSelectedFieldIds((prev) =>
@@ -53,6 +58,7 @@ const UserPreferencePopup: React.FC = () => {
                 localStorage.setItem("suppressPreferencePopup", "true");
             }
             setOpen(false);
+            setFlag(pre => !pre);
         } catch (error) {
             console.error("Failed to save preferences", error);
         }

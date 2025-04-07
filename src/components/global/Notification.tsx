@@ -16,6 +16,8 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import toast from "react-hot-toast";
 import { useNotification } from "@/hooks/useNotification";
+import useAuth from "@/hooks/useAuth";
+import Swal from "sweetalert2";
 
 const NotificationDropdown = () => {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
@@ -26,6 +28,7 @@ const NotificationDropdown = () => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
+  const {logout} = useAuth();
 
   // Tự động kết nối SignalR ngay khi load component
   useEffect(() => {
@@ -66,54 +69,96 @@ const NotificationDropdown = () => {
       }
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("https://localhost:7021/notificationHub", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Thêm Bearer token vào header
-          },
-        })
+        .withUrl(
+          `https://localhost:7021/notificationHub?access_token=${accessToken}`
+        )
         .configureLogging(signalR.LogLevel.Information)
         .withAutomaticReconnect()
         .build();
 
       newConnection.on(
         "ReceiveNotification",
-        ({ notificationId, notificationType, message, isRead }: Noti) => {
+        async (notificationId, notificationType, message, isRead) => {
+          console.log("=== SignalR Notification Received ===");
+          console.log("Connection state:", newConnection.state);
+          console.log("Connection ID:", newConnection.connectionId);
+          console.log("Notification details:", {
+            notificationId,
+            notificationType,
+            message,
+            isRead,
+          });
+          console.log("=== End Notification ===");
           setNotifications((prev) => {
             const exists = prev.some(
               (noti) => noti.notificationId === notificationId
             );
             if (exists) return prev;
-
             return [
               ...prev,
-              {
-                notificationType,
-                message,
-                isRead,
-                notificationId,
-              },
+              { notificationType, message, isRead, notificationId },
             ];
           });
 
-          // Tăng số lượng thông báo chưa đọc
           if (!isRead) {
+            console.log("New unread notification:", isRead);
             setUnreadCount((prev) => prev + 1);
           }
 
-          // Hiển thị thông báo ngay lập tức
           if (message) {
-            toast.custom(message, {
-              position: "top-right",
-              icon: notificationType === "SYSTEM" ? "🚨" : "Infor",
-              duration: 5000, // Giảm thời gian để hiển thị nhanh hơn
-            });
+            const isDuplicateMessage = notifications.some((noti) => noti.message === message);
+            if (!isDuplicateMessage) {
+              toast.custom(
+                () => (
+                  <div className="bg-white border-l-4 border-blue-500 shadow-md rounded-md p-4 w-96 text-sm text-gray-800">
+                    <div className="flex items-start space-x-2">
+                      <div className="text-xl">
+                        {notificationType === "SYSTEM" ? "🚨" : "ℹ️"}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold">Thông báo</p>
+                        <p className="mt-1">{message}</p>
+                      </div>
+                    </div>
+                  </div>
+                ),
+                {
+                  position: "top-right",
+                  duration: 4000,
+                }
+              );
+            }
+          }     
+
+          if (
+            message.includes("New club owner has been add! You are kicked!") ||
+            message.includes("New representative has been add! You are kicked!")
+          ) {
+            try {
+              // Hiển thị popup đẹp với 1 nút OK
+              const result = await Swal.fire({
+                title: "Alert",
+                text: message,
+                icon: "error", // Có thể là 'warning', 'success', 'error'
+                confirmButtonText: "OK",
+                allowOutsideClick: false, // Không cho click ra ngoài để tắt
+                allowEscapeKey: false,   // Không cho bấm ESC để tắt
+              });
+          
+              // Sau khi bấm OK thì logout
+              if (result.isConfirmed) {
+                await logout();
+                window.location.href = "/login";  // Chuyển hướng sau khi logout thành công
+              }
+            } catch (error) {
+              console.error("Error during logout", error);
+            }
           }
         }
       );
 
       try {
         await newConnection.start();
-        console.log("Connected to SignalR Hub");
         setConnection(newConnection);
       } catch (error) {
         console.error("Error connecting to SignalR", error);
@@ -121,16 +166,24 @@ const NotificationDropdown = () => {
     };
 
     connectSignalR();
-  }, [connection, accessToken]);
+  }, [connection]);
 
-  // 🛑 Ngắt kết nối SignalR
-  //   const disconnectSignalR = async () => {
-  //     if (connection) {
-  //       await connection.stop();
-  //       console.log("Disconnected from SignalR");
-  //       setConnection(null);
-  //     }
-  //   };
+  // Thêm useEffect để theo dõi trạng thái kết nối
+  useEffect(() => {
+    if (connection) {
+      connection.onclose((error) => {
+        console.log("SignalR connection closed", error);
+      });
+
+      connection.onreconnecting((error) => {
+        console.log("SignalR reconnecting", error);
+      });
+
+      connection.onreconnected((connectionId) => {
+        console.log("SignalR reconnected", connectionId);
+      });
+    }
+  }, [connection]);
 
   // 🟢 Đánh dấu tất cả thông báo là đã đọc
   const markNotificationsAsRead = async () => {
