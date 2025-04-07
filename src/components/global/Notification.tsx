@@ -66,7 +66,7 @@ const NotificationDropdown = () => {
       }
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("http://localhost:5214/notificationHub", {
+        .withUrl(import.meta.env.VITE_ECAMS_API_URL + "/notificationHub", {
           headers: {
             Authorization: `Bearer ${accessToken}`, // Thêm Bearer token vào header
           },

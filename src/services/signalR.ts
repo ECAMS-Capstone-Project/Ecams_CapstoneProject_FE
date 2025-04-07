@@ -5,7 +5,7 @@ class SignalRService {
 
   constructor() {
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5214/chatHub") // URL của hub
+      .withUrl(import.meta.env.VITE_ECAMS_API_URL + "/chatHub") // URL của hub
       .withAutomaticReconnect()
       .build();
 
