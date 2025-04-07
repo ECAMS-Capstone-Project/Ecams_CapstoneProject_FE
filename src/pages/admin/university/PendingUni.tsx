@@ -14,7 +14,7 @@ const PendingUniversity = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [uniList, setUniList] = useState<University[]>([]);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(99);
   const [totalPages, setTotalPages] = useState(0);
   // const [activeTab, setActiveTab] = useState("");
   useEffect(() => {

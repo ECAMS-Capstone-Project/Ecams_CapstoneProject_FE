@@ -22,7 +22,7 @@ const NotificationDropdown = () => {
     null
   );
   const [notifications, setNotifications] = useState<Noti[]>([]);
-  const accessToken = localStorage.getItem("accessToken") || "";
+  // const accessToken = localStorage.getItem("accessToken") || "";
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
@@ -66,9 +66,10 @@ const NotificationDropdown = () => {
       }
 
       const newConnection = new signalR.HubConnectionBuilder()
-        .withUrl("https://ecams.duckdns.org/notificationHub", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Thêm Bearer token vào header
+        .withUrl("https://localhost:7021//notificationHub", {
+          accessTokenFactory: () => {
+            const token = localStorage.getItem("accessToken");
+            return token || "";
           },
         })
         .configureLogging(signalR.LogLevel.Information)
@@ -77,35 +78,38 @@ const NotificationDropdown = () => {
 
       newConnection.on(
         "ReceiveNotification",
-        ({ notificationId, notificationType, message, isRead }: Noti) => {
+        (notificationId, notificationType, message, isRead) => {
+          console.log("=== SignalR Notification Received ===");
+          console.log("Connection state:", newConnection.state);
+          console.log("Connection ID:", newConnection.connectionId);
+          console.log("Notification details:", {
+            notificationId,
+            notificationType,
+            message,
+            isRead,
+          });
+          console.log("=== End Notification ===");
           setNotifications((prev) => {
             const exists = prev.some(
               (noti) => noti.notificationId === notificationId
             );
             if (exists) return prev;
-
             return [
               ...prev,
-              {
-                notificationType,
-                message,
-                isRead,
-                notificationId,
-              },
+              { notificationType, message, isRead, notificationId },
             ];
           });
 
-          // Tăng số lượng thông báo chưa đọc
           if (!isRead) {
+            console.log("New unread notification:", isRead);
             setUnreadCount((prev) => prev + 1);
           }
 
-          // Hiển thị thông báo ngay lập tức
           if (message) {
             toast.custom(message, {
               position: "top-right",
               icon: notificationType === "SYSTEM" ? "🚨" : "Infor",
-              duration: 5000, // Giảm thời gian để hiển thị nhanh hơn
+              duration: 5000,
             });
           }
         }
@@ -113,7 +117,9 @@ const NotificationDropdown = () => {
 
       try {
         await newConnection.start();
-        console.log("Connected to SignalR Hub");
+        console.log("Connected to SignalR Hub successfully");
+        console.log("Connection state:", newConnection.state);
+        console.log("Connection ID:", newConnection.connectionId);
         setConnection(newConnection);
       } catch (error) {
         console.error("Error connecting to SignalR", error);
@@ -121,16 +127,24 @@ const NotificationDropdown = () => {
     };
 
     connectSignalR();
-  }, [connection, accessToken]);
+  }, [connection]);
 
-  // 🛑 Ngắt kết nối SignalR
-  //   const disconnectSignalR = async () => {
-  //     if (connection) {
-  //       await connection.stop();
-  //       console.log("Disconnected from SignalR");
-  //       setConnection(null);
-  //     }
-  //   };
+  // Thêm useEffect để theo dõi trạng thái kết nối
+  useEffect(() => {
+    if (connection) {
+      connection.onclose((error) => {
+        console.log("SignalR connection closed", error);
+      });
+
+      connection.onreconnecting((error) => {
+        console.log("SignalR reconnecting", error);
+      });
+
+      connection.onreconnected((connectionId) => {
+        console.log("SignalR reconnected", connectionId);
+      });
+    }
+  }, [connection]);
 
   // 🟢 Đánh dấu tất cả thông báo là đã đọc
   const markNotificationsAsRead = async () => {

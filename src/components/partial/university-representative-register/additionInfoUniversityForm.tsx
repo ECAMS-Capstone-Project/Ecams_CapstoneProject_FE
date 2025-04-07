@@ -384,7 +384,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
         setOpen={setOpen}
         handleAccept={handleAccept}
         handleDeny={handleDeny}
-        type="staff"
+        type="representative"
       />
     </Box>
   );

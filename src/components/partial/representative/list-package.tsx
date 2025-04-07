@@ -106,7 +106,7 @@ const Pricing: React.FC = () => {
     if (user) {
       const response = await CheckBuyPackageAPI({
         packageId: plan.packageId,
-        representativeId: user.representativeId,
+        representativeId: user.userId,
       });
       console.log(response);
       navigate("/payment-confirm", {

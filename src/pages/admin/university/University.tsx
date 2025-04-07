@@ -68,6 +68,13 @@ const University = () => {
                 data={uniList.filter((uni) => uni.status == "ACTIVE")}
                 refreshData={loadUniversity}
               />
+              <DataTablePagination
+                currentPage={pageNo}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
+              />
             </TabsContent>
             <TabsContent value="inactive">
               <UniversityTable

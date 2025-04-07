@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegister";
 import { GenderEnum } from "@/lib/GenderEnum";
-import { ring2 } from 'ldrs'
+import { ring2 } from "ldrs";
 import PoliciesDialog from "./policiesDiablog";
 // Validation schema using Zod
 const schema = z
@@ -44,7 +44,7 @@ const schema = z
 type SignUpFormValues = z.infer<typeof schema>;
 
 const RegisterUniversityForm: React.FC = () => {
-  ring2.register()
+  ring2.register();
   const [open, setOpen] = React.useState<boolean>(false);
   const { registerUniversity } = useAuth();
   const {
@@ -214,13 +214,16 @@ const RegisterUniversityForm: React.FC = () => {
                       sx={{
                         "&.Mui-disabled": {
                           color: "#1565C0",
-                        }
+                        },
                       }}
                       checked={agreeToTerms}
                     />
                   }
                   label={
-                    <Typography onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                    <Typography
+                      onClick={() => setOpen(true)}
+                      style={{ cursor: "pointer" }}
+                    >
                       I agree to all the terms and{" "}
                       <span
                         className="text-red-400"
@@ -261,7 +264,7 @@ const RegisterUniversityForm: React.FC = () => {
                     )
                   }
                 >
-                  {(isSubmitting) ? "Loading..." : "Create account"}
+                  {isSubmitting ? "Loading..." : "Create account"}
                 </Button>
               </Grid2>
 
@@ -307,7 +310,13 @@ const RegisterUniversityForm: React.FC = () => {
           </form>
         </Grid2>
       </Grid2>
-      <PoliciesDialog open={open} setOpen={setOpen} handleAccept={handleAccept} handleDeny={handleDeny} type='staff' />
+      <PoliciesDialog
+        open={open}
+        setOpen={setOpen}
+        handleAccept={handleAccept}
+        handleDeny={handleDeny}
+        type="representative"
+      />
     </Box>
   );
 };
