@@ -4,8 +4,6 @@ import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-colu
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableRowActions } from "./row-actions";
 import { Area } from "@/models/Area";
-
-import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAreas } from "@/hooks/staff/Area/useArea";
@@ -59,16 +57,17 @@ export const AreaColums: ColumnDef<Area>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div className="flex items-center justify-center">
-        <DataTableFacetedFilter
-          column={column}
-          title="Status"
-          options={[
-            { label: "Active", value: true },
-            { label: "Inactive", value: false },
-          ]}
-        />
-      </div>
+      // <div className="flex items-center justify-center">
+      //   <DataTableFacetedFilter
+      //     column={column}
+      //     title="Status"
+      //     options={[
+      //       { label: "Active", value: true },
+      //       { label: "Inactive", value: false },
+      //     ]}
+      //   />
+      // </div>
+      <DataTableColumnHeader column={column} title="Status" />
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as boolean;
@@ -92,7 +91,7 @@ export const AreaColums: ColumnDef<Area>[] = [
       };
 
       return (
-        <div className="flex justify-center p-0">
+        <div className="flex justify-start p-0">
           <div
             onClick={handleStatusChange} // Bắt sự kiện click
             className={`flex items-center justify-center gap-1 py-2 px-2 rounded-md cursor-pointer ${

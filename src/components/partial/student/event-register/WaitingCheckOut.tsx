@@ -84,7 +84,7 @@ function WaitingCheckout() {
         console.log("Event registration data:", data);
       } else {
         data = {
-          representativeId: user.representativeId,
+          representativeId: user.userId,
           transactionInfo: vnp_OrderInfo,
           transactionNumber: vnp_TransactionNo,
           isSuccess,
@@ -104,7 +104,7 @@ function WaitingCheckout() {
         };
       } else {
         data = {
-          representativeId: user.representativeId,
+          representativeId: user.userId,
           transactionInfo: isSuccess ? "Buy Successfully" : "Buy Failed",
           transactionNumber: pos_orderCode,
           isSuccess,

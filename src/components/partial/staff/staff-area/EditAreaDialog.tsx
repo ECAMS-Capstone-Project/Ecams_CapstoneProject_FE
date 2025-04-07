@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
 import {
   DialogDescription,
   DialogHeader,
@@ -118,7 +117,6 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
       }
       onSuccess && onSuccess(); // Callback reload data nếu cần
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
       console.error("Error:", error);
     } finally {
       setIsLoading(false);

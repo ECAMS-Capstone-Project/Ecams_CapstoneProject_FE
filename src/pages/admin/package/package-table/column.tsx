@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
@@ -8,18 +9,8 @@ import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { DataTableRowActions } from "./row-actions";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePackages } from "@/hooks/admin/usePackage";
+import { format } from "date-fns";
 
-const formatDate = (timestamp: string): string => {
-  const date = new Date(timestamp);
-
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-
-  return date.toLocaleString("en-US", options);
-};
 // Định nghĩa columns cho DataTable
 export const packageColumns: ColumnDef<Package>[] = [
   {
@@ -47,7 +38,11 @@ export const packageColumns: ColumnDef<Package>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Description" />
     ),
-    cell: ({ row }) => <span>{row.getValue("description")}</span>, // Hiển thị Duration kèm đơn vị
+    cell: ({ row }) => (
+      <span className="truncate max-w-[150px] block">
+        {row.getValue("description")}
+      </span>
+    ), // Hiển thị Duration kèm đơn vị
   },
   {
     accessorKey: "price",
@@ -55,12 +50,7 @@ export const packageColumns: ColumnDef<Package>[] = [
       <DataTableColumnHeader column={column} title="price" />
     ),
     cell: ({ row }) => (
-      <span>
-        {(row.getValue("price") as number).toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        })}
-      </span>
+      <span>{(row.getValue("price") as number).toLocaleString()} VND</span>
     ), // Hiển thị giá theo định dạng USD
   },
   {
@@ -131,7 +121,14 @@ export const packageColumns: ColumnDef<Package>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="End of Support" />
     ),
-    cell: ({ row }) => formatDate(row.getValue("endOfSupportDate")), // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
+    cell: ({ row }) => {
+      const endOfSupportDate = row.getValue("endOfSupportDate") as Date;
+      if (endOfSupportDate) {
+        return format(endOfSupportDate, "dd/MM/yyyy");
+      } else {
+        return "Not yet";
+      }
+    }, // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
   },
   {
     id: "actions",

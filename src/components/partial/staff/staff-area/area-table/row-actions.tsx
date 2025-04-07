@@ -38,6 +38,7 @@ export function DataTableRowActions<TData>({
       await deleteArea(row.getValue("areaId"));
       queryClient.invalidateQueries({ queryKey: ["areas"] });
       await refetchArea();
+      setOpen(false);
       // window.location.reload();
     } catch (error: any) {
       const errorMessage = error.response.data?.message || "An error occurred";

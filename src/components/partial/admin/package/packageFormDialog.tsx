@@ -98,13 +98,12 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
     try {
       console.log("Adding New Package:", values);
       await createPackage(values);
-      toast.success("Package created successfully.");
-      setOpen(false);
       onClose && onClose();
+      setOpen(false);
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
-      toast.error(errorMessage);
-      console.error("Error:", error);
+
+      console.error("Error:", errorMessage);
     } finally {
       // setIsLoading(false);
     }
@@ -347,8 +346,10 @@ export const EditPackageDialog: React.FC<EditPackageDialogProps> = ({
                               <FormControl>
                                 <Input
                                   {...field}
+                                  type="number"
                                   placeholder="Value"
                                   readOnly={!!initialData}
+                                  min={1}
                                 />
                               </FormControl>
                             </FormItem>

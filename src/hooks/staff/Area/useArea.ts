@@ -1,24 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAreaList, createArea, deactiveArea, updateArea } from "@/api/representative/AreaAgent";
+import {
+  getAreaList,
+  createArea,
+  deactiveArea,
+  updateArea,
+} from "@/api/representative/AreaAgent";
 import toast from "react-hot-toast";
 
-export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) => {
+export const useAreas = (
+  pageSize?: number,
+  pageNo?: number,
+  uniId?: string
+) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
-    const { data, isLoading, refetch } = useQuery({
-      queryKey: ["areas", pageNo || 1, pageSize || 5], // Query key động
-      queryFn: () => getAreaList( pageNo || 1,pageSize || 5,uniId || ""),
-      refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
-      refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
-      enabled: !!uniId
-    });
-
-
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["areas", pageNo || 1, pageSize || 5], // Query key động
+    queryFn: () => getAreaList(pageNo || 1, pageSize || 5, uniId || ""),
+    refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
+    refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
+    enabled: !!uniId,
+  });
 
   // Tạo mới area
-  const {mutateAsync:createAreaMutation, isPending} = useMutation({
+  const { mutateAsync: createAreaMutation, isPending } = useMutation({
     mutationFn: createArea,
     onSuccess: () => {
       toast.success("Area created successfully!");
@@ -31,32 +38,36 @@ export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) =>
   });
 
   // Xóa area
-  const {mutateAsync: deleteAreaMutation, isPending: isDeleting} = useMutation({
-    mutationFn: deactiveArea,
-    onSuccess: () => {
-      // refetch();
-      refetch();
+  const { mutateAsync: deleteAreaMutation, isPending: isDeleting } =
+    useMutation({
+      mutationFn: deactiveArea,
+      onSuccess: () => {
+        // refetch();
+        refetch();
 
-      toast.success("Area deleted successfully!");
-      refetch();
+        toast.success("Area deleted successfully!");
+        refetch();
 
-      queryClient.invalidateQueries( {queryKey:["areas", pageNo || 1, pageSize || 5]}); // Tự động refetch danh sách ✅
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Error deleting area");
-    },
-  });
-  const {mutateAsync: updateAreaMutation, isPending: isUpdating} = useMutation({
-    mutationFn: updateArea,
-    onSuccess: () => {
-      // refetch();
-      toast.success("Area updated successfully!");
-     queryClient.invalidateQueries( {queryKey:["areas"]}); // Tự động refetch danh sách ✅
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Error deleting area");
-    },
-  });
+        queryClient.invalidateQueries({
+          queryKey: ["areas", pageNo || 1, pageSize || 5],
+        }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Error deleting area");
+      },
+    });
+  const { mutateAsync: updateAreaMutation, isPending: isUpdating } =
+    useMutation({
+      mutationFn: updateArea,
+      onSuccess: () => {
+        // refetch();
+        toast.success("Area updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["areas"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error(error.message || "Error deleting area");
+      },
+    });
 
   return {
     areas: data?.data?.data || [],
@@ -64,10 +75,10 @@ export const useAreas = ( pageSize?: number, pageNo?: number,uniId?: string,) =>
     isLoading,
     pageNo,
     pageSize,
-   isPending,
-   isDeleting,
-   isUpdating,
-   refetchArea: refetch,
+    isPending,
+    isDeleting,
+    isUpdating,
+    refetchArea: refetch,
     createArea: createAreaMutation,
     deleteArea: deleteAreaMutation,
     updateArea: updateAreaMutation,

@@ -198,9 +198,7 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="outline"
-                                  className={`h-10 px-4 w-full rounded-lg group relative text-white bg-gradient-to-r from-[#136CB5] to-[#49BBBD] hover:opacity-90 flex items-center justify-between space-x-2 ${
-                                    initialData ? "pointer-events-none" : ""
-                                  } `}
+                                  className={`h-10 px-4 w-full rounded-lg group relative text-white bg-gradient-to-r from-[#136CB5] to-[#49BBBD] hover:opacity-90 flex items-center justify-between space-x-2  `}
                                 >
                                   <span>
                                     {field.value
@@ -209,9 +207,7 @@ export const ViewWalletDialog: React.FC<WalletDialogProps> = ({
                                         )?.label
                                       : "Select Bank's Name..."}
                                   </span>
-                                  {!initialData && (
-                                    <ChevronDownIcon className="h-4 w-4" />
-                                  )}
+                                  <ChevronDownIcon className="h-4 w-4" />
                                 </Button>
                                 {/* Tooltip when hover */}
                               </PopoverTrigger>

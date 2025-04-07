@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [universityList, setUniversityList] = useState<University[]>([]);
   const [reportList, setReportList] = useState<Report[]>([]);
   const [pageNo] = useState(1);
-  const [pageSize] = useState(5);
+  const [pageSize] = useState(99);
 
   useEffect(() => {
     const loadAllData = async () => {

@@ -97,7 +97,7 @@ const PackageContract = () => {
           "PaymentMethodId",
           "59b3cf1a-4ed7-469a-a551-5196755a12ad"
         );
-        formData.append("RepresentativeId", user.representativeId);
+        formData.append("RepresentativeId", user.userId);
 
         const response = await paymentPackage(formData);
         console.log(paymentMethod);
@@ -178,8 +178,8 @@ const PackageContract = () => {
                   {selectedPlan?.duration === 1
                     ? `${selectedPlan?.duration} month`
                     : selectedPlan?.duration > 1
-                      ? `${selectedPlan?.duration} months`
-                      : "No package yet!"}
+                    ? `${selectedPlan?.duration} months`
+                    : "No package yet!"}
                 </b>
                 .
               </span>

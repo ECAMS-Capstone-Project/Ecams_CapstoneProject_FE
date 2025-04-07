@@ -140,13 +140,13 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                       control={form.control}
                       name="universityName"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col gap-2">
                           <FormLabel>University Name</FormLabel>
                           <FormControl>
-                            <Input
-                              type="text"
+                            <textarea
                               {...field}
                               readOnly={mode === "view" || mode === "pending"}
+                              className="resize-none border rounded-md p-2"
                             />
                           </FormControl>
                           <FormMessage />

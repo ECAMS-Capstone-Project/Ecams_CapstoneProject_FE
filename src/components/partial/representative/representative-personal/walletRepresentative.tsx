@@ -176,7 +176,7 @@ const WalletRepresentative = () => {
                     <div className="flex justify-center w-full">
                       <li
                         key={index + 1}
-                        className="flex  w-2/4 items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300"
+                        className="flex  w-3/5 items-center space-x-2 p-2 bg-white rounded-lg shadow-md hover:bg-blue-100 transition-all duration-300"
                       >
                         <span className="text-lg font-semibold text-blue-600">
                           Max {detail.packageType}:{" "}

@@ -28,7 +28,7 @@ const NotificationDropdown = () => {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
-  const {logout} = useAuth();
+  const { logout } = useAuth();
 
   // Tự động kết nối SignalR ngay khi load component
   useEffect(() => {
@@ -70,7 +70,7 @@ const NotificationDropdown = () => {
 
       const newConnection = new signalR.HubConnectionBuilder()
         .withUrl(
-          `https://localhost:7021/notificationHub?access_token=${accessToken}`
+          `https://ecams.duckdns.org/notificationHub?access_token=${accessToken}`
         )
         .configureLogging(signalR.LogLevel.Information)
         .withAutomaticReconnect()
@@ -78,7 +78,7 @@ const NotificationDropdown = () => {
 
       newConnection.on(
         "ReceiveNotification",
-        async (notificationId, notificationType, message, isRead) => {
+        (notificationId, notificationType, message, isRead) => {
           console.log("=== SignalR Notification Received ===");
           console.log("Connection state:", newConnection.state);
           console.log("Connection ID:", newConnection.connectionId);
@@ -106,7 +106,9 @@ const NotificationDropdown = () => {
           }
 
           if (message) {
-            const isDuplicateMessage = notifications.some((noti) => noti.message === message);
+            const isDuplicateMessage = notifications.some(
+              (noti) => noti.message === message
+            );
             if (!isDuplicateMessage) {
               toast.custom(
                 () => (
@@ -128,7 +130,7 @@ const NotificationDropdown = () => {
                 }
               );
             }
-          }     
+          }
 
           if (
             message.includes("New club owner has been add! You are kicked!") ||
@@ -142,13 +144,13 @@ const NotificationDropdown = () => {
                 icon: "error", // Có thể là 'warning', 'success', 'error'
                 confirmButtonText: "OK",
                 allowOutsideClick: false, // Không cho click ra ngoài để tắt
-                allowEscapeKey: false,   // Không cho bấm ESC để tắt
+                allowEscapeKey: false, // Không cho bấm ESC để tắt
               });
-          
+
               // Sau khi bấm OK thì logout
               if (result.isConfirmed) {
                 await logout();
-                window.location.href = "/login";  // Chuyển hướng sau khi logout thành công
+                window.location.href = "/login"; // Chuyển hướng sau khi logout thành công
               }
             } catch (error) {
               console.error("Error during logout", error);

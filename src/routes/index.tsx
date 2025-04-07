@@ -347,7 +347,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/student",
-    element: <StudentAppShell />,
+    element: (
+      <RoleBasedGuard accessibleRoles={["STUDENT"]}>
+        <StudentAppShell />
+      </RoleBasedGuard>
+    ),
     children: [
       {
         index: true,
@@ -386,16 +390,18 @@ export const router = createBrowserRouter([
         path: "/student/club/:clubId",
         element: <StudentClubDetail />,
       },
-      {
-        path: "/student/waiting",
-        element: <WaitingStudentPage />,
-      },
+
       {
         path: "/student/schedule",
         element: <StudentSchedule />,
         errorElement: <ErrorException />,
       },
     ],
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/student/waiting",
+    element: <WaitingStudentPage />,
     errorElement: <ErrorException />,
   },
   {
