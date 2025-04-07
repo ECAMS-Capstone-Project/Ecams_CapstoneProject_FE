@@ -162,7 +162,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/admin/request-representative",
-        element: <AdminRepRequestsPage />
+        element: <AdminRepRequestsPage />,
       },
     ],
   },
@@ -190,9 +190,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/representative",
-    element: (
-      <PrivateRoute />
-    ),
+    element: <PrivateRoute />,
     children: [
       {
         index: true,
@@ -266,18 +264,18 @@ export const router = createBrowserRouter([
       {
         path: "/representative/request-change-owner",
         element: <RepresentativeRequestsPage />,
-        errorElement: <ErrorException />
+        errorElement: <ErrorException />,
       },
       {
         path: "/representative/request-change",
         element: <RepresentativeInformationPage />,
-        errorElement: <ErrorException />
+        errorElement: <ErrorException />,
       },
       {
         path: "/representative/history-representative",
         element: <UniversityRepresentativeHistory />,
-        errorElement: <ErrorException />
-      }
+        errorElement: <ErrorException />,
+      },
     ],
     errorElement: <ErrorException />,
   },
@@ -310,7 +308,7 @@ export const router = createBrowserRouter([
     path: "/common",
     element: (
       <RoleBasedGuard
-        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB-OWNER"]}
+        accessibleRoles={["REPRESENTATIVE", "ADMIN", "STUDENT", "CLUB_OWNER"]}
       >
         <PrivateRoute />
       </RoleBasedGuard>
@@ -368,7 +366,7 @@ export const router = createBrowserRouter([
         path: "/student/schedule",
         element: <StudentSchedule />,
         errorElement: <ErrorException />,
-      }
+      },
     ],
     errorElement: <ErrorException />,
   },
@@ -409,7 +407,7 @@ export const router = createBrowserRouter([
         path: "/club/create-task",
         element: <CreateTaskClub />,
         errorElement: <ErrorException />,
-      }
+      },
     ],
     errorElement: <ErrorException />,
   },
