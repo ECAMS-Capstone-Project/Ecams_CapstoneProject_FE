@@ -18,7 +18,7 @@ import useAuth from "@/hooks/useAuth";
 import { additionInfoUniversityAPI } from "@/api/auth/RegisterAPI";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { ring2 } from 'ldrs'
+import { ring2 } from "ldrs";
 import PoliciesDialog from "../auth/policiesDiablog";
 import { ChevronLeft } from "lucide-react";
 
@@ -67,11 +67,11 @@ type SignUpFormValues = z.infer<typeof schema>;
 
 const AdditionInfoUniversityForm: React.FC = () => {
   const [open, setOpen] = React.useState<boolean>(false);
-  ring2.register()
+  ring2.register();
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
   const [verifyImg, setVerifyImg] = useState<string | null>(null);
-  const { user, logout } = useAuth()
+  const { user, logout } = useAuth();
   const {
     handleSubmit,
     register,
@@ -105,21 +105,23 @@ const AdditionInfoUniversityForm: React.FC = () => {
         formDataInput.append("Logo", data.Logo[0]);
       }
       if (data.VerifyUniversityImage && data.VerifyUniversityImage[0]) {
-        formDataInput.append("VerifyUniversityImage", data.VerifyUniversityImage[0]);
+        formDataInput.append(
+          "VerifyUniversityImage",
+          data.VerifyUniversityImage[0]
+        );
       }
       formDataInput.append("WebsiteUrl", data.WebsiteUrl);
-      formDataInput.append("RepresentativeId", user.representativeId);
+      formDataInput.append("RepresentativeId", user.userId);
       try {
         const response = await additionInfoUniversityAPI(formDataInput);
         if (response) {
           toast.success("Update info successful");
-          navigate('/waiting-representative')
+          navigate("/waiting-representative");
         } else {
-          toast.error("Update info failed");
+          console.error("Update info failed");
         }
       } catch (error) {
         console.error(error);
-        toast.error("An error occurred while updating info");
       }
     }
   };
@@ -160,7 +162,9 @@ const AdditionInfoUniversityForm: React.FC = () => {
           variant="h4"
           gutterBottom
         >
-          <Button onClick={handleLogout} sx={{ mb: 1, mr: 1 }}><ChevronLeft /></Button>
+          <Button onClick={handleLogout} sx={{ mb: 1, mr: 1 }}>
+            <ChevronLeft />
+          </Button>
           Welcome to our platform! Please provide your university information so
           you can register and start using our services
         </Typography>
@@ -318,13 +322,16 @@ const AdditionInfoUniversityForm: React.FC = () => {
                       sx={{
                         "&.Mui-disabled": {
                           color: "#1565C0",
-                        }
+                        },
                       }}
                       checked={agreeToTerms}
                     />
                   }
                   label={
-                    <Typography onClick={() => setOpen(true)} style={{ cursor: "pointer" }}>
+                    <Typography
+                      onClick={() => setOpen(true)}
+                      style={{ cursor: "pointer" }}
+                    >
                       I agree to all the terms and{" "}
                       <span
                         className="text-red-400"
@@ -365,14 +372,20 @@ const AdditionInfoUniversityForm: React.FC = () => {
                     )
                   }
                 >
-                  {(isSubmitting) ? "Loading..." : "Submit"}
+                  {isSubmitting ? "Loading..." : "Submit"}
                 </Button>
               </Grid2>
             </Grid2>
           </form>
         </Grid2>
       </Grid2>
-      <PoliciesDialog open={open} setOpen={setOpen} handleAccept={handleAccept} handleDeny={handleDeny} type='staff' />
+      <PoliciesDialog
+        open={open}
+        setOpen={setOpen}
+        handleAccept={handleAccept}
+        handleDeny={handleDeny}
+        type="staff"
+      />
     </Box>
   );
 };
