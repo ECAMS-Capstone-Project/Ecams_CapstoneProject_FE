@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
+import { ClubStatusEnum } from "@/api/club-owner/ClubByUser";
 
 interface ClubCardProps {
   image: string;
@@ -12,7 +13,7 @@ interface ClubCardProps {
   field: FieldDTO[];
   clubId: string;
   clubOwnerId?: string;
-  status: string;
+  status: ClubStatusEnum;
 }
 
 const ClubCard: React.FC<ClubCardProps> = ({
@@ -21,7 +22,7 @@ const ClubCard: React.FC<ClubCardProps> = ({
   field,
   clubId,
   clubOwnerId,
-  status
+  status,
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ const ClubCard: React.FC<ClubCardProps> = ({
                   />
                 ))}
             </div>
-            {status != "INACTIVE" && (
+            {status != ClubStatusEnum.Inactive && (
               <div className="flex w-full justify-center align-middle mt-7">
                 <Button
                   variant="custom"
