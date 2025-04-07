@@ -1,12 +1,10 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import "./arrow.css"
 import RecentEventCard from "./recentEventCard";
-import { ArrowRight } from "lucide-react";
 import { Event } from "@/models/Event";
-import { useNavigate } from "react-router-dom";
 interface EventSliderProps {
     events: Event[];
     title: string;
@@ -41,14 +39,10 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
             },
         ],
     };
-    const navigate = useNavigate();
     return (
         <div className="mt-16 mb-7" >
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Typography variant="h5" fontWeight="bold">{title}</Typography>
-                <Button onClick={() => navigate('/representative/event')} variant="contained" sx={{ gap: 1, textTransform: "none", background: 'linear-gradient(to right, #136CB5, #49BBBD)', fontWeight: "600" }}>
-                    View More <ArrowRight size={18} />
-                </Button>
             </Box>
             <Slider {...settings}>
                 {events.map((event, index) => (

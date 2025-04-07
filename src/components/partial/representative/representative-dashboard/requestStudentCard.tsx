@@ -1,89 +1,119 @@
-import { Card, CardContent, Typography, Box, Divider, Chip } from "@mui/material";
+import {
+    Card,
+    CardContent,
+    Typography,
+    Box,
+    Chip,
+    Avatar,
+    Stack,
+    Tooltip,
+} from "@mui/material";
 import { format } from "date-fns";
-import StudentRequest from "@/models/StudentRequest";
+import { ClubResponseDTO, ClubStatusEnum } from "@/api/club-owner/ClubByUser";
+import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 
-interface RequestStudentCardProps {
-    student: StudentRequest;
+interface RequestClubCardProps {
+    club: ClubResponseDTO;
 }
 
-const RequestStudentCard: React.FC<RequestStudentCardProps> = ({ student }) => {
+const RequestClubCard: React.FC<RequestClubCardProps> = ({ club }) => {
     return (
         <Card
             sx={{
                 borderRadius: 3,
                 height: "100%",
                 position: "relative",
-                boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px',
-                transition: "transform 0.3s ease-in-out",
+                boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 6px",
+                transition: "transform 0.2s ease-in-out",
                 "&:hover": {
-                    transform: "scale(1.03)",
-                    boxShadow: "0 6px 18px rgba(0,0,0,0.15)",
+                    transform: "scale(1.02)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 },
             }}
         >
-            {student.imageUrl && (
-                <Box sx={{ position: "relative", width: "100%" }}>
-                    <img
-                        src={student.imageUrl}
-                        alt={student.fullname}
-                        style={{
-                            width: "100%",
-                            height: "200px",
-                            objectFit: "cover",
-                            borderTopLeftRadius: 16,
-                            borderTopRightRadius: 16,
+            {club.logoUrl && (
+                <Box sx={{ textAlign: "center", pt: 2 }}>
+                    <Avatar
+                        src={club.logoUrl}
+                        alt={club.clubName}
+                        sx={{
+                            width: 64,
+                            height: 64,
+                            mx: "auto",
+                            border: "2px solid white",
+                            boxShadow: 1,
                         }}
                     />
                 </Box>
             )}
-            <CardContent sx={{ flex: 1, p: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: "#1e3a8a" }}>
-                    {student.fullname}
+
+            <CardContent sx={{ px: 3, pb: 2 }}>
+                <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 700, color: "#1e3a8a", textAlign: "center", mb: 0.5 }}
+                >
+                    {club.clubName}
                 </Typography>
 
-                <Typography sx={{ fontSize: 14, color: "#555", mt: 0.5 }}>
-                    🎓 {student.universityName}
-                </Typography>
-                <Typography sx={{ fontSize: 13, color: "#777", mb: 1 }}>
-                    📘 Major: {student.major} · Year: {student.yearOfStudy}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        fontStyle: "italic",
+                        color: "#666",
+                        textAlign: "center",
+                        mb: 1,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    <DescriptionWithToggle text={club.purpose} />
                 </Typography>
 
-                <Divider sx={{ my: 1 }} />
+                <Typography sx={{ fontSize: 13, color: "#444", textAlign: "center", mb: 1 }}>
+                    📅 {format(new Date(club.foundingDate), "dd/MM/yyyy")}
+                </Typography>
 
-                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1 }}>
-                    {/* <Typography sx={{ fontSize: 13, color: "#444" }}>
-                        🆔 ID: {student.studentId}
-                    </Typography> */}
-                    <Typography sx={{ fontSize: 13, color: "#444" }}>
-                        📅 Start: {format(new Date(student.startDate), "dd/MM/yyyy")}
-                    </Typography>
-                    {student.endDate && (
-                        <Typography sx={{ fontSize: 13, color: "#444" }}>
-                            📅 End: {format(new Date(student.endDate), "dd/MM/yyyy")}
-                        </Typography>
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    justifyContent="center"
+                    flexWrap="wrap"
+                    sx={{ mb: 1 }}
+                >
+                    {club.clubFields.slice(0, 3).map((field, index) => (
+                        <Chip
+                            key={index}
+                            label={field.fieldName}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                        />
+                    ))}
+                    {club.clubFields.length > 3 && (
+                        <Chip label={`+${club.clubFields.length - 3}`} size="small" variant="outlined" />
                     )}
-                    <Typography sx={{ fontSize: 13, color: "#444" }}>
-                        📧 {student.email}
-                    </Typography>
-                    <Typography sx={{ fontSize: 13, color: "#444" }}>
-                        📞 {student.phonenumber}
-                    </Typography>
-                    <Typography sx={{ fontSize: 13, color: "#444" }}>
-                        🏠 {student.address}
-                    </Typography>
-                </Box>
+                </Stack>
 
-                <Box sx={{ mt: 2, display: "flex", justifyContent: "end" }}>
-                    <Chip
-                        label={student.status}
-                        color={"warning"}
-                        variant="outlined"
-                        sx={{ fontWeight: 600, fontSize: "0.8rem" }}
-                    />
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                    <Tooltip title="Current Club Status">
+                        <Chip
+                            label={club.status}
+                            color={
+                                club.status === ClubStatusEnum.Pending
+                                    ? "warning"
+                                    : club.status === ClubStatusEnum.Active
+                                        ? "success"
+                                        : "error"
+                            }
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontWeight: 600, fontSize: "0.75rem" }}
+                        />
+                    </Tooltip>
                 </Box>
             </CardContent>
         </Card>
     );
 };
 
-export default RequestStudentCard;
+export default RequestClubCard;
