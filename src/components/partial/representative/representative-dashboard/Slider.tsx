@@ -41,7 +41,6 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
             },
         ],
     };
-
     return (
         <div className="mt-16 mb-7">
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>

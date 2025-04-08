@@ -377,7 +377,7 @@ const ClubRequestForm: React.FC = () => {
                                             )
                                         }
                                         variant="contained">
-                                        {(isSubmitting) ? "Loading..." : "Create account"}
+                                        {(isSubmitting) ? "Loading..." : "Create Club"}
                                     </Button>
                                 </div>
                             </Grid2>

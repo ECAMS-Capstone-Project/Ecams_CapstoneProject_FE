@@ -52,7 +52,6 @@ type EventFormValues = z.infer<typeof EventSchema1> & {
     StartTime: string;
     EndTime: string;
   }[];
-  fieldIds: string[];
 }
 const EventSchema1 = z
   .object({
@@ -77,33 +76,15 @@ const EventSchema1 = z
     eventAreas: z
       .array(
         z.object({
-          areaId: z.string(),
-          startDate: z.date(),
-          endDate: z.date(),
+          AreaId: z.string().min(1, "Area ID is required"),
+          Date: z.coerce.date(),
+          StartTime: z.string(),
+          EndTime: z.string(),
         })
-      )
-      .superRefine((areas, ctx) => {
-        const ids = areas.map((a) => a.areaId);
-        if (new Set(ids).size !== ids.length) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Area is not allowed to be duplicated.",
-            path: ["_error"],
-          });
-        }
-
-        areas.forEach((area, index) => {
-          if (area.endDate < area.startDate) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "End date must be after start date.",
-              path: [index, "endDate"],
-            });
-          }
-        });
-      }),
+      ),
 
     feedbacks: z.array(z.unknown()).optional(),
+
     imageUrl: z
       .any()
       .refine(
@@ -127,7 +108,43 @@ const EventSchema1 = z
   }, {
     path: ["registeredEndDate"],
     message: "Registered end date must be after or equal to start date",
-  });
+  })
+  .superRefine((data, ctx) => {
+    // Check duplicate AreaId
+    const ids = data.eventAreas.map((a) => a.AreaId);
+    if (new Set(ids).size !== ids.length) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Area is not allowed to be duplicated.",
+        path: ["eventAreas", "_error"],
+      });
+    }
+
+    data.eventAreas.forEach((area, index) => {
+
+      const [startHour, startMinute] = area.StartTime.split(":").map(Number);
+      const [endHour, endMinute] = area.EndTime.split(":").map(Number);
+
+      const start = startHour * 60 + startMinute;
+      const end = endHour * 60 + endMinute;
+
+      if (end <= start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End time must be after start time.",
+          path: ["eventAreas", index, "EndTime"],
+        });
+      }
+
+      if (area.Date <= data.registeredEndDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Event date must be after registered end date.",
+          path: ["eventAreas", index, "Date"],
+        });
+      }
+    });
+  });;
 
 interface EventDialogProps {
   initialData?: EventFormValues | null
@@ -212,6 +229,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   // Xử lý submit
   const onSubmit = async (values: EventFormValues) => {
     ring2.register()
+    console.log(values.eventAreas);
     try {
       setIsLoading(true)
       console.log(values.imageUrl);
@@ -243,10 +261,11 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       values.fieldIds.forEach((id) => formData.append("FieldIds", id));
       // Format eventAreas
       const formattedEventAreas = values.eventAreas.map((area) => ({
-        AreaId: area.areaId,
-        StartDate: area.startDate,
-        EndDate: area.endDate,
-      }))
+        AreaId: area.AreaId,
+        Date: format(area.Date, "yyyy-MM-dd"),
+        StartTime: area.StartTime,
+        EndTime: area.EndTime,
+      }));
       formData.append("EventArea", JSON.stringify(formattedEventAreas))
 
       if (initialData) {
@@ -275,24 +294,31 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   const onError = (errors: any) => {
     const areaErrors = errors.eventAreas;
 
-    // ❗Lỗi toàn mảng (duplicate area)
+    // ❗Lỗi toàn mảng (ví dụ: duplicate AreaId)
     if (areaErrors?._error) {
       toast.error(areaErrors._error.message);
       return;
     }
 
-    // ❗Lỗi từng phần tử bên trong mảng
+    // ❗Lỗi từng phần tử bên trong mảng eventAreas
     if (Array.isArray(areaErrors)) {
       areaErrors.forEach((err: any, index: number) => {
-        if (err?.endDate?.message) {
-          toast.error(`Area ${index + 1}: ${err.endDate.message}`);
+        if (err?.AreaId?.message) {
+          toast.error(`Area ${index + 1}: ${err.AreaId.message}`);
         }
-        if (err?.areaId?.message) {
-          toast.error(`Area ${index + 1}: ${err.areaId.message}`);
+        if (err?.Date?.message) {
+          toast.error(`Area ${index + 1}: ${err.Date.message}`);
+        }
+        if (err?.StartTime?.message) {
+          toast.error(`Area ${index + 1}: ${err.StartTime.message}`);
+        }
+        if (err?.EndTime?.message) {
+          toast.error(`Area ${index + 1}: ${err.EndTime.message}`);
         }
       });
     }
   };
+
 
   console.log(errors);
 
@@ -609,33 +635,81 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                                     />
                                   </div>
 
-                                  {/* Start Date */}
                                   <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                     <DatePicker
-                                      label="Start Date"
-                                      selectedDate={item.startDate}
+                                      label="Date"
+                                      selectedDate={item.Date}
                                       onDateSelect={(date: Date) =>
                                         update(index, {
                                           ...item,
-                                          startDate: date,
+                                          Date: date,
                                         })
                                       }
                                     />
                                   </div>
 
-                                  {/* End Date */}
+                                  {/* Start Time */}
                                   <div className="w-full sm:w-auto flex-1 min-w-[100px]">
-                                    <DatePicker
-                                      label="End Date"
-                                      selectedDate={item.endDate}
-                                      onDateSelect={(date: Date) =>
+                                    <FormLabel>Start Time</FormLabel>
+                                    <Select
+                                      value={item.StartTime}
+                                      onValueChange={(value) =>
                                         update(index, {
                                           ...item,
-                                          endDate: date,
+                                          StartTime: value,
                                         })
                                       }
-                                    />
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select start time" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {Array.from(
+                                          { length: 24 },
+                                          (_, i) => (
+                                            <SelectItem
+                                              key={i}
+                                              value={i.toString()}
+                                            >
+                                              {`${i}:00`}
+                                            </SelectItem>
+                                          )
+                                        )}
+                                      </SelectContent>
+                                    </Select>
                                   </div>
+
+                                  {/* End Time */}
+                                  <div className="w-full sm:w-auto flex-1 min-w-[100px]">
+                                    <FormLabel>End Time</FormLabel>
+                                    <Select
+                                      value={item.EndTime}
+                                      onValueChange={(value) =>
+                                        update(index, {
+                                          ...item,
+                                          EndTime: value,
+                                        })
+                                      }
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select end time" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {Array.from(
+                                          { length: 24 },
+                                          (_, i) => (
+                                            <SelectItem
+                                              key={i}
+                                              value={i.toString()}
+                                            >
+                                              {`${i}:00`}
+                                            </SelectItem>
+                                          )
+                                        )}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
                                 </div>
                               </div>
                             ))}
@@ -647,9 +721,10 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                               variant="text"
                               onClick={() =>
                                 append({
-                                  areaId: "",
-                                  startDate: new Date(),
-                                  endDate: new Date(),
+                                  AreaId: "",
+                                  Date: new Date(),
+                                  StartTime: "8",
+                                  EndTime: "17",
                                 })
                               }
                               className="inline-flex w-fit items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm transition-colors"
