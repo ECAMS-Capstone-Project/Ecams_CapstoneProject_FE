@@ -6,7 +6,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import rrulePlugin from "@fullcalendar/rrule";
 import { Button } from "@/components/ui/button";
 import CreateClubScheduleDialog from "@/components/partial/club_owner/club-schedule/CreateClubScheduleDialog";
-import EditClubScheduleDialog from "@/components/partial/club_owner/club-schedule/EditClubScheduleDialog";
 import toast from "react-hot-toast";
 import { ClubSchedule, CreateClubScheduleAPI, GetScheduleClubAPI, ScheduleRequest } from "@/api/representative/StudentAPI";
 
@@ -53,7 +52,6 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
     const [schedules, setSchedules] = useState<ClubSchedule[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
-    const [openEditDialog, setOpenEditDialog] = useState<ClubSchedule | null>(null);
     const [flag, setFlag] = useState<boolean>(false);
 
     useEffect(() => {
@@ -120,18 +118,6 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
     };
 
 
-    const handleEventClick = (info: any) => {
-        info.jsEvent.preventDefault();
-        const eventStart = info.event.start;
-        const today = new Date();
-        if (eventStart && eventStart >= today) {
-            const schedule: ClubSchedule = info.event.extendedProps.schedule;
-            setOpenEditDialog(schedule);
-        } else {
-            toast.error("Cannot edit past schedule.");
-        }
-    };
-
     const handleSubmit = async (data: ScheduleRequest) => {
         const newSchedule: ScheduleRequest = {
             clubId: clubId,
@@ -177,7 +163,6 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
                         events={calendarEvents}
                         eventContent={renderEventContent}
                         height="auto"
-                        eventClick={handleEventClick}
                         timeZone="local"
                     />
                 </div>
@@ -186,22 +171,7 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
                 <CreateClubScheduleDialog
                     onClose={() => setOpenCreateDialog(false)}
                     onSubmit={(data) => handleSubmit(data)}
-                />
-            )}
-            {openEditDialog && (
-                <EditClubScheduleDialog
-                    schedule={openEditDialog}
-                    onClose={() => setOpenEditDialog(null)}
-                    onSubmit={(updatedSchedule) => {
-                        setSchedules((prev) =>
-                            prev.map((sch) =>
-                                sch.clubScheduleId === updatedSchedule.clubScheduleId
-                                    ? updatedSchedule
-                                    : sch
-                            )
-                        );
-                        setOpenEditDialog(null);
-                    }}
+                    clubId={clubId}
                 />
             )}
         </div>

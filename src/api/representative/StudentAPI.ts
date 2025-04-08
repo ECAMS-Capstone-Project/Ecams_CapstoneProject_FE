@@ -163,15 +163,17 @@ export const CreateClubScheduleAPI = async (data: ScheduleRequest): Promise<Resp
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
-            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message);
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
