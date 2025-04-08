@@ -37,13 +37,15 @@ export const ContractRepresentative = async (
 export const CancelContractRepresentative = async (
   contractId: string,
   representativeId: string,
-  reason: string
+  reason: string,
+  universityId: string
 ): Promise<ResponseDTO<string>> => {
   try {
     const data = {
       contractId: contractId,
       representativeId: representativeId,
       reason: reason,
+      universityId: universityId,
     };
     const response = await put<ResponseDTO<string>>(
       `/Contracts/${contractId}/cancel`,
@@ -53,13 +55,14 @@ export const CancelContractRepresentative = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.response.status == 400) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
-      console.log(error.response.data.errors);
-      console.error("API Error:", error.response.data);
+      toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);

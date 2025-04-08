@@ -110,6 +110,9 @@ const ExtendCheckOut: React.FC = () => {
             : "59b3cf1a-4ed7-469a-a551-5196755a12bb";
         formData.append("PaymentMethodId", paymentMethodId);
         formData.append("RepresentativeId", user.userId || "");
+        formData.append("UniversityId", user.universityId || "");
+        console.log(user.universityId);
+        console.log(formData);
 
         const response = await exchangePackage(formData);
 

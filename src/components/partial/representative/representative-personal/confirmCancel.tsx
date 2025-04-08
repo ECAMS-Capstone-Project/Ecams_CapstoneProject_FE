@@ -46,7 +46,8 @@ export default function ConfirmCancelDialog({
       await CancelContractRepresentative(
         contract.contractId,
         user.userId,
-        reason
+        reason,
+        user.universityId || ""
       );
       toast.success("Cancel contract successfully.");
       setOpen(false);
@@ -55,7 +56,7 @@ export default function ConfirmCancelDialog({
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
-      window.location.reload();
+      // window.location.reload();
     }
   }
 
