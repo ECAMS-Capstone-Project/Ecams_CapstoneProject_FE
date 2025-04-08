@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import LoadingAnimation from "@/components/ui/loading";
-import HomePage from "@/pages/student/home/HomePage";
 import { GetRecommendedEventsAPI } from "@/api/student/UserPreference";
 import { Event } from "@/models/Event";
 interface Props {
@@ -97,7 +96,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
               navigate(`/student/events/${event.eventId}`, {
                 state: {
                   previousPage: location.pathname,
-                  breadcrumb: HomePage,
+                  breadcrumb: "Home",
                 },
               })
             }
@@ -115,14 +114,6 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                     : "Have yet to"}
                 </p>
                 <h3
-                  onClick={() =>
-                    navigate(`/student/events/${event.eventId}`, {
-                      state: {
-                        previousPage: location.pathname,
-                        breadcrumb: "Home",
-                      },
-                    })
-                  }
                   className="text-2xl cursor-pointer font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
                 >
                   {event.eventName}
