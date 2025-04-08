@@ -23,18 +23,15 @@ import { useNavigate } from "react-router-dom";
 export const StudentEventCheckIn = () => {
   // const location = useLocation();
   // const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { checkInStudent, isCheckingIn, getCheckInInfoQuery } =
     useEventSchedule(user?.userId || "");
   const [userId, setUserId] = useState("");
   const [eventId, setEventId] = useState("");
   const navigate = useNavigate();
-
+  console.log("isAuthenticated", isAuthenticated);
   useEffect(() => {
     // Lấy URL hiện tại của trang
-    // const url = window.location.href;
-
-    // Sử dụng URLSearchParams để lấy các tham số
     const urlParams = new URLSearchParams(window.location.search);
     const user = urlParams.get("userId");
     const event = urlParams.get("eventId");
@@ -42,8 +39,17 @@ export const StudentEventCheckIn = () => {
     if (user && event) {
       setUserId(user);
       setEventId(event);
+
+      // Nếu chưa đăng nhập, lưu URL hiện tại và redirect đến trang login
+      if (!isAuthenticated) {
+        const currentPath = `/club/event-check-in?userId=${user}&eventId=${event}`;
+        localStorage.setItem("redirectAfterLogin", currentPath);
+        console.log("currentPath", currentPath);
+        navigate("/login");
+        return;
+      }
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
   console.log("from url", userId, eventId);
 
   // TODO: Lấy ticketId từ QR code và gọi API để lấy thông tin
