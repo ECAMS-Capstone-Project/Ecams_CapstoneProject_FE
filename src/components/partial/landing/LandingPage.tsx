@@ -101,7 +101,7 @@ const GuestLandingPage = () => {
         </div>
         <div className="hero-image w-1/2">
           <img
-            src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
+            src="https://res.cloudinary.com/ecams/image/upload/v1744098313/unsplash_ugaOk9LkmQY_bbvr93.png"
             alt=""
           />
         </div>
