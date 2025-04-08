@@ -26,7 +26,6 @@ import useAuth from "@/hooks/useAuth";
 import { ring2 } from "ldrs";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import LoadingAnimation from "@/components/ui/loading";
 
 // Zod Schema for validation
 const clubSchema = z.object({
@@ -378,7 +377,7 @@ const ClubRequestForm: React.FC = () => {
                                             )
                                         }
                                         variant="contained">
-                                        {(isSubmitting) ? <LoadingAnimation /> : "Create account"}
+                                        {(isSubmitting) ? "Loading..." : "Create account"}
                                     </Button>
                                 </div>
                             </Grid2>

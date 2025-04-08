@@ -98,7 +98,7 @@ const RegisterUniversityForm: React.FC = () => {
               maxWidth: "50rem",
             }}
           >
-            <img src="public/image/hinhRegister.png"></img>
+            <img src="https://res.cloudinary.com/ecams/image/upload/hinh_Register"></img>
           </Stack>
         </Grid2>
 
@@ -292,14 +292,14 @@ const RegisterUniversityForm: React.FC = () => {
                 <div className="flex justify-center mt-4 gap-4">
                   <Button variant="outlined" className="w-1/2 h-12">
                     <img
-                      src="public/image/facebook-icon.png"
+                      src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
                       alt="Facebook"
                       className="w-6 h-6"
                     />
                   </Button>
                   <Button variant="outlined" className="w-1/2 h-12">
                     <img
-                      src="public/image/google-icon.png"
+                      src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
                       alt="Google"
                       className="w-6 h-6"
                     />
