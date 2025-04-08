@@ -10,17 +10,51 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Ellipsis, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import { ChangeClubOwnerAPI, ClubMemberDTO, GetMemberInClubsByStatusAPI, LeaveClubAPI } from "@/api/club-owner/ClubByUser";
+import { ChangeClubOwnerAPI, ClubMemberDTO, EditClubAPI, GetMemberInClubsByStatusAPI, LeaveClubAPI } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ClubResponse } from "@/models/Club";
 
 interface props {
   isClubOwner: boolean;
   clubId: string
   clubOwnerId: string | undefined
+  club: ClubResponse | null
 }
 
-export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
+const clubSchema = z.object({
+  description: z.string().min(5, "Description is required"),
+  purpose: z.string().min(5, "Purpose is required"),
+  contactEmail: z.string().email("Invalid email"),
+  contactPhone: z.string().min(5, "Phone is required"),
+  websiteUrl: z.string().url("Invalid URL"),
+  logo: z.instanceof(File).optional(),
+});
+
+export type ClubFormData = z.infer<typeof clubSchema>;
+
+export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset
+  } = useForm<ClubFormData>({
+    resolver: zodResolver(clubSchema),
+    defaultValues: {
+      description: club?.description || "",
+      purpose: club?.purpose || "",
+      contactEmail: club?.contactEmail || "",
+      contactPhone: club?.contactPhone || "",
+      websiteUrl: club?.websiteUrl || "",
+      logo: undefined,
+    },
+  });
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openLeaveDialog, setOpenLeaveDialog] = useState(false);
   const [openRequestDialog, setOpenRequestDialog] = useState(false);
@@ -34,6 +68,19 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
   const handleLeaveClub = () => {
     setOpenLeaveDialog(true)
   };
+
+  useEffect(() => {
+    if (openEditDialog) {
+      reset({
+        description: club?.description || "",
+        purpose: club?.purpose || "",
+        contactEmail: club?.contactEmail || "",
+        contactPhone: club?.contactPhone || "",
+        websiteUrl: club?.websiteUrl || "",
+        logo: undefined,
+      });
+    }
+  }, [openEditDialog, club, reset]);
 
   const handleChangeClubOwner = () => {
     setOpenRequestDialog(true)
@@ -97,9 +144,29 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       }
     };
 
-    // Gọi API luôn ngay cả khi searchQuery rỗng (để load danh sách mặc định)
     fetchMembers();
   }, [clubId]);
+
+  const onSubmit = async (data: ClubFormData) => {
+    console.log("ấn nè")
+    const formData = new FormData();
+    formData.append("ClubId", clubId);
+    formData.append("Description", data.description);
+    formData.append("Purpose", data.purpose);
+    formData.append("ContactEmail", data.contactEmail);
+    formData.append("ContactPhone", data.contactPhone);
+    formData.append("WebsiteUrl", data.websiteUrl);
+    if (data.logo) formData.append("LogoUrl", data.logo);
+
+    try {
+      await EditClubAPI(formData)
+      toast.success("Updated club successfully!");
+      setOpenEditDialog(false);
+    } catch (err) {
+      toast.error("Failed to update club.");
+      console.error(err);
+    }
+  };
 
 
   return (
@@ -141,39 +208,80 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId }: props) {
       </Popover>
 
       {/* Dialog hiển thị khi bấm "Edit Club" */}
-      <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
-        <DialogContent className="max-w-lg">
-          <div className="flex flex-col gap-4">
+      <Dialog open={openEditDialog} onOpenChange={(open) => {
+        if (!open) setOpenEditDialog(false);
+      }}>
+        <DialogContent className="max-w-lg" onInteractOutside={(e) => e.preventDefault()} >
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <h3 className="text-lg font-semibold">Edit Club</h3>
+
             <div className="grid gap-2">
-              <Label htmlFor="clubName">Club Name</Label>
-              <Input id="clubName" defaultValue="Club Name" />
+              <Label>Description</Label>
+              <Input {...register("description")} />
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description.message}</p>
+              )}
             </div>
+
             <div className="grid gap-2">
-              <Label htmlFor="clubDescription">Description</Label>
-              <Input id="clubDescription" defaultValue="Club Description" />
+              <Label>Purpose</Label>
+              <Input {...register("purpose")} />
+              {errors.purpose && (
+                <p className="text-sm text-red-500">{errors.purpose.message}</p>
+              )}
             </div>
-            {/* Bạn có thể thêm các field khác nếu cần */}
-            <div className="flex justify-end gap-2">
+
+            <div className="grid gap-2">
+              <Label>Contact Email</Label>
+              <Input type="email" {...register("contactEmail")} />
+              {errors.contactEmail && (
+                <p className="text-sm text-red-500">{errors.contactEmail.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Contact Phone</Label>
+              <Input {...register("contactPhone")} />
+              {errors.contactPhone && (
+                <p className="text-sm text-red-500">{errors.contactPhone.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Website URL</Label>
+              <Input {...register("websiteUrl")} />
+              {errors.websiteUrl && (
+                <p className="text-sm text-red-500">{errors.websiteUrl.message}</p>
+              )}
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Logo</Label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    setValue("logo", e.target.files[0]);
+                  }
+                }}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
               <Button
+                type="button"
                 variant="outline"
                 onClick={() => setOpenEditDialog(false)}
               >
                 Cancel
               </Button>
-              <Button
-                onClick={() => {
-                  // Thực hiện lưu thông tin chỉnh sửa (có thể gọi API)
-                  alert("Club details saved!");
-                  setOpenEditDialog(false);
-                }}
-              >
-                Save
-              </Button>
+              <Button type="submit">Save</Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
+
 
       <Dialog open={openLeaveDialog} onOpenChange={setOpenLeaveDialog}>
         <DialogContent className="max-w-lg">

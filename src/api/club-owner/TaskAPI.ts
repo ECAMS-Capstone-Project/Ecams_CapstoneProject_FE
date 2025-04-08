@@ -121,7 +121,6 @@ export interface Submission {
     status: string;
 }
 
-
 export const GetTaskDetail = async (taskId: string): Promise<ResponseDTO<TaskDetailDTO>> => {
     try {
         const response = await get<ResponseDTO<TaskDetailDTO>>(`/Tasks/${taskId}`);
