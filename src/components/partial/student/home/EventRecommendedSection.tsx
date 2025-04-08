@@ -3,10 +3,8 @@ import { EventCategoryFilter } from "../events/EventFilter";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarDays, SearchXIcon } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import LoadingAnimation from "@/components/ui/loading";
-import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
-import HomePage from "@/pages/student/home/HomePage";
 import { GetRecommendedEventsAPI } from "@/api/student/UserPreference";
 import { Event } from "@/models/Event";
 interface Props {
@@ -52,15 +50,17 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
           </span>
           around you
         </h2>
-        <div className="flex justify-center items-center gap-2">
-          <EventCategoryFilter
-            value={scopeFilter}
-            onChange={(newVal) => {
-              setScopeFilter(newVal);
-              setPageNo(1);
-            }}
-          />
-        </div>
+        {events.length > 0 && (
+          <div className="flex justify-center items-center gap-2">
+            <EventCategoryFilter
+              value={scopeFilter}
+              onChange={(newVal) => {
+                setScopeFilter(newVal);
+                setPageNo(1);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       {isLoading && (
@@ -70,14 +70,19 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
       )}
 
       {!isLoading && events.length === 0 && (
-        <div className="flex justify-center items-center h-36">
-          <AnimatedGradientText>
-            <SearchXIcon size={26} color="#136CB5" />{" "}
-            <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "}
-            <span className="inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold">
-              No event yet!
-            </span>
-          </AnimatedGradientText>
+        <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
+          <img
+            src="https://img.freepik.com/free-vector/flat-prom-background_23-2149365647.jpg"
+            alt="No recommended events"
+            className="w-28 h-28 mb-4 opacity-90"
+          />
+          <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
+            No recommended events right now
+          </h3>
+          <p className="text-sm max-w-md text-gray-500">
+            Currently, we couldn't find any events that match your interests.
+            Check back later! 💡
+          </p>
         </div>
       )}
 
@@ -91,7 +96,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
               navigate(`/student/events/${event.eventId}`, {
                 state: {
                   previousPage: location.pathname,
-                  breadcrumb: HomePage,
+                  breadcrumb: "Home",
                 },
               })
             }
@@ -109,14 +114,6 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                     : "Have yet to"}
                 </p>
                 <h3
-                  onClick={() =>
-                    navigate(`/student/events/${event.eventId}`, {
-                      state: {
-                        previousPage: location.pathname,
-                        breadcrumb: "Home",
-                      },
-                    })
-                  }
                   className="text-2xl cursor-pointer font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
                 >
                   {event.eventName}

@@ -107,7 +107,13 @@ const RepresentativeRequestsPage: React.FC = () => {
       ) : error ? (
         <p className="text-center text-red-500">Error: {error}</p>
       ) : requests.length === 0 ? (
-        <p className="text-center">No change requests available.</p>
+        <div className="flex flex-col items-center justify-center text-center mt-16 mb-20 text-gray-500">
+          <ContentPasteIcon className="w-14 h-14 mb-4 text-[#49BBBD]" />
+          <h2 className="text-lg font-semibold mb-1">No requests to review</h2>
+          <p className="text-sm">
+            When a club requests to change ownership, it’ll show up here. 👀
+          </p>
+        </div>
       ) : (
         <div>
           <div className="grid gap-6 sm:grid-cols-2">

@@ -1,5 +1,4 @@
 import { ClubsSection } from "@/components/partial/student/home/ClubSection";
-import { EventsSection } from "@/components/partial/student/home/EventSection";
 import { Hero } from "@/components/partial/student/home/Hero";
 import UserPreferencePopup from "./UserPreferencePopup";
 import { EventRecommendedSection } from "@/components/partial/student/home/EventRecommendedSection";
@@ -40,7 +39,17 @@ const HomePage = () => {
         <Hero />
         <div className="container mx-auto px-4">
           {userInfo && userInfo.isRecommended !== true ? (
-            <EventsSection />
+            <div className="flex flex-col items-center justify-center text-center mt-20 mb-24 text-gray-600">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
+                alt="Not recommended"
+                className="w-24 h-24 mb-4 opacity-80"
+              />
+              <h2 className="text-xl font-semibold mb-2">No event recommendations</h2>
+              <p className="text-sm max-w-md">
+                You have opted out of personalized event recommendations. If you change your mind, you can turn it back on in your preferences 🎯
+              </p>
+            </div>
           ) : (
             <>
               <EventRecommendedSection userId={userInfo?.userId} flag={flag} />

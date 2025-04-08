@@ -115,14 +115,14 @@ const LoginForm: React.FC = () => {
             <div className="flex justify-center mt-4 gap-4">
               <Button variant="outlined" className="w-1/2 h-12">
                 <img
-                  src="public/image/facebook-icon.png"
+                  src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
                   alt="Facebook"
                   className="w-6 h-6"
                 />
               </Button>
               <Button variant="outlined" className="w-1/2 h-12">
                 <img
-                  src="public/image/google-icon.png"
+                  src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
                   alt="Google"
                   className="w-6 h-6"
                 />
@@ -134,7 +134,7 @@ const LoginForm: React.FC = () => {
         {/* Right Side */}
         <div className="hidden sm:flex w-full sm:w-1/2 items-center justify-center">
           <img
-            src="/public/login-img.png"
+            src="https://res.cloudinary.com/ecams/image/upload/v1738675298/login-img_j0j6kt"
             alt="Login Illustration"
             className="w-4/5 md:w-3/4 lg:w-1/2 xl:w-2/3 mb-20"
           />

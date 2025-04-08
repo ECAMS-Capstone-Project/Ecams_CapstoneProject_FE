@@ -57,20 +57,27 @@ export const ClubsSection = () => {
       </div>
 
       {filteredClubs.length === 0 && (
-        <div className="flex justify-center items-center h-64">
-          <AnimatedGradientText>
-            <SearchXIcon size={26} color="#136CB5" />{" "}
-            <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "}
-            <span
-              className={
-                "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-              }
-            >
-              No club found!
+        <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/5219/5219073.png"
+            alt="No clubs"
+            className="w-28 h-28 mb-4 opacity-90"
+          />
+          <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
+            No clubs matched your search
+          </h3>
+          <p className="text-sm max-w-sm mb-2 text-gray-500">
+            Try adjusting your filters or explore all available clubs.
+          </p>
+          <AnimatedGradientText className="mt-2">
+            <SearchXIcon size={22} className="mr-1" />
+            <span className="bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-clip-text text-transparent text-lg font-bold">
+              Nothing found yet!
             </span>
           </AnimatedGradientText>
         </div>
       )}
+
       <div className="grid md:grid-cols-4 gap-7 mt-6 w-full px-8">
         {filteredClubs.map((club, index) => (
           <MagicCard

@@ -8,7 +8,7 @@ import {
     Container,
     Typography,
     Box,
-    Grid,
+    Grid2,
     Avatar,
     Autocomplete,
     Chip,
@@ -29,9 +29,9 @@ import { useNavigate } from "react-router-dom";
 
 // Zod Schema for validation
 const clubSchema = z.object({
-    clubName: z.string().min(3, "Club name must be at least 3 characters"),
-    description: z.string().min(5, "Description must be at least 5 characters"),
-    purpose: z.string().min(5, "Purpose must be at least 5 characters"),
+    clubName: z.string().trim().min(3, "Club name must be at least 3 characters"),
+    description: z.string().trim().min(5, "Description must be at least 5 characters"),
+    purpose: z.string().trim().min(5, "Purpose must be at least 5 characters"),
     logo: z.instanceof(File).optional(),
     fieldIds: z.array(z.string()).min(1, "At least one field is required"),
     members: z.array(
@@ -180,7 +180,7 @@ const ClubRequestForm: React.FC = () => {
         <div >
             <Container maxWidth="md" sx={{ display: "flex" }}>
                 <div className="relative" style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', padding: "40px", paddingTop: "10px" }}>
-                    <div className="absolute" style={{ top: "29px" }}>
+                    <div className="absolute" style={{ top: "17px" }}>
                         {isMobile ? (
                             <Button
                                 onClick={() => window.history.back()}
@@ -193,7 +193,7 @@ const ClubRequestForm: React.FC = () => {
                                     borderRadius: "50%",
                                     "@media (max-width: 600px)": {
                                         left: "-20px",
-                                        top: "-3px",
+                                        top: "-6px",
                                     },
                                 }}
                             >
@@ -204,14 +204,24 @@ const ClubRequestForm: React.FC = () => {
                         )
                         }
                     </div>
-                    <Typography variant="h4" align="center" fontWeight="bold" mt={2} color="primary">
-                        Create Club
+                    <Typography
+                        variant="h4"
+                        fontWeight={700}
+                        align="center"
+                        gutterBottom
+                        sx={{
+                            background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                        }}
+                    >
+                        Create a New Club
                     </Typography>
 
                     <Box component="form" onSubmit={handleSubmit(onSubmit)} mt={4}>
-                        <Grid container spacing={3}>
-                            {/* Club Name */}
-                            <Grid item xs={12}>
+                        <Grid2 container spacing={3}>
+
+                            <Grid2 size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
                                     label="Club Name"
@@ -219,10 +229,9 @@ const ClubRequestForm: React.FC = () => {
                                     error={!!errors.clubName}
                                     helperText={errors.clubName?.message}
                                 />
-                            </Grid>
+                            </Grid2>
 
-                            {/* Description */}
-                            <Grid item xs={12}>
+                            <Grid2 size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
                                     label="Description"
@@ -232,10 +241,9 @@ const ClubRequestForm: React.FC = () => {
                                     error={!!errors.description}
                                     helperText={errors.description?.message}
                                 />
-                            </Grid>
+                            </Grid2>
 
-                            {/* Purpose */}
-                            <Grid item xs={12}>
+                            <Grid2 size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
                                     label="Purpose"
@@ -245,10 +253,9 @@ const ClubRequestForm: React.FC = () => {
                                     error={!!errors.purpose}
                                     helperText={errors.purpose?.message}
                                 />
-                            </Grid>
+                            </Grid2>
 
-                            {/* Multiple Select Fields */}
-                            <Grid item xs={12}>
+                            <Grid2 size={{ xs: 12 }}>
                                 <Controller
                                     name="fieldIds"
                                     control={control}
@@ -295,10 +302,9 @@ const ClubRequestForm: React.FC = () => {
                                         Add More Field
                                     </Button>
                                 </div>
-                            </Grid>
+                            </Grid2>
 
-                            {/* Member Emails */}
-                            <Grid item xs={12}>
+                            <Grid2 size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
                                     label="Add Member (Email)"
@@ -313,10 +319,9 @@ const ClubRequestForm: React.FC = () => {
                                     error={!!errors.members}
                                     helperText={errors.members?.message}
                                 />
-                            </Grid>
+                            </Grid2>
 
-                            {/* Display Added Members */}
-                            <Grid item xs={12} display="flex" flexWrap="wrap" gap={1}>
+                            <Grid2 size={{ xs: 12 }} display="flex" flexWrap="wrap" gap={1}>
                                 {members.map((m, index) => (
                                     <Chip
                                         key={index}
@@ -328,9 +333,8 @@ const ClubRequestForm: React.FC = () => {
                                         }}
                                     />
                                 ))}
-                            </Grid>
-                            {/* Upload Logo */}
-                            <Grid item xs={12} mb={3}>
+                            </Grid2>
+                            <Grid2 size={{ xs: 12 }} mb={3}>
                                 {previewImage && (
                                     <Avatar
                                         src={previewImage}
@@ -349,9 +353,9 @@ const ClubRequestForm: React.FC = () => {
                                         Choose Logo
                                     </Button>
                                 </label>
-                            </Grid>
+                            </Grid2>
                             {/* Submit Button */}
-                            <Grid item xs={12}>
+                            <Grid2 size={{ xs: 12 }}>
                                 <div className="flex justify-center">
                                     <Button type="submit"
                                         sx={{
@@ -373,11 +377,11 @@ const ClubRequestForm: React.FC = () => {
                                             )
                                         }
                                         variant="contained">
-                                        {(isSubmitting) ? "Loading..." : "Create account"}
+                                        {(isSubmitting) ? "Loading..." : "Create Club"}
                                     </Button>
                                 </div>
-                            </Grid>
-                        </Grid>
+                            </Grid2>
+                        </Grid2>
                     </Box>
 
                     {/* Dialog for creating new field */}

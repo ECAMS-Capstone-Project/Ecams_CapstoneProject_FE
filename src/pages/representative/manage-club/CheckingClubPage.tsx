@@ -49,11 +49,30 @@ const CheckingClubPage: React.FC = () => {
     return (
         <>
             <Box sx={{ padding: 4, paddingTop: 0 }}>
-                <Typography variant="h5" sx={{ textAlign: "left", marginBottom: 4 }}>
-                    <Typography component="span" sx={{ color: "blue", fontWeight: "bold" }}>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    sx={{
+                        textAlign: "left",
+                        mb: 4,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                    }}
+                >
+                    <Box
+                        component="span"
+                        sx={{
+                            color: "#136CB5",
+                            fontWeight: 800,
+                            fontSize: "1.6rem",
+                        }}
+                    >
                         Clubs
-                    </Typography>{" "}
-                    Request
+                    </Box>
+                    <Box component="span" sx={{ color: "#444", fontWeight: 500 }}>
+                        Request
+                    </Box>
                 </Typography>
 
                 {loading ? (
@@ -77,9 +96,34 @@ const CheckingClubPage: React.FC = () => {
                         ))}
                     </Grid2>
                 ) : (
-                    <Typography align="center" color="gray">
-                        No clubs yet.
-                    </Typography>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        py={6}
+                        px={2}
+                        sx={{ opacity: 0.9 }}
+                    >
+                        <img
+                            src="https://cdn-icons-png.freepik.com/512/3085/3085313.png"
+                            alt="All clear"
+                            style={{ width: 110, height: 110, marginBottom: 16 }}
+                        />
+
+                        <Typography variant="h6" fontWeight={700} color="#2E7D32" gutterBottom>
+                            No pending club requests
+                        </Typography>
+
+                        <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            align="center"
+                            maxWidth={320}
+                        >
+                            Once a new club requests approval, it will show up here for you to review.
+                        </Typography>
+                    </Box>
                 )}
             </Box>
 

@@ -130,7 +130,7 @@ const VerifyEmailForm: React.FC = () => {
                             maxWidth: "50rem",
                         }}
                     >
-                        <img src="/public/image/verifyOTP_img.png"></img>
+                        <img src="https://res.cloudinary.com/ecams/image/upload/v1738675298/verify_OTP"></img>
                     </Stack>
                 </Grid2>
             </Grid2>

@@ -142,13 +142,23 @@ const Pricing: React.FC = () => {
   return (
     <GradientBackground>
       <Container maxWidth="lg">
-        <Box textAlign="center" pt={2} mb={8}>
-          <Typography variant="h3" component="h1" gutterBottom color="#231D4F">
-            Plans & Pricing
+        <Box textAlign="center" pt={4} mb={10}>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight={800}
+            gutterBottom
+            sx={{
+              background: "linear-gradient(to right, #136CB5, #49BBBD)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Choose Your Plan
           </Typography>
-          <Typography variant="h6" color="#848199">
-            Whether your automation needs are large or small, we're here to help
-            you scale.
+
+          <Typography variant="h6" color="#6C6A8A" maxWidth={600} mx="auto">
+            Flexible pricing to match your needs. Pick a plan that fits your goals and start unlocking premium features today.
           </Typography>
         </Box>
 
@@ -158,71 +168,73 @@ const Pricing: React.FC = () => {
         {!loading && !error && packages.length > 0 && (
           <SliderContainer>
             <Slider {...settings}>
-              {packages.map((plan, index) => {
-                const isPopular = index === popularIndex;
-                return (
-                  <Box key={`${plan.packageName}-${index}`} p={2}>
-                    <StyledCard isPopular={isPopular}>
-                      <CardContent
-                        sx={{
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        {isPopular && (
-                          <Chip
-                            label="MOST POPULAR"
-                            color="secondary"
-                            size="small"
-                            sx={{ alignSelf: "flex-end", mb: 2 }}
-                          />
-                        )}
-                        <Typography
-                          variant="h6"
-                          fontWeight={"600"}
-                          component="h2"
-                          gutterBottom
+              {packages
+                .filter((pkg) => pkg.status == true)
+                .map((plan, index) => {
+                  const isPopular = index === popularIndex;
+                  return (
+                    <Box key={`${plan.packageName}-${index}`} p={2}>
+                      <StyledCard isPopular={isPopular}>
+                        <CardContent
+                          sx={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
                         >
-                          {formatPrice(plan.price)}
-                          <Typography variant="subtitle1" component="span">
-                            / {plan.duration} months
+                          {isPopular && (
+                            <Chip
+                              label="MOST POPULAR"
+                              color="secondary"
+                              size="small"
+                              sx={{ alignSelf: "flex-end", mb: 2 }}
+                            />
+                          )}
+                          <Typography
+                            variant="h6"
+                            fontWeight={"600"}
+                            component="h2"
+                            gutterBottom
+                          >
+                            {formatPrice(plan.price)}
+                            <Typography variant="subtitle1" component="span">
+                              / {plan.duration} months
+                            </Typography>
                           </Typography>
-                        </Typography>
-                        <Typography variant="h5" gutterBottom>
-                          {plan.packageName}
-                        </Typography>
-                        <Typography variant="body1">
-                          {plan.description}
-                        </Typography>
-                        <List sx={{ flexGrow: 1 }}>
-                          {plan.packageDetails.map((detail, i) => (
-                            <ListItem
-                              key={detail.packageType + "-" + i}
-                              sx={{ padding: "4px 0" }}
-                            >
-                              <ListItemIcon sx={{ minWidth: 36 }}>
-                                <CheckIcon sx={{ color: "#BB6BD9" }} />
-                              </ListItemIcon>
-                              <ListItemText
-                                primary={`${detail.packageType}: ${detail.value}`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                        <StyledButton
-                          onClick={() => handleClick(plan)}
-                          isPopular={isPopular}
-                          variant="contained"
-                          fullWidth
-                        >
-                          Choose plan
-                        </StyledButton>
-                      </CardContent>
-                    </StyledCard>
-                  </Box>
-                );
-              })}
+                          <Typography variant="h5" gutterBottom>
+                            {plan.packageName}
+                          </Typography>
+                          <Typography variant="body1">
+                            {plan.description}
+                          </Typography>
+                          <List sx={{ flexGrow: 1 }}>
+                            {plan.packageDetails.map((detail, i) => (
+                              <ListItem
+                                key={detail.packageType + "-" + i}
+                                sx={{ padding: "4px 0" }}
+                              >
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                  <CheckIcon sx={{ color: "#BB6BD9" }} />
+                                </ListItemIcon>
+                                <ListItemText
+                                  primary={`${detail.packageType}: ${detail.value}`}
+                                />
+                              </ListItem>
+                            ))}
+                          </List>
+                          <StyledButton
+                            onClick={() => handleClick(plan)}
+                            isPopular={isPopular}
+                            variant="contained"
+                            fullWidth
+                          >
+                            Choose plan
+                          </StyledButton>
+                        </CardContent>
+                      </StyledCard>
+                    </Box>
+                  );
+                })}
             </Slider>
           </SliderContainer>
         )}

@@ -49,12 +49,27 @@ const InvitationClubPage: React.FC = () => {
     return (
         <>
             <Box sx={{ padding: 4, paddingTop: 0 }}>
-                <Typography variant="h5" sx={{ textAlign: "left", marginBottom: 4 }}>
-                    <Typography component="span" sx={{ color: "blue", fontWeight: "bold" }}>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    sx={{ textAlign: "left", mb: 4 }}
+                >
+                    <Box
+                        component="span"
+                        sx={{
+                            background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            fontWeight: "bold",
+                        }}
+                    >
                         Clubs
-                    </Typography>{" "}
-                    Invitation
+                    </Box>{" "}
+                    <Box component="span" sx={{ color: "#444" }}>
+                        Invitation
+                    </Box>
                 </Typography>
+
 
                 {loading ? (
                     <DialogLoading />
@@ -77,9 +92,27 @@ const InvitationClubPage: React.FC = () => {
                         ))}
                     </Grid2>
                 ) : (
-                    <Typography align="center" color="gray">
-                        No clubs yet.
-                    </Typography>
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        py={6}
+                        px={2}
+                    >
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/9131/9131510.png"
+                            alt="No invitations"
+                            style={{ width: 100, height: 100, opacity: 0.9, marginBottom: 16 }}
+                        />
+                        <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
+                            No invitations at the moment
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                            Once a club sends you an invitation, it’ll show up here 🚀
+                        </Typography>
+                    </Box>
+
                 )}
             </Box>
 

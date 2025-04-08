@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { useEffect, useState } from "react";
 import { ClubMemberDTO, GetMemberInClubsAPI } from "@/api/club-owner/ClubByUser";
@@ -18,8 +19,8 @@ export default function ActiveMemberList({ clubId, isClubOwner }: props) {
         try {
             const clubData = await GetMemberInClubsAPI(clubId, pageSize, pageNo);
             if (clubData) {
-                setMemberList(clubData.data?.data || []); // Đảm bảo `data.data` tồn tại
-                setTotalPages(clubData.data?.totalPages || 1); // Đặt số trang
+                setMemberList(clubData.data?.data || []);
+                setTotalPages(clubData.data?.totalPages || 1);
             } else {
                 console.warn("UniversityList returned no data");
             }

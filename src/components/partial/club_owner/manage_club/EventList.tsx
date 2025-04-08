@@ -90,7 +90,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
             {filteredEvents.map((evt, index) => (
               <Link
                 key={index}
-                to={`/events/${evt.eventId}`}
+                to={`/student/events/${evt.eventId}`}
                 className="flex items-center  gap-4 rounded-lg bg-white shadow-sm border
                    hover:shadow-md transition cursor-pointer no-underline"
                 style={{ height: "105px", marginBottom: "15px" }}

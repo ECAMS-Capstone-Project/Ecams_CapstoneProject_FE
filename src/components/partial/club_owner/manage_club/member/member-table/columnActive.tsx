@@ -5,45 +5,38 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import RoleDropdownCell from "../RoleDropdownCell";
 import { DataTableRowActiveActions } from "./row-actions-active";
+import { format, isValid } from "date-fns";
 
 export const memberActiveColumn = (
   isClubOwner: boolean,
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<ClubMemberDTO>[] => {
-
-  return [
+  const baseColumns: ColumnDef<ClubMemberDTO>[] = [
     {
       accessorKey: "studentId",
       header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Student ID" />
-        </div>
+        <DataTableColumnHeader column={column} title="Student ID" />
       ),
-      cell: ({ row }) => <div >{row.getValue("studentId")}</div>,
+      cell: ({ row }) => <div>{row.getValue("studentId")}</div>,
     },
     {
       accessorKey: "fullname",
       header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Full Name" />
-        </div>
+        <DataTableColumnHeader column={column} title="Full Name" />
       ),
-      cell: ({ row }) => <div >{row.getValue("fullname")}</div>,
-      // cell: ({ row }) => <div >{row.getValue("gender") == 'Female' ? <Person color="error" style={{ color: "red" }} /> : <Person style={{ color: "#2D3748" }} />}</div>,
+      cell: ({ row }) => <div>{row.getValue("fullname")}</div>,
     },
     {
       accessorKey: "email",
       header: ({ column }) => (
-        <div >
-          <DataTableColumnHeader column={column} title="Email" />
-        </div>
+        <DataTableColumnHeader column={column} title="Email" />
       ),
-      cell: ({ row }) => <div >{row.getValue("email")}</div>,
+      cell: ({ row }) => <div>{row.getValue("email")}</div>,
     },
     {
       accessorKey: "clubRoleName",
       header: ({ column }) => (
-        <div className="text-center" >
+        <div className="text-center">
           <DataTableColumnHeader column={column} title="Position" />
         </div>
       ),
@@ -60,9 +53,12 @@ export const memberActiveColumn = (
         );
       },
     },
-    {
+  ];
+
+  const conditionalColumn: ColumnDef<ClubMemberDTO> = isClubOwner
+    ? {
       id: "actions",
-      header: () => <div >Action</div>,
+      header: () => <div>Action</div>,
       cell: ({ row }) => (
         <Dialog>
           <DialogTrigger>
@@ -75,6 +71,23 @@ export const memberActiveColumn = (
           </DialogContent>
         </Dialog>
       ),
-    },
-  ];
-}
+    }
+    : {
+      accessorKey: "joinedAt",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Join Date" />
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue("joinedAt");
+        const date = new Date(value as string | number | Date);
+        return (
+          <div>
+            {value && isValid(date) ? format(date, "dd/MM/yyyy") : "N/A"}
+          </div>
+        )
+      }
+    };
+
+  return [...baseColumns, conditionalColumn];
+};
+

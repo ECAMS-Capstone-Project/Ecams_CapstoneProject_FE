@@ -1,4 +1,4 @@
-import { Card, CardContent, Icon, Typography } from "@mui/material";
+import { Card, CardContent, Icon, IconButton, Typography } from "@mui/material";
 
 import { Event } from "@/models/Event";
 import { format } from "date-fns";
@@ -6,11 +6,14 @@ interface EventCardProps {
     event: Event;
 }
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const EventCard: React.FC<EventCardProps> = ({ event }: EventCardProps) => {
-    // const handleClick = () => {
-    //     console.log('Icon button clicked');
-    // };
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate(`/representative/event/request/${event.eventId}`);
+    };
     return (
         <Card
             sx={{
@@ -81,6 +84,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }: EventCardProps) => {
                     <Icon component={CalendarTodayIcon} sx={{ color: "#3b82f6", mr: 1 }} />
                     <span className="font-semibold mr-1">End:</span> {format(new Date(event.endDate), "dd/MM/yyyy")}
                 </Typography>
+                <div style={{ display: "flex", justifyContent: "end", width: "100%" }}>
+                    <IconButton onClick={handleClick} sx={{ mt: 1, pb: 0, color: "black" }}>
+                        <ArrowRight size={18} />
+                    </IconButton>
+                </div>
             </CardContent>
         </Card>
 
