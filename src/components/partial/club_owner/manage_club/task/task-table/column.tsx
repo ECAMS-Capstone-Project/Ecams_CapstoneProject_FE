@@ -12,7 +12,7 @@ export const taskColumn = (
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
 ): ColumnDef<Task>[] => {
   // const { user } = useAuth(); // Get the user from useAuth
-
+  console.log(isClubOwner);
   return [
     {
       accessorKey: "taskName",
@@ -66,10 +66,10 @@ export const taskColumn = (
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${isInProgress
-                ? "bg-[#D6E4FF] text-[#007BFF]"
-                : isCompleted
-                  ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                  : ""
+              ? "bg-[#D6E4FF] text-[#007BFF]"
+              : isCompleted
+                ? "bg-[#CBF2DA] text-[#2F4F4F]"
+                : ""
               }`}
             style={{ margin: "0 auto" }}
           >

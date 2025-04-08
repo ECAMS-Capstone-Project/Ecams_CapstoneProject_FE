@@ -20,9 +20,6 @@ const ClubListPage: React.FC = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [status, setStatus] = useState<"ACTIVE" | "PROCESSING">(
-    "ACTIVE"
-  ); // Trạng thái mặc định
 
   const [clubs, setClubs] = useState<ClubResponseDTO[]>([]);
 
