@@ -84,6 +84,7 @@ const PackageContract = () => {
     }
     return new File([u8arr], filename, { type: mime });
   };
+  console.log(paymentMethod);
 
   const onSubmit = async (data: { fullName: string; signature: string }) => {
     if (user && selectedPlan && paymentMethod) {
@@ -93,10 +94,8 @@ const PackageContract = () => {
         const formData = new FormData();
         formData.append("SignatureFile", signatureFile);
         formData.append("PackageId", selectedPlan.packageId);
-        formData.append(
-          "PaymentMethodId",
-          "59b3cf1a-4ed7-469a-a551-5196755a12ad"
-        );
+        const paymentMethodId = paymentMethod == "VnPay" ? "59b3cf1a-4ed7-469a-a551-5196755a12ad" : "59b3cf1a-4ed7-469a-a551-5196755a12bb"
+        formData.append("PaymentMethodId", paymentMethodId);
         formData.append("RepresentativeId", user.userId);
 
         const response = await paymentPackage(formData);
@@ -112,7 +111,7 @@ const PackageContract = () => {
             } else {
               toast.error("Invalid response data");
             }
-          } else if (paymentMethod == "1") {
+          } else if (paymentMethod == "PayOS") {
             // For PAYOS: redirect using the checkoutUrl
             if (
               typeof response.data !== "string" &&
@@ -178,8 +177,8 @@ const PackageContract = () => {
                   {selectedPlan?.duration === 1
                     ? `${selectedPlan?.duration} month`
                     : selectedPlan?.duration > 1
-                    ? `${selectedPlan?.duration} months`
-                    : "No package yet!"}
+                      ? `${selectedPlan?.duration} months`
+                      : "No package yet!"}
                 </b>
                 .
               </span>

@@ -69,11 +69,8 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
             const weekdayAbbrev = dayMap[sch.dayOfWeek] || "MO";
             const dtStartDate = getFirstWeekdayFromStart(sch.startDate, sch.dayOfWeek);
 
-            const startHour = String(sch.startTime).padStart(2, "0");
-            const endHour = String(sch.endTime).padStart(2, "0");
-
-            const startDateTime = new Date(`${dtStartDate}T${startHour}:00:00`);
-            const endDateTime = new Date(`${dtStartDate}T${endHour}:00:00`);
+            const startDateTime = new Date(`${dtStartDate}T${sch.startTime}`);
+            const endDateTime = new Date(`${dtStartDate}T${sch.endTime}`);
 
             const untilDate = new Date(sch.endDate);
             const validUntil = isNaN(untilDate.getTime()) || untilDate.getFullYear() <= 1900
