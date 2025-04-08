@@ -7,35 +7,49 @@ import type { Contract } from "@/models/Contract";
 import { ContractRepresentative } from "@/api/representative/ContractAPI";
 import useAuth from "@/hooks/useAuth";
 import ContractStaffTable from "@/components/partial/representative/representative-contract/ContractStaffTable";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
-const ContractRepresentativePage = () => {
+interface ContractRepresentativePageProps {
+  dateRange: DateRange | undefined;
+}
+
+const ContractRepresentativePage = ({
+  dateRange,
+}: ContractRepresentativePageProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [contractList, setContractList] = useState<Contract[]>([]);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
-  const { user } = useAuth()
+  const { user } = useAuth();
+
   useEffect(() => {
     const loadContract = async () => {
       if (user) {
         try {
-          //   // Tải cả component lười biếng và dữ liệu API song song
-          const contractData = await ContractRepresentative(pageSize, pageNo, user.userId);
+          const contractData = await ContractRepresentative(
+            pageSize,
+            pageNo,
+            user.userId,
+            undefined, // status
+            dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
+            dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined
+          );
           setContractList(contractData.data?.data || []);
           setTotalPages(contractData.data?.totalPages || 1);
         } catch (error) {
           console.error("Error loading data:", error);
         } finally {
-          setIsLoading(false); // Hoàn tất tải
+          setIsLoading(false);
         }
       }
     };
     loadContract();
-  }, [pageNo, pageSize, user]);
+  }, [pageNo, pageSize, user, dateRange]);
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
-      {/* Hiển thị spinner nếu API chưa tải xong */}
       {isLoading ? (
         <LoadingAnimation />
       ) : (

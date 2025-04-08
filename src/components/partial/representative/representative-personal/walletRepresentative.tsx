@@ -15,6 +15,8 @@ import ConfirmCancelDialog from "./confirmCancel";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
 import { format } from "date-fns";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
@@ -22,6 +24,7 @@ const WalletRepresentative = () => {
   // State cho package và contract
   const [curPackage, setCurPackage] = useState<Package | null>(null);
   const [contractCurrent, setContractCurrent] = useState<Contract | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   // State điều khiển loading, error, refetch
   const [loading, setLoading] = useState<boolean>(true);
@@ -216,10 +219,18 @@ const WalletRepresentative = () => {
 
       {/* Lịch sử đăng ký */}
       <Card className="p-4 mt-6 shadow-lg">
-        <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
-          📜 Registration History
-        </Typography>
-        <ContractRepresentativePage />
+        <div className="flex justify-between items-center mb-4">
+          <Typography variant="h6" fontWeight="bold" color="primary">
+            📜 Registration History
+          </Typography>
+          <div className="flex items-center gap-4">
+            <DateRangePicker
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
+          </div>
+        </div>
+        <ContractRepresentativePage dateRange={dateRange} />
       </Card>
 
       {/* Dialog Extend */}
