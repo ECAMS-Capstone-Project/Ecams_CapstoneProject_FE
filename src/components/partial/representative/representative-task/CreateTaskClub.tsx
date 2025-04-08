@@ -62,7 +62,7 @@ export default function CreateTaskClub() {
         if (response.data) {
           // Giả sử API trả về { data: ClubMemberDTO[] }
           const members: ClubMemberDTO[] = response.data.data;
-          const students: Student[] = members.map((m) => ({
+          const students: Student[] = members.filter(a => a.clubRoleName != "CLUB_OWNER").map((m) => ({
             studentId: m.studentId,
             fullName: m.fullname,
             roleName: m.clubRoleName,
@@ -132,7 +132,8 @@ export default function CreateTaskClub() {
       // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
       const assignedMembers =
         assignAll && allStudents.length > 0
-          ? allStudents.map((student) => ({ clubMemberId: student.clubMemberId }))
+          ? allStudents.filter((student) => student.roleName != "CLUB_OWNER")
+            .map((student) => ({ clubMemberId: student.clubMemberId }))
           : selectedMembers.map((id: string) => {
             const stu = allStudents.find((s) => s.studentId === id);
             return { clubMemberId: stu ? stu.clubMemberId : id };

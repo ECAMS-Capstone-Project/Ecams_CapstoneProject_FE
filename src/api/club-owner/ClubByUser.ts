@@ -301,14 +301,13 @@ export const ApproveClubCheckingAPI = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);
@@ -515,12 +514,13 @@ export const CreateClubJoinedRequest = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error("Something went wrong. Please try again.");
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
-      console.log(error.response.data.errors);
-      console.error("API Error:", error.response.data);
+      toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);

@@ -21,11 +21,13 @@ import { ScheduleRequest } from "@/api/representative/StudentAPI";
 interface CreateClubScheduleDialogProps {
     onClose: () => void;
     onSubmit: (data: ScheduleRequest) => void;
+    clubId: string
 }
 
 const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
     onClose,
     onSubmit,
+    clubId
 }) => {
     const [scheduleName, setScheduleName] = useState("");
     const [dayOfWeek, setDayOfWeek] = useState("Monday");
@@ -65,7 +67,7 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
         }
 
         const data: ScheduleRequest = {
-            clubId: "b2fa90e4-3479-4351-9862-9d2266fc442b",
+            clubId: clubId,
             scheduleName,
             dayOfWeek,
             startTime,
