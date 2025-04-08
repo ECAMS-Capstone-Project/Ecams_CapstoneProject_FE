@@ -106,7 +106,7 @@ const EventPaymentConfirmation: React.FC = () => {
 
               window.location.replace(response.data);
             } else {
-              toast.error("Payment failed. Please try again.");
+              console.error("Payment failed. Please try again.");
             }
           },
         }

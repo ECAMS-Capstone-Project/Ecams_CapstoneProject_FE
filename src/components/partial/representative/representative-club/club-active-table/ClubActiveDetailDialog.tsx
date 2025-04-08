@@ -4,16 +4,15 @@ import { Grid2, Typography } from "@mui/material";
 import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 import { formatDate } from "date-fns";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
-import ClubOwnerHistoryDialog from "../../representative-history-owner/ClubOwnerHistoryDialog";
-
 
 interface ClubDetailDialogProps {
   initialData: ClubResponseDTO | null;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }) => {
-
+const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({
+  initialData,
+}) => {
   return (
     <div className="p-5 mt-2 max-h-[900px] overflow-y-auto">
       <h2 className="text-xl font-semibold mb-4">Club Detail</h2>
@@ -35,7 +34,10 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
               Founding Date
             </Typography>
             <Typography variant="body2" className="text-gray-700">
-              {formatDate(initialData?.foundingDate || new Date(), "dd/MM/yyyy")}
+              {formatDate(
+                initialData?.foundingDate || new Date(),
+                "dd/MM/yyyy"
+              )}
             </Typography>
           </div>
         </Grid2>
@@ -55,7 +57,11 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
               Club Description
             </Typography>
             <Typography variant="body2" className="text-gray-700">
-              {<DescriptionWithToggle text={initialData?.description ?? "N/A"} />}
+              {
+                <DescriptionWithToggle
+                  text={initialData?.description ?? "N/A"}
+                />
+              }
             </Typography>
           </div>
         </Grid2>
@@ -91,7 +97,9 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
               Status
             </Typography>
             <Typography variant="body2">
-              <span className="bg-[#CBF2DA] text-[#2F4F4F] p-1 rounded-sm">{initialData?.status}</span>
+              <span className="bg-[#CBF2DA] text-[#2F4F4F] p-1 rounded-sm">
+                {initialData?.status}
+              </span>
             </Typography>
           </div>
         </Grid2>
@@ -105,7 +113,6 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({ initialData }
           />
         </Avatar>
       </div>
-      <ClubOwnerHistoryDialog clubId={initialData!.clubId} />
     </div>
   );
 };
