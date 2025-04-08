@@ -22,7 +22,7 @@ export interface Event {
   walletId?: string;
   eventType: string;
   trainingPoint: number;
-  eventField: FieldDTO[];
+  eventFields: FieldDTO[];
 }
 
 export interface CheckInInfo {

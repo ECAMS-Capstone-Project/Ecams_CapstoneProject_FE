@@ -10,8 +10,8 @@ import { FormItem } from "@/components/ui/form";
 import { FormLabel, FormControl } from "@mui/material";
 import { ChevronDownIcon, CheckIcon, CalendarIcon } from "lucide-react";
 import {
-  CommandEmpty,
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -20,61 +20,80 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 
-// Component chọn khu vực
-export const AreaPicker = ({ item, index, update, areas }: any) => {
+interface AreaPickerProps {
+  item: {
+    AreaId: string;
+    Date: Date;
+    StartTime: string;
+    EndTime: string;
+  };
+  index: number;
+  update: (index: number, value: any) => void;
+  areas: Array<{
+    areaId: string;
+    name: string;
+  }>;
+}
+
+export const AreaPicker: React.FC<AreaPickerProps> = ({
+  item,
+  index,
+  update,
+  areas,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          onClick={() => setOpen(true)}
-          className="h-9 px-3 w-full rounded-md flex items-center justify-between"
-        >
-          <span>
-            {item.areaId
-              ? areas.find((a: any) => a.areaId === item.areaId)?.name
-              : "Select Area..."}
-          </span>
-          <ChevronDownIcon className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0" align="start">
-        <Command>
-          <CommandInput placeholder="Search area..." />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup>
-              {areas.map((area: any) => {
-                const isSelected = item.areaId === area.areaId;
-                return (
+    <div>
+      <FormLabel>Area</FormLabel>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between"
+          >
+            {item.AreaId
+              ? areas.find((area) => area.areaId === item.AreaId)?.name
+              : "Select area..."}
+            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0">
+          <Command>
+            <CommandInput placeholder="Search area..." />
+            <CommandList>
+              <CommandEmpty>No area found.</CommandEmpty>
+              <CommandGroup>
+                {areas?.map((area) => (
                   <CommandItem
                     key={area.areaId}
-                    onSelect={() => {
-                      update(index, { ...item, areaId: area.areaId });
+                    value={area.areaId}
+                    onSelect={(value) => {
+                      update(index, {
+                        ...item,
+                        AreaId: value,
+                      });
                       setOpen(false);
                     }}
-                    className="flex items-center"
                   >
-                    <div
-                      className={`mr-2 flex h-4 w-4 items-center justify-center rounded border ${
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50"
+                    <CheckIcon
+                      className={`mr-2 h-4 w-4 ${
+                        item.AreaId === area.areaId
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
-                    >
-                      {isSelected && <CheckIcon className="h-4 w-4" />}
-                    </div>
-                    <span>{area.name}</span>
+                    />
+                    {area.name}
                   </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 
