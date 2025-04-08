@@ -47,10 +47,12 @@ import { FieldDTO, GetAllFields } from "@/api/club-owner/RequestClubAPI"
 
 type EventFormValues = z.infer<typeof EventSchema1> & {
   eventAreas: {
-    areaId: string
-    startDate: Date
-    endDate: Date
-  }[]
+    AreaId: string;
+    Date: Date;
+    StartTime: string;
+    EndTime: string;
+  }[];
+  fieldIds: string[];
 }
 const EventSchema1 = z
   .object({
@@ -190,11 +192,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         price: 0,
         maxParticipants: 0,
         eventAreas: [
-          {
-            areaId: "",
-            startDate: new Date(),
-            endDate: new Date(),
-          },
+          { AreaId: "", Date: new Date(), StartTime: "8", EndTime: "17" },
         ],
         eventType: "",
         trainingPoint: 0,
