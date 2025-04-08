@@ -59,9 +59,10 @@ import { useEventDetail } from "@/hooks/club/useEventDetail";
 
 type EventFormValues = z.infer<typeof InterClubEventSchema> & {
   eventAreas: {
-    areaId: string;
-    startDate: Date;
-    endDate: Date;
+    AreaId: string;
+    Date: Date;
+    StartTime: string;
+    EndTime: string;
   }[];
   listClubName: string[];
 };
@@ -118,7 +119,9 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
       registeredEndDate: new Date(),
       price: 0,
       maxParticipants: 0,
-      eventAreas: [{ areaId: "", startDate: new Date(), endDate: new Date() }],
+      eventAreas: [
+        { AreaId: "", Date: new Date(), StartTime: "8", EndTime: "17" },
+      ],
       eventType: "",
       trainingPoint: 0,
     },
@@ -160,9 +163,10 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
 
       // Format eventAreas before appending to formData
       const formattedEventAreas = values.eventAreas.map((area) => ({
-        AreaId: area.areaId,
-        StartDate: area.startDate,
-        EndDate: area.endDate,
+        AreaId: area.AreaId,
+        Date: format(area.Date, "yyyy-MM-dd"),
+        StartTime: area.StartTime,
+        EndTime: area.EndTime,
       }));
       formData.append("EventArea", JSON.stringify(formattedEventAreas));
 
@@ -558,32 +562,80 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                       />
                                     </div>
 
-                                    {/* Start Date */}
+                                    {/* Date */}
                                     <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                       <DatePicker
-                                        label="Start Date"
-                                        selectedDate={item.startDate}
+                                        label="Date"
+                                        selectedDate={item.Date}
                                         onDateSelect={(date: Date) =>
                                           update(index, {
                                             ...item,
-                                            startDate: date,
+                                            Date: date,
                                           })
                                         }
                                       />
                                     </div>
 
-                                    {/* End Date */}
+                                    {/* Start Time */}
                                     <div className="w-full sm:w-auto flex-1 min-w-[100px]">
-                                      <DatePicker
-                                        label="End Date"
-                                        selectedDate={item.endDate}
-                                        onDateSelect={(date: Date) =>
+                                      <FormLabel>Start Time</FormLabel>
+                                      <Select
+                                        value={item.StartTime}
+                                        onValueChange={(value) =>
                                           update(index, {
                                             ...item,
-                                            endDate: date,
+                                            StartTime: value,
                                           })
                                         }
-                                      />
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select start time" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Array.from(
+                                            { length: 24 },
+                                            (_, i) => (
+                                              <SelectItem
+                                                key={i}
+                                                value={i.toString()}
+                                              >
+                                                {`${i}:00`}
+                                              </SelectItem>
+                                            )
+                                          )}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+
+                                    {/* End Time */}
+                                    <div className="w-full sm:w-auto flex-1 min-w-[100px]">
+                                      <FormLabel>End Time</FormLabel>
+                                      <Select
+                                        value={item.EndTime}
+                                        onValueChange={(value) =>
+                                          update(index, {
+                                            ...item,
+                                            EndTime: value,
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select end time" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {Array.from(
+                                            { length: 24 },
+                                            (_, i) => (
+                                              <SelectItem
+                                                key={i}
+                                                value={i.toString()}
+                                              >
+                                                {`${i}:00`}
+                                              </SelectItem>
+                                            )
+                                          )}
+                                        </SelectContent>
+                                      </Select>
                                     </div>
                                   </div>
                                 </div>
@@ -595,9 +647,10 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                 variant="custom"
                                 onClick={() =>
                                   append({
-                                    areaId: "",
-                                    startDate: new Date(),
-                                    endDate: new Date(),
+                                    AreaId: "",
+                                    Date: new Date(),
+                                    StartTime: "8",
+                                    EndTime: "17",
                                   })
                                 }
                                 className="inline-flex w-fit items-center justify-center px-4 py-2 text-sm font-medium text-white  rounded-md shadow-sm  transition-colors"

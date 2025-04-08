@@ -201,25 +201,66 @@ export const InterClubEventSchema = z.object({
     .int()
     .positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
   status: z.string().optional(), // Kiểm tra status không rỗng
-
   eventAreas: z
     .array(
       z.object({
-        areaId: z.string(),
-        startDate: z.date(),
-        endDate: z.date(),
+        AreaId: z.string(),
+        Date: z.coerce.date(),
+        StartTime: z.string(),
+        EndTime: z.string(),
       })
     )
-    .superRefine((areas, ctx) => {
-      const ids = areas.map((a) => a.areaId);
-      if (new Set(ids).size !== ids.length) {
+    .superRefine((data, ctx) => {
+      // Kiểm tra thời gian kết thúc phải sau thời gian bắt đầu
+      if (
+        !data.every((item) => parseInt(item.EndTime) > parseInt(item.StartTime))
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Area is not allowed to be duplicated.",
-          path: ["_error"], // Đặt lỗi toàn cục của mảng vào _error
+          message: "End time must be after start time",
+          path: ["_error"],
         });
       }
-    }),
+
+      // Kiểm tra ngày phải trong tương lai
+      const now = new Date().getTime();
+      if (!data.every((item) => new Date(item.Date).getTime() > now)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Date must be in the future",
+          path: ["_error"],
+        });
+      }
+
+      // Kiểm tra ngày phải sau registered end date
+      const parentData = (ctx as any).parent;
+      if (parentData?.registeredEndDate) {
+        const registeredEndTimestamp = new Date(
+          parentData.registeredEndDate
+        ).getTime();
+        const hasInvalidDate = data.some(
+          (item) => new Date(item.Date).getTime() <= registeredEndTimestamp
+        );
+        if (hasInvalidDate) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Area date must be after registered end date",
+            path: ["_error"],
+          });
+        }
+      }
+    })
+    .refine(
+      (areas) => {
+        const ids = areas.map((a) => a.AreaId);
+        const uniqueSize = new Set(ids).size;
+        return uniqueSize === ids.length;
+      },
+      {
+        message: "Area is not allowed to be duplicated",
+        path: ["_error"],
+      }
+    ),
 
   // eventAreas là mảng tùy chọn, nếu có
   feedbacks: z.array(z.unknown()).optional(), // feedbacks là mảng tùy chọn, nếu có
