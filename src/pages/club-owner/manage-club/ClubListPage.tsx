@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { Box, Button, Grid2, Typography } from "@mui/material";
-import ClubCard from "@/components/partial/club_owner/manage_club/ClubCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ClubResponseDTO,
-  ClubStatusEnum,
   GetAllClubsAPI,
 } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import DialogLoading from "@/components/ui/dialog-loading";
 import PageNavigation from "@/components/global/PageNavigation";
 import { useNavigate } from "react-router-dom";
+import { ClubListSection } from "./ClubListSection";
+import InviteClubCard from "@/components/partial/club_owner/manage_club/InviteClubCard";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { InviteClubDialog } from "@/components/partial/club_owner/manage_club/InviteClubDialog";
 
 const ClubListPage: React.FC = () => {
   const { user } = useAuth();
@@ -28,7 +30,8 @@ const ClubListPage: React.FC = () => {
     INACTIVE: {},
     PENDING: {},
   });
-
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [clubDetail, setClubDetail] = useState<ClubResponseDTO>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -66,6 +69,11 @@ const ClubListPage: React.FC = () => {
   const handleCreateClub = () => {
     navigate("/club/create-club");
   };
+  const handleClick = (club: ClubResponseDTO) => {
+    setClubDetail(club);
+    setOpenDialog(true);
+  }
+
   return (
     <>
       <Tabs
@@ -104,17 +112,21 @@ const ClubListPage: React.FC = () => {
         </Box>
 
         {/* Danh sách Clubs */}
-        <TabsContent value={status}>
+        <TabsContent value="ACTIVE">
+          <ClubListSection status={status} clubs={clubs} loading={loading} error={error} />
+        </TabsContent>
+
+        <TabsContent value="INACTIVE">
+          <ClubListSection status={status} clubs={clubs} loading={loading} error={error} />
+        </TabsContent>
+
+        <TabsContent value="PENDING">
           <Box sx={{ padding: 4, paddingTop: 0 }}>
             <Typography variant="h6" fontWeight={600} mb={3}>
               <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>
                 Clubs
               </Box>{" "}
-              {status === "ACTIVE"
-                ? "you’re participating in"
-                : status === "INACTIVE"
-                  ? "you’ve been part of"
-                  : "awaiting approval"}
+              awaiting approval
             </Typography>
 
             {loading ? (
@@ -131,15 +143,9 @@ const ClubListPage: React.FC = () => {
                     size={{ xs: 12, sm: 6, md: 3 }}
                     display="flex"
                     justifyContent="center"
+                    onClick={() => handleClick(club)}
                   >
-                    <ClubCard
-                      image={club.logoUrl}
-                      title={club.clubName}
-                      field={club.clubFields}
-                      clubId={club.clubId}
-                      clubOwnerId={club.clubOwnerId}
-                      status={status as unknown as ClubStatusEnum}
-                    />
+                    <InviteClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} />
                   </Grid2>
                 ))}
               </Grid2>
@@ -187,6 +193,15 @@ const ClubListPage: React.FC = () => {
           </div>
         )}
       </Tabs>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="max-w-2xl">
+          <InviteClubDialog
+            initialData={clubDetail as any}
+            mode={"view"}
+            setOpenDialog={setOpenDialog}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
