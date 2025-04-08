@@ -72,6 +72,7 @@ export const StudentEventCheckIn = () => {
                 previousPath: "/club/event-check-in",
               },
             });
+            localStorage.removeItem("redirectAfterLogin");
           },
         }
       );
