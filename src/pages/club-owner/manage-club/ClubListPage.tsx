@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ClubResponseDTO,
   GetAllClubsAPI,
+  GetProcessClubsAPI,
 } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import DialogLoading from "@/components/ui/dialog-loading";
@@ -19,7 +20,7 @@ const ClubListPage: React.FC = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [status, setStatus] = useState<"ACTIVE" | "INACTIVE" | "PENDING">(
+  const [status, setStatus] = useState<"ACTIVE" | "INACTIVE" | "PENDING" | "PROCESSING">(
     "ACTIVE"
   ); // Trạng thái mặc định
 
@@ -40,17 +41,34 @@ const ClubListPage: React.FC = () => {
     const loadClubs = async () => {
       if (!user) return;
 
-      // Kiểm tra cache: Nếu đã có dữ liệu cho `status` + `page`, không gọi API nữa
-      if (clubsCache[status][page]) return;
+      // ✅ Đảm bảo cache tồn tại cho status đó
+      if (!clubsCache[status]) {
+        setClubsCache((prev) => ({
+          ...prev,
+          [status]: {},
+        }));
+      }
+
+      // ✅ Kiểm tra nếu đã có trong cache
+      if (clubsCache[status]?.[page]) return;
 
       setLoading(true);
       try {
-        const response = await GetAllClubsAPI(user.userId, status, page);
+        let response;
+
+        if (status === "PROCESSING") {
+          if (!user.universityId) {
+            throw new Error("University ID is undefined");
+          }
+          response = await GetProcessClubsAPI(user.universityId, page); // <- tạo hàm này
+        } else {
+          response = await GetAllClubsAPI(user.userId, status, page);
+        }
 
         setClubsCache((prev) => ({
           ...prev,
           [status]: {
-            ...prev[status], // Giữ dữ liệu của các page khác
+            ...(prev[status] || {}),
             [page]: response.data?.data || [],
           },
         }));
@@ -65,7 +83,8 @@ const ClubListPage: React.FC = () => {
     loadClubs();
   }, [user, status, page]);
 
-  const clubs = clubsCache[status][page] || []; // Lấy dữ liệu theo `status` + `page`
+
+  const clubs = (clubsCache?.[status]?.[page]) || []; // Lấy dữ liệu theo `status` + `page`
   const handleCreateClub = () => {
     navigate("/club/create-club");
   };
@@ -80,7 +99,7 @@ const ClubListPage: React.FC = () => {
         defaultValue="ACTIVE"
         value={status}
         onValueChange={(val) => {
-          setStatus(val as "ACTIVE" | "INACTIVE" | "PENDING");
+          setStatus(val as "ACTIVE" | "INACTIVE" | "PENDING" | "PROCESSING");
           setPage(1);
         }}
         className="w-full p-2"
@@ -92,6 +111,7 @@ const ClubListPage: React.FC = () => {
                 <TabsTrigger value="ACTIVE">Participated</TabsTrigger>
                 <TabsTrigger value="INACTIVE">History</TabsTrigger>
                 <TabsTrigger value="PENDING">Pending</TabsTrigger>
+                <TabsTrigger value="PROCESSING">Processing</TabsTrigger>
               </TabsList>
             </Grid2>
 
@@ -121,6 +141,59 @@ const ClubListPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="PENDING">
+          <Box sx={{ padding: 4, paddingTop: 0 }}>
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>
+                Clubs
+              </Box>{" "}
+              pending
+            </Typography>
+
+            {loading ? (
+              <DialogLoading />
+            ) : error ? (
+              <Typography color="error" align="center">
+                {error}
+              </Typography>
+            ) : clubs.length > 0 ? (
+              <Grid2 container spacing={3}>
+                {clubs.map((club, index) => (
+                  <Grid2
+                    key={index}
+                    size={{ xs: 12, sm: 6, md: 3 }}
+                    display="flex"
+                    justifyContent="center"
+                    onClick={() => handleClick(club)}
+                  >
+                    <InviteClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} />
+                  </Grid2>
+                ))}
+              </Grid2>
+            ) : <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              py={6}
+              px={2}
+            >
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
+                alt="No clubs"
+                style={{ width: 100, height: 100, opacity: 0.85, marginBottom: 16 }}
+              />
+              <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
+                No clubs found
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Try adjusting your filters or come back later to explore more student clubs 💡
+              </Typography>
+            </Box>
+            }
+          </Box>
+        </TabsContent>
+
+        <TabsContent value="PROCESSING">
           <Box sx={{ padding: 4, paddingTop: 0 }}>
             <Typography variant="h6" fontWeight={600} mb={3}>
               <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>

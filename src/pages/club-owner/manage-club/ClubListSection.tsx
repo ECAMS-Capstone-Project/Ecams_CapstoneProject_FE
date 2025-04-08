@@ -4,7 +4,7 @@ import DialogLoading from "@/components/ui/dialog-loading";
 import { Box, Grid2, Typography } from "@mui/material";
 
 interface ClubListSectionProps {
-    status: "ACTIVE" | "INACTIVE" | "PENDING";
+    status: "ACTIVE" | "INACTIVE" | "PENDING" | "PROCESSING";
     clubs: ClubResponseDTO[];
     loading: boolean;
     error: string | null;
