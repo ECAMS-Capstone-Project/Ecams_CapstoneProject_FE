@@ -1,3 +1,4 @@
+import LoadingAnimation from "@/components/ui/loading";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
@@ -18,11 +19,13 @@ export const EventDetail: React.FC = () => {
     isLoading: isEventDetailLoading,
     error,
   } = getEventDetailQuery(eventId, user?.userId || "");
+  console.log("event detail", eventDetail?.data);
+  console.log("event fields", eventDetail?.data?.eventFields);
 
   if (isEventDetailLoading) {
     return (
       <div className="flex justify-center items-center h-screen text-xl">
-        Loading...
+        <LoadingAnimation />
       </div>
     );
   }
@@ -102,6 +105,19 @@ export const EventDetail: React.FC = () => {
                   </p>
                 </div>
                 <div>
+                  <p className="text-gray-600">Event Fields:</p>
+                  <p className="font-semibold text-lg">
+                    {event?.eventFields?.map((field) => (
+                      <span
+                        key={field.fieldId}
+                        className="px-2 py-1 rounded-md bg-[#136CB5]/20 text-[#136CB5] mr-2"
+                      >
+                        {field.fieldName}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+                <div>
                   <p className="text-gray-600">Registered Range:</p>
                   <p className="font-semibold text-lg">
                     {event?.registeredStartDate && event?.registeredEndDate
@@ -145,13 +161,13 @@ export const EventDetail: React.FC = () => {
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Start Date
+                        Date
                       </th>
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        End Date
+                        Time
                       </th>
                     </tr>
                   </thead>
@@ -162,10 +178,10 @@ export const EventDetail: React.FC = () => {
                           {area.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {format(new Date(area.startDate), "P")}
+                          {format(new Date(area.date), "P")}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {format(new Date(area.endDate), "P")}
+                          {area.startTime}h - {area.endTime}h
                         </td>
                       </tr>
                     ))}
@@ -187,7 +203,7 @@ export const EventDetail: React.FC = () => {
             {/* Status Description */}
 
             <section className="flex items-center gap-2">
-              <div>
+              <div className="flex items-center gap-2">
                 <h3 className="text-2xl font-semibold text-gray-800 ">
                   Status:
                 </h3>

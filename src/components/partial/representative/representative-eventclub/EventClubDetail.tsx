@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Edit2Icon, EyeIcon, Mail, Phone } from "lucide-react";
+import { EyeIcon, Mail, Phone } from "lucide-react";
 import MemberTable from "./MemberList";
 import { format } from "date-fns";
 
@@ -38,21 +38,21 @@ const EventClubDetail = ({ club }: EventClubProps) => {
           </div>
         </CardHeader>
         <div className="flex justify-start px-8 mt-3">
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger>
               <Button className="bg-gradient-to-bl from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300">
                 <Edit2Icon className="mr-1 h-4 w-4" />
                 Change Club's Leader
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg">
-              {/* <CreateEventClubDialog
+            <DialogContent className="max-w-lg"> */}
+          {/* <CreateEventClubDialog
                 initialData={null}
                 onSuccess={() => {}}
                 setOpen={handleCloseDialog}
               /> */}
-            </DialogContent>
-          </Dialog>
+          {/* </DialogContent>
+          </Dialog> */}
         </div>
         <CardContent className="px-8 py-7  bg-white ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -84,9 +84,9 @@ const EventClubDetail = ({ club }: EventClubProps) => {
                 </div>
               </div>
               {club?.clubMembers &&
-                club.clubMembers.filter(
-                  (member) => member.clubRoleName === "CLUB_OWNER"
-                ).length > 0 ? (
+              club.clubMembers.filter(
+                (member) => member.clubRoleName === "CLUB_OWNER"
+              ).length > 0 ? (
                 <ul className="mt-4 space-y-4">
                   {club.clubMembers
                     .filter((member) => member.clubRoleName === "CLUB_OWNER")
