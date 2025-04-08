@@ -40,8 +40,8 @@ const WalletRepresentative = () => {
     setLoading(true);
     try {
       const [packData, contractData] = await Promise.all([
-        PackageCurrent(user.userId),
-        GetContractCurrentAPI(user.userId),
+        PackageCurrent(user.universityId || ""),
+        GetContractCurrentAPI(user.universityId || ""),
       ]);
 
       setCurPackage(packData.data || null);
