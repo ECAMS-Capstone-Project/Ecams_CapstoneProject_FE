@@ -122,6 +122,22 @@ export const RequestEventDetail: React.FC = () => {
                       </p>
                     </div>
                     <div>
+                      <p className="text-gray-600">Event Fields:</p>
+                      <p className="font-semibold text-lg">
+                        {event?.eventFields?.length &&
+                        event?.eventFields?.length > 0
+                          ? event?.eventFields?.map((field) => (
+                              <span
+                                key={field.fieldId}
+                                className="px-2 py-1 rounded-md bg-[#136CB5]/20 text-[#136CB5] mr-2"
+                              >
+                                {field.fieldName}
+                              </span>
+                            ))
+                          : "No event fields"}
+                      </p>
+                    </div>
+                    <div>
                       <p className="text-gray-600">Registered Range:</p>
                       <p className="font-semibold text-lg">
                         {event?.registeredStartDate && event?.registeredEndDate
@@ -168,13 +184,13 @@ export const RequestEventDetail: React.FC = () => {
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            Start Date
+                            Date
                           </th>
                           <th
                             scope="col"
                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            End Date
+                            Time
                           </th>
                         </tr>
                       </thead>
@@ -185,10 +201,10 @@ export const RequestEventDetail: React.FC = () => {
                               {area.name}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {format(new Date(area.startDate), "P")}
+                              {format(new Date(area.date), "P")}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                              {format(new Date(area.endDate), "P")}
+                              {area.startTime}h - {area.endTime}h
                             </td>
                           </tr>
                         ))}
@@ -269,19 +285,23 @@ export const RequestEventDetail: React.FC = () => {
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-4">
-              <DialogHeader className="p-1">
-                <DialogTitle>Select Wallet for Approval</DialogTitle>
+              <DialogHeader className="p-1 mb-3">
+                <DialogTitle>Event Approval</DialogTitle>
                 <DialogDescription>
-                  Choose a wallet for this event to create QR code.
+                  {(event?.price ?? 0) > 0
+                    ? "Choose a wallet for this event to create QR code."
+                    : "This is a free event. You can approve it directly."}
                 </DialogDescription>
               </DialogHeader>
-              <div className=" p-5">
-                <Label className="mb-3">Wallet name</Label>
-                <EventWalletPicker
-                  value={selectedWalletId}
-                  onChange={(walletId) => setSelectedWalletId(walletId)}
-                />
-              </div>
+              {(event?.price ?? 0) > 0 && (
+                <div className="p-5">
+                  <Label className="mb-3">Wallet name</Label>
+                  <EventWalletPicker
+                    value={selectedWalletId}
+                    onChange={(walletId) => setSelectedWalletId(walletId)}
+                  />
+                </div>
+              )}
               <div className="flex justify-end gap-2">
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsOpen(false)}>
@@ -293,7 +313,7 @@ export const RequestEventDetail: React.FC = () => {
                       handleApprove();
                       setIsOpen(false);
                     }}
-                    disabled={!selectedWalletId}
+                    disabled={(event?.price ?? 0) > 0 && !selectedWalletId}
                   >
                     Confirm Approval
                   </Button>

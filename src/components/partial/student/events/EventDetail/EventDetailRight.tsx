@@ -27,10 +27,10 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
                   Area Name
                 </th>
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  Start Date
+                  Date
                 </th>
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  End Date
+                  Time
                 </th>
               </tr>
             </thead>
@@ -41,10 +41,10 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
                     {area.name}
                   </td>
                   <td className="text-left px-3 py-4 whitespace-nowrap text-md text-gray-900">
-                    {format(new Date(area.startDate), "dd/MM/yyyy")}
+                    {format(new Date(area.date), "dd/MM/yyyy")}
                   </td>
                   <td className="text-left px-3 py-4 whitespace-nowrap text-md text-gray-900">
-                    {format(new Date(area.endDate), "dd/MM/yyyy")}
+                    {area.startTime}h - {area.endTime}h
                   </td>
                 </tr>
               ))}
