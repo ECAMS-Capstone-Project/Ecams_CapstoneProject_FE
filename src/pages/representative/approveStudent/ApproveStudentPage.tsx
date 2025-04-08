@@ -11,7 +11,10 @@ import useAuth from "@/hooks/useAuth";
 
 // Lazy load bảng (nếu muốn)
 const ApproveStudentTable = React.lazy(
-  () => import("@/components/partial/representative/representative-approve/ApproveStudentTable")
+  () =>
+    import(
+      "@/components/partial/representative/representative-approve/ApproveStudentTable"
+    )
 );
 
 const ApproveStudentPage = () => {
@@ -28,7 +31,9 @@ const ApproveStudentPage = () => {
   const [flag, setFlag] = useState<boolean>(false);
 
   // State cho tab
-  const [activeTab, setActiveTab] = useState<"request" | "registered">("request");
+  const [activeTab, setActiveTab] = useState<"request" | "registered">(
+    "request"
+  );
 
   useEffect(() => {
     const loadRequestStudent = async () => {
@@ -73,8 +78,8 @@ const ApproveStudentPage = () => {
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title="Manage student's request"
-              description="Approve request student in the system"
+              title="Manage student"
+              description={`View all information of students in ${user?.universityName}`}
             />
           </div>
           <Separator />
@@ -82,7 +87,9 @@ const ApproveStudentPage = () => {
           <Tabs
             // Điều khiển tab bằng state
             value={activeTab}
-            onValueChange={(val) => setActiveTab(val as "request" | "registered")}
+            onValueChange={(val) =>
+              setActiveTab(val as "request" | "registered")
+            }
             className="w-full mt-3 p-2"
           >
             <TabsList>
@@ -92,10 +99,7 @@ const ApproveStudentPage = () => {
 
             {/* Tab 1: Pending (CHECKING) */}
             <TabsContent value="request">
-              <ApproveStudentTable
-                data={stuList}
-                setFlag={setFlag}
-              />
+              <ApproveStudentTable data={stuList} setFlag={setFlag} />
               <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}
