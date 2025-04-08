@@ -6,57 +6,64 @@ import { CheckCircle2Icon, Eye, XCircleIcon } from "lucide-react";
 import StudentRequest from "@/models/StudentRequest";
 import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { format } from "date-fns";
 
-export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boolean>>): ColumnDef<StudentRequest>[] => [
+export const contractColumn = (
+  setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+): ColumnDef<StudentRequest>[] => [
   {
     accessorKey: "email",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Email" />
       </div>
     ),
-    cell: ({ row }) => <div >{row.getValue("email")} </div>,
+    cell: ({ row }) => <div>{row.getValue("email")} </div>,
   },
   {
     accessorKey: "fullname",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Full Name" />
       </div>
     ),
-    cell: ({ row }) => <div >{row.getValue("fullname")}</div>,
+    cell: ({ row }) => <div>{row.getValue("fullname")}</div>,
   },
   {
     accessorKey: "universityName",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="University" />
       </div>
     ),
-    cell: ({ row }) => <div >{row.getValue("universityName")}</div>,
+    cell: ({ row }) => <div>{row.getValue("universityName")}</div>,
   },
   {
     accessorKey: "startDate",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Join Date" />
       </div>
     ),
-    cell: ({ row }) => <div >{String(row.getValue("startDate")).split("T")[0]}</div>,
+    cell: ({ row }) => (
+      <div>{format(row.getValue("startDate"), "dd/MM/yyyy")}</div>
+    ),
   },
   {
     accessorKey: "endDate",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Left Date" />
       </div>
     ),
-    cell: ({ row }) => <div>{String(row.getValue("endDate") || "Not yet").split("T")[0]}</div>,
+    cell: ({ row }) => (
+      <div>{format(row.getValue("endDate") || new Date(), "dd/MM/yyyy")}</div>
+    ),
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div className="text-center" >
+      <div className="text-center">
         <DataTableFacetedFilter
           column={column}
           title="Status"
@@ -76,17 +83,23 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
       const isChecking = status == "CHECKING";
 
       return (
-        <div className={`flex items-center justify-center gap-2 p-2 rounded-md ${isActive
-          ? "bg-[#CBF2DA] text-[#2F4F4F]"
-          : isInactive
-            ? "bg-[#FFF5BA] text-[#5A3825]"
-            : isChecking
+        <div
+          className={`flex items-center justify-center gap-2 p-2 rounded-md ${
+            isActive
+              ? "bg-[#CBF2DA] text-[#2F4F4F]"
+              : isInactive
+              ? "bg-[#FFF5BA] text-[#5A3825]"
+              : isChecking
               ? "bg-[#D6E4FF] text-[#007BFF]"
               : isPending
-                ? "bg-[#FFEFD5] text-[#FFC107]"
-                : ""
-          } w-3/4`} style={{ margin: "0 auto" }}>
-          {isActive && <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />}
+              ? "bg-[#FFEFD5] text-[#FFC107]"
+              : ""
+          } w-3/4`}
+          style={{ margin: "0 auto" }}
+        >
+          {isActive && (
+            <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />
+          )}
           {isInactive && <XCircleIcon size={20} className="text-[#5A3825]" />}
           {isPending && <XCircleIcon size={20} className="text-[#FFC107 ]" />}
           {isChecking && <XCircleIcon size={20} className="text-[#007BFF]" />}
@@ -97,10 +110,8 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
   },
   {
     id: "actions",
-    header: () => (<div >
-      Action
-    </div>),
-    cell: ({ row }) =>
+    header: () => <div>Action</div>,
+    cell: ({ row }) => (
       <>
         <Dialog>
           <DialogTrigger>
@@ -113,7 +124,6 @@ export const contractColumn = (setFlag?: React.Dispatch<React.SetStateAction<boo
           </DialogContent>
         </Dialog>
       </>
+    ),
   },
 ];
-
-

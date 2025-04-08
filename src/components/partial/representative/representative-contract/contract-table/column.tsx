@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
-import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, EyeIcon, XCircleIcon } from "lucide-react";
 import { Contract } from "@/models/Contract";
@@ -16,72 +15,55 @@ export const contractColumn: ColumnDef<Contract>[] = [
         <DataTableColumnHeader column={column} title="Package" />
       </div>
     ),
-    cell: ({ row }) => (
-      <div >{row.getValue("packageName")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("packageName")}</div>,
   },
   {
     accessorKey: "universityName",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="University" />
       </div>
     ),
-    cell: ({ row }) => (
-      <div >{row.getValue("universityName")}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("universityName")}</div>,
   },
   {
     accessorKey: "signedDate",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Signed Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div >
-        {format(new Date(row.getValue("signedDate")), 'dd-MM-yyyy')}
-      </div>
+      <div>{format(new Date(row.getValue("signedDate")), "dd-MM-yyyy")}</div>
     ),
   },
   {
     accessorKey: "startDate",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Started Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div >
-        {format(new Date(row.getValue("startDate")), 'dd-MM-yyyy')}
-      </div>
+      <div>{format(new Date(row.getValue("startDate")), "dd-MM-yyyy")}</div>
     ),
   },
   {
     accessorKey: "endDate",
     header: ({ column }) => (
-      <div >
+      <div>
         <DataTableColumnHeader column={column} title="Ended Date" />
       </div>
     ),
     cell: ({ row }) => (
-      <div >
-        {format(new Date(row.getValue("endDate")), 'dd-MM-yyyy')}
-      </div>
+      <div>{format(new Date(row.getValue("endDate")), "dd-MM-yyyy")}</div>
     ),
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div >
-        <DataTableFacetedFilter
-          column={column}
-          title="Status"
-          options={[
-            { label: "Active", value: true },
-            { label: "Inactive", value: false },
-          ]}
-        />
+      <div>
+        <DataTableColumnHeader column={column} title="Status" />
       </div>
     ),
     cell: ({ row }) => {
@@ -91,12 +73,13 @@ export const contractColumn: ColumnDef<Contract>[] = [
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${isActive
-            ? "bg-[#CBF2DA] text-[#2F4F4F]"
-            : isInactive
+          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${
+            isActive
+              ? "bg-[#CBF2DA] text-[#2F4F4F]"
+              : isInactive
               ? "bg-[#FFF5BA] text-[#5A3825]"
               : ""
-            }`}
+          }`}
         >
           {isActive && (
             <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />
@@ -109,7 +92,7 @@ export const contractColumn: ColumnDef<Contract>[] = [
   },
   {
     id: "actions",
-    header: () => <div >Actions</div>,
+    header: () => <div>Actions</div>,
     cell: ({ row }) => {
       const navigate = useNavigate();
       return (

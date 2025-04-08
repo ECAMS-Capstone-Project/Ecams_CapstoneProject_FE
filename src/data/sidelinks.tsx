@@ -89,7 +89,7 @@ const SidebarLinks = () => {
         title: "Request Representative",
         href: "/admin/request-representative",
         icon: <UserCheck size={18} />,
-        id: 88
+        id: 88,
       }
     );
   }
@@ -115,7 +115,7 @@ const SidebarLinks = () => {
         id: 22,
       },
       {
-        title: "Request Student",
+        title: "Student",
         href: "/representative/request-student",
         icon: <UserCheck size={18} />,
         id: 23,
