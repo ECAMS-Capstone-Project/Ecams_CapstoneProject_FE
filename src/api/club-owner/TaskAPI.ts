@@ -13,6 +13,7 @@ export interface TaskDetailDTO {
     creator: MemberInTaskDTO;
     status: boolean;
     assignedMember: MemberInTaskDTO[];
+    submissions: Submission[]
 }
 
 export interface MemberInTaskDTO {
@@ -32,16 +33,19 @@ export interface MemberInTaskDTO {
 export type UserTaskStatusEnum = "ON_GOING" | "COMPLETED" | "REVIEWING" | "OVERDUE";
 
 export interface StudentSubmission {
-    taskId: string;
+    userId: string;
+    studentId: string | null;
     clubMemberId: string;
-    memberEmail: string;
-    memberName: string;
-    studentSubmission: string;
-    submissionDate: string; // ISO date string
-    submissionScore: number;
-    taskScore: number;
-    comment: string;
-    reviewer: string | null;
+    clubRoleName: string;
+    joinedAt: string;
+    requestedDate: string;
+    reason: string;
+    leaveReason: string | null;
+    clubActivityPoint: number;
+    leftDate: string | null;
+    avatar: string;
+    fullname: string;
+    email: string;
     status: UserTaskStatusEnum;
 }
 
@@ -101,6 +105,20 @@ export interface TaskDetailForStudent {
     creator: MemberInTaskDTO;
     reviewer: MemberInTaskDTO | null;
     submissionStatus: UserTaskStatusEnum;
+}
+
+export interface Submission {
+    taskId: string;
+    clubMemberId: string;
+    memberEmail: string;
+    memberName: string;
+    studentSubmission: string;
+    submissionDate: string;
+    submissionScore: number;
+    taskScore: number;
+    comment: string | null;
+    reviewer: string | null;
+    status: string;
 }
 
 export const GetTaskDetail = async (taskId: string): Promise<ResponseDTO<TaskDetailDTO>> => {

@@ -81,7 +81,7 @@ const PrivateRoute = ({ element, ...rest }: any) => {
 
   useEffect(() => {
     const handleLogout = async () => {
-      
+
       if (
         (user?.email !== "ecams@admin.com" && (user?.roles.includes("REPRESENTATIVE") || user?.roles.includes("ADMIN"))) &&
         userStatus !== "ACTIVE"
@@ -91,7 +91,7 @@ const PrivateRoute = ({ element, ...rest }: any) => {
       } else {
         return;
       }
-      
+
     };
     handleLogout();
   }, [userStatus, logout, user?.roles, user?.email]);
@@ -143,9 +143,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      // <RoleBasedGuard accessibleRoles={["ADMIN"]}>
-      <PrivateRoute />
-      // </RoleBasedGuard>
+      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+        <PrivateRoute />
+      </RoleBasedGuard>
     ),
     children: [
       {

@@ -31,7 +31,12 @@ export const OtherEvents = ({
                   key={index}
                   className="cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
                   gradientColor="#D1EAF0"
-                  onClick={() => navigate(`/events/${event.eventId}`)}
+                  onClick={() => navigate(`/student/events/${event.eventId}`, {
+                    state: {
+                      previousPage: previousPage,
+                      breadcrumb: breadcrumbLabel,
+                    },
+                  })}
                 >
                   <div className="w-full p-5 h-auto">
                     {/* Hình ảnh */}
@@ -46,20 +51,12 @@ export const OtherEvents = ({
                       <p className="inline-block italic text-sm font-semibold text-[#2786c6] uppercase">
                         {event.eventAreas && event.eventAreas.length > 0
                           ? event.eventAreas
-                              ?.map((area) => area.name)
-                              .join(" & ")
+                            ?.map((area) => area.name)
+                            .join(" & ")
                           : "Have yet to"}
                       </p>
                       {/* Tên sự kiện */}
                       <h3
-                        onClick={() =>
-                          navigate(`/student/events/${event.eventId}`, {
-                            state: {
-                              previousPage: previousPage,
-                              breadcrumb: breadcrumbLabel,
-                            },
-                          })
-                        }
                         className="cursor-pointer text-2xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
                       >
                         {event.eventName}

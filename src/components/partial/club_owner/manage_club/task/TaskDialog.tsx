@@ -95,11 +95,28 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
             <div>
               <p className="font-bold">Submission Status:</p>
               <p>
-                {taskDetail.submissionStatus === "COMPLETED" ? (
-                  <span className="text-[#3a8f5e] font-bold">Submitted</span>
-                ) : (
-                  <span className="text-[#007BFF] font-bold">Not submitted</span>
-                )}
+                <div>
+                  {taskDetail.submissionStatus === "COMPLETED" && (
+                    <span className="text-green-700 bg-green-100 px-3 py-1 rounded-full text-base font-bold">
+                      Completed
+                    </span>
+                  )}
+                  {taskDetail.submissionStatus === "REVIEWING" && (
+                    <span className="text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full text-base font-bold">
+                      Reviewing
+                    </span>
+                  )}
+                  {taskDetail.submissionStatus === "OVERDUE" && (
+                    <span className="text-red-700 bg-red-100 px-3 py-1 rounded-full text-base font-bold">
+                      Overdue
+                    </span>
+                  )}
+                  {taskDetail.submissionStatus === "ON_GOING" && (
+                    <span className="text-blue-700 bg-blue-100 px-3 py-1 rounded-full text-base font-bold">
+                      On going
+                    </span>
+                  )}
+                </div>
               </p>
             </div>
           </div>

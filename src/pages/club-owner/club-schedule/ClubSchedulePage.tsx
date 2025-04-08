@@ -127,6 +127,7 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
         };
         await CreateClubScheduleAPI(newSchedule)
         toast.success("Create schedule successfully!");
+        setOpenCreateDialog(false)
         setFlag((prev) => !prev);
     }
 
