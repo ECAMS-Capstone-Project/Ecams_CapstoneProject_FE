@@ -41,47 +41,44 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
     );
 
     const handleSubmit = () => {
-        const startTimeValue = parseTime(startTime);
-        const endTimeValue = parseTime(endTime);
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+        const [startHour, startMin] = startTime.split(":").map(Number);
+        const [endHour, endMin] = endTime.split(":").map(Number);
 
-        // Check: End time must be after start time
-        if (endTimeValue <= startTimeValue) {
-            toast.error("End time must be after start time");
+        const start = new Date(startDate);
+        start.setHours(startHour, startMin, 0, 0);
+
+        const end = new Date(endDate);
+        end.setHours(endHour, endMin, 0, 0);
+
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        if (scheduleName == "") {
+            toast.error("Schedule name is empty");
             return;
         }
 
-        // Check: Start date must be >= today
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Clear time
-        if (start < today) {
+        if (start < now) {
             toast.error("Start date must be today or later");
             return;
         }
 
-        // Check: End date must be >= start date
         if (end < start) {
             toast.error("End date must be after or equal to start date");
             return;
         }
 
         const data: ScheduleRequest = {
-            clubId: clubId,
+            clubId,
             scheduleName,
             dayOfWeek,
             startTime,
             endTime,
             startDate: start.toISOString(),
             endDate: end.toISOString(),
-        }
+        };
 
         onSubmit(data);
-    };
-
-    const parseTime = (timeStr: string) => {
-        const [h, m] = timeStr.split(":").map(Number);
-        return h * 60 + m;
     };
 
     return (
