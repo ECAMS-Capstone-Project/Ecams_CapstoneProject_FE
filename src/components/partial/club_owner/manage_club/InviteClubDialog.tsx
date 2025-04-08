@@ -77,64 +77,38 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
           <DialogLoading />
         </div>
       ) : (
-        <div className="w-full max-w-2xl mx-auto my-auto">
+        <div className="w-full max-w-2xl mx-auto my-auto bg-white rounded-xl shadow-md px-6 py-6">
           <DialogHeader>
-            <DialogTitle>View Club Details</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold text-gray-800">
+              Club Information
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="p-4 mt-2">
+          <div className="mt-4">
             <Form {...form}>
-              <form>
-                <Grid2 container spacing={3}>
+              <form className="flex flex-col max-h-[80vh] overflow-y-auto pr-1">
+                <Grid2 container spacing={4} p={1}>
                   {/* Club Avatar */}
-                  <Grid2 size={{ xs: 12, sm: 12 }}>
+                  <Grid2 size={{ xs: 12 }}>
                     <div className="flex justify-center">
                       <img
                         src={initialData?.logoUrl}
-                        alt={"test"}
-                        style={{ height: "250px", width: "300px" }}
-                        className="object-cover rounded-lg"
+                        alt="Club logo"
+                        className="w-64 h-48 object-cover rounded-2xl shadow-md"
                       />
                     </div>
                   </Grid2>
 
                   {/* Club Name */}
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                  <Grid2 size={{ xs: 12 }}>
                     <FormField
                       control={form.control}
                       name="clubName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Club Name</FormLabel>
+                          <FormLabel className="font-bold text-base">Club Name</FormLabel>
                           <FormControl>
-                            <Input type="text" {...field} readOnly={!!initialData} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </Grid2>
-
-                  {/* Description */}
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              readOnly
-                              style={{
-                                width: "100%",
-                                padding: "8px",
-                                borderRadius: "5px",
-                                border: "1px solid #ccc",
-                                fontSize: "16px",
-                              }}
-                            />
+                            <Input {...field} readOnly className="bg-gray-50" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -143,15 +117,19 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                   </Grid2>
 
                   {/* Purpose */}
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                  <Grid2 size={{ xs: 12 }}>
                     <FormField
                       control={form.control}
                       name="purpose"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Purpose</FormLabel>
+                          <FormLabel className="font-bold text-base">Purpose</FormLabel>
                           <FormControl>
-                            <Input type="text" {...field} readOnly={!!initialData} />
+                            <textarea
+                              {...field}
+                              readOnly
+                              className="w-full p-2 rounded-md border border-gray-300 text-sm focus:outline-none bg-gray-50"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -159,16 +137,20 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                     />
                   </Grid2>
 
-                  {/* Status */}
-                  <Grid2 size={{ xs: 12, sm: 6 }}>
+                  {/* Description */}
+                  <Grid2 size={{ xs: 12 }}>
                     <FormField
                       control={form.control}
-                      name="status"
+                      name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Status</FormLabel>
+                          <FormLabel className="font-bold text-base">Description</FormLabel>
                           <FormControl>
-                            <Input type="text" {...field} readOnly={!!initialData} />
+                            <textarea
+                              {...field}
+                              readOnly
+                              className="w-full p-2 rounded-md border border-gray-300 text-sm focus:outline-none bg-gray-50"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -178,25 +160,46 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
 
                 </Grid2>
 
-                {/* Club Fields */}
-                <div className="mt-4 mb-7">
-                  <Typography sx={{ fontWeight: "bold", mb: 2 }}>
-                    Type of club
-                  </Typography>
-                  <div className="flex flex-wrap gap-2">
-                    {initialData?.clubFields?.map((field) => (
-                      <span
-                        key={field.fieldId}
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm"
-                      >
-                        {field.fieldName}
-                      </span>
-                    ))}
+                <div className="mt-6 flex justify-between items-start gap-4 flex-wrap">
+                  {/* Club Fields */}
+                  <div>
+                    <Typography
+                      variant="subtitle1"
+                      className="font-semibold text-gray-800 mb-2"
+                    >
+                      Type of Club
+                    </Typography>
+                    <div className="flex flex-wrap gap-2">
+                      {initialData?.clubFields?.map((field) => (
+                        <span
+                          key={field.fieldId}
+                          className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium shadow-sm"
+                        >
+                          {field.fieldName}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div>
+                    <Typography
+                      variant="subtitle1"
+                      className="font-semibold text-gray-800 mb-2"
+                    >
+                      Status
+                    </Typography>
+                    <div
+                      className={`min-w-[180px] px-4 py-2 rounded-lg text-sm text-center font-semibold uppercase bg-yellow-100 text-yellow-700`}
+                    >
+                      {initialData?.status}
+                    </div>
                   </div>
                 </div>
 
+
                 {/* Action Buttons */}
-                <div className="flex w-full justify-end mt-4 space-x-3">
+                <div className="flex w-full justify-end mt-10 space-x-3">
                   {mode === "pending" && (
                     <div className="flex justify-center w-full space-x-1 gap-5">
                       {/* Approve Button */}
@@ -247,5 +250,6 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
         }}
       />
     </div>
+
   );
 };
