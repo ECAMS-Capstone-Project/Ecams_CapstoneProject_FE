@@ -21,6 +21,7 @@ export function MagicCard({
   gradientOpacity = 0.8,
   gradientFrom = "#9E7AFF",
   gradientTo = "#FE8BBB",
+  ...props
 }: MagicCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(-gradientSize);
@@ -77,6 +78,8 @@ export function MagicCard({
     <div
       ref={cardRef}
       className={cn("group relative flex size-full rounded-xl", className)}
+      onClick={props.onClick}
+      {...props}
     >
       <div className="absolute inset-px z-10 rounded-xl bg-white dark:bg-slate-950" />
       <div className="relative z-30 w-full">{children}</div>

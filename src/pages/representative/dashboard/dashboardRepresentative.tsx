@@ -1,4 +1,4 @@
-import { GetStudentInUniversityAPI } from "@/api/representative/StudentAPI";
+import { ClubResponseDTO, GetProcessClubsAPI } from "@/api/club-owner/ClubByUser";
 import Overview from "@/components/partial/representative/representative-dashboard/overView";
 import EventSlider from "@/components/partial/representative/representative-dashboard/Slider";
 import EventSlider2 from "@/components/partial/representative/representative-dashboard/Slider2";
@@ -6,7 +6,6 @@ import EventSlider3 from "@/components/partial/representative/representative-das
 import LoadingAnimation from "@/components/ui/loading";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import useAuth from "@/hooks/useAuth";
-import StudentRequest from "@/models/StudentRequest";
 import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -20,9 +19,9 @@ const DashboardRepresentative = () => {
         pageNo,
         pageSize
     );
-    const [stuList, setStuList] = useState<StudentRequest[]>([]);
+    const [clubList, setClubList] = useState<ClubResponseDTO[]>([]);
     useEffect(() => {
-        const loadRequestStudent = async () => {
+        const loadRequestClub = async () => {
             try {
                 if (!user?.universityId) {
                     throw new Error("University ID is undefined");
@@ -30,21 +29,12 @@ const DashboardRepresentative = () => {
 
                 setLoading(true);
 
-                // Xác định status theo tab
-                const status = "CHECKING";
+                const response = await GetProcessClubsAPI(user.universityId, pageNo);
 
-                // Gọi API với status tương ứng
-                const uniData = await GetStudentInUniversityAPI(
-                    user.universityId,
-                    pageSize,
-                    pageNo,
-                    status
-                );
-
-                if (uniData) {
-                    setStuList(uniData.data?.data || []);
+                if (response) {
+                    setClubList(response.data?.data || []);
                 } else {
-                    console.warn("Student returned no data");
+                    console.warn("Club returned no data");
                 }
             } catch (error) {
                 console.error("Error loading data:", error);
@@ -52,17 +42,30 @@ const DashboardRepresentative = () => {
                 setLoading(false);
             }
         };
-        loadRequestStudent();
-    }, [pageNo, pageSize, user]);
+        loadRequestClub();
+    }, [pageNo, user]);
     return (
         <div className="p-4 pt-1">
-            <Typography variant="h4" fontWeight="bold" mb={2}>Overview</Typography>
+            <Typography
+                variant="h4"
+                fontWeight={700}
+                mb={2}
+                sx={{
+                    background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    display: "inline-block"
+                }}
+            >
+                Overview
+            </Typography>
+
             <Overview />
-            <EventSlider2 events={events} title="Recent Event" />
+            <EventSlider2 events={events} title="Event Upcoming" />
             {(isLoading || loading) ? <div><LoadingAnimation /></div> : (
                 <EventSlider events={events.filter(a => a.status.toLowerCase() == "pending")} title="Pending Event" />
             )}
-            <EventSlider3 students={stuList} title="Student Request" />
+            <EventSlider3 clubs={clubList} title="Club Request" />
         </div>
 
     );

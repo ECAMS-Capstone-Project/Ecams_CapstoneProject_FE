@@ -1,12 +1,12 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import EventCard from "./eventCard";
 import Slider from "react-slick";
-import "./arrow.css"
-import { ArrowRight } from "lucide-react";
+import "./arrow.css";
 import { Event } from "@/models/Event";
-import { useNavigate } from "react-router-dom";
+import { HiOutlineCalendar } from "react-icons/hi";
+
 interface EventSliderProps {
     events: Event[];
     title: string;
@@ -41,21 +41,69 @@ const EventSlider: React.FC<EventSliderProps> = ({ events, title }) => {
             },
         ],
     };
-    const navigate = useNavigate();
     return (
-        <div className="mt-16 mb-7" >
+        <div className="mt-16 mb-7">
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                <Typography variant="h5" fontWeight="bold">{title}</Typography>
-                <Button onClick={() => navigate('/representative/event')} variant="contained" sx={{ gap: 1, textTransform: "none", background: 'linear-gradient(to right, #136CB5, #49BBBD)', fontWeight: "600" }}>
-                    View More <ArrowRight size={18} />
-                </Button>
+                <Typography
+                    variant="h5"
+                    fontWeight={700}
+                    mb={2}
+                    sx={{
+                        background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block"
+                    }}
+                >
+                    {title}
+                </Typography>
             </Box>
+
             <Slider {...settings}>
-                {events.map((event, index) => (
-                    <Box key={index} display={'flex'} justifyContent={'center'} sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}>
-                        <EventCard event={event} />
+                {events.length > 0 ? (
+                    events.map((event, index) => (
+                        <Box
+                            key={index}
+                            display="flex"
+                            justifyContent="center"
+                            sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}
+                        >
+                            <EventCard event={event} />
+                        </Box>
+                    ))
+                ) : (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{ padding: { xs: "0 5px", sm: "0 10px" }, marginBottom: "10px" }}
+                    >
+                        <Paper
+                            elevation={3}
+                            sx={{
+                                height: 250,
+                                width: 250,
+                                borderRadius: 4,
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                bgcolor: "#f5f5f5",
+                                color: "#666",
+                                textAlign: "center",
+                                px: 2,
+                            }}
+                        >
+                            <HiOutlineCalendar size={48} style={{ marginBottom: 8 }} />
+                            <Typography variant="subtitle1" fontWeight={600}>
+                                No events available
+                            </Typography>
+                            <Typography variant="body2">
+                                Once new events are created, they’ll show up here 👀
+                            </Typography>
+                        </Paper>
                     </Box>
-                ))}
+                )}
             </Slider>
         </div>
     );

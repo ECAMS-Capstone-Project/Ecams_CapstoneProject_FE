@@ -142,13 +142,23 @@ const Pricing: React.FC = () => {
   return (
     <GradientBackground>
       <Container maxWidth="lg">
-        <Box textAlign="center" pt={2} mb={8}>
-          <Typography variant="h3" component="h1" gutterBottom color="#231D4F">
-            Plans & Pricing
+        <Box textAlign="center" pt={4} mb={10}>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight={800}
+            gutterBottom
+            sx={{
+              background: "linear-gradient(to right, #136CB5, #49BBBD)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Choose Your Plan
           </Typography>
-          <Typography variant="h6" color="#848199">
-            Whether your automation needs are large or small, we're here to help
-            you scale.
+
+          <Typography variant="h6" color="#6C6A8A" maxWidth={600} mx="auto">
+            Flexible pricing to match your needs. Pick a plan that fits your goals and start unlocking premium features today.
           </Typography>
         </Box>
 

@@ -129,7 +129,17 @@ export default function FancyClubRankingPage() {
           {/* Club Ranking List */}
           <div className="space-y-4">
             {displayedClubs && displayedClubs.length === 0 && (
-              <div className="text-center text-gray-500">No club yet</div>
+              <div className="flex flex-col items-center justify-center text-center mt-20 mb-24 text-gray-500">
+                <img
+                  src="https://img.freepik.com/free-vector/student-club-abstract-concept-illustration-student-organization-university-interest-club-after-school-activity-program-college-association-professional-hobby-society_335657-3493.jpg"
+                  alt="No clubs"
+                  className="w-20 h-20 mb-4 opacity-80"
+                />
+                <h2 className="text-lg font-semibold mb-1">No clubs to show</h2>
+                <p className="text-sm max-w-md">
+                  There are currently no clubs ranked for this filter or time range. Try adjusting your filter or check back later 👀
+                </p>
+              </div>
             )}
             {displayedClubs.map((club, index) => {
               const rankIndex = index + 1;

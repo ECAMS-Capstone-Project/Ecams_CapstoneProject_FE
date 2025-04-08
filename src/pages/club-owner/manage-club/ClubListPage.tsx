@@ -106,21 +106,15 @@ const ClubListPage: React.FC = () => {
         {/* Danh sách Clubs */}
         <TabsContent value={status}>
           <Box sx={{ padding: 4, paddingTop: 0 }}>
-            <Typography
-              variant="h5"
-              sx={{ textAlign: "left", marginBottom: 4 }}
-            >
-              <Typography
-                component="span"
-                sx={{ color: "blue", fontWeight: "bold" }}
-              >
+            <Typography variant="h6" fontWeight={600} mb={3}>
+              <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>
                 Clubs
-              </Typography>{" "}
+              </Box>{" "}
               {status === "ACTIVE"
-                ? "Participated"
+                ? "you’re participating in"
                 : status === "INACTIVE"
-                ? "History"
-                : "Pending"}
+                  ? "you’ve been part of"
+                  : "awaiting approval"}
             </Typography>
 
             {loading ? (
@@ -149,11 +143,27 @@ const ClubListPage: React.FC = () => {
                   </Grid2>
                 ))}
               </Grid2>
-            ) : (
-              <Typography align="center" color="gray">
-                No clubs found.
+            ) : <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              py={6}
+              px={2}
+            >
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
+                alt="No clubs"
+                style={{ width: 100, height: 100, opacity: 0.85, marginBottom: 16 }}
+              />
+              <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
+                No clubs found
               </Typography>
-            )}
+              <Typography variant="body2" color="textSecondary">
+                Try adjusting your filters or come back later to explore more student clubs 💡
+              </Typography>
+            </Box>
+            }
           </Box>
         </TabsContent>
 
