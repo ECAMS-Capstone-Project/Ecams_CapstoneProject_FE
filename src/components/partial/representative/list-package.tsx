@@ -106,7 +106,7 @@ const Pricing: React.FC = () => {
     if (user) {
       const response = await CheckBuyPackageAPI({
         packageId: plan.packageId,
-        representativeId: user.userId,
+        representativeId: user.universityId || "",
       });
       console.log(response);
       navigate("/payment-confirm", {
@@ -158,7 +158,8 @@ const Pricing: React.FC = () => {
           </Typography>
 
           <Typography variant="h6" color="#6C6A8A" maxWidth={600} mx="auto">
-            Flexible pricing to match your needs. Pick a plan that fits your goals and start unlocking premium features today.
+            Flexible pricing to match your needs. Pick a plan that fits your
+            goals and start unlocking premium features today.
           </Typography>
         </Box>
 
