@@ -60,7 +60,7 @@ const ClubListPage: React.FC = () => {
           if (!user.universityId) {
             throw new Error("University ID is undefined");
           }
-          response = await GetProcessClubsAPI(user.universityId, page); // <- tạo hàm này
+          response = await GetProcessClubsAPI(user.universityId, page);
         } else {
           response = await GetAllClubsAPI(user.userId, status, page);
         }
