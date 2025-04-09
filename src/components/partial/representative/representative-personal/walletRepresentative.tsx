@@ -162,12 +162,12 @@ const WalletRepresentative = () => {
                 <Button
                   className="block mt-4 hover:scale-105"
                   sx={{
-                    background: "#5a5d5c",
+                    background: "black",
                     textTransform: "none",
                   }}
                   variant="contained"
                 >
-                  📄 View detail
+                  View detail
                 </Button>
               </DialogTrigger>
               <DialogContent className="w-full md:w-1/2 p-6 bg-gradient-to-r from-[#e0f7fa] to-[#80deea] rounded-lg shadow-lg">
@@ -197,10 +197,10 @@ const WalletRepresentative = () => {
             <Button
               className="block mt-4 hover:scale-105"
               variant="contained"
-              sx={{ background: "black", textTransform: "none" }}
+              sx={{ background: "#f24141", textTransform: "none" }}
               onClick={() => setOpenCancel(true)}
             >
-              📄 Cancel package
+              Cancel package
             </Button>
             <Button
               className="block mt-4 hover:scale-105"
@@ -211,7 +211,7 @@ const WalletRepresentative = () => {
               variant="contained"
               onClick={() => setOpen(true)}
             >
-              📄 Extend package
+              Extend package
             </Button>
           </div>
         )}
