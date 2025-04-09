@@ -43,7 +43,7 @@ export default function RoleBasedGuard({
   }, []);
 
   const handleNavigateDashboard = () => {
-    navigate("/staff");
+    navigate("/admin");
   };
 
   const handleNavigateLogin = async () => {
