@@ -143,9 +143,9 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <RoleBasedGuard accessibleRoles={["ADMIN"]}>
-        <PrivateRoute />
-      </RoleBasedGuard>
+      // <RoleBasedGuard accessibleRoles={["ADMIN"]}>
+      <PrivateRoute />
+      // </RoleBasedGuard>
     ),
     children: [
       {
