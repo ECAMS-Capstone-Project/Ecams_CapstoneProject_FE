@@ -134,7 +134,7 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
     return (
         <div className="p-6">
             <div className="flex justify-end mb-10 mt-3">
-                <Button variant={'custom'} onClick={() => setOpenCreateDialog(true)}>Create Club Schedule</Button>
+                <Button variant={'default'} onClick={() => setOpenCreateDialog(true)}>Create Club Schedule</Button>
             </div>
             {loading ? (
                 <p className="text-center">Loading schedules...</p>
