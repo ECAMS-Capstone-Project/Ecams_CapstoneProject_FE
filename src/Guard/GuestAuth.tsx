@@ -8,7 +8,8 @@ interface GuestAuthProps {
 
 export default function GuestAuth({ children }: GuestAuthProps) {
   const { isAuthenticated, user } = useAuth();
-
+  const redirectPath = localStorage.getItem("redirectAfterLogin");
+  console.log("redirectPath", redirectPath);
   if (isAuthenticated) {
     if (
       user &&
@@ -43,6 +44,13 @@ export default function GuestAuth({ children }: GuestAuthProps) {
       user.status.toUpperCase() != "CHECKING" &&
       user.status.toUpperCase() != "INACTIVE"
     ) {
+      if (redirectPath) {
+        return (
+          <>
+            <Navigate to={redirectPath} />
+          </>
+        );
+      }
       return <Navigate to="/student" />;
     }
     if (

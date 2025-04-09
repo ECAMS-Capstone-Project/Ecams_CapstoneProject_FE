@@ -14,8 +14,8 @@ const ContractStaffTable = ({ data }: ContractData) => {
         <DataTable
           columns={contractColumn}
           data={data}
-          searchKey={"universityName"}
-          placeholder="Search contract's university"
+          searchKey={"packageName"}
+          placeholder="Search contract's package"
         />
       </div>
     </>
