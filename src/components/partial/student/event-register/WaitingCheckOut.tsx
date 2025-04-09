@@ -37,7 +37,7 @@ function WaitingCheckout() {
         pos_orderCode?.toLowerCase().includes("pay")
     );
 
-    setIsEventRegistration(isEventReg);
+    setIsEventRegistration(isEventReg || user?.userType === "STUDENT");
 
     if (user && !hasProcessedPayment.current) {
       processPayment(
@@ -93,7 +93,7 @@ function WaitingCheckout() {
     } else if (pos_orderCode && pos_status && user) {
       // Xử lý thanh toán PAYOS
       isSuccess = !(pos_status === "CANCELLED");
-      if (isEventReg) {
+      if (user.userType === "STUDENT") {
         data = {
           studentId: user.userId,
           transactionInfo: isSuccess
@@ -118,7 +118,7 @@ function WaitingCheckout() {
 
     try {
       let response;
-      if (isEventReg) {
+      if (isEventReg || user.userType === "STUDENT") {
         // Khi thanh toán là sự kiện
         response = await handleEventResponse(data as StudentHandleResponse);
       } else {
@@ -132,7 +132,7 @@ function WaitingCheckout() {
         setPaymentStatus(status);
         if (isSuccess) {
           setTimeout(() => {
-            if (isEventReg) {
+            if (isEventReg || user.userType === "STUDENT") {
               window.location.href = "/student/student-events";
             } else {
               window.location.href = "/representative";
