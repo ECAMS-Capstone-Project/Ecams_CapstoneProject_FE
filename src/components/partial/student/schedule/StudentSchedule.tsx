@@ -143,60 +143,59 @@ export const StudentSchedule = () => {
 
   const clubEvents = Array.isArray(data.clubSchedules)
     ? data.clubSchedules
-        .filter((club) => club.status)
-        .map((club, index) => {
-          const weekdayAbbrev = dayMap[club.dayOfWeek] || "MO";
+      .filter((club) => club.status)
+      .map((club, index) => {
+        const weekdayAbbrev = dayMap[club.dayOfWeek] || "MO";
 
-          const baseDate = getFirstWeekdayFromStart(
-            club.startDate,
-            club.dayOfWeek
-          );
+        const baseDate = getFirstWeekdayFromStart(
+          club.startDate,
+          club.dayOfWeek
+        );
 
-          const formatTime = (time: string) => {
-            if (time.includes(":")) return time.padStart(5, "0");
-            return `${time.padStart(2, "0")}:00`;
-          };
+        const formatTime = (time: string) => {
+          if (time.includes(":")) return time.padStart(5, "0");
+          return `${time.padStart(2, "0")}:00`;
+        };
 
-          const startTimeFormatted = formatTime(club.startTime);
-          const endTimeFormatted = formatTime(club.endTime);
+        const startTimeFormatted = formatTime(club.startTime);
+        const endTimeFormatted = formatTime(club.endTime);
 
-          const startDateTime = new Date(
-            `${baseDate}T${startTimeFormatted}:00`
-          );
-          const endDateTime = new Date(`${baseDate}T${endTimeFormatted}:00`);
+        const startDateTime = new Date(
+          `${baseDate}T${startTimeFormatted}:00`
+        );
+        const endDateTime = new Date(`${baseDate}T${endTimeFormatted}:00`);
 
-          if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
-            console.warn("⛔ Invalid datetime for:", club);
-            return null;
-          }
+        if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+          console.warn("⛔ Invalid datetime for:", club);
+          return null;
+        }
 
-          const untilDate = new Date(club.endDate);
-          const validUntil = isNaN(untilDate.getTime())
-            ? new Date().toISOString()
-            : untilDate.toISOString();
+        const untilDate = new Date(club.endDate);
+        const validUntil = isNaN(untilDate.getTime())
+          ? new Date().toISOString()
+          : untilDate.toISOString();
 
-          return {
-            id: `club-${index}`,
-            title: `${club.clubName}: ${club.scheduleName}`,
-            rrule: {
-              freq: "weekly",
-              byweekday: [weekdayAbbrev],
-              dtstart: startDateTime.toISOString(),
-              until: validUntil,
-            },
-            start: startDateTime,
-            end: endDateTime,
-            backgroundColor: "#28a745",
-            extendedProps: {
-              type: "club",
-              startTime: startTimeFormatted,
-              endTime: endTimeFormatted,
-              schedule: club,
-              link: `/student/club/${club.clubName}`,
-            },
-          };
-        })
-        .filter(Boolean)
+        return {
+          id: `club-${index}`,
+          title: `${club.clubName}: ${club.scheduleName}`,
+          rrule: {
+            freq: "weekly",
+            byweekday: [weekdayAbbrev],
+            dtstart: startDateTime.toISOString(),
+            until: validUntil,
+          },
+          start: startDateTime,
+          end: endDateTime,
+          backgroundColor: "#28a745",
+          extendedProps: {
+            type: "club",
+            startTime: startTimeFormatted,
+            endTime: endTimeFormatted,
+            schedule: club,
+          },
+        };
+      })
+      .filter(Boolean)
     : [];
 
   // Combine events.

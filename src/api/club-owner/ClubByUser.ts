@@ -5,6 +5,7 @@ import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
 import { ClubJoinedRequest, ClubResponse } from "@/models/Club";
 import { Task } from "@/models/Task";
+import axiosMultipartForm from "../axiosMultipartForm";
 
 export enum ClubStatusEnum {
   Inactive = 0,
@@ -738,8 +739,8 @@ export const ChangeClubOwnerAPI = async (
 
 export const EditClubAPI = async (data: FormData): Promise<ResponseDTO<string>> => {
   try {
-    const response = await put<ResponseDTO<string>>(`/Clubs/update-club`, data);
-    return response;
+    const response = await axiosMultipartForm.put(`/Clubs/update-club`, data);
+    return response.data as ResponseDTO<string>;
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);
