@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +29,7 @@ const NotificationDropdown = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { readNotiMutation } = useNotification();
   const { logout } = useAuth();
-  const shownNotiIdsRef = useRef<Set<string>>(new Set());
+  // const shownNotiIdsRef = useRef<Set<string>>(new Set());
 
   // Tự động kết nối SignalR ngay khi load component
   useEffect(() => {
@@ -106,29 +106,29 @@ const NotificationDropdown = () => {
             setUnreadCount((prev) => prev + 1);
           }
 
-          if (!shownNotiIdsRef.current.has(notificationId)) {
-            shownNotiIdsRef.current.add(notificationId);
+          // if (!shownNotiIdsRef.current.has(notificationId)) {
+          //   shownNotiIdsRef.current.add(notificationId);
 
-            toast.custom(
-              () => (
-                <div className="bg-white border-l-4 border-blue-500 shadow-md rounded-md p-4 w-96 text-sm text-gray-800">
-                  <div className="flex items-start space-x-2">
-                    <div className="text-xl">
-                      {notificationType === "SYSTEM" ? "🚨" : "ℹ️"}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold">Thông báo</p>
-                      <p className="mt-1">{message}</p>
-                    </div>
-                  </div>
-                </div>
-              ),
-              {
-                position: "top-right",
-                duration: 4000,
-              }
-            );
-          }
+          //   toast.custom(
+          //     () => (
+          //       <div className="bg-white border-l-4 border-blue-500 shadow-md rounded-md p-4 w-96 text-sm text-gray-800">
+          //         <div className="flex items-start space-x-2">
+          //           <div className="text-xl">
+          //             {notificationType === "SYSTEM" ? "🚨" : "ℹ️"}
+          //           </div>
+          //           <div className="flex-1">
+          //             <p className="font-semibold">Thông báo</p>
+          //             <p className="mt-1">{message}</p>
+          //           </div>
+          //         </div>
+          //       </div>
+          //     ),
+          //     {
+          //       position: "top-right",
+          //       duration: 4000,
+          //     }
+          //   );
+          // }
 
           if (
             message.includes("New club owner has been add! You are kicked!") ||

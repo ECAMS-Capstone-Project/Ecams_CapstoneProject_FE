@@ -61,7 +61,7 @@ const DashboardRepresentative = () => {
             </Typography>
 
             <Overview />
-            <EventSlider2 events={events} title="Event Upcoming" />
+            <EventSlider2 events={events} title="Upcoming Event" />
             {(isLoading || loading) ? <div><LoadingAnimation /></div> : (
                 <EventSlider events={events.filter(a => a.status.toLowerCase() == "pending")} title="Pending Event" />
             )}
