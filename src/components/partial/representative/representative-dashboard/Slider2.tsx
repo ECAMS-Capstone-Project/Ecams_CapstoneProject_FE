@@ -77,7 +77,7 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}
+                        sx={{ padding: { xs: "0 5px", sm: "0 10px" }, mb: 2 }}
                     >
                         <Paper
                             elevation={3}
