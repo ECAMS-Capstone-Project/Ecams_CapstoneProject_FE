@@ -71,6 +71,12 @@ interface SubtaskData {
   deadline: Date;
   status: string;
 }
+// Thêm 7 giờ vào mọi timestamp
+function fixTime(date: Date) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() + 7);
+  return adjustedDate;
+}
 
 export const TaskEditDialog = ({
   task,
@@ -90,21 +96,21 @@ export const TaskEditDialog = ({
     null
   );
   const [openClubSelect, setOpenClubSelect] = useState(false);
-
+  // const timeZone = "Asia/Ho_Chi_Minh";
   const form = useForm<z.infer<typeof InterTaskSchema>>({
     resolver: zodResolver(InterTaskSchema),
     defaultValues: {
       taskName: task.taskName,
       description: task.description,
-      startTime: new Date(task.startTime),
-      deadline: new Date(task.deadline),
+      startTime: fixTime(new Date(task.startTime)),
+      deadline: fixTime(new Date(task.deadline)),
       status: task.status,
       clubId: task.clubId,
       listEventTaskDetails: task.eventTaskDetails.map((detail) => ({
         detailName: detail.detailName,
         description: detail.description,
-        startTime: new Date(detail.startTime),
-        deadline: new Date(detail.deadline),
+        startTime: fixTime(new Date(detail.startTime)),
+        deadline: fixTime(new Date(detail.deadline)),
         status: detail.status,
       })),
     },
@@ -120,19 +126,16 @@ export const TaskEditDialog = ({
         eventId: selectedEvent.eventId,
         taskName: values.taskName,
         description: values.description,
-        startTime: values.startTime || new Date(task.startTime),
-        deadline: values.deadline || new Date(task.deadline),
+        startTime: fixTime(new Date(task.startTime)),
+        deadline: fixTime(new Date(task.deadline)),
         status: values.status || task.status,
         eventTaskDetails: values.listEventTaskDetails.map((detail, index) => ({
           eventTaskDetailId: task.eventTaskDetails[index].eventTaskDetailId,
           eventTaskId: task.eventTaskId,
           detailName: detail.detailName,
           description: detail.description,
-          startTime:
-            detail.startTime ||
-            new Date(task.eventTaskDetails[index].startTime),
-          deadline:
-            detail.deadline || new Date(task.eventTaskDetails[index].deadline),
+          startTime: fixTime(new Date(task.eventTaskDetails[index].startTime)),
+          deadline: fixTime(new Date(task.eventTaskDetails[index].deadline)),
           status: detail.status || task.eventTaskDetails[index].status,
         })),
       };
@@ -149,8 +152,8 @@ export const TaskEditDialog = ({
     const subtaskToEdit = {
       detailName: currentSubtask.detailName,
       description: currentSubtask.description,
-      startTime: currentSubtask.startTime || new Date(),
-      deadline: currentSubtask.deadline || new Date(),
+      startTime: fixTime(currentSubtask.startTime || new Date()),
+      deadline: fixTime(currentSubtask.deadline || new Date()),
       status: currentSubtask.status || "ON_GOING",
     };
 
