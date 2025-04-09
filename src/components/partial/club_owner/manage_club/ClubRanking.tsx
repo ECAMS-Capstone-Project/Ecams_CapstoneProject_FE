@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
-import { Crown, Star } from "lucide-react";
+import { Crown, HelpCircle, Star } from "lucide-react";
 import {
   ClubRankingDTO,
   GetClubRankingAPI,
@@ -17,6 +17,7 @@ import ClubRankingDetail from "./ClubRankingDetail";
 import useAuth from "@/hooks/useAuth";
 import { Dialog } from "@/components/ui/dialog";
 import { WarningClubDialog } from "./WarningClubDialog";
+import { PointClubDialog } from "./PointClubDialog";
 
 const rankFilters: string[] = ["All", "EXCELENT", "GOOD", "AVERAGE", "NEED_IMPROVEMENT"];
 
@@ -30,6 +31,7 @@ export default function FancyClubRankingPage() {
   const [selectedRankFilter, setSelectedRankFilter] = useState<string>("All");
   const [selectedClubDetail, setSelectedClubDetail] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogQuestion, setDialogQuestion] = useState(false);
   const [clubId, setClubId] = useState<string>("");
 
   useEffect(() => {
@@ -113,6 +115,15 @@ export default function FancyClubRankingPage() {
               {filter === "All" ? "All" : filter}
             </button>
           ))}
+          <div>
+            <Button
+              onClick={() => setDialogQuestion(true)}
+              className="rounded-full p-2 h-9 w-9 bg-red-100 text-red-600 hover:bg-red-200 shadow-sm border border-red-300 transition-all duration-200"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Button>
+
+          </div>
         </div>
 
         {/* Tabs now represent Month intervals */}
@@ -214,6 +225,10 @@ export default function FancyClubRankingPage() {
           open={isDialogOpen}
         />
       </Dialog>
+      <PointClubDialog onClose={() => {
+        setDialogQuestion(false);
+      }}
+        open={dialogQuestion} />
     </div>
   );
 }
