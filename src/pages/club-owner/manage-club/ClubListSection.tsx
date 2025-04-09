@@ -21,7 +21,7 @@ export const ClubListSection: React.FC<ClubListSectionProps> = ({
     <Box sx={{ padding: 4, paddingTop: 0 }}>
         <Typography variant="h6" fontWeight={600} mb={3}>
             <Box component="span" sx={{ color: "#136CB5", fontWeight: 700 }}>
-                Clubs {status}
+                Clubs
             </Box>{" "}
             {customTitle ??
                 (status === "PARTICIPATED"
