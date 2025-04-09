@@ -148,7 +148,7 @@ const PaymentConfirmation: React.FC = () => {
                                 <div>
                                     <Box
                                         component="img"
-                                        src="/public/image/memberShip.png"
+                                        src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRmUJk9v7BYIpYj3A2TFiuUdYbzAX0V31VdKiv674bYxR4vuwUI"
                                         alt="Event"
                                         sx={{
                                             width: 120,

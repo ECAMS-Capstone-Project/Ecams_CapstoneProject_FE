@@ -148,9 +148,9 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
                 <label className="font-bold">Status:</label>
                 <div className="p-2 bg-gray-100 border border-gray-300 rounded">
                   {taskDetail.status ? (
-                    <span className="text-[#3a8f5e] font-bold">Completed</span>
+                    <span className="text-[#3a8f5e] font-bold">Active</span>
                   ) : (
-                    <span className="text-[#007BFF] font-bold">In progress</span>
+                    <span className="text-[#007BFF] font-bold">In Active</span>
                   )}
                 </div>
               </div>

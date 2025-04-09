@@ -95,7 +95,16 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                         <p className="text-sm font-medium text-gray-600 mb-1">Submission Content:</p>
                         <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
                             <ScrollArea className="max-h-40">
-                                <p className="whitespace-pre-wrap text-justify">{submission.studentSubmission == "" ? "Student hasn't submitted" : submission.studentSubmission}</p>
+                                <p className="whitespace-pre-wrap text-justify">
+                                    {
+                                        submission.studentSubmission
+                                            ? submission.studentSubmission
+                                                .replace(/<\/p>\s*/gi, "\n")
+                                                .replace(/<[^>]+>/g, "")
+                                                .trim()
+                                            : "Student hasn't submitted"
+                                    }
+                                </p>
                             </ScrollArea>
                         </div>
                     </div>
@@ -112,7 +121,14 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                     disabled={isSubmitted}
                                     placeholder={`Enter score (max ${taskScore} points)`}
                                     value={tempScore}
-                                    onChange={(e) => setTempScore(Number(e.target.value))}
+                                    onChange={(e) => {
+                                        const value = Number(e.target.value);
+                                        if (value >= 0 && value <= taskScore) {
+                                            setTempScore(value);
+                                        } else {
+                                            toast.success("Invalid Input")
+                                        }
+                                    }}
                                     className="w-full text-sm"
                                 />
                             </div>

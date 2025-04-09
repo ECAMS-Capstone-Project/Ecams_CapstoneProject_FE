@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, EyeIcon, XCircleIcon } from "lucide-react";
 import { Contract } from "@/models/Contract";
 import { useNavigate } from "react-router-dom";
+import { format, isValid } from "date-fns";
 
 // Định nghĩa columns cho DataTable
 export const contractColumn: ColumnDef<Contract>[] = [
@@ -55,13 +56,12 @@ export const contractColumn: ColumnDef<Contract>[] = [
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md ${
-            isActive
-              ? "bg-[#CBF2DA] text-[#2F4F4F]"
-              : isInactive
+          className={`flex items-center justify-center gap-2 p-2 rounded-md ${isActive
+            ? "bg-[#CBF2DA] text-[#2F4F4F]"
+            : isInactive
               ? "bg-[#FFF5BA] text-[#5A3825]"
               : ""
-          } w-full`} // Đặt width cố định
+            } w-full`} // Đặt width cố định
         >
           {isActive && (
             <CheckCircle2Icon size={20} className="h-5 w-5 text-[#2F4F4F]" />
@@ -84,21 +84,30 @@ export const contractColumn: ColumnDef<Contract>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Signed Date" />
     ),
-    cell: ({ row }) => String(row.getValue("signedDate")).split("T")[0], // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("signedDate"));
+      return isValid(date) ? format(date, "dd/MM/yyyy") : "Date not valid";
+    },
   },
   {
     accessorKey: "startDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Started Date" />
     ),
-    cell: ({ row }) => String(row.getValue("startDate")).split("T")[0], // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("startDate"));
+      return isValid(date) ? format(date, "dd/MM/yyyy") : "Date not valid";
+    },
   },
   {
     accessorKey: "endDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Ended Date" />
     ),
-    cell: ({ row }) => String(row.getValue("endDate")).split("T")[0], // Hiển thị ngày kết thúc hỗ trợ ở định dạng ngày tháng
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("endDate"));
+      return isValid(date) ? format(date, "dd/MM/yyyy") : "Date not valid";
+    },
   },
 
   {

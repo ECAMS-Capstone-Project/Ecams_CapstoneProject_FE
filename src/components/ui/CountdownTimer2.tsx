@@ -21,12 +21,9 @@ const CountdownTimer2: React.FC<RequestEmail> = ({ email, setIsLoading }) => {
                 const response = await ForgotPasswordAPI({ email: decodedEmail });
                 if (response.statusCode === 201) {
                     toast.success("OTP sent successfully!");
-                } else {
-                    toast.error("Failed to send OTP");
                 }
             }
         } catch (error) {
-            toast.error("An error occurred while sending OTP");
             console.log(error);
         } finally {
             setIsLoading(false);

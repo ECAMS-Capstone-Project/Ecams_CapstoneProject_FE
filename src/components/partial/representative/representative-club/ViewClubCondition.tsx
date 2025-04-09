@@ -155,6 +155,13 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                                     </p>
                                 </Card>
                             ))}
+                        {clubCondition &&
+                            clubCondition.length <= 0 && (
+                                <div className="text-base text-gray-500 italic flex items-center space-x-2">
+                                    <span>📭</span>
+                                    <span>No club conditions available.</span>
+                                </div>
+                            )}
                     </div>
                 </CardContent>
             </Card>

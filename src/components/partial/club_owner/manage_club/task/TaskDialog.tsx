@@ -144,7 +144,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
           {/* Creator & Reviewer Info */}
           <div>
             <div>
-              <p className="font-bold">Review By:</p>
+              <p className="font-bold">Created By:</p>
               <p>{taskDetail.creator.fullname}</p>
             </div>
             {taskDetail.reviewer && (

@@ -161,6 +161,9 @@ const ClubRequestForm: React.FC = () => {
 
             if (data.logo) {
                 formData.append("Logo", data.logo);
+            } else {
+                toast.error("Please choose image")
+                return;
             }
 
             data.fieldIds.forEach((id) => formData.append("FieldIds", id));
@@ -313,7 +316,7 @@ const ClubRequestForm: React.FC = () => {
                             <Grid2 size={{ xs: 12 }}>
                                 <TextField
                                     fullWidth
-                                    label="Add Member (Email)"
+                                    label="Add Member (Email-Enter)"
                                     value={emailInput}
                                     onChange={(e) => setEmailInput(e.target.value)}
                                     onKeyDown={(e) => {
