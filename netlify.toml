@@ -3,8 +3,8 @@
   publish = "dist"
 
 [build.environment]
-  TIMEZONE = "Asia/Bangkok"
-
+  TZ = "Asia/Ho_Chi_Minh"
+  
 [[redirects]]
   from = "/*"
   to = "/index.html"
