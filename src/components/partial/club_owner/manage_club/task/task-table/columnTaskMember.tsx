@@ -2,7 +2,7 @@
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2Icon, Eye, Clock } from "lucide-react";
+import { CheckCircle2Icon, Eye, Clock, Search } from "lucide-react";
 import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Task } from "@/models/Task";
@@ -58,24 +58,35 @@ export const taskMemberColumn = (
         </div>
       ),
       cell: ({ row }) => {
+        const status = row.getValue("submissionStatus");
+
+        let bgColor = "";
+        let textColor = "";
+        let Icon = null;
+
+        if (status === "ON_GOING") {
+          bgColor = "bg-[#D6E4FF]";
+          textColor = "text-[#007BFF]";
+          Icon = <Clock size={20} className={textColor} />;
+        } else if (status === "COMPLETED") {
+          bgColor = "bg-[#CBF2DA]";
+          textColor = "text-[#2F4F4F]";
+          Icon = <CheckCircle2Icon size={20} className={textColor} />;
+        } else if (status === "REVIEWING") {
+          bgColor = "bg-yellow-100";
+          textColor = "text-yellow-700";
+          Icon = <Search size={20} className={textColor} />;
+        }
         return (
-          <>
-            <div
-              className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${row.getValue("submissionStatus") == "ON_GOING"
-                ? "bg-[#D6E4FF] text-[#007BFF]"
-                : row.getValue("submissionStatus") == "COMPLETED"
-                  ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                  : ""
-                }`}
-              style={{ margin: "0 auto" }}
-            >
-              {row.getValue("submissionStatus") == "ON_GOING" && <Clock size={20} className="text-[#007BFF]" />}
-              {row.getValue("submissionStatus") == "COMPLETED" && <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />}
-              <span>{row.getValue("submissionStatus")}</span>
-            </div>
-          </>
+          <div
+            className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${bgColor} ${textColor}`}
+            style={{ margin: "0 auto" }}
+          >
+            {Icon}
+            <span className="capitalize">{(status as string).toLowerCase()}</span>
+          </div>
         );
-      },
+      }
     },
     {
       id: "actions",

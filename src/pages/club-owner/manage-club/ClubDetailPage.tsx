@@ -22,13 +22,15 @@ export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
     const [clubData, setClubData] = useState<ClubResponse | null>(null);
     const { user } = useAuth();
+    const [flag, setFlag] = useState<boolean>(false)
+
     useEffect(() => {
         async function fetchClubDetail() {
             const response = await GetClubsDetailAPI(clubId);
             setClubData(response.data || null);
         }
         fetchClubDetail();
-    }, [clubId]);
+    }, [clubId, flag]);
     const isClubOwner: boolean = user?.userId == clubData?.clubOwnerId;
     return (
         <div className="max-w-[1700px] mx-auto p-4 pt-0">
@@ -51,7 +53,7 @@ export default function ClubDetailPage() {
                         </Badge>
                     </div>
                     <div>
-                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} club={clubData} />
+                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} club={clubData} setFlag={setFlag} />
                     </div>
                 </div>
 
