@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ResponseDTO } from "@/api/BaseResponse";
 import {
-  approveEvent,
   createEvent,
   createEventClub,
   EventFilterParams,
@@ -14,7 +12,6 @@ import {
 } from "@/api/representative/EventAgent";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Event } from "@/models/Event";
 import { GetAllFields } from "@/api/club-owner/RequestClubAPI";
 
 export const useFields = () => {
@@ -113,22 +110,22 @@ export const useFields = () => {
   //       queryKey: ["wallets"]
   //     });
   //   }
-  // });
-  const { mutateAsync: approveEventMutation, isPending: isApproving } =
-    useMutation<
-      ResponseDTO<Event>,
-      unknown,
-      { eventId: string; walletId: string }
-    >({
-      mutationFn: ({ eventId, walletId }) => approveEvent(eventId, walletId),
-      onSuccess: () => {
-        toast.success("Event approved successfully!");
-        queryClient.invalidateQueries({ queryKey: ["events"] });
-      },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Error approving event");
-      },
-    });
+  // // });
+  // const { mutateAsync: approveEventMutation, isPending: isApproving } =
+  //   useMutation<
+  //     ResponseDTO<Event>,
+  //     unknown,
+  //     { eventId: string; walletId: string }
+  //   >({
+  //     mutationFn: ({ eventId, walletId }) => approveEvent(eventId, walletId),
+  //     onSuccess: () => {
+  //       toast.success("Event approved successfully!");
+  //       queryClient.invalidateQueries({ queryKey: ["events"] });
+  //     },
+  //     onError: (error: any) => {
+  //       toast.error(error.response?.data?.message || "Error approving event");
+  //     },
+  //   });
 
   const { mutateAsync: rejectEventMutation, isPending: isRejecting } =
     useMutation({
@@ -147,13 +144,11 @@ export const useFields = () => {
     fields: data?.data || [],
     isLoading,
     isPending,
-    isApproving,
     isRejecting,
     isCreatePending,
     createEvent: createEventMutation,
     refetchEvents: refetch,
     getEventDetailQuery,
-    approveEvent: approveEventMutation,
     rejectEvent: rejectEventMutation,
     getEventClubDetailQuery,
     createEventClub: createEventClubMutation,
