@@ -445,7 +445,7 @@ export const TaskEditDialog = ({
                   />
                 </div>
 
-                {isHost && currentClub.clubId === task.clubId && (
+                {isHost && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
@@ -512,7 +512,7 @@ export const TaskEditDialog = ({
                     </div>
                   </div>
                 )}
-                {!isHost && (
+                {!isHost && currentClub.clubId === task.clubId && (
                   <div className="space-y-4 h-[calc(100vh-600px)] overflow-y-auto">
                     <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
                     <div className="space-y-2">
