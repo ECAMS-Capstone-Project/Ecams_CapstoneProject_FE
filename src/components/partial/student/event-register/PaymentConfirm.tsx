@@ -105,6 +105,12 @@ const EventPaymentConfirmation: React.FC = () => {
               toast.success("Event registration successful!");
 
               window.location.replace(response.data);
+            } else if (
+              response &&
+              response.data &&
+              typeof response.data !== "string"
+            ) {
+              window.location.replace(response.data.checkoutUrl);
             } else {
               console.error("Payment failed. Please try again.");
             }

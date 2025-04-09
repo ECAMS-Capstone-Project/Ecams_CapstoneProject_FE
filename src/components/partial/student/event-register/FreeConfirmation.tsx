@@ -29,7 +29,7 @@ export const FreeEventConfirm = () => {
   const event = location.state?.event;
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { mutate: paymentEvent } = usePaymentEvent();
+  const { mutate: paymentEvent, isPending } = usePaymentEvent();
   if (!event) {
     return <div>No event data found. Please navigate from the event page.</div>;
   }
@@ -221,7 +221,7 @@ export const FreeEventConfirm = () => {
                   </Button>
                   <Button variant="custom" onClick={handleSubmit}>
                     <CheckCircle2Icon />
-                    Confirm
+                    {isPending ? "Confirming..." : "Confirm"}
                   </Button>
                 </CardFooter>
               </div>
