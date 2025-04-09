@@ -19,6 +19,8 @@ import { University } from "@/models/University";
 import { Report } from "@/models/Report";
 import LoadingAnimation from "@/components/ui/loading";
 import { getReportList } from "@/api/agent/ReportAgent";
+import { GetStatisticSystem, StatisticSystemResponse } from "@/api/admin/Statistic";
+import { formatPrice } from "@/lib/FormatPrice";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,22 +28,26 @@ export default function Dashboard() {
   const [reportList, setReportList] = useState<Report[]>([]);
   const [pageNo] = useState(1);
   const [pageSize] = useState(99);
+  const [statistics, setStatistics] = useState<StatisticSystemResponse>();
 
   useEffect(() => {
     const loadAllData = async () => {
       try {
         // Tải cả component lười biếng và dữ liệu API song song
         // const [uniData, reportData] = await Promise.all([
-        const [uniData, report] = await Promise.all([
-          UniversityList(pageSize, pageNo), // Gọi API dữ liệu danh sách trường đại học
-          getReportList(), // Gọi API dữ liệu báo cáo
+        const [uniData, report, statData] = await Promise.all([
+          UniversityList(pageSize, pageNo),
+          getReportList(),
+          GetStatisticSystem(), // Gọi API thống kê hệ thống
         ]);
+
         setUniversityList(
           uniData.data?.data
             .filter((uni) => uni.status === "PENDING")
             .slice(0, 4) || []
         ); // Lọc và giới hạn 4 trường đại học
         setReportList(report);
+        setStatistics(statData.data);
         // setReportList(reportData);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -60,7 +66,7 @@ export default function Dashboard() {
         <div className="flex items-center space-x-2"></div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -78,10 +84,7 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
+            <div className="text-2xl font-bold"> {formatPrice(Number(statistics?.revenue))}</div>
           </CardContent>
         </Card>
         <Card>
@@ -103,15 +106,12 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
+            <div className="text-2xl font-bold">{statistics?.numOfActiveUniversities} sub</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">Number of contract</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -127,33 +127,7 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
-            <p className="text-xs text-muted-foreground">
-              +19% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+573</div>
-            <p className="text-xs text-muted-foreground">
-              +201 since last hour
-            </p>
+            <div className="text-2xl font-bold">{statistics?.numOfContracts} contract</div>
           </CardContent>
         </Card>
       </div>

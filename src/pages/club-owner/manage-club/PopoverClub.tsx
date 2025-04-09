@@ -17,6 +17,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ClubResponse } from "@/models/Club";
+import { useNavigate } from "react-router-dom";
 
 interface props {
   isClubOwner: boolean;
@@ -65,6 +66,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
   const [selectedMember, setSelectedMember] = useState<ClubMemberDTO | null>();
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>();
+  const navigate = useNavigate();
   const handleLeaveClub = () => {
     setOpenLeaveDialog(true)
   };
@@ -100,6 +102,10 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
       await LeaveClubAPI(clubId, user.userId, { reason });
       toast.success("Leave club successfully.");
       setOpenLeaveDialog(false)
+      const timer = setTimeout(() => {
+        navigate("/club")
+      }, 700)
+      return () => clearTimeout(timer)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);

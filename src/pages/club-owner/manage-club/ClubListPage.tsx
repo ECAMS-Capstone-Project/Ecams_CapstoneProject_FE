@@ -32,8 +32,8 @@ const ClubListPage: React.FC = () => {
   const tabFilters = {
     PARTICIPATED: { status: "ACTIVE", memberStatus: "ACTIVE" },
     HISTORY: { status: "ACTIVE", memberStatus: "FORMER" },
-    PENDING: { status: "ACTIVE", memberStatus: "PENDING" },
-    PROCESSING: { status: "PROCESSING", memberStatus: "ACTIVE" }, // nếu cần
+    PENDING: { status: "PENDING", memberStatus: "ACTIVE" },
+    PROCESSING: { status: "PROCESSING", memberStatus: "ACTIVE" },
   };
   const [currentTab, setCurrentTab] = useState<"PARTICIPATED" | "HISTORY" | "PENDING" | "PROCESSING">("PARTICIPATED");
 

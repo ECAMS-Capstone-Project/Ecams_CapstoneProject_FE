@@ -81,7 +81,7 @@ const Wallet = () => {
                       <Button
                         variant="custom"
                         onClick={toggleVideoDialog}
-                        className=" text-white shadow-lg hover:shadow-xl duration-300"
+                        className=" text-white shadow-lg hover:shadow-xl duration-300 hover:scale-105 transition"
                       >
                         View instruction
                       </Button>
@@ -108,13 +108,13 @@ const Wallet = () => {
                 <DialogTrigger>
                   <Button className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300">
                     <Plus className="mr-1 h-4 w-4" />
-                    New Bank Account
+                    New Wallet
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-lg">
                   <ViewWalletDialog
                     initialData={null}
-                    onSuccess={() => {}}
+                    onSuccess={() => { }}
                     setOpen={handleCloseDialog}
                   />
                 </DialogContent>
