@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import toast from "react-hot-toast";
 import { ScheduleRequest } from "@/api/representative/StudentAPI";
+import { fixTime } from "@/lib/utils";
 
 interface CreateClubScheduleDialogProps {
     onClose: () => void;
@@ -34,10 +35,10 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
     const [startTime, setStartTime] = useState("09:00");
     const [endTime, setEndTime] = useState("10:00");
     const [startDate, setStartDate] = useState(
-        new Date().toISOString().split("T")[0]
+        fixTime(new Date()).toISOString().split("T")[0]
     );
     const [endDate, setEndDate] = useState(
-        new Date().toISOString().split("T")[0]
+        fixTime(new Date()).toISOString().split("T")[0]
     );
 
     const handleSubmit = () => {
@@ -74,8 +75,8 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
             dayOfWeek,
             startTime,
             endTime,
-            startDate: start.toISOString(),
-            endDate: end.toISOString(),
+            startDate: fixTime(start).toISOString(),
+            endDate: fixTime(end).toISOString(),
         };
 
         onSubmit(data);
@@ -147,7 +148,7 @@ const CreateClubScheduleDialog: React.FC<CreateClubScheduleDialogProps> = ({
                             <Input
                                 type="date"
                                 value={startDate}
-                                min={new Date().toISOString().split("T")[0]}
+                                min={fixTime(new Date()).toISOString().split("T")[0]}
                                 onChange={(e) => setStartDate(e.target.value)}
                             />
                         </div>

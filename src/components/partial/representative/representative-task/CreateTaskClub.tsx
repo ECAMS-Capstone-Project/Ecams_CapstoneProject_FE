@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 
 import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 
@@ -67,7 +67,7 @@ export default function CreateTaskClub() {
             fullName: m.fullname,
             roleName: m.clubRoleName,
             userId: m.userId,
-            clubMemberId: m.clubMemberId, // Lấy trường clubMemberId từ API
+            clubMemberId: m.clubMemberId,
           }));
           setAllStudents(students);
         }
@@ -144,8 +144,8 @@ export default function CreateTaskClub() {
         createdBy: user.userId,
         taskName: values.taskName,
         description: values.description,
-        startTime: finalStartTime.toISOString(),
-        deadline: finalDeadline.toISOString(),
+        startTime: fixTime(finalStartTime).toISOString(),
+        deadline: fixTime(finalDeadline).toISOString(),
         taskScore: values.taskScore,
         assignedMembers,
       };

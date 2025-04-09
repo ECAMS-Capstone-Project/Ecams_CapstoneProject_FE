@@ -40,7 +40,7 @@ const schema = z.object({
   ShortName: z.string().min(1, "Short name is required"),
   ContactPhone: z.string().min(10, "Phone number must be at least 10 digits"),
   ContactEmail: z.string().email("Invalid email address"),
-  UniversityAddress: z.string().optional(),
+  UniversityAddress: z.string().min(1, "Address is required"),
   WebsiteUrl: z.string().min(1, "Website url is required"),
   Logo: z
     .any()
@@ -254,7 +254,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
                       Choose your logo
                     </Button>
                     {errors.Logo && (
-                      <Typography color="error" variant="caption">
+                      <Typography color="error" variant="caption" ml={2}>
                         Please choose image
                       </Typography>
                     )}
@@ -294,7 +294,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
                       Choose verify image
                     </Button>
                     {errors.Logo && (
-                      <Typography color="error" variant="caption">
+                      <Typography color="error" variant="caption" ml={2}>
                         Please choose image
                       </Typography>
                     )}

@@ -18,12 +18,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ClubResponse } from "@/models/Club";
 import { useNavigate } from "react-router-dom";
+import LoadingAnimation from "@/components/ui/loading";
 
 interface props {
   isClubOwner: boolean;
   clubId: string
   clubOwnerId: string | undefined
   club: ClubResponse | null
+  setFlag: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const clubSchema = z.object({
@@ -37,11 +39,11 @@ const clubSchema = z.object({
 
 export type ClubFormData = z.infer<typeof clubSchema>;
 
-export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
+export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }: props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setValue,
     reset
   } = useForm<ClubFormData>({
@@ -154,7 +156,6 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
   }, [clubId]);
 
   const onSubmit = async (data: ClubFormData) => {
-    console.log("ấn nè")
     const formData = new FormData();
     formData.append("ClubId", clubId);
     formData.append("Description", data.description);
@@ -168,8 +169,10 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
       await EditClubAPI(formData)
       toast.success("Updated club successfully!");
       setOpenEditDialog(false);
+      if (setFlag) {
+        setFlag((pre) => !pre)
+      }
     } catch (err) {
-      toast.error("Failed to update club.");
       console.error(err);
     }
   };
@@ -223,15 +226,24 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
 
             <div className="grid gap-2">
               <Label>Description</Label>
-              <Input {...register("description")} />
+              <textarea
+                rows={4}
+                {...register("description")}
+                className="w-full rounded-md border border-gray-300 p-2 text-sm"
+              />
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description.message}</p>
               )}
             </div>
 
             <div className="grid gap-2">
-              <Label>Purpose</Label>
-              <Input {...register("purpose")} />
+              <Label className="font-medium text-gray-700">Purpose</Label>
+              <textarea
+                disabled
+                rows={2}
+                {...register("purpose")}
+                className="w-full rounded-md border border-gray-300 bg-gray-100 p-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
               {errors.purpose && (
                 <p className="text-sm text-red-500">{errors.purpose.message}</p>
               )}
@@ -282,7 +294,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club }: props) {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save</Button>
+              <Button disabled={isSubmitting} type="submit"> {isSubmitting ? <LoadingAnimation /> : "Save"}</Button>
             </div>
           </form>
         </DialogContent>

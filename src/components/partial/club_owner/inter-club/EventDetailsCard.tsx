@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
+import { formatPrice } from "@/lib/FormatPrice";
 
 interface EventDetailsCardProps {
   selectedEvent: InterClubEventDTO;
@@ -94,7 +95,7 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <span className="text-gray-700">Price: </span>
             <span className="font-medium text-[#136cb9]">
-              {selectedEvent.price === 0 ? "Free" : `$${selectedEvent.price}`}
+              {selectedEvent.price === 0 ? "Free" : `${formatPrice(selectedEvent.price)}`}
             </span>
           </div>
         </div>

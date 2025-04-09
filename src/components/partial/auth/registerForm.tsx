@@ -569,36 +569,6 @@ const RegisterForm: React.FC = () => {
                   </Link>
                 </Typography>
               </Grid2>
-
-              <Grid2 size={{ xs: 12 }}>
-                <div className="relative my-2 flex items-center justify-center">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 opacity-50"></div>
-                  </div>
-                  <div className="relative bg-white px-4 text-gray-600 opacity-50">
-                    Or login with
-                  </div>
-                </div>
-              </Grid2>
-
-              <Grid2 size={{ xs: 12 }}>
-                <div className="flex justify-center mt-4 gap-4">
-                  <Button variant="outlined" className="w-1/2 h-12">
-                    <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
-                      alt="Facebook"
-                      className="w-6 h-6"
-                    />
-                  </Button>
-                  <Button variant="outlined" className="w-1/2 h-12">
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
-                      alt="Google"
-                      className="w-6 h-6"
-                    />
-                  </Button>
-                </div>
-              </Grid2>
             </Grid2>
           </form>
         </Grid2>

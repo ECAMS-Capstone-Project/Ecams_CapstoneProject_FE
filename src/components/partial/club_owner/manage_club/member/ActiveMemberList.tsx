@@ -10,7 +10,7 @@ interface props {
 
 export default function ActiveMemberList({ clubId, isClubOwner }: props) {
     const [pageNo, setPageNo] = useState(1);
-    const [pageSize, setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [memberList, setMemberList] = useState<ClubMemberDTO[]>([]);
     const [, setIsLoading] = useState(true);

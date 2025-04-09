@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,7 @@ import { ReviewSubmissionRequest, Submission } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 interface SubmissionDetailDialogProps {
     submission: Submission;
@@ -15,6 +16,7 @@ interface SubmissionDetailDialogProps {
     onClose: () => void;
     onSaveFeedback: (data: ReviewSubmissionRequest) => void;
     taskScore: number;
+    isSubmitting: boolean
 }
 
 const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
@@ -23,15 +25,17 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     onClose,
     onSaveFeedback,
     taskScore,
+    isSubmitting
 }) => {
     const { user } = useAuth();
-    // Lưu feedback tạm trước khi bấm Save
     const [tempFeedback, setTempFeedback] = useState(submission.comment ?? "");
-    // Lưu điểm tạm (mặc định là submission.submissionScore nếu có, hoặc 0)
     const [tempScore, setTempScore] = useState<number>(submission.submissionScore ?? 0);
 
-    // Nếu đã có feedback => read-only
     const hasFeedback = submission.comment !== null && submission.comment !== "";
+
+    useEffect(() => {
+        setTempScore(0)
+    }, [])
 
     const handleSave = async () => {
         if (user) {
@@ -56,7 +60,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg p-0 overflow-hidden rounded-lg shadow-lg">
+            <DialogContent className="max-w-xl p-0 overflow-hidden rounded-lg shadow-lg">
                 {/* Header */}
                 <DialogHeader className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                     <DialogTitle className="text-xl font-semibold text-gray-800">
@@ -75,7 +79,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                             </Grid2>
                             <Grid2 size={{ xs: 12, md: 6 }}>
                                 <span className="font-medium text-gray-600">Submitted At:</span>{" "}
-                                <span className="text-gray-800">
+                                <span className="text-gray-800 font-semibold">
                                     {isSubmitted ? "Haven't submitted " : format(submission.submissionDate, "HH:mm - dd/MM/yyyy")}
                                 </span>
                             </Grid2>
@@ -94,25 +98,41 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                     <div className="mt-4">
                         <p className="text-sm font-medium text-gray-600 mb-1">Submission Content:</p>
                         <div className="border border-gray-200 bg-gray-50 rounded-md p-3 text-sm text-gray-700">
-                            <ScrollArea className="max-h-40">
-                                <p className="whitespace-pre-wrap text-justify">{submission.studentSubmission == "" ? "Student hasn't submitted" : submission.studentSubmission}</p>
+                            <ScrollArea className="max-h-40 overflow-y-auto">
+                                <p className="whitespace-pre-wrap text-justify">
+                                    {
+                                        submission.studentSubmission
+                                            ? submission.studentSubmission
+                                                .replace(/<\/p>\s*/gi, "\n")
+                                                .replace(/<[^>]+>/g, "")
+                                                .trim()
+                                            : "Student hasn't submitted"
+                                    }
+                                </p>
                             </ScrollArea>
                         </div>
                     </div>
 
                     {/* Feedback and Score */}
                     <div className="mt-4 space-y-4">
-                        {!hasFeedback && (
+                        {(!hasFeedback && submission.submissionScore == 0) && (
                             <div>
                                 <p className="text-sm font-medium text-gray-600 mb-1">
-                                    Score {"<="} {taskScore} points
+                                    Score the task (up to {taskScore} points)
                                 </p>
                                 <Input
                                     type="number"
                                     disabled={isSubmitted}
                                     placeholder={`Enter score (max ${taskScore} points)`}
                                     value={tempScore}
-                                    onChange={(e) => setTempScore(Number(e.target.value))}
+                                    onChange={(e) => {
+                                        const value = Number(e.target.value);
+                                        if (value >= 0) {
+                                            setTempScore(value);
+                                        } else {
+                                            toast.error("Please input correct conditions ")
+                                        }
+                                    }}
                                     className="w-full text-sm"
                                 />
                             </div>
@@ -147,7 +167,16 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                             <Button variant="outline" onClick={onClose}>
                                 Cancel
                             </Button>
-                            <Button onClick={handleSave}>Save</Button>
+                            <Button onClick={handleSave}>
+                                {isSubmitting ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin" size={16} />
+                                        Saving...
+                                    </span>
+                                ) : (
+                                    "Save"
+                                )}
+                            </Button>
                         </>
                     )}
                 </DialogFooter>

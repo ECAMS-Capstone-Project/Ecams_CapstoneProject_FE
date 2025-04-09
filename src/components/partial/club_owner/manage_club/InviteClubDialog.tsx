@@ -77,7 +77,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
           <DialogLoading />
         </div>
       ) : (
-        <div className="w-full max-w-2xl mx-auto my-auto bg-white rounded-xl shadow-md px-6 py-6">
+        <div className="w-full max-w-2xl mx-auto my-auto px-6 py-6">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold text-gray-800">
               Club Information

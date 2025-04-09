@@ -9,8 +9,18 @@ export const VerifyEmailAPI = async (data: VerifyEmailRequest): Promise<Response
         const response = await post<ResponseDTO<string>>("/Auth/verify-email", data);
         return response;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
         if (error.response) {
-            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message);
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
@@ -24,8 +34,18 @@ export const ConfirmEmailAPI = async (data: ConfirmEmailRequest): Promise<Respon
         const response = await patch<ResponseDTO<string>>("/Auth/confirm-email", data);
         return response;
     } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
         if (error.response) {
-            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message);
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
@@ -41,13 +61,16 @@ export const ForgotPasswordAPI = async (data: ForgotPasswordRequest): Promise<Re
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message);
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);
@@ -63,13 +86,16 @@ export const ResetPasswordAPI = async (data: ResetPasswordRequest): Promise<Resp
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.error("API Error:", error.response.data);
+            toast.error(error.response.data.message);
             throw new Error(error.response.data.message || "API Error");
         } else {
             console.error("Network Error:", error.message);

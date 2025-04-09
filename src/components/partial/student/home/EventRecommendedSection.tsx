@@ -44,12 +44,6 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
   return (
     <section className="py-12">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-800">
-          <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-            Events{" "}
-          </span>
-          around you
-        </h2>
         {events.length > 0 && (
           <div className="flex justify-center items-center gap-2">
             <EventCategoryFilter
@@ -77,7 +71,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
             className="w-28 h-28 mb-4 opacity-90"
           />
           <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
-            No recommended events right now
+            No  events right now
           </h3>
           <p className="text-sm max-w-md text-gray-500">
             Currently, we couldn't find any events that match your interests.

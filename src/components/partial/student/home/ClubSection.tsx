@@ -91,6 +91,21 @@ export const ClubsSection = () => {
             </div>
           </MagicCard>
         ))}
+        {clubs && clubs.length === 0 && (
+          <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
+            <img
+              src="https://img.freepik.com/free-vector/flat-prom-background_23-2149365647.jpg"
+              alt="No recommended events"
+              className="w-28 h-28 mb-4 opacity-90"
+            />
+            <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
+              No club right now
+            </h3>
+            <p className="text-sm max-w-md text-gray-500">
+              Currently, there is no club at the university. Check back later! 💡
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

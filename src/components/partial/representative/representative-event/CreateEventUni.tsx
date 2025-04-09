@@ -33,7 +33,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ArrowLeft, CalendarIcon, Trash2Icon } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, fixTime } from "@/lib/utils"
 import { useEvents } from "@/hooks/staff/Event/useEvent"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -244,11 +244,11 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       formData.append("Description", values.description ?? "")
       formData.append(
         "RegisteredStartDate",
-        values.registeredStartDate.toISOString()
+        fixTime(values.registeredStartDate).toISOString()
       )
       formData.append(
         "RegisteredEndDate",
-        values.registeredEndDate.toISOString()
+        fixTime(values.registeredEndDate).toISOString()
       )
       formData.append("Price", values.price.toString())
       formData.append("TrainingPoint", values.trainingPoint.toString())

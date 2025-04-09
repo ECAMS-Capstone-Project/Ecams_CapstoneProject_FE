@@ -24,12 +24,9 @@ const CountdownTimer: React.FC<RequestEmail> = ({ email, setIsLoading }) => {
                 const response = await VerifyEmailAPI({ email: decodedEmail });
                 if (response.statusCode === 201) {
                     toast.success("OTP sent successfully!");
-                } else {
-                    toast.error("Failed to send OTP");
                 }
             }
         } catch (error) {
-            toast.error("An error occurred while sending OTP");
             console.log(error);
         } finally {
             setIsLoading(false);

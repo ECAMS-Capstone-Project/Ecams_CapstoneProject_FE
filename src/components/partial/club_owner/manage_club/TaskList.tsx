@@ -24,7 +24,7 @@ export default function TaskList({ clubId, isClubOwner }: props) {
 
                 if (taskData) {
                     setTaskList(taskData.data?.data || []); // Đảm bảo `data.data` tồn tại
-                    // setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
+                    setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
                 } else {
                     console.warn("Task returned no data");
                 }

@@ -289,7 +289,6 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
     } catch (error: any) {
       console.error("Error:", error.message);
-      toast.error("Đã xảy ra lỗi trong quá trình xác thực");
     }
   };
 

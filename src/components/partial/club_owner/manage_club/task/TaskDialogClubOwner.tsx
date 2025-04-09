@@ -30,6 +30,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
   const submissionsPerPage = 5;
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // 🌀 trạng thái chờ
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -70,16 +71,21 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
     fetchTaskDetail();
   }, [initialData.taskId]);
 
-  // Khi lưu feedback cho submission, gọi API rồi refresh danh sách submissions (và cập nhật cache)
   const handleSaveFeedback = async (data: ReviewSubmissionRequest) => {
     try {
+      setIsSubmitting(true); // ✅ Bắt đầu loading
+
       await SendReviewSubmission(data);
+
       toast.success("Feedback sent successfully");
+
       if (setFlag) {
-        setFlag(pre => !pre)
+        setFlag(prev => !prev);
       }
     } catch (error) {
       console.error("Failed to send feedback", error);
+    } finally {
+      setIsSubmitting(false); // ✅ Kết thúc loading
     }
   };
 
@@ -87,6 +93,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
   const handleViewSubmission = (sub: Submission) => {
     setSelectedSubmission(sub);
     setOpenDetailDialog(true);
+    console.log(sub);
   };
 
   return (
@@ -148,9 +155,9 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
                 <label className="font-bold">Status:</label>
                 <div className="p-2 bg-gray-100 border border-gray-300 rounded">
                   {taskDetail.status ? (
-                    <span className="text-[#3a8f5e] font-bold">Completed</span>
+                    <span className="text-[#3a8f5e] font-bold">Active</span>
                   ) : (
-                    <span className="text-[#007BFF] font-bold">In progress</span>
+                    <span className="text-[#007BFF] font-bold">In Active</span>
                   )}
                 </div>
               </div>
@@ -233,6 +240,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
           onClose={() => setOpenDetailDialog(false)}
           onSaveFeedback={handleSaveFeedback}
           taskScore={taskDetail ? taskDetail.taskScore : 0}
+          isSubmitting={isSubmitting}
         />
       )}
     </div>

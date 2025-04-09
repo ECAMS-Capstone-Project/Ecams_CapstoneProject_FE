@@ -48,12 +48,10 @@ const VerifyCodeForm: React.FC = () => {
                 const decodedEmail = atob(email);
                 await ResetPasswordAPI({ email: decodedEmail || "", newPassword: data.password, otp: data.otp });
                 toast.success("Reset password successfully!");
+                navigate('/login')
             }
         } catch (error) {
-            toast.error("An error occurred while reset password");
             console.log(error);
-        } finally {
-            navigate('/login')
         }
     };
 

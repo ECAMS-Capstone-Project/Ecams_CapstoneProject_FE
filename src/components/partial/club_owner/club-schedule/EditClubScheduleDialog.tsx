@@ -15,6 +15,7 @@ import {
     SelectContent,
     SelectItem,
 } from "@/components/ui/select";
+import { fixTime } from "@/lib/utils";
 
 export interface ClubSchedule {
     clubScheduleId: string;
@@ -52,8 +53,8 @@ const EditClubScheduleDialog: React.FC<EditClubScheduleDialogProps> = ({
             dayOfWeek,
             startTime,
             endTime,
-            startDate: new Date(startDate).toISOString(),
-            endDate: new Date(endDate).toISOString(),
+            startDate: fixTime(new Date(startDate)).toISOString(),
+            endDate: fixTime(new Date(endDate)).toISOString(),
         });
     };
 

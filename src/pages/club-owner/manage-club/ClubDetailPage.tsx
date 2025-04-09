@@ -22,13 +22,15 @@ export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
     const [clubData, setClubData] = useState<ClubResponse | null>(null);
     const { user } = useAuth();
+    const [flag, setFlag] = useState<boolean>(false)
+
     useEffect(() => {
         async function fetchClubDetail() {
             const response = await GetClubsDetailAPI(clubId);
             setClubData(response.data || null);
         }
         fetchClubDetail();
-    }, [clubId]);
+    }, [clubId, flag]);
     const isClubOwner: boolean = user?.userId == clubData?.clubOwnerId;
     return (
         <div className="max-w-[1700px] mx-auto p-4 pt-0">
@@ -51,7 +53,7 @@ export default function ClubDetailPage() {
                         </Badge>
                     </div>
                     <div>
-                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} club={clubData} />
+                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} club={clubData} setFlag={setFlag} />
                     </div>
                 </div>
 
@@ -62,19 +64,19 @@ export default function ClubDetailPage() {
                         <div className="flex flex-col md:flex-row items-start md:items-center pl-8">
                             {/* Avatar Club */}
                             <img
-                                src="https://i.pravatar.cc/150?img=68" // Fake avatar
+                                src={clubData?.logoUrl || "https://i.pravatar.cc/150?img=68"}
                                 alt="Club Avatar"
                                 className="w-24 h-24 rounded-full object-cover mr-4 mb-2 md:mb-0"
                             />
                             {/* Mô tả */}
-                            <p className="text-gray-700 text-base leading-relaxed text-justify">
+                            <p className="text-gray-700 text-base leading-relaxed text-justify ml-3">
                                 {clubData?.description}
                             </p>
                         </div>
                     </Grid2>
                     <Grid2 size={{ xs: 12, md: 3 }}>
                         {/* Cột phải: Thông tin thời gian, contact, website */}
-                        <div className="flex flex-col md:items-end space-y-1 text-base text-gray-600">
+                        <div className="flex flex-col items-start space-y-1 text-base text-gray-600">
                             <p>
                                 <b>Club owner: {clubData?.clubOwnerName}</b>
                             </p>
