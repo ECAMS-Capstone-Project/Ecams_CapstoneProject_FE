@@ -16,8 +16,8 @@ export const paymentEvent = async (data: {
 
     // Kiểm tra toàn bộ response
     console.log("Full API Response:", response);
-
     const apiResponse = response.data;
+    console.log("type of apiResponse", typeof apiResponse);
 
     // Kiểm tra nếu apiResponse tồn tại
     if (apiResponse) {
@@ -34,6 +34,15 @@ export const paymentEvent = async (data: {
       // Nếu trả về PaymentDetails (thông tin thanh toán PAYOS)
       else if (typeof apiResponse === "object" && apiResponse) {
         console.log("PAYOS response:", apiResponse);
+
+        // Chuyển hướng tới checkoutUrl của PayOS
+        const paymentDetails = apiResponse as unknown as PaymentDetails; // Ép kiểu
+        if (paymentDetails.checkoutUrl) {
+          window.location.replace(paymentDetails.checkoutUrl);
+        } else {
+          toast.error("Checkout URL is missing in the response.");
+        }
+
         return apiResponse; // Trả về PaymentDetails
       }
     }
