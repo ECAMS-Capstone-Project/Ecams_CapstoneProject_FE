@@ -66,6 +66,7 @@ export const useEvents = (
       },
       onError: (error: any) => {
         console.error("Error:", error);
+        toast.error(error.response.data.message || "An error occurred");
       },
     });
 
@@ -121,9 +122,9 @@ export const useEvents = (
     useMutation<
       ResponseDTO<Event>,
       unknown,
-      { eventId: string; walletId: string }
+      { eventId: string; walletId?: string }
     >({
-      mutationFn: ({ eventId, walletId }) => approveEvent(eventId, walletId),
+      mutationFn: (body) => approveEvent(body), // Truyền body vào API
       onSuccess: () => {
         toast.success("Event approved successfully!");
         queryClient.invalidateQueries({ queryKey: ["events"] });
