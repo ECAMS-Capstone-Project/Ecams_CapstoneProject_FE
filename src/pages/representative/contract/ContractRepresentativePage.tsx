@@ -31,7 +31,7 @@ const ContractRepresentativePage = ({
           const contractData = await ContractRepresentative(
             pageSize,
             pageNo,
-            user.userId,
+            user.universityId || "",
             undefined, // status
             dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
             dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined

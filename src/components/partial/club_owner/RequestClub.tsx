@@ -38,7 +38,7 @@ const clubSchema = z.object({
         z.object({
             email: z.string().email("Invalid email"),
         })
-    ).min(1, "At least one member is required"),
+    ).min(3, "You must add at least 3 members"),
 });
 
 type ClubFormData = z.infer<typeof clubSchema>;
@@ -147,6 +147,12 @@ const ClubRequestForm: React.FC = () => {
     // -------------------
     const onSubmit: SubmitHandler<ClubFormData> = async (data) => {
         if (user) {
+            console.log(data.members);
+
+            if (data.members.length < 3) {
+                toast.error("You must add at least 3 members.");
+                return;
+            }
             const formData = new FormData();
             formData.append("UserId", user.userId);
             formData.append("ClubName", data.clubName);

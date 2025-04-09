@@ -1,10 +1,10 @@
-import { ClubResponseDTO, ClubStatusEnum } from "@/api/club-owner/ClubByUser";
+import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
 import ClubCard from "@/components/partial/club_owner/manage_club/ClubCard";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { Box, Grid2, Typography } from "@mui/material";
 
 interface ClubListSectionProps {
-    status: "ACTIVE" | "INACTIVE" | "PENDING";
+    status: "PARTICIPATED" | "HISTORY" | "PENDING" | "PROCESSING";
     clubs: ClubResponseDTO[];
     loading: boolean;
     error: string | null;
@@ -24,11 +24,10 @@ export const ClubListSection: React.FC<ClubListSectionProps> = ({
                 Clubs
             </Box>{" "}
             {customTitle ??
-                (status === "ACTIVE"
+                (status === "PARTICIPATED"
                     ? "you’re participating in"
                     : "you’ve been part of")}
         </Typography>
-
         {loading ? (
             <DialogLoading />
         ) : error ? (
@@ -50,7 +49,7 @@ export const ClubListSection: React.FC<ClubListSectionProps> = ({
                             field={club.clubFields}
                             clubId={club.clubId}
                             clubOwnerId={club.clubOwnerId}
-                            status={status as unknown as ClubStatusEnum}
+                            status={status as "PARTICIPATED" | "HISTORY" | "PENDING" | "PROCESSING"}
                         />
                     </Grid2>
                 ))}

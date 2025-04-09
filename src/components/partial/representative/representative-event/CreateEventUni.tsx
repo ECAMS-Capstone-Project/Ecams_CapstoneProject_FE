@@ -229,7 +229,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
   // Xử lý submit
   const onSubmit = async (values: EventFormValues) => {
     ring2.register()
-    console.log(values.eventAreas);
     try {
       setIsLoading(true)
       console.log(values.imageUrl);
@@ -319,8 +318,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
     }
   };
 
-
-  console.log(errors);
 
   return (
     <div className="min-h-[200px] sm:min-h-[300px] h-auto sm:min-w-[300px]">

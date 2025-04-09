@@ -104,11 +104,15 @@ const ExtendCheckOut: React.FC = () => {
       try {
         const formData = new FormData();
         formData.append("PackageId", selectedPlan.packageId);
-        formData.append(
-          "PaymentMethodId",
-          "59b3cf1a-4ed7-469a-a551-5196755a12bb"
-        );
-        formData.append("RepresentativeId", user.userId);
+        const paymentMethodId =
+          methodPayment == "VnPay"
+            ? "59b3cf1a-4ed7-469a-a551-5196755a12ad"
+            : "59b3cf1a-4ed7-469a-a551-5196755a12bb";
+        formData.append("PaymentMethodId", paymentMethodId);
+        formData.append("RepresentativeId", user.userId || "");
+        formData.append("UniversityId", user.universityId || "");
+        console.log(user.universityId);
+        console.log(formData);
 
         const response = await exchangePackage(formData);
 

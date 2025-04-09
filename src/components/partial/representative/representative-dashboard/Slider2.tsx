@@ -62,7 +62,7 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
 
             <Slider {...settings}>
                 {events.length > 0 ? (
-                    events.filter(a => a.status == "ACTIVE").map((event, index) => (
+                    events.filter(a => a.status == "ACTIVE" && new Date(a.startDate) > new Date()).map((event, index) => (
                         <Box
                             key={index}
                             display="flex"
@@ -77,7 +77,7 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
                         display="flex"
                         justifyContent="center"
                         alignItems="center"
-                        sx={{ padding: { xs: "0 5px", sm: "0 10px" } }}
+                        sx={{ padding: { xs: "0 5px", sm: "0 10px" }, mb: 2 }}
                     >
                         <Paper
                             elevation={3}

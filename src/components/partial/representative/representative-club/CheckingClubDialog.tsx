@@ -67,7 +67,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
       setFlag?.((prev) => !prev);
       setOpenDialog(false);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "An error occurred");
+      console.log(error.response?.data?.message)
     } finally {
       setIsLoading(false);
     }
@@ -193,7 +193,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {initialData?.clubMembers?.map((member, index) => (
+                      {initialData?.clubMembers?.filter(a => a.status == "ACTIVE").map((member, index) => (
                         <TableRow key={index + 1}>
                           <TableCell>
                             <div className="flex flex-wrap gap-2 justify-center">

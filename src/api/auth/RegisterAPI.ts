@@ -19,14 +19,16 @@ export const registerRepresentativeAPI = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 404) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);
@@ -48,14 +50,16 @@ export const registerStudentAPI = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 404) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);
@@ -84,7 +88,6 @@ export const additionInfoUniversityAPI = async (
     }
     if (error.response) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);

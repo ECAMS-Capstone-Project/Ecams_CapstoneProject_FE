@@ -5,6 +5,7 @@ import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
 import { ClubJoinedRequest, ClubResponse } from "@/models/Club";
 import { Task } from "@/models/Task";
+import axiosMultipartForm from "../axiosMultipartForm";
 
 export enum ClubStatusEnum {
   Inactive = 0,
@@ -139,11 +140,21 @@ interface AlertClubDTO {
 export const GetAllClubsAPI = async (
   userId: string,
   status: string,
-  pageNo: number
+  pageNo: number,
+  pageSize: 6,
+  memberStatus?: string
 ): Promise<ResponseDTO<ResponseData<ClubResponseDTO>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<ClubResponseDTO>>>(
-      `/Clubs/User/${userId}?Status=${status}&PageNumber=${pageNo}&PageSize=8`
+      `/Clubs/User/${userId}`,
+      {
+        params: {
+          Status: status,
+          MemberStatus: memberStatus, // gửi vào query string
+          PageNumber: pageNo,
+          PageSize: pageSize,
+        }
+      }
     );
     return response; // Trả về toàn bộ phản hồi
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -301,14 +312,13 @@ export const ApproveClubCheckingAPI = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
       toast.error(error.response.data.message);
-      console.error("API Error:", error.response.data);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);
@@ -515,12 +525,13 @@ export const CreateClubJoinedRequest = async (
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error("Something went wrong. Please try again.");
+      throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
-      console.log(error.response.data.errors);
-      console.error("API Error:", error.response.data);
+      toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     } else {
       console.error("Network Error:", error.message);
@@ -704,6 +715,32 @@ export const ChangeClubOwnerAPI = async (
       data
     );
     return response; // Trả về toàn bộ phản hồi
+  } catch (error: any) {
+    if (error.response.status == 400) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    } else if (error.response.status == 401) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    } else if (error.response.status == 404) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    }
+    if (error.response) {
+      toast.error(error.response.data.message);
+      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
+    } else {
+      console.error("Network Error:", error.message);
+      throw new Error("Network error. Please try again later.");
+    }
+  }
+};
+
+export const EditClubAPI = async (data: FormData): Promise<ResponseDTO<string>> => {
+  try {
+    const response = await axiosMultipartForm.put(`/Clubs/update-club`, data);
+    return response.data as ResponseDTO<string>;
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error(error.response.data.message);

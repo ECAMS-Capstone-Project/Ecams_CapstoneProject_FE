@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Grid2 } from "@mui/material";
 import { format } from "date-fns";
-import { ReviewSubmissionRequest, StudentSubmission } from "@/api/club-owner/TaskAPI";
+import { ReviewSubmissionRequest, Submission } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 
 interface SubmissionDetailDialogProps {
-    submission: StudentSubmission;
+    submission: Submission;
     open: boolean;
     onClose: () => void;
     onSaveFeedback: (data: ReviewSubmissionRequest) => void;

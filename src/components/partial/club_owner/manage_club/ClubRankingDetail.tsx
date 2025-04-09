@@ -10,6 +10,21 @@ interface ClubRankingDetailProps {
     onClose: () => void;
 }
 
+const getRankClass = (rank: string) => {
+    switch (rank.toLowerCase()) {
+        case "good":
+            return "text-green-700 bg-green-100 px-2 py-1 rounded";
+        case "excellent":
+            return "text-blue-700 bg-blue-100 px-2 py-1 rounded";
+        case "average":
+            return "text-yellow-700 bg-yellow-100 px-2 py-1 rounded";
+        case "need improve":
+            return "text-red-700 bg-red-100 px-2 py-1 rounded";
+        default:
+            return "text-gray-700 bg-gray-100 px-2 py-1 rounded";
+    }
+};
+
 const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, onClose }) => {
     const [clubDetail, setClubDetail] = useState<ClubRankingDetailDTO | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -128,7 +143,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                         </div>
                         <div className="flex justify-between items-center mt-2">
                             <span className="text-xl text-gray-700">Rank:</span>
-                            <span className="text-xl font-semibold text-green-600">{clubDetail.rank}</span>
+                            <span className={`text-xl font-semibold ${getRankClass(clubDetail.rank)}`}>{clubDetail.rank}</span>
                         </div>
                     </div>
                 </div>
