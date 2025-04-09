@@ -73,6 +73,13 @@ interface EventDialogProps {
   setOpen?: (open: boolean) => void; // Nhận state từ component cha
 }
 
+// Thêm 7 giờ vào mọi timestamp
+function fixTime(date: Date) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() + 7);
+  return adjustedDate;
+}
+
 export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
   initialData,
   onSuccess,
@@ -147,11 +154,11 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
       formData.append("Description", values.description ?? "");
       formData.append(
         "RegisteredStartDate",
-        values.registeredStartDate.toISOString()
+        fixTime(values.registeredStartDate).toISOString()
       );
       formData.append(
         "RegisteredEndDate",
-        values.registeredEndDate.toISOString()
+        fixTime(values.registeredEndDate).toISOString()
       );
       formData.append("Price", values.price.toString());
       formData.append("MaxParticipants", values.maxParticipants.toString());
