@@ -170,22 +170,22 @@ export const createEvent = async (
     }
   }
 };
-
-export const approveEvent = async (
-  eventId: string,
-  walletId: string
-): Promise<ResponseDTO<Event>> => {
+export const approveEvent = async (body: {
+  eventId: string;
+  walletId?: string;
+}): Promise<ResponseDTO<Event>> => {
   try {
-    const response = await put<ResponseDTO<Event>>(`/Event/approve-event`, {
-      eventId,
-      walletId,
-    });
+    const response = await put<ResponseDTO<Event>>(
+      `/Event/approve-event`,
+      body
+    );
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);
     throw error;
   }
 };
+
 export const rejectEvent = async (event: any): Promise<ResponseDTO<Event>> => {
   try {
     const response = await put<ResponseDTO<Event>>(

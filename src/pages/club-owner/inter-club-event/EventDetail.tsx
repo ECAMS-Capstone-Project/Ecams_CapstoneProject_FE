@@ -117,6 +117,7 @@ export const EventDetailPage = () => {
           <Button
             onClick={() => setIsApproveDialogOpen(true)}
             className="bg-green-500 hover:bg-green-600 text-white"
+            disabled={event.data?.status === "PENDING"}
           >
             <Check className="w-4 h-4 mr-2" />
             Accept Invitation
@@ -124,6 +125,7 @@ export const EventDetailPage = () => {
           <Button
             onClick={() => setIsRejectDialogOpen(true)}
             variant="destructive"
+            disabled={event.data?.status === "PENDING"}
           >
             <X className="w-4 h-4 mr-2" />
             Deny Invitation

@@ -39,7 +39,13 @@ export const RequestEventDetail: React.FC = () => {
       console.log("Approving Event...");
       // Call API để cập nhật status thành "Active"
 
-      await approveEvent({ eventId, walletId: selectedWalletId ?? "" });
+      const body =
+        event?.price && event?.price > 0
+          ? { eventId, walletId: selectedWalletId ?? "" } // Gửi cả eventId và walletId nếu có giá
+          : { eventId }; // Chỉ gửi eventId nếu sự kiện miễn phí
+
+      // Gọi API approveEvent với tham số tương ứng
+      await approveEvent(body);
 
       navigate("/representative/event");
     } catch (error: any) {
