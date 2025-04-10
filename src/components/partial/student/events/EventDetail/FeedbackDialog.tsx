@@ -68,7 +68,7 @@ export default function FeedbackDialog({
       await createFeedbackQuery(feedbackRequest);
       form.reset();
       setIsOpen(false);
-      queryClient.invalidateQueries({ queryKey: ["feedback", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["feedbacks", eventId] });
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Error sending feedback");
     } finally {
@@ -113,7 +113,7 @@ export default function FeedbackDialog({
                           <Rating
                             value={field.value}
                             onChange={field.onChange}
-                            max={10}
+                            max={5}
                             precision={1}
                             sx={{
                               "& .MuiRating-iconHover": {
@@ -122,7 +122,7 @@ export default function FeedbackDialog({
                             }}
                           />
                           <span className="text-sm text-gray-500">
-                            {field.value}/10
+                            {field.value}/5
                           </span>
                         </div>
                       </FormControl>
