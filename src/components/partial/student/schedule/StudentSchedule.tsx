@@ -13,7 +13,6 @@ import {
   StudentScheduleData,
 } from "@/api/representative/StudentAPI";
 import LoadingAnimation from "@/components/ui/loading";
-import { fixTime } from "@/lib/utils";
 
 const dayMap: Record<string, string> = {
   Monday: "MO",
@@ -50,7 +49,7 @@ function getFirstWeekdayFromStart(
   const diff = (targetDay - startDay + 7) % 7;
   start.setDate(start.getDate() + diff);
 
-  const date = fixTime(start).toISOString().split("T")[0];
+  const date = start.toISOString().split("T")[0];
   return date;
 }
 
@@ -61,7 +60,7 @@ function splitMultiDayEvent(event: any) {
   const end = new Date(event.end);
   // In FullCalendar, the end date is exclusive so we iterate until day before end.
   for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-    const dayISO = fixTime(d).toISOString().split("T")[0];
+    const dayISO = d.toISOString().split("T")[0];
     events.push({
       ...event,
       id: event.id + "-" + dayISO,
@@ -173,7 +172,7 @@ export const StudentSchedule = () => {
 
         const untilDate = new Date(club.endDate);
         const validUntil = isNaN(untilDate.getTime())
-          ? fixTime(new Date()).toISOString()
+          ? new Date().toISOString()
           : untilDate.toISOString();
 
         return {
@@ -182,7 +181,7 @@ export const StudentSchedule = () => {
           rrule: {
             freq: "weekly",
             byweekday: [weekdayAbbrev],
-            dtstart: fixTime(startDateTime).toISOString(),
+            dtstart: startDateTime.toISOString(),
             until: validUntil,
           },
           start: startDateTime,

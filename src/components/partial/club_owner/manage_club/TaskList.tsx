@@ -23,15 +23,15 @@ export default function TaskList({ clubId, isClubOwner }: props) {
                 const taskData = await GetTaskInClubsAPI(clubId, pageSize, pageNo);
 
                 if (taskData) {
-                    setTaskList(taskData.data?.data || []); // Đảm bảo `data.data` tồn tại
-                    setTotalPages(taskData.data?.totalPages || 1); // Đặt số trang
+                    setTaskList(taskData.data?.data || []);
+                    setTotalPages(taskData.data?.totalPages || 1);
                 } else {
                     console.warn("Task returned no data");
                 }
             } catch (error) {
                 console.error("Error loading data:", error);
             } finally {
-                setIsLoading(false); // Hoàn tất tải
+                setIsLoading(false);
             }
         };
         loadUniversity();
