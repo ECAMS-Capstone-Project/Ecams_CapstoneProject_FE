@@ -73,7 +73,7 @@ export const EventFeedback: React.FC<EventFeedbackProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All ratings</SelectItem>
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((value) => (
+              {Array.from({ length: 5 }, (_, i) => i + 1).map((value) => (
                 <SelectItem key={value} value={value.toString()}>
                   {value} ⭐
                 </SelectItem>
@@ -110,7 +110,7 @@ export const EventFeedback: React.FC<EventFeedbackProps> = ({
                   <Rating
                     value={feedback.rating}
                     readOnly
-                    max={10}
+                    max={5}
                     size="small"
                   />
                   <span className="text-sm text-gray-500">

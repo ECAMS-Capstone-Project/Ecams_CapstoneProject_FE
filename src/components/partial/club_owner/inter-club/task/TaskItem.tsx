@@ -110,7 +110,10 @@ export const TaskItem = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setIsEditOpen(true)}
-                  disabled={currentClub.clubId !== task.clubId}
+                  disabled={
+                    task.completionPercentage === 100 ||
+                    (currentClub.clubId !== task.clubId && !isHost)
+                  }
                 >
                   Edit
                 </DropdownMenuItem>

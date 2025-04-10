@@ -38,9 +38,7 @@ export const StudentEventDetail: React.FC = () => {
   const events = eventData?.data?.data;
 
   // Kiểm tra xem sự kiện đã kết thúc chưa
-  const isEventEnded = event?.endDate
-    ? new Date(event.endDate) < new Date()
-    : false;
+  const isEventEnded = event?.status ? event.status === "ENDED" : false;
 
   return (
     <div className="flex min-h-screen flex-col px-14 py-5">
