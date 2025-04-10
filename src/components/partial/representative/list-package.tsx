@@ -78,7 +78,7 @@ const Pricing: React.FC = () => {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [popularIndex, setPopularIndex] = useState<number | null>(null);
+  const [popularIndex] = useState<number | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -88,11 +88,11 @@ const Pricing: React.FC = () => {
         const packageList = packageData.data?.data || [];
         setPackages(packageList);
 
-        if (packageList.length > 0) {
-          // Chọn random một gói làm Popular
-          const randomIndex = Math.floor(Math.random() * packageList.length);
-          setPopularIndex(randomIndex);
-        }
+        // if (packageList.length > 0) {
+        //   // Chọn random một gói làm Popular
+        //   const randomIndex = Math.floor(Math.random() * packageList.length);
+        //   setPopularIndex(randomIndex);
+        // }
       } catch (error: any) {
         setError(error.message);
       } finally {

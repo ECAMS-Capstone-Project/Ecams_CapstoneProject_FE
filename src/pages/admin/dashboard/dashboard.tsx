@@ -19,7 +19,10 @@ import { University } from "@/models/University";
 import { Report } from "@/models/Report";
 import LoadingAnimation from "@/components/ui/loading";
 import { getReportList } from "@/api/agent/ReportAgent";
-import { GetStatisticSystem, StatisticSystemResponse } from "@/api/admin/Statistic";
+import {
+  GetStatisticSystem,
+  StatisticSystemResponse,
+} from "@/api/admin/Statistic";
 import { formatPrice } from "@/lib/FormatPrice";
 
 export default function Dashboard() {
@@ -84,12 +87,17 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold"> {formatPrice(Number(statistics?.revenue))}</div>
+            <div className="text-2xl font-bold">
+              {" "}
+              {formatPrice(Number(statistics?.revenue))}
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Universities
+            </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -106,12 +114,16 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{statistics?.numOfActiveUniversities} sub</div>
+            <div className="text-2xl font-bold">
+              {statistics?.numOfActiveUniversities} universities
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Number of contract</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Number of contract
+            </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -127,7 +139,9 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{statistics?.numOfContracts} contract</div>
+            <div className="text-2xl font-bold">
+              {statistics?.numOfContracts} contract
+            </div>
           </CardContent>
         </Card>
       </div>
