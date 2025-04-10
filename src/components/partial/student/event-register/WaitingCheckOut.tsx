@@ -188,12 +188,14 @@ function WaitingCheckout() {
       <Box className="buttonLoading" marginTop={4}>
         <Box className="buttonItem" marginBottom={2}>
           <Link to={isEventRegistration ? "/student" : "/representative"}>
-            <Button variant="contained">Back to home page</Button>
+            <Button disabled={loading} variant="contained">
+              Back to home page
+            </Button>
           </Link>
         </Box>
         <Box className="buttonItem">
           <Link to={isEventRegistration ? "/student/event" : "/view-package"}>
-            <Button variant="contained">
+            <Button disabled={loading} variant="contained">
               {isEventRegistration ? "Back to events" : "Back to package"}
             </Button>
           </Link>
