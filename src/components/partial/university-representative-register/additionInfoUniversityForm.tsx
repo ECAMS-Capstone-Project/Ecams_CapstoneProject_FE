@@ -9,8 +9,9 @@ import {
   Grid2,
   styled,
   Avatar,
+  Autocomplete,
 } from "@mui/material";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
@@ -21,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { ring2 } from "ldrs";
 import PoliciesDialog from "../auth/policiesDiablog";
 import { ChevronLeft } from "lucide-react";
+import { UniversityData } from "@/data/UniversityData";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -77,6 +79,7 @@ const AdditionInfoUniversityForm: React.FC = () => {
     register,
     setValue,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     defaultValues: {
@@ -147,6 +150,10 @@ const AdditionInfoUniversityForm: React.FC = () => {
     await logout();
     navigate("/login");
   };
+  const universityOptions = UniversityData.map((university) => ({
+    label: university.name,
+    code: university.code,
+  }));
   return (
     <Box
       display="flex"
@@ -174,22 +181,53 @@ const AdditionInfoUniversityForm: React.FC = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Grid2 container spacing={2}>
               <Grid2 size={{ xs: 12, md: 6 }}>
-                <TextField
-                  {...register("UniversityName")}
-                  label="University Name"
-                  fullWidth
-                  error={!!errors.UniversityName}
-                  helperText={errors.UniversityName?.message}
+                <Controller
+                  name="UniversityName"
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      options={universityOptions.map((option) => option.label)}
+                      getOptionLabel={(option) => option || ""}
+                      value={field.value || null}
+                      onChange={(_event, newValue) => {
+                        field.onChange(newValue); // Cập nhật giá trị của UniversityName
+                        // Cập nhật luôn giá trị cho ShortName bằng code của trường được chọn, nếu có
+                        setValue(
+                          "ShortName",
+                          newValue
+                            ? universityOptions.find(
+                                (option) => option.label === newValue
+                              )?.code || ""
+                            : ""
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="University Name"
+                          error={!!errors.UniversityName}
+                          helperText={errors.UniversityName?.message}
+                        />
+                      )}
+                    />
+                  )}
                 />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
-                <TextField
-                  {...register("ShortName")}
-                  label="Short Name"
-                  fullWidth
-                  error={!!errors.ShortName}
-                  helperText={errors.ShortName?.message}
+                <Controller
+                  name="ShortName"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Short Name"
+                      fullWidth
+                      error={!!errors.ShortName}
+                      helperText={errors.ShortName?.message}
+                    />
+                  )}
                 />
               </Grid2>
 
