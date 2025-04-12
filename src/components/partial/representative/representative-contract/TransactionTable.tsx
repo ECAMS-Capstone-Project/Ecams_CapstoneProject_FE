@@ -12,6 +12,7 @@ export const TransactionTable = (contract: ContractData) => {
         <table className="w-full text-left">
           <thead className="bg-gray-100">
             <tr>
+              <th className="p-3">Transaction Number</th>
               <th className="p-3">Type</th>
               <th className="p-3">Date</th>
               <th className="p-3">Method</th>
