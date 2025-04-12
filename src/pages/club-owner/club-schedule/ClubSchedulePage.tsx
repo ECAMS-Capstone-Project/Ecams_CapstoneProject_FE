@@ -64,7 +64,13 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
     }, [flag, clubId]);
 
     const calendarEvents = schedules
-        .filter((sch) => sch.status)
+        .filter((sch) => {
+            if (!sch.status) return false;
+            const start = new Date(sch.startDate);
+            const end = new Date(sch.endDate);
+            // Check startDate, endDate validity
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+        })
         .map((sch) => {
             const weekdayAbbrev = dayMap[sch.dayOfWeek] || "MO";
             const dtStartDate = getFirstWeekdayFromStart(sch.startDate, sch.dayOfWeek);

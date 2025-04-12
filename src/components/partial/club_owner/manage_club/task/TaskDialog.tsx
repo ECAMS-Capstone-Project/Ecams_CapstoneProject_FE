@@ -36,6 +36,10 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
 
   // Task được coi là đã nộp nếu submissionStatus là "COMPLETED"
   const isSubmitted = taskDetail?.submissionStatus === "COMPLETED";
+  const isDeadlineOver = taskDetail?.deadline
+    ? new Date(taskDetail.deadline).getTime() < Date.now()
+    : false;
+
 
   // Xử lý submit: validate editorContent trước khi gọi API
   const handleSubmit = async () => {
@@ -43,7 +47,6 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
       toast.error("Submission content cannot be empty");
       return;
     }
-    console.log("Submitted Content:", editorContent);
     const data = {
       taskId: initialData.taskId,
       clubMemberId: initialData.clubMemberId,
@@ -164,6 +167,10 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                 <p className="font-bold">Comment:</p>
                 <p className="text-center">{taskDetail.comment || "No comment"}</p>
               </div>
+            ) : isDeadlineOver ? (
+              <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-md text-center font-medium">
+                Overdue deadline, you can't submit this task.
+              </div>
             ) : (
               <ReactQuill
                 theme="snow"
@@ -176,7 +183,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
 
           {/* Buttons */}
           <div className="flex justify-end mt-4">
-            {isSubmitted ? (
+            {isSubmitted || isDeadlineOver ? (
               <DialogClose asChild>
                 <Button type="button" className="text-white">
                   Quit
