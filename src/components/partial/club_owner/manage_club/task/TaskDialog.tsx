@@ -40,6 +40,8 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
     ? new Date(taskDetail.deadline).getTime() < Date.now()
     : false;
 
+  console.log(isDeadlineOver, isSubmitted);
+
 
   // Xử lý submit: validate editorContent trước khi gọi API
   const handleSubmit = async () => {

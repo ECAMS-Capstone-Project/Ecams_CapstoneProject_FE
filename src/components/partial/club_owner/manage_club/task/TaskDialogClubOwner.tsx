@@ -241,6 +241,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
           onSaveFeedback={handleSaveFeedback}
           taskScore={taskDetail ? taskDetail.taskScore : 0}
           isSubmitting={isSubmitting}
+          deadline={taskDetail?.deadline || null}
         />
       )}
     </div>

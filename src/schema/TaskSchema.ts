@@ -33,20 +33,34 @@ export const TaskSchema = z
     )
     .refine(
         (data) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return data.startTimeDate >= today;
+            const now = new Date();
+            const [startHour, startMinute] = data.startTimeTime.split(":").map(Number);
+            const startDateTime = new Date(data.startTimeDate);
+            startDateTime.setHours(startHour, startMinute, 0, 0);
+
+            return startDateTime > now;
         },
         {
-            message: "Start date must be today or in the future",
-            path: ["startTimeDate"],
+            message: "Start time must be in the future",
+            path: ["startTimeTime"],
         }
     )
     .refine(
-        (data) => data.deadlineDate > data.startTimeDate,
+        (data) => {
+            const [startHour, startMinute] = data.startTimeTime.split(":").map(Number);
+            const [endHour, endMinute] = data.deadlineTime.split(":").map(Number);
+
+            const startDateTime = new Date(data.startTimeDate);
+            startDateTime.setHours(startHour, startMinute, 0, 0);
+
+            const endDateTime = new Date(data.deadlineDate);
+            endDateTime.setHours(endHour, endMinute, 0, 0);
+
+            return endDateTime > startDateTime;
+        },
         {
-            message: "Deadline date must be after the start date",
-            path: ["deadlineDate"],
+            message: "Deadline must be after the start time",
+            path: ["deadlineTime"],
         }
     );
 

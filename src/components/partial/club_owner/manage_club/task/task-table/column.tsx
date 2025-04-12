@@ -31,7 +31,7 @@ export const taskColumn = (
         </div>
       ),
       cell: ({ row }) => (
-        <div>{format(row.getValue("startTime"), "HH:mm:ss - dd/MM/yyyy")}</div>
+        <div>{format(row.getValue("startTime"), "HH:mm - dd/MM/yyyy")}</div>
       ),
     },
     {
