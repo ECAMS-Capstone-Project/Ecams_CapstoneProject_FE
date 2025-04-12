@@ -23,6 +23,7 @@ export const TransactionTable = (contract: ContractData) => {
           <tbody>
             {contract.data.transactions?.filter((a) => a.status == 'PAID')?.map((txn) => (
               <tr key={txn.transactionId} className="border-b">
+                <td className="p-3">{txn.transactionNumber}</td>
                 <td className="p-3">{txn.type}</td>
                 <td className="p-3">{format(new Date(txn.paymentDate), 'dd-MM-yyyy')}</td>
                 <td className="p-3">{txn.methodName}</td>
