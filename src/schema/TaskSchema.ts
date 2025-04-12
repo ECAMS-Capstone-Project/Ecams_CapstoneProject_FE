@@ -5,24 +5,18 @@ export const TaskSchema = z
         clubId: z.string().min(1, "Club ID is required"),
         taskName: z.string().nonempty("Task name is required"),
         description: z.string().nonempty("Description is required"),
-        // Deadline được tách thành 2 trường: Date và Time
         deadlineDate: z.date({
             required_error: "Deadline date is required",
-        }).refine((d) => d.getTime() > Date.now(), {
-            message: "Deadline date must be in the future",
         }),
         deadlineTime: z.string().nonempty("Deadline time is required"),
-        // Start time được tách thành 2 trường: Date và Time
         startTimeDate: z.date({
             required_error: "Start time date is required",
         }),
         startTimeTime: z.string().nonempty("Start time is required"),
-        // Sử dụng taskScore thay cho score
         taskScore: z.preprocess((a) => Number(a), z.number().min(0).max(100)),
         assignAll: z.boolean(),
         selectedMembers: z.array(z.string()),
     })
-    // Nếu assignAll = false => phải chọn ít nhất 1 student
     .refine(
         (data) => (!data.assignAll ? data.selectedMembers.length > 0 : true),
         {
@@ -30,12 +24,43 @@ export const TaskSchema = z
             path: ["selectedMembers"],
         }
     )
-    // Nếu assignAll = true => selectedMembers phải rỗng
     .refine(
         (data) => (data.assignAll ? data.selectedMembers.length === 0 : true),
         {
             message: "Cannot assign all members and select specific students simultaneously",
             path: ["selectedMembers"],
+        }
+    )
+    .refine(
+        (data) => {
+            const now = new Date();
+            const [startHour, startMinute] = data.startTimeTime.split(":").map(Number);
+            const startDateTime = new Date(data.startTimeDate);
+            startDateTime.setHours(startHour, startMinute, 0, 0);
+
+            return startDateTime > now;
+        },
+        {
+            message: "Start time must be in the future",
+            path: ["startTimeTime"],
+        }
+    )
+    .refine(
+        (data) => {
+            const [startHour, startMinute] = data.startTimeTime.split(":").map(Number);
+            const [endHour, endMinute] = data.deadlineTime.split(":").map(Number);
+
+            const startDateTime = new Date(data.startTimeDate);
+            startDateTime.setHours(startHour, startMinute, 0, 0);
+
+            const endDateTime = new Date(data.deadlineDate);
+            endDateTime.setHours(endHour, endMinute, 0, 0);
+
+            return endDateTime > startDateTime;
+        },
+        {
+            message: "Deadline must be after the start time",
+            path: ["deadlineTime"],
         }
     );
 
