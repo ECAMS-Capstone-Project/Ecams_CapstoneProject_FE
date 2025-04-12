@@ -118,3 +118,18 @@ export const getCheckInInfo = async (
     throw error;
   }
 };
+
+export const checkUserCanCheckIn = async (
+  eventId: string,
+  userId: string
+): Promise<ResponseDTO<boolean>> => {
+  try {
+    const response = await get<ResponseDTO<boolean>>(
+      `/Event/User/${userId}/Event/${eventId}/check`
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Error in checkUserCanCheckIn:", error.response || error);
+    throw error;
+  }
+};

@@ -3,6 +3,7 @@
 import { ResponseDTO } from "@/api/BaseResponse";
 import {
   checkInStudent,
+  checkUserCanCheckIn,
   getCheckInInfo,
   paymentEvent,
 } from "@/api/student/EventRegistrationAgent";
@@ -70,6 +71,17 @@ export const useEventSchedule = (userId: string) => {
       },
     });
 
+  const {
+    mutateAsync: getUserCanCheckIn,
+    isPending: isCheckingUserCanCheckIn,
+  } = useMutation<
+    ResponseDTO<boolean>,
+    unknown,
+    { eventId: string; userId: string }
+  >({
+    mutationFn: ({ eventId, userId }) => checkUserCanCheckIn(eventId, userId),
+  });
+
   return {
     studentEvents: data?.data || [],
     isLoading,
@@ -78,5 +90,7 @@ export const useEventSchedule = (userId: string) => {
     checkInStudent: checkInStudentEvent,
     isCheckingIn,
     getCheckInInfoQuery,
+    getUserCanCheckIn,
+    isCheckingUserCanCheckIn,
   };
 };
