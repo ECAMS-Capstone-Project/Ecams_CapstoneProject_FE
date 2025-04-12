@@ -42,10 +42,18 @@ import {
 } from "@/components/ui/command";
 import { InterClubEventDTO } from "@/models/Event";
 import { SubtaskDialog } from "./SubtaskDialog";
+import toast from "react-hot-toast";
+import { useEvents } from "@/hooks/staff/Event/useEvent";
 interface TaskCreateDialogProps {
   onCreateTask: (task: CreateInterTaskRequest) => void;
   eventId: string;
   selectedEvent: InterClubEventDTO | null;
+}
+
+function fixTime(date: Date) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() + 7);
+  return adjustedDate;
 }
 
 export const TaskCreateDialog = ({
@@ -61,6 +69,7 @@ export const TaskCreateDialog = ({
 
   const form = useForm<z.infer<typeof InterTaskSchema>>({
     resolver: zodResolver(InterTaskSchema),
+    mode: "onChange",
     defaultValues: {
       taskName: "",
       description: "",
@@ -71,23 +80,37 @@ export const TaskCreateDialog = ({
     },
   });
   console.log(form.formState.errors);
+  const { getEventDetailQuery } = useEvents();
+  const { data: event } = getEventDetailQuery(eventId, user?.userId || "");
+  console.log(event);
 
   const onSubmit = async (values: z.infer<typeof InterTaskSchema>) => {
     try {
       setIsSubmitting(true);
+      console.log("test", values.deadline, event?.data?.endDate);
+
       const taskData: CreateInterTaskRequest = {
         ...values,
         eventId,
         createdBy: user?.userId || "",
         clubId: values.clubId || "",
-        startTime: values.startTime || new Date(),
-        deadline: values.deadline || new Date(),
+        startTime: fixTime(values.startTime || new Date()),
+        deadline: fixTime(values.deadline || new Date()),
         listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
           ...detail,
-          startTime: detail.startTime || new Date(),
-          deadline: detail.deadline || new Date(),
+          startTime: fixTime(detail.startTime || new Date()),
+          deadline: fixTime(detail.deadline || new Date()),
         })),
       };
+      if (
+        values.deadline &&
+        event?.data?.endDate &&
+        fixTime(values.deadline) > new Date(event?.data?.endDate)
+      ) {
+        toast.error("Task's deadline must be before the event end date!");
+        setIsSubmitting(false);
+        return;
+      }
       await onCreateTask(taskData);
       setIsOpen(false);
       form.reset();
@@ -98,9 +121,12 @@ export const TaskCreateDialog = ({
     }
   };
 
-  const handleAddSubtask = (subtask: z.infer<typeof subtaskSchema>) => {
+  const handleAddSubtask = async (subtask: z.infer<typeof subtaskSchema>) => {
     const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue("listEventTaskDetails", [...currentSubtasks, subtask]);
+    form.setValue("listEventTaskDetails", [...currentSubtasks, subtask], {
+      shouldValidate: true,
+    });
+    await form.trigger("listEventTaskDetails");
   };
 
   const handleRemoveSubtask = (index: number) => {
@@ -395,6 +421,8 @@ export const TaskCreateDialog = ({
         isOpen={isSubtaskDialogOpen}
         onClose={() => setIsSubtaskDialogOpen(false)}
         onSubmit={handleAddSubtask}
+        mainTaskStartTime={form.getValues("startTime")}
+        mainTaskDeadline={form.getValues("deadline")}
       />
     </>
   );

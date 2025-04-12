@@ -37,15 +37,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import toast from "react-hot-toast";
 
-const subtaskSchema = z.object({
-  detailName: z.string().min(1, "Subtask name is required"),
-  description: z.string().min(1, "Description is required"),
-  startTime: z.date(),
-  deadline: z.date(),
-  status: z.string(),
-});
-
+const subtaskSchema = z
+  .object({
+    detailName: z.string().min(1, "Subtask name is required"),
+    description: z.string().min(1, "Description is required"),
+    startTime: z.date(),
+    deadline: z.date(),
+    status: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.startTime && data.deadline) {
+      if (data.startTime > data.deadline) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Start time must be before deadline",
+          path: ["deadline"], // gán vào deadline
+        });
+      }
+    }
+  });
 interface SubtaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -57,6 +69,8 @@ interface SubtaskDialogProps {
     deadline: Date;
     status?: string;
   };
+  mainTaskStartTime: Date;
+  mainTaskDeadline: Date;
 }
 
 export const SubtaskDialog = ({
@@ -64,6 +78,8 @@ export const SubtaskDialog = ({
   onClose,
   onSubmit,
   initialValues,
+  mainTaskStartTime,
+  mainTaskDeadline,
 }: SubtaskDialogProps) => {
   useEffect(() => {
     if (initialValues) {
@@ -73,6 +89,7 @@ export const SubtaskDialog = ({
 
   const form = useForm<z.infer<typeof subtaskSchema>>({
     resolver: zodResolver(subtaskSchema),
+    mode: "onChange",
     defaultValues: initialValues
       ? initialValues
       : {
@@ -85,6 +102,16 @@ export const SubtaskDialog = ({
   });
 
   const handleSubmit = (values: z.infer<typeof subtaskSchema>) => {
+    if (
+      values.startTime < mainTaskStartTime ||
+      values.deadline > mainTaskDeadline
+    ) {
+      toast.error(
+        "Subtask's start time must be before the main task start time and deadline must be before the main task deadline"
+      );
+      return;
+    }
+
     onSubmit(values);
     form.reset();
     onClose();
