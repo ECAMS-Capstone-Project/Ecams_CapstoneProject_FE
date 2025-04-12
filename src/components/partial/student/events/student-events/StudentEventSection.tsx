@@ -11,6 +11,7 @@ import useAuth from "@/hooks/useAuth";
 import { EventSchedule, UserSchedule } from "@/models/User";
 import { EventStatistics } from "./EventStatistics";
 import { HeroSection } from "./HeroSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const StudentEventSection = () => {
   const [search, setSearch] = useState("");
@@ -83,67 +84,172 @@ export const StudentEventSection = () => {
             </AnimatedGradientText>
           </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-7 w-full">
-            {(search ? filteredEvents : events).map(
-              (event: EventSchedule, index: number) => (
-                <MagicCard
-                  key={index}
-                  className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-                  gradientColor="#E8F4FF"
-                  onClick={() =>
-                    navigate(`/student/events/${event.eventId}`, {
-                      state: {
-                        previousPage: location.pathname,
-                        breadcrumb: "My Event",
-                      },
-                    })
-                  }
-                >
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <h3
-                        onClick={() =>
-                          navigate(`/student/events/${event.eventId}`, {
-                            state: {
-                              previousPage: location.pathname,
-                              breadcrumb: "My Event",
-                            },
-                          })
-                        }
-                        className="text-xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent line-clamp-2"
-                      >
-                        {event.eventName}
-                      </h3>
-                    </div>
+          <>
+            <Tabs defaultValue="event-upcoming">
+              <TabsList className="mb-4">
+                <TabsTrigger value="event-upcoming">Upcoming Event</TabsTrigger>
+                <TabsTrigger value="event-completed">
+                  Completed Event
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="event-upcoming">
+                <div className="grid md:grid-cols-3 gap-7 w-full">
+                  {(search ? filteredEvents : events)
+                    .filter(
+                      (event: EventSchedule) =>
+                        new Date(event.endDate) > new Date()
+                    )
+                    .map((event: EventSchedule, index: number) => (
+                      <>
+                        <MagicCard
+                          key={index}
+                          className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+                          gradientColor="#E8F4FF"
+                          onClick={() =>
+                            navigate(`/student/events/${event.eventId}`, {
+                              state: {
+                                previousPage: location.pathname,
+                                breadcrumb: "My Event",
+                              },
+                            })
+                          }
+                        >
+                          <div className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                              <h3
+                                onClick={() =>
+                                  navigate(`/student/events/${event.eventId}`, {
+                                    state: {
+                                      previousPage: location.pathname,
+                                      breadcrumb: "My Event",
+                                    },
+                                  })
+                                }
+                                className="text-xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent line-clamp-2"
+                              >
+                                {event.eventName}
+                              </h3>
+                            </div>
 
-                    {event.startDate && event.endDate && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-2 rounded-lg">
-                        <CalendarDays size={16} className="text-[#49BBBD]" />
-                        <span>
-                          {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
-                          {format(new Date(event.endDate), "dd/MM/yyyy")}
-                        </span>
-                      </div>
-                    )}
+                            {event.startDate && event.endDate && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-2 rounded-lg">
+                                <CalendarDays
+                                  size={16}
+                                  className="text-[#49BBBD]"
+                                />
+                                <span>
+                                  {format(
+                                    new Date(event.startDate),
+                                    "dd/MM/yyyy"
+                                  )}{" "}
+                                  -{" "}
+                                  {format(
+                                    new Date(event.endDate),
+                                    "dd/MM/yyyy"
+                                  )}
+                                </span>
+                              </div>
+                            )}
 
-                    <div className="pt-2">
-                      <span
-                        className={`px-3 py-1 text-xs rounded-full ${
-                          new Date(event.endDate) > new Date()
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-700"
-                        }`}
-                      >
-                        {new Date(event.endDate) > new Date()
-                          ? "Upcoming"
-                          : "Completed"}
-                      </span>
-                    </div>
-                  </div>
-                </MagicCard>
-              )
-            )}
-          </div>
+                            <div className="pt-2">
+                              <span
+                                className={`px-3 py-1 text-xs rounded-full ${
+                                  new Date(event.endDate) > new Date()
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {new Date(event.endDate) > new Date()
+                                  ? "Upcoming"
+                                  : "Completed"}
+                              </span>
+                            </div>
+                          </div>
+                        </MagicCard>
+                      </>
+                    ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="event-completed">
+                <div className="grid md:grid-cols-3 gap-7 w-full">
+                  {(search ? filteredEvents : events)
+                    .filter(
+                      (event: EventSchedule) =>
+                        new Date(event.endDate) < new Date()
+                    )
+                    .map((event: EventSchedule, index: number) => (
+                      <>
+                        <MagicCard
+                          key={index}
+                          className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+                          gradientColor="#E8F4FF"
+                          onClick={() =>
+                            navigate(`/student/events/${event.eventId}`, {
+                              state: {
+                                previousPage: location.pathname,
+                                breadcrumb: "My Event",
+                              },
+                            })
+                          }
+                        >
+                          <div className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                              <h3
+                                onClick={() =>
+                                  navigate(`/student/events/${event.eventId}`, {
+                                    state: {
+                                      previousPage: location.pathname,
+                                      breadcrumb: "My Event",
+                                    },
+                                  })
+                                }
+                                className="text-xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent line-clamp-2"
+                              >
+                                {event.eventName}
+                              </h3>
+                            </div>
+
+                            {event.startDate && event.endDate && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-2 rounded-lg">
+                                <CalendarDays
+                                  size={16}
+                                  className="text-[#49BBBD]"
+                                />
+                                <span>
+                                  {format(
+                                    new Date(event.startDate),
+                                    "dd/MM/yyyy"
+                                  )}{" "}
+                                  -{" "}
+                                  {format(
+                                    new Date(event.endDate),
+                                    "dd/MM/yyyy"
+                                  )}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="pt-2">
+                              <span
+                                className={`px-3 py-1 text-xs rounded-full ${
+                                  new Date(event.endDate) > new Date()
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {new Date(event.endDate) > new Date()
+                                  ? "Upcoming"
+                                  : "Completed"}
+                              </span>
+                            </div>
+                          </div>
+                        </MagicCard>
+                      </>
+                    ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </>
         )}
       </section>
     </>

@@ -54,10 +54,12 @@ export const EventSchema = z
     //       ctx.addIssue({ code: "custom", message: "Ended date must be after created date." });
     //     }
     //   }), // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
-    registeredStartDate: z.coerce.date().min(new Date(), {
-      message: "Registered start date must be in the future",
+    registeredStartDate: z.coerce.date().refine((date) => date !== null, {
+      message: "Registered start date is required!",
     }), // Kiểm tra là đối tượng Date hợp lệ
-    registeredEndDate: z.coerce.date(), // Kiểm tra là đối tượng Date hợp lệ
+    registeredEndDate: z.coerce.date().refine((date) => date !== null, {
+      message: "Registered end date is required!",
+    }), // Kiểm tra là đối tượng Date hợp lệ
 
     // Kiểm tra ngày kết thúc đăng ký phải lớn hơn ngày bắt đầu đăng ký
     fieldIds: z.array(z.string()),
@@ -175,7 +177,9 @@ export const InterClubEventSchema = z.object({
   //     }
   //   }), // Kiểm tra ngày kết thúc phải lớn hơn ngày bắt đầu
   listClubName: z.array(z.string()),
-  registeredStartDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
+  registeredStartDate: z.coerce.date().refine((date) => date !== null, {
+    message: "Registered start date is required!",
+  }), // Kiểm tra là đối tượng Date hợp lệ
   registeredEndDate: z.coerce.date().superRefine((date, ctx) => {
     const parsedDate = Date.parse(date.toString());
     if (isNaN(parsedDate)) {

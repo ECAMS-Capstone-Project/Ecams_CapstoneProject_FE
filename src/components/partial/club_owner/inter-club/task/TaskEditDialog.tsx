@@ -126,16 +126,26 @@ export const TaskEditDialog = ({
         eventId: selectedEvent.eventId,
         taskName: values.taskName,
         description: values.description,
-        startTime: fixTime(new Date(task.startTime)),
-        deadline: fixTime(new Date(task.deadline)),
+        startTime: fixTime(new Date(values.startTime || task.startTime)),
+        deadline: fixTime(new Date(values.deadline || task.deadline)),
         status: values.status || task.status,
         eventTaskDetails: values.listEventTaskDetails.map((detail, index) => ({
           eventTaskDetailId: task.eventTaskDetails[index].eventTaskDetailId,
           eventTaskId: task.eventTaskId,
           detailName: detail.detailName,
           description: detail.description,
-          startTime: fixTime(new Date(task.eventTaskDetails[index].startTime)),
-          deadline: fixTime(new Date(task.eventTaskDetails[index].deadline)),
+          startTime: fixTime(
+            new Date(
+              values.listEventTaskDetails[index].startTime ||
+                task.eventTaskDetails[index].startTime
+            )
+          ),
+          deadline: fixTime(
+            new Date(
+              values.listEventTaskDetails[index].deadline ||
+                task.eventTaskDetails[index].deadline
+            )
+          ),
           status: detail.status || task.eventTaskDetails[index].status,
         })),
       };
@@ -622,6 +632,8 @@ export const TaskEditDialog = ({
         onClose={handleCloseSubtaskDialog}
         onSubmit={handleAddSubtask}
         initialValues={editingSubtask || undefined}
+        mainTaskStartTime={form.getValues("startTime")}
+        mainTaskDeadline={form.getValues("deadline")}
       />
     </>
   );

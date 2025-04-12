@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { formatPrice } from "@/lib/FormatPrice";
+import { Money } from "@mui/icons-material";
 
 interface EventDetailsCardProps {
   selectedEvent: InterClubEventDTO;
@@ -53,6 +54,7 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
         <div className="space-y-4">
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Calendar className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Registration Period: </span>
             <span className="text-gray-700">
               {format(
                 new Date(selectedEvent.registeredStartDate),
@@ -63,6 +65,7 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Clock className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Registration Time: </span>
             <span className="text-gray-700">
               {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -
               {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
@@ -70,6 +73,7 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Users className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Number of Participants: </span>
             <span className="text-gray-700">
               {selectedEvent.numOfParticipants}/{selectedEvent.maxParticipants}{" "}
               participants
@@ -81,21 +85,25 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
         <div className="space-y-4">
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <MapPin className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Areas: </span>
             <span className="text-gray-700">
-              Areas:{" "}
               {selectedEvent.eventAreas?.map((area) => area.name).join(", ")}
             </span>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Building2 className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
             <span className="text-gray-700">
               {selectedEvent.clubs?.length || 0} clubs
             </span>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
-            <span className="text-gray-700">Price: </span>
-            <span className="font-medium text-[#136cb9]">
-              {selectedEvent.price === 0 ? "Free" : `${formatPrice(selectedEvent.price)}`}
+            <Money className="w-5 h-5 text-[#136cb9]" />
+            <span className="text-[#136cb9]">Price: </span>
+            <span className="font-bold text-[#49BBBD]">
+              {selectedEvent.price === 0
+                ? "Free"
+                : `${formatPrice(selectedEvent.price)}`}
             </span>
           </div>
         </div>

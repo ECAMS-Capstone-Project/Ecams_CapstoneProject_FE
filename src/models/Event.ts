@@ -70,4 +70,6 @@ export interface InterClubEventDTO {
   clubs: InterClub[]; // Danh sách câu lạc bộ liên quan đến sự kiện
   eventAreas?: EventAreas[]; // Các khu vực sự kiện
   status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING";
+  startDate: Date;
+  endDate: Date;
 }
