@@ -109,6 +109,11 @@ export default function RoleBasedGuard({
               currentStatus == "CHECKING" && (
                 <Button onClick={handleNavigateLogin}>Back to Log in</Button>
               )}
+            {currentRole &&
+              currentRole.includes("STUDENT") &&
+              currentStatus == "PENDING" && (
+                <Button onClick={handleNavigateLogin}>Back to Log in</Button>
+              )}
             {(!currentRole || currentRole.includes("null")) && (
               <Button onClick={handleNavigateHomePage}>
                 Back to home page
