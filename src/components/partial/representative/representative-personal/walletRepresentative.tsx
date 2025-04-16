@@ -213,6 +213,17 @@ const WalletRepresentative = () => {
             >
               Extend package
             </Button>
+            <Button
+              className="block mt-4 hover:scale-105"
+              sx={{
+                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                textTransform: "none",
+              }}
+              variant="contained"
+              onClick={() => setOpen(true)}
+            >
+              Update package
+            </Button>
           </div>
         )}
       </Card>
