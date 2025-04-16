@@ -77,6 +77,13 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
                 {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
               </span>
             </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
+              <Clock className="w-5 h-5 text-[#136cb9]" />
+              <span className="text-[#136cb9]">Training Point: </span>
+              <span className="text-gray-800">
+                {selectedEvent.trainingPoint} points
+              </span>
+            </div>
           </div>
 
           {/* Extra Info */}
