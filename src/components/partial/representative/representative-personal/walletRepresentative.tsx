@@ -17,6 +17,7 @@ import { formatPrice } from "@/lib/FormatPrice";
 import { format } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import { useNavigate } from "react-router-dom";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
@@ -29,6 +30,8 @@ const WalletRepresentative = () => {
   // State điều khiển loading, error, refetch
   const [loading, setLoading] = useState<boolean>(true);
   const [, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   // State điều khiển Dialog
   const [open, setOpen] = useState<boolean>(false);
@@ -216,11 +219,11 @@ const WalletRepresentative = () => {
             <Button
               className="block mt-4 hover:scale-105"
               sx={{
-                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                background: "#4CAF50",
                 textTransform: "none",
               }}
               variant="contained"
-              onClick={() => setOpen(true)}
+              onClick={() => navigate('/view-package-update', { state: { curPackage: curPackage } })}
             >
               Update package
             </Button>
