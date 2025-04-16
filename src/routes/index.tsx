@@ -75,6 +75,8 @@ import { EventDetailTask } from "@/components/partial/club_owner/manage_club/eve
 import StudentEventDetail from "@/components/partial/student/events/EventDetail/EventDetail";
 import TaskDetailCard from "@/components/partial/club_owner/manage_club/event-task/TaskDetailCard";
 import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
+import PackageListUpdatePage from "@/pages/representative/package/packageListUpdatePage";
+import PaymentUpdateConfirmation from "@/components/partial/representative/representative-update-package/confirm-payment-update";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -311,9 +313,19 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
+    path: "/view-package-update",
+    element: <PackageListUpdatePage />,
+    errorElement: <ErrorException />
+  },
+  {
     path: "/payment-confirm",
     element: <PaymentConfirmation />,
     errorElement: <ErrorException />,
+  },
+  {
+    path: "/payment-update-confirm",
+    element: <PaymentUpdateConfirmation />,
+    errorElement: <ErrorException />
   },
   {
     path: "/events/payment-confirm",
