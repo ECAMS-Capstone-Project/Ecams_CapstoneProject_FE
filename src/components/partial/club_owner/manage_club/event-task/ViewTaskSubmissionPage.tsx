@@ -237,7 +237,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                                                         toast.error("Please input correct conditions ")
                                                     }
                                                 }}
-                                                className="w-full text-sm"
+                                                className="w-1/4 text-sm"
                                             />
                                         </div>
                                     )}
@@ -255,14 +255,14 @@ const ViewTaskSubmissionPage: React.FC = () => {
                                             disabled={!(isSubmitted || isAllowedToReviewAsZero)}
                                             onChange={(e) => setFeedback(e.target.value)}
                                             className="block w-full rounded-md border border-gray-300 p-2 text-sm"
-                                            rows={3}
+                                            rows={4}
                                         ></textarea>
                                     )}
                                 </div>
                             </div>
                         ) : (
                             <p className="text-muted-foreground italic">
-                                Không thể chấm điểm vì học sinh chưa nộp bài và chưa quá hạn deadline.
+                                ⚠️ Cannot grade because the student has not submitted the assignment and the deadline has not passed yet.
                             </p>
                         )}
                     </CardContent>

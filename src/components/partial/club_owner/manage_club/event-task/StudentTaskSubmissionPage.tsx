@@ -4,12 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CalendarDays, FileText, CheckCircle2, Pencil } from "lucide-react";
+import { CalendarDays, CheckCircle2, Pencil, ArrowLeft } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const StudentTaskSubmissionPage: React.FC = () => {
     const navigate = useNavigate();
+    // const location = useLocation();
+    // const taskDetail = location.state.taskDetail as TaskDetailDTO;
+    // const submission = location.state.submission as Submission
 
     const taskDetail = {
         taskName: "Viết bài luận về môi trường",
@@ -50,14 +53,22 @@ const StudentTaskSubmissionPage: React.FC = () => {
     return (
         <div className="p-6 max-w-full mx-auto space-y-6 rounded-md border border-gray-300 shadow-lg">
             {/* Task Info */}
-            <Card className="bg-blue-100">
+            <Card className="shadow-md bg-blue-50">
                 <CardContent className="p-6 space-y-4">
-                    <h1 className="text-2xl font-bold text-blue-700 flex items-center gap-2">
-                        <FileText size={20} />
-                        {taskDetail.taskName}
-                    </h1>
+                    <div className="flex items-center gap-4 mb-4">
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold text-blue-600">{taskDetail?.taskName}</h1>
+                            <p className="mt-1">{taskDetail?.description}</p>
+                        </div>
+                    </div>
 
-                    <div className="text-gray-700 space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <p className="flex items-center gap-2">
                             <CalendarDays size={16} className="text-muted-foreground" />
                             <span>
@@ -69,9 +80,6 @@ const StudentTaskSubmissionPage: React.FC = () => {
                             <span>
                                 <strong>Kết thúc:</strong> {deadline.toLocaleString()}
                             </span>
-                        </p>
-                        <p>
-                            <strong>Mô tả:</strong> {taskDetail.description}
                         </p>
                         <p>
                             <strong>Điểm tối đa:</strong>{" "}
@@ -109,19 +117,14 @@ const StudentTaskSubmissionPage: React.FC = () => {
                     ) : (
                         <>
                             <ReactQuill theme="snow" value={content} onChange={setContent} className="bg-white" />
-                            <div className="flex justify-end">
-                                <Button onClick={handleSubmit} disabled={isSubmitting || !content.trim()}>
-                                    {isSubmitting ? "Đang gửi..." : "Nộp bài"}
-                                </Button>
-                            </div>
                         </>
                     )}
                 </CardContent>
             </Card>
 
-            <div className="flex justify-end">
-                <Button variant="outline" onClick={() => navigate(-1)}>
-                    Quay lại
+            <div className="flex justify-end gap-4">
+                <Button onClick={handleSubmit} disabled={isSubmitting || !content.trim()}>
+                    {isSubmitting ? "Đang gửi..." : "Nộp bài"}
                 </Button>
             </div>
         </div>
