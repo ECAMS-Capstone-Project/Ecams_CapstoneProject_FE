@@ -73,6 +73,7 @@ import RepresentativeInformationPage from "@/pages/representative/request-to-cha
 import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
+import { TaskDetailPage } from "@/pages/club-owner/inter-club-event/task/TaskDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -81,9 +82,10 @@ const PrivateRoute = ({ element, ...rest }: any) => {
 
   useEffect(() => {
     const handleLogout = async () => {
-
       if (
-        (user?.email !== "ecams@admin.com" && (user?.roles.includes("REPRESENTATIVE") || user?.roles.includes("ADMIN"))) &&
+        user?.email !== "ecams@admin.com" &&
+        (user?.roles.includes("REPRESENTATIVE") ||
+          user?.roles.includes("ADMIN")) &&
         userStatus !== "ACTIVE"
       ) {
         await logout();
@@ -91,7 +93,6 @@ const PrivateRoute = ({ element, ...rest }: any) => {
       } else {
         return;
       }
-
     };
     handleLogout();
   }, [userStatus, logout, user?.roles, user?.email]);
@@ -475,6 +476,11 @@ export const router = createBrowserRouter([
       {
         path: "/club/inter-club-event/:clubEventId",
         element: <EventDetailPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/task/:eventTaskId",
+        element: <TaskDetailPage />,
         errorElement: <ErrorException />,
       },
     ],

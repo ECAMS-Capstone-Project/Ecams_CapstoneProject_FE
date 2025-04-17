@@ -58,3 +58,12 @@ export const UpdateInterTask = async (
     throw error;
   }
 };
+
+export const GetInterTaskDetail = async (
+  eventTaskId: string
+): Promise<ResponseDTO<InterTask>> => {
+  const response = await get<ResponseDTO<InterTask>>(
+    `/EventTask/${eventTaskId}`
+  );
+  return response;
+};

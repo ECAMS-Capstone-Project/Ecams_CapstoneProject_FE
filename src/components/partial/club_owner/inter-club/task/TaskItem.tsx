@@ -3,7 +3,6 @@ import { InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
 import { format } from "date-fns";
 import { Calendar, MoreHorizontal, Users2 } from "lucide-react";
 import { useState } from "react";
-import { TaskDetailDialog } from "./TaskDetailDialog";
 import {
   DropdownMenuTrigger,
   DropdownMenu,
@@ -14,6 +13,7 @@ import { TaskEditDialog } from "./TaskEditDialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { EventClubDTO } from "@/api/representative/EventAgent";
+import { useNavigate } from "react-router-dom";
 
 interface TaskItemProps {
   task: InterTask;
@@ -28,8 +28,8 @@ export const TaskItem = ({
   selectedEvent,
   currentClub,
 }: TaskItemProps) => {
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const navigate = useNavigate();
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100)
       return "bg-green-100 text-green-800";
@@ -105,7 +105,18 @@ export const TaskItem = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setIsDetailOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigate(
+                      `/club/inter-club-event/task/${task.eventTaskId}`,
+                      {
+                        state: {
+                          currentClub: currentClub,
+                        },
+                      }
+                    )
+                  }
+                >
                   View
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -123,11 +134,6 @@ export const TaskItem = ({
         </div>
       </div>
 
-      <TaskDetailDialog
-        task={task}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-      />
       <TaskEditDialog
         onUpdate={handleUpdateTask}
         task={task}

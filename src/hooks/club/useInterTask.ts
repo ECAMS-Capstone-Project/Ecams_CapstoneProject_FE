@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   CreateInterTask,
   GetInterTask,
+  GetInterTaskDetail,
   UpdateInterTask,
 } from "@/api/club-owner/InterEventTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -63,14 +65,13 @@ export const useInterTask = (
   //   });
   // };
 
-  // const getInterEventDetailQuery = (eventId: string) => {
-  //   return useQuery({
-  //     queryKey: ["interEventDetail", eventId], // Query key động dựa trên eventId
-  //     queryFn: () => GetInterClubEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
-  //     enabled: !!eventId, // Chỉ thực hiện khi có eventId
-
-  //   });
-  // };
+  const getInterTaskDetailQuery = (eventTaskId: string) => {
+    return useQuery({
+      queryKey: ["interTaskDetail", eventTaskId], // Query key động dựa trên eventId
+      queryFn: () => GetInterTaskDetail(eventTaskId), // Gọi API lấy chi tiết sự kiện
+      enabled: !!eventTaskId, // Chỉ thực hiện khi có eventId
+    });
+  };
 
   // const { mutateAsync: approveInterEventMutation, isPending: isApproving } = useMutation({
   //   mutationFn:approveInterEvent,
@@ -102,5 +103,6 @@ export const useInterTask = (
     isPending,
     updateInterEventTask: updateInterEventTaskMutation,
     isUpdating,
+    getInterTaskDetailQuery,
   };
 };

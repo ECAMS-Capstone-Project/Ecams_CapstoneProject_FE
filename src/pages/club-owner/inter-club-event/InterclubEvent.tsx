@@ -25,7 +25,7 @@ export const InterClubEvent = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb]">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden ">
         <div className="p-6">
           <InterClubEventList />
         </div>
