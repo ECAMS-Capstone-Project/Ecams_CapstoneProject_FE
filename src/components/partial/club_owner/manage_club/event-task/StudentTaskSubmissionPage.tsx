@@ -116,7 +116,19 @@ const StudentTaskSubmissionPage: React.FC = () => {
                         <p className="text-red-500 font-semibold">Đã quá hạn nộp bài. Bạn không thể nộp bài nữa.</p>
                     ) : (
                         <>
-                            <ReactQuill theme="snow" value={content} onChange={setContent} className="bg-white" />
+                            <ReactQuill
+                                theme="snow"
+                                value={content}
+                                onChange={setContent}
+                                modules={{
+                                    toolbar: [
+                                        ['bold', 'italic', 'underline'],
+                                        ['link', 'image', 'video'], // Cho phép chèn ảnh & video
+                                        [{ list: 'ordered' }, { list: 'bullet' }],
+                                    ],
+                                }}
+                                className="bg-white"
+                            />
                         </>
                     )}
                 </CardContent>
