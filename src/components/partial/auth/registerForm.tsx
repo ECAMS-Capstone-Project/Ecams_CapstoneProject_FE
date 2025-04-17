@@ -20,15 +20,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
-
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { formatDate } from "date-fns";
+import { format } from "date-fns";
 import useAuth from "@/hooks/useAuth";
 import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
 import { University } from "@/models/University";
@@ -378,77 +370,41 @@ const RegisterForm: React.FC = () => {
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        border: "1px solid #E4E4E7",
-                        textTransform: "none",
-                        color: "#838385",
-                      }}
-                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
-                        }`}
-                    >
-                      <CalendarIcon />
-                      {date ? (
-                        formatDate(date, "PPP")
-                      ) : (
-                        <span className="ml-3">Pick Start Date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(selectedDate) => {
-                        setDate(selectedDate || undefined); // Cập nhật giá trị `date` trong state
-                        if (selectedDate) {
-                          setValue("startDate", selectedDate); // Cập nhật giá trị vào form state
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <TextField
+                  label="Start Date"
+                  type="date"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  value={date ? format(date, "yyyy-MM-dd") : ""}
+                  onChange={(e) => {
+                    const newDate = e.target.value ? new Date(e.target.value) : undefined;
+                    setDate(newDate);
+                    if (newDate) {
+                      setValue("startDate", newDate);
+                    }
+                  }}
+                  error={!!errors.startDate}
+                  helperText={errors.startDate?.message}
+                />
               </Grid2>
 
               <Grid2 size={{ xs: 12, md: 6 }}>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        border: "1px solid #E4E4E7",
-                        textTransform: "none",
-                        color: "#838385",
-                      }}
-                      className={`w-full justify-start text-left font-normal ${!date ? "text-muted-foreground" : ""
-                        }`}
-                    >
-                      <CalendarIcon />
-                      {endDate ? (
-                        formatDate(endDate, "PPP")
-                      ) : (
-                        <span className="ml-3">Pick End Date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate || undefined} // Đảm bảo `undefined` được truyền khi `endDate` không có giá trị
-                      onSelect={(selectedDate) => {
-                        setEndDate(selectedDate || undefined); // Cập nhật giá trị `date` trong state
-                        if (selectedDate) {
-                          setValue("endDate", selectedDate); // Cập nhật giá trị vào form state
-                        }
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <TextField
+                  label="End Date"
+                  type="date"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  value={endDate ? format(endDate, "yyyy-MM-dd") : ""}
+                  onChange={(e) => {
+                    const newDate = e.target.value ? new Date(e.target.value) : undefined;
+                    setEndDate(newDate);
+                    if (newDate) {
+                      setValue("endDate", newDate);
+                    }
+                  }}
+                  error={!!errors.startDate}
+                  helperText={errors.startDate?.message}
+                />
               </Grid2>
               <div className="w-full flex justify-center">
                 {errors.endDate && (
