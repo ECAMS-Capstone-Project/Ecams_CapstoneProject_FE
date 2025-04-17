@@ -139,11 +139,12 @@ const WalletRepresentative = () => {
                     <Typography mb={2}>
                       🔘 <b>Package Status:</b>{" "}
                       <span
-                        className={
-                          curPackage.status ? "text-green-500" : "text-red-500"
-                        }
+                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${curPackage.status
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                          }`}
                       >
-                        {curPackage.status ? "Active" : "Inactive"}
+                        {curPackage.status ? "Active ✅" : "Inactive ❌"}
                       </span>
                     </Typography>
                   </Grid2>

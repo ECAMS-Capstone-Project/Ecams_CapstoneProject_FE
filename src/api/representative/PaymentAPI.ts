@@ -104,7 +104,7 @@ export const exchangePackage = async (formData: FormData): Promise<ResponseDTO<P
 
 export const updatePackage = async (formData: FormData): Promise<ResponseDTO<PaymentDetails | string>> => {
     try {
-        const response = await axiosMultipartForm.post("/Payment/package/extend", formData);
+        const response = await axiosMultipartForm.post("/Payment/package/upgrade", formData);
         const apiResponse = response.data as ResponseDTO<PaymentDetails | string>;
 
         if (apiResponse.data && typeof apiResponse.data === "string") {

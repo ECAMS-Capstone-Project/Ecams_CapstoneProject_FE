@@ -24,8 +24,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { PackageList3 } from "@/api/agent/PackageAgent";
 import { Package } from "@/models/Package";
 import { formatPrice } from "@/lib/FormatPrice";
-import { CheckBuyPackageAPI } from "@/api/representative/PaymentAPI";
-import useAuth from "@/hooks/useAuth";
 
 // Styled components
 const StyledCard = styled(Card, {
@@ -83,13 +81,12 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [popularIndex] = useState<number | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     const loadPackage = async () => {
       try {
         const packageData = await PackageList3(100, 1);
-        const packageList = packageData.data?.data || [];
+        const packageList = packageData.data?.data.filter((pkg) => pkg.status == true && pkg.price > curPackage.price) || [];
         setPackages(packageList);
       } catch (error: any) {
         setError(error.message);
@@ -101,22 +98,15 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
   }, []);
 
   const handleClick = async (plan: Package) => {
-    if (user) {
-      const response = await CheckBuyPackageAPI({
-        packageId: plan.packageId,
-        representativeId: user.universityId || "",
-      });
-      console.log(response);
-      navigate("/payment-update-confirm", {
-        state: { selectedPlan: plan },
-      });
-    }
+    navigate("/payment-update-confirm", {
+      state: { selectedPlan: plan },
+    });
   };
 
   // Cấu hình react-slick sử dụng các nút chuyển mặc định
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -167,7 +157,6 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
           <SliderContainer>
             <Slider {...settings}>
               {packages
-                .filter((pkg) => pkg.status == true && pkg.price > curPackage.price)
                 .map((plan, index) => {
                   const isPopular = index === popularIndex;
                   return (
@@ -238,7 +227,7 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
         )}
         <Box display="flex" justifyContent="center">
           <Button
-            onClick={() => navigate("/representative")}
+            onClick={() => navigate(-1)}
             variant="contained"
             color="primary"
             sx={{
@@ -249,7 +238,7 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
               width: 250,
             }}
           >
-            Back To Home Page
+            Back To Page
           </Button>
         </Box>
       </Container>
