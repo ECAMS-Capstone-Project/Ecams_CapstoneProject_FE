@@ -102,9 +102,7 @@ export const StudentEventCheckIn = () => {
       </div>
 
       {checkInInfo?.data?.startDate &&
-      checkInInfo?.data?.endDate &&
-      new Date() >= new Date(checkInInfo.data.startDate) &&
-      new Date() <= new Date(checkInInfo.data.endDate) ? (
+      new Date() >= new Date(checkInInfo.data.startDate) ? (
         <Card className="w-full md:max-w-2xl max-w-lg mx-auto border-t-4 border-t-[#136CB9] shadow-lg">
           <div className="p-4 sm:p-6">
             {/* Ticket Status */}

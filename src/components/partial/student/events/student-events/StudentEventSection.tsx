@@ -173,10 +173,7 @@ export const StudentEventSection = () => {
               <TabsContent value="event-completed">
                 <div className="grid md:grid-cols-3 gap-7 w-full">
                   {(search ? filteredEvents : events)
-                    .filter(
-                      (event: EventSchedule) =>
-                        new Date(event.endDate) < new Date()
-                    )
+                    .filter((event: EventSchedule) => event.status === "ENDED")
                     .map((event: EventSchedule, index: number) => (
                       <>
                         <MagicCard

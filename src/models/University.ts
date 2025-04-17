@@ -1,6 +1,6 @@
 export interface University {
-    universityId: string; // Primary key
-    representativeId: string; // Foreign key referencing Staffs table
+  universityId: string; // Primary key
+  representativeId: string; // Foreign key referencing Staffs table
   representativeName?: string; // Staff name
   universityName: string; // University name
   universityAddress?: string; // Optional university address
@@ -14,4 +14,5 @@ export interface University {
   subscriptionStatus: string; // Subscription status
   createdDate?: Date; // Optional created date
   updatedDate?: Date; // Optional updated date
+  verifyImageUrl?: string; // Verify image URL
 }
