@@ -147,7 +147,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                       variant={"custom"}
                       className="z-[1000] w-fit"
                       onClick={() =>
-                        navigate(`/club/event-task/${evt.eventId}`)
+                        navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner } })
                       }
                     >
                       <Link

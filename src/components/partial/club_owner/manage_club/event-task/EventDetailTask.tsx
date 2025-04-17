@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
@@ -12,6 +12,8 @@ export const EventDetailTask = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
   const { user } = useAuth();
+  const location = useLocation();
+  const isClubOwner = location.state?.isClubOwner as boolean
 
   const { data: eventDetail, isLoading: isEventDetailLoading } =
     getEventDetailQuery(eventId, user?.userId || "");
@@ -76,7 +78,7 @@ export const EventDetailTask = () => {
               <EventParticipants eventId={event.eventId} />
             </TabsContent>
             <TabsContent value="tasks" className="mt-0">
-              <TaskListInEvent clubId="fad28837-8bd0-46a3-bd80-205a1a7ba97d" isClubOwner={true} />
+              <TaskListInEvent clubId="fad28837-8bd0-46a3-bd80-205a1a7ba97d" isClubOwner={isClubOwner} />
             </TabsContent>
           </div>
         </Tabs>
