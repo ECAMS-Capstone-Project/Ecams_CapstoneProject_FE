@@ -62,7 +62,7 @@ export const contractColumn: ColumnDef<Contract>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <div>
+      <div className="text-center">
         <DataTableColumnHeader column={column} title="Status" />
       </div>
     ),
@@ -73,13 +73,12 @@ export const contractColumn: ColumnDef<Contract>[] = [
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${
-            isActive
-              ? "bg-[#CBF2DA] text-[#2F4F4F]"
-              : isInactive
+          className={`flex items-center justify-center gap-2 p-2 rounded-md w-full ${isActive
+            ? "bg-[#CBF2DA] text-[#2F4F4F]"
+            : isInactive
               ? "bg-[#FFF5BA] text-[#5A3825]"
               : ""
-          }`}
+            }`}
         >
           {isActive && (
             <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />
@@ -92,7 +91,7 @@ export const contractColumn: ColumnDef<Contract>[] = [
   },
   {
     id: "actions",
-    header: () => <div>Actions</div>,
+    header: () => <div className="text-center">Actions</div>,
     cell: ({ row }) => {
       const navigate = useNavigate();
       return (

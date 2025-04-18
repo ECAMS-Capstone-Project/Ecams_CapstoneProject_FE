@@ -17,6 +17,7 @@ import { formatPrice } from "@/lib/FormatPrice";
 import { format } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import { useNavigate } from "react-router-dom";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
@@ -29,6 +30,8 @@ const WalletRepresentative = () => {
   // State điều khiển loading, error, refetch
   const [loading, setLoading] = useState<boolean>(true);
   const [, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   // State điều khiển Dialog
   const [open, setOpen] = useState<boolean>(false);
@@ -136,11 +139,12 @@ const WalletRepresentative = () => {
                     <Typography mb={2}>
                       🔘 <b>Package Status:</b>{" "}
                       <span
-                        className={
-                          curPackage.status ? "text-green-500" : "text-red-500"
-                        }
+                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${curPackage.status
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                          }`}
                       >
-                        {curPackage.status ? "Active" : "Inactive"}
+                        {curPackage.status ? "Active ✅" : "Inactive ❌"}
                       </span>
                     </Typography>
                   </Grid2>
@@ -212,6 +216,17 @@ const WalletRepresentative = () => {
               onClick={() => setOpen(true)}
             >
               Extend package
+            </Button>
+            <Button
+              className="block mt-4 hover:scale-105"
+              sx={{
+                background: "#4CAF50",
+                textTransform: "none",
+              }}
+              variant="contained"
+              onClick={() => navigate('/view-package-update', { state: { curPackage: curPackage } })}
+            >
+              Update package
             </Button>
           </div>
         )}

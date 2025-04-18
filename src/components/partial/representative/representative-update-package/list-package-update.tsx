@@ -24,8 +24,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { PackageList3 } from "@/api/agent/PackageAgent";
 import { Package } from "@/models/Package";
 import { formatPrice } from "@/lib/FormatPrice";
-import { CheckBuyPackageAPI } from "@/api/representative/PaymentAPI";
-import useAuth from "@/hooks/useAuth";
 
 // Styled components
 const StyledCard = styled(Card, {
@@ -73,26 +71,23 @@ const SliderContainer = styled(Box)({
   padding: "0 60px",
 });
 
-const Pricing: React.FC = () => {
+interface props {
+  curPackage: Package
+}
+
+const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
   const navigate = useNavigate();
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [popularIndex] = useState<number | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     const loadPackage = async () => {
       try {
         const packageData = await PackageList3(100, 1);
-        const packageList = packageData.data?.data || [];
+        const packageList = packageData.data?.data.filter((pkg) => pkg.status == true && pkg.price > curPackage.price) || [];
         setPackages(packageList);
-
-        // if (packageList.length > 0) {
-        //   // Chọn random một gói làm Popular
-        //   const randomIndex = Math.floor(Math.random() * packageList.length);
-        //   setPopularIndex(randomIndex);
-        // }
       } catch (error: any) {
         setError(error.message);
       } finally {
@@ -103,21 +98,15 @@ const Pricing: React.FC = () => {
   }, []);
 
   const handleClick = async (plan: Package) => {
-    if (user) {
-      await CheckBuyPackageAPI({
-        packageId: plan.packageId,
-        representativeId: user.universityId || "",
-      });
-      navigate("/payment-confirm", {
-        state: { selectedPlan: plan },
-      });
-    }
+    navigate("/payment-update-confirm", {
+      state: { selectedPlan: plan },
+    });
   };
 
   // Cấu hình react-slick sử dụng các nút chuyển mặc định
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -137,7 +126,6 @@ const Pricing: React.FC = () => {
       },
     ],
   };
-
   return (
     <GradientBackground>
       <Container maxWidth="lg">
@@ -169,7 +157,6 @@ const Pricing: React.FC = () => {
           <SliderContainer>
             <Slider {...settings}>
               {packages
-                .filter((pkg) => pkg.status == true)
                 .map((plan, index) => {
                   const isPopular = index === popularIndex;
                   return (
@@ -259,4 +246,4 @@ const Pricing: React.FC = () => {
   );
 };
 
-export default Pricing;
+export default ListPackageUpdate;
