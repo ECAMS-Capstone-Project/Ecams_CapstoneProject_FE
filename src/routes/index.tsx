@@ -78,6 +78,7 @@ import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/
 import PackageListUpdatePage from "@/pages/representative/package/packageListUpdatePage";
 import PaymentUpdateConfirmation from "@/components/partial/representative/representative-update-package/confirm-payment-update";
 import StudentTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/StudentTaskSubmissionPage";
+import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-task/TaskListInEvent";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -502,6 +503,10 @@ export const router = createBrowserRouter([
       {
         path: "/club/task-submission-student",
         element: <StudentTaskSubmissionPage />
+      },
+      {
+        path: "/club/event-subtask/:eventId",
+        element: <TaskListInEvent />
       }
     ],
     errorElement: <ErrorException />,
