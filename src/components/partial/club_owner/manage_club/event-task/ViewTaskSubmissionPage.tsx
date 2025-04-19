@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { Submission, TaskDetailDTO } from "@/api/club-owner/TaskAPI";
 import { fixTime } from "@/lib/utils";
+import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 
 const ViewTaskSubmissionPage: React.FC = () => {
     const navigate = useNavigate();
@@ -59,22 +60,33 @@ const ViewTaskSubmissionPage: React.FC = () => {
         }, 1000);
     };
     return (
-        <div className="p-6 max-w-full mx-auto space-y-6 rounded-md border border-gray-300 shadow-lg bg-white">
+        <div className="max-w-full mx-auto space-y-6 ">
+            <EventTaskBreadcrumb
+                items={[
+                    { label: "Event List" },
+                    { label: "Task list in event" },
+                    { label: "Sub task list in event" },
+                    { label: "Sub task detail" },
+                    { label: "Task submission" }
+                ]}
+            />
             <Card className="bg-blue-50 shadow-md">
                 <CardContent className="py-6 space-y-4">
-                    <div className="flex items-center gap-4 mb-4">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
-                        >
-                            <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
-                        </button>
-                        <div>
-                            <h1 className="text-2xl font-bold text-blue-600">
-                                {taskDetail?.taskName}
-                            </h1>
-                            <p className="mt-1 text-gray-700">{taskDetail?.description}</p>
+                    <div>
+                        <div className="flex items-center gap-4 mb-4">
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
+                            >
+                                <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+                            </button>
+                            <div>
+                                <h1 className="text-2xl font-bold text-blue-600">
+                                    {taskDetail?.taskName}
+                                </h1>
+                            </div>
                         </div>
+                        <p className="mt-1">{taskDetail?.description}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
