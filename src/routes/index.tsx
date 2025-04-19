@@ -54,7 +54,6 @@ import ClubRankingPage from "@/components/partial/club_owner/manage_club/ClubRan
 import ClubActiveListPage from "@/pages/representative/manage-club/ClubActiveListPage";
 import CreateTaskClub from "@/components/partial/representative/representative-task/CreateTaskClub";
 import { CreateEventClub } from "@/components/partial/representative/representative-event/CreateEventUni";
-import { StudentEventDetail } from "@/components/partial/student/events/EventDetail/EventDetail";
 import { FreeEventConfirm } from "@/components/partial/student/event-register/FreeConfirmation";
 import { EventConfirmSuccess } from "@/components/partial/student/event-register/ConfirmSuccess";
 import StudentClubDetail from "@/components/partial/student/clubs/ClubDetail/ClubDetail";
@@ -62,7 +61,6 @@ import EventPaymentConfirmation from "@/components/partial/student/event-registe
 import WaitingCheckout from "@/components/partial/student/event-register/WaitingCheckOut";
 import { EventCheckIn } from "@/pages/club-owner/event/EventCheckIn";
 import { StudentEventSection } from "@/components/partial/student/events/student-events/StudentEventSection";
-import EventParticipants from "@/pages/club-owner/event/EventParticipants";
 import { InterClubEvent } from "@/pages/club-owner/inter-club-event/InterclubEvent";
 import { CreateInterClubEventPage } from "@/pages/club-owner/inter-club-event/CreateInterClubEvent";
 import { EventDetailPage } from "@/pages/club-owner/inter-club-event/EventDetail";
@@ -74,6 +72,13 @@ import UniversityRepresentativeHistory from "@/pages/representative/history-repr
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { TaskDetailPage } from "@/pages/club-owner/inter-club-event/task/TaskDetailPage";
+import { EventDetailTask } from "@/components/partial/club_owner/manage_club/event-task/EventDetailTask";
+import StudentEventDetail from "@/components/partial/student/events/EventDetail/EventDetail";
+import TaskDetailCard from "@/components/partial/club_owner/manage_club/event-task/TaskDetailCard";
+import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
+import PackageListUpdatePage from "@/pages/representative/package/packageListUpdatePage";
+import PaymentUpdateConfirmation from "@/components/partial/representative/representative-update-package/confirm-payment-update";
+import StudentTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/StudentTaskSubmissionPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -310,8 +315,18 @@ export const router = createBrowserRouter([
     errorElement: <ErrorException />,
   },
   {
+    path: "/view-package-update",
+    element: <PackageListUpdatePage />,
+    errorElement: <ErrorException />,
+  },
+  {
     path: "/payment-confirm",
     element: <PaymentConfirmation />,
+    errorElement: <ErrorException />,
+  },
+  {
+    path: "/payment-update-confirm",
+    element: <PaymentUpdateConfirmation />,
     errorElement: <ErrorException />,
   },
   {
@@ -434,11 +449,6 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/club/event-participants/:eventId",
-        element: <EventParticipants />,
-        errorElement: <ErrorException />,
-      },
-      {
         path: "/club/event-check-in",
         element: <EventCheckIn />,
         errorElement: <ErrorException />,
@@ -482,6 +492,22 @@ export const router = createBrowserRouter([
         path: "/club/inter-club-event/task/:eventTaskId",
         element: <TaskDetailPage />,
         errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/event-task/:eventId",
+        element: <EventDetailTask />,
+      },
+      {
+        path: "/club/task-detail/:taskId",
+        element: <TaskDetailCard />,
+      },
+      {
+        path: "/club/task-submission",
+        element: <ViewTaskSubmissionPage />,
+      },
+      {
+        path: "/club/task-submission-student",
+        element: <StudentTaskSubmissionPage />,
       },
     ],
     errorElement: <ErrorException />,

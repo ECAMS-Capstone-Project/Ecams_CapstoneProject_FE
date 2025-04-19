@@ -47,20 +47,16 @@ export default function CreateTaskClub() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
-  // Club ID (có thể lấy từ context hoặc auth)
   const location = useLocation();
-  const clubId = location.state?.clubId; // Lấy clubId
+  const clubId = location.state?.clubId;
 
-  // Lấy danh sách thành viên từ API
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   useEffect(() => {
     async function fetchMembers() {
       try {
         if (!clubId) return;
-        // Gọi API với clubId, pageSize và pageNo
         const response = await GetMemberInClubsByStatusAPI(clubId, 100, 1, "ACTIVE");
         if (response.data) {
-          // Giả sử API trả về { data: ClubMemberDTO[] }
           const members: ClubMemberDTO[] = response.data.data;
           const students: Student[] = members.filter(a => a.clubRoleName != "CLUB_OWNER").map((m) => ({
             studentId: m.studentId,

@@ -17,6 +17,7 @@ interface SubmissionDetailDialogProps {
     onSaveFeedback: (data: ReviewSubmissionRequest) => void;
     taskScore: number;
     isSubmitting: boolean
+    deadline: string | null;
 }
 
 const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
@@ -25,7 +26,8 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     onClose,
     onSaveFeedback,
     taskScore,
-    isSubmitting
+    isSubmitting,
+    deadline
 }) => {
     const { user } = useAuth();
     const [tempFeedback, setTempFeedback] = useState(submission.comment ?? "");
@@ -57,6 +59,9 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     };
 
     const isSubmitted = submission.submissionDate == "0001-01-01T00:00:00"
+
+    const isDeadlinePassed = deadline ? new Date(deadline).getTime() < Date.now() : false;
+    const isAllowedToReviewAsZero = isSubmitted && isDeadlinePassed;
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -115,14 +120,18 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
 
                     {/* Feedback and Score */}
                     <div className="mt-4 space-y-4">
-                        {(!hasFeedback && submission.submissionScore == 0) && (
+                        {(!hasFeedback && (isSubmitted || isAllowedToReviewAsZero)) && (
                             <div>
+                                {isAllowedToReviewAsZero && (
+                                    <p className="text-sm text-orange-500 font-medium mb-2">
+                                        ⚠️ This student missed the deadline and has not submitted. You may grade with 0 and leave feedback.
+                                    </p>
+                                )}
                                 <p className="text-sm font-medium text-gray-600 mb-1">
                                     Score the task (up to {taskScore} points)
                                 </p>
                                 <Input
                                     type="number"
-                                    disabled={isSubmitted}
                                     placeholder={`Enter score (max ${taskScore} points)`}
                                     value={tempScore}
                                     onChange={(e) => {
@@ -145,8 +154,8 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                 </div>
                             ) : (
                                 <textarea
-                                    disabled={isSubmitted}
                                     placeholder="Fill in feedback"
+                                    disabled={!(isSubmitted || isAllowedToReviewAsZero)}
                                     onChange={(e) => setTempFeedback(e.target.value)}
                                     className="block w-full rounded-md border border-gray-300 p-2 text-sm"
                                     rows={3}

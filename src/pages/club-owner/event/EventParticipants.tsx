@@ -1,28 +1,25 @@
 import { useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
-import { Button } from "@/components/ui/button";
 import ParticipantsList from "@/components/partial/club_owner/event-participants/ParticipantsTable";
-import { ChevronLeft } from "lucide-react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ParticipantsHeader from "@/components/partial/club_owner/event-participants/ParticipantsHeader";
 import ParticipantsSearchBar from "@/components/partial/club_owner/event-participants/ParticipantsSearchBar";
 import { ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
-const EventParticipants = () => {
+interface props {
+  eventId: string
+}
+const EventParticipants = ({ eventId }: props) => {
   const [isLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ParticipantStatus | "all">(
     "all"
   );
-  const { eventId = "" } = useParams();
   const { state } = useLocation();
   const eventName = state?.eventName;
-  const previousPage = state?.previousPath;
-
-  const navigate = useNavigate();
   const { participants } = useEventDetail(eventId, 10, 1);
 
   // Filter participants list
@@ -55,22 +52,6 @@ const EventParticipants = () => {
         <LoadingAnimation />
       ) : (
         <div className="space-y-6">
-          <Button
-            variant={"custom"}
-            onClick={() => {
-              if (previousPage === "/club/event-check-in") {
-                navigate(`/club`);
-              } else {
-                navigate(-2);
-              }
-            }}
-          >
-            <ChevronLeft />{" "}
-            {previousPage === "/club/event-check-in"
-              ? "Back to club list"
-              : "Back"}
-          </Button>
-
           <ParticipantsHeader
             eventName={eventName}
             totalParticipants={totalParticipants}

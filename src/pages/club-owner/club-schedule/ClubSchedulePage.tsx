@@ -63,42 +63,64 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
         fetchSchedules();
     }, [flag, clubId]);
 
-    const calendarEvents = schedules
-        .filter((sch) => sch.status)
-        .map((sch) => {
-            const weekdayAbbrev = dayMap[sch.dayOfWeek] || "MO";
-            const dtStartDate = getFirstWeekdayFromStart(sch.startDate, sch.dayOfWeek);
+    const clubEvents = Array.isArray(schedules)
+        ? schedules
+            .filter((club) => club.status)
+            .map((club, index) => {
+                const weekdayAbbrev = dayMap[club.dayOfWeek] || "MO";
 
-            const startDateTime = new Date(`${dtStartDate}T${sch.startTime}`);
-            const endDateTime = new Date(`${dtStartDate}T${sch.endTime}`);
+                const baseDate = getFirstWeekdayFromStart(
+                    club.startDate,
+                    club.dayOfWeek
+                );
 
-            const untilDate = new Date(sch.endDate);
-            const validUntil = isNaN(untilDate.getTime()) || untilDate.getFullYear() <= 1900
-                ? new Date(new Date().getFullYear(), 11, 31, 23, 59, 59).toISOString()
-                : untilDate.toISOString();
+                const formatTime = (time: string) => {
+                    if (time.includes(":")) return time.padStart(5, "0");
+                    return `${time.padStart(2, "0")}:00`;
+                };
 
-            return {
-                id: sch.clubScheduleId,
-                title: sch.scheduleName,
-                rrule: {
-                    freq: "weekly",
-                    byweekday: [weekdayAbbrev],
-                    dtstart: startDateTime.toISOString(),
-                    until: validUntil,
-                },
-                start: startDateTime,
-                end: endDateTime,
-                backgroundColor: "#28a745",
-                extendedProps: {
-                    dayOfWeek: sch.dayOfWeek,
-                    startTime: sch.startTime,
-                    endTime: sch.endTime,
-                    schedule: sch,
-                },
-            };
-        })
+                const startTimeFormatted = formatTime(club.startTime);
+                const endTimeFormatted = formatTime(club.endTime);
 
+                const startDateTime = new Date(
+                    `${baseDate}T${startTimeFormatted}:00`
+                );
+                const endDateTime = new Date(`${baseDate}T${endTimeFormatted}:00`);
 
+                if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+                    console.warn("⛔ Invalid datetime for:", club);
+                    return null;
+                }
+
+                const untilDate = new Date(club.endDate);
+                const validUntil = isNaN(untilDate.getTime())
+                    ? new Date().toISOString()
+                    : untilDate.toISOString();
+
+                return {
+                    id: `club-${index}`,
+                    title: `${club.scheduleName}`,
+                    rrule: {
+                        freq: "weekly",
+                        byweekday: [weekdayAbbrev],
+                        dtstart: startDateTime.toISOString(),
+                        until: validUntil,
+                    },
+                    start: startDateTime,
+                    end: endDateTime,
+                    backgroundColor: "#28a745",
+                    extendedProps: {
+                        type: "club",
+                        startTime: startTimeFormatted,
+                        endTime: endTimeFormatted,
+                        schedule: club,
+                    },
+                };
+            })
+            .filter(Boolean)
+        : [];
+
+    const calendarEvents = [...clubEvents];
 
     const renderEventContent = (eventInfo: any) => {
         const start = String(eventInfo.event.extendedProps.startTime).padStart(2, "0");
@@ -158,7 +180,7 @@ const ClubSchedulePage: React.FC<props> = ({ clubId }: props) => {
                             listWeek: { buttonText: "Week" },
                             listDay: { buttonText: "Day" },
                         }}
-                        events={calendarEvents}
+                        events={calendarEvents as any}
                         eventContent={renderEventContent}
                         height="auto"
                         timeZone="local"
