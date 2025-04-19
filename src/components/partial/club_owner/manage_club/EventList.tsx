@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
 import { EyeIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 interface Props {
   clubId: string;
@@ -26,7 +27,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
   const [eventList, setEventList] = useState<EventResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  // 🎯 Load danh sách sự kiện từ API
+
   const loadEvents = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -88,11 +89,13 @@ export default function EventList({ clubId, isClubOwner }: Props) {
           {/* Danh sách sự kiện */}
           <div>
             {filteredEvents.map((evt, index) => (
-              <Link
+              <Card
                 key={index}
-                to={`/student/events/${evt.eventId}`}
-                className="flex items-center  gap-4 rounded-lg bg-white shadow-sm border
-                   hover:shadow-md transition cursor-pointer no-underline"
+                onClick={() =>
+                  navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner } })
+                }
+                className="flex items-center  gap-4 rounded-3xl bg-white shadow-md border
+                   hover:scale-105 transition cursor-pointer no-underline"
                 style={{ height: "105px", marginBottom: "15px" }}
               >
                 {/* Avatar của sự kiện */}
@@ -159,7 +162,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                     </Button>
                   </div>
                 </div>
-              </Link>
+              </Card>
             ))}
           </div>
 
