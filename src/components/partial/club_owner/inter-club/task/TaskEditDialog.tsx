@@ -137,13 +137,13 @@ export const TaskEditDialog = ({
           startTime: fixTime(
             new Date(
               values.listEventTaskDetails[index].startTime ||
-                task.eventTaskDetails[index].startTime
+              task.eventTaskDetails[index].startTime
             )
           ),
           deadline: fixTime(
             new Date(
               values.listEventTaskDetails[index].deadline ||
-                task.eventTaskDetails[index].deadline
+              task.eventTaskDetails[index].deadline
             )
           ),
           status: detail.status || task.eventTaskDetails[index].status,
@@ -381,8 +381,8 @@ export const TaskEditDialog = ({
                               >
                                 {field.value
                                   ? selectedEvent.clubs.find(
-                                      (club) => club.clubId === field.value
-                                    )?.clubName
+                                    (club) => club.clubId === field.value
+                                  )?.clubName
                                   : "Select club"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
@@ -490,12 +490,12 @@ export const TaskEditDialog = ({
                               </p>
                               <p className="text-sm text-gray-500">
                                 {subtask.startTime &&
-                                subtask.deadline &&
-                                subtask.startTime !== subtask.deadline
+                                  subtask.deadline &&
+                                  subtask.startTime !== subtask.deadline
                                   ? `${format(
-                                      subtask.startTime,
-                                      "PPP"
-                                    )} - ${format(subtask.deadline, "PPP")}`
+                                    subtask.startTime,
+                                    "PPP"
+                                  )} - ${format(subtask.deadline, "PPP")}`
                                   : "No date"}
                               </p>
                             </div>
@@ -543,12 +543,12 @@ export const TaskEditDialog = ({
                                 </p>
                                 <p className="text-sm text-gray-500">
                                   {subtask.startTime &&
-                                  subtask.deadline &&
-                                  subtask.startTime !== subtask.deadline
+                                    subtask.deadline &&
+                                    subtask.startTime !== subtask.deadline
                                     ? `${format(
-                                        subtask.startTime,
-                                        "PPP"
-                                      )} - ${format(subtask.deadline, "PPP")}`
+                                      subtask.startTime,
+                                      "PPP"
+                                    )} - ${format(subtask.deadline, "PPP")}`
                                     : "No date"}
                                 </p>
                               </div>
