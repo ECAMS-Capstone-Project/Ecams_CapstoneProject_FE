@@ -3,7 +3,7 @@ import { EventCategoryFilter } from "../events/EventFilter";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ClipboardPenLine } from "lucide-react";
 import LoadingAnimation from "@/components/ui/loading";
 import { GetRecommendedEventsAPI } from "@/api/student/UserPreference";
 import { Event } from "@/models/Event";
@@ -25,7 +25,12 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
     if (!userId) return;
     setIsLoading(true);
     try {
-      const response = await GetRecommendedEventsAPI(userId, pageNo, pageSize, scopeFilter.join(","));
+      const response = await GetRecommendedEventsAPI(
+        userId,
+        pageNo,
+        pageSize,
+        scopeFilter.join(",")
+      );
       setEvents(response.data?.data || []);
       setTotalPages(response.data?.totalPages || 1);
     } catch (error) {
@@ -71,7 +76,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
             className="w-28 h-28 mb-4 opacity-90"
           />
           <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
-            No  events right now
+            No events right now
           </h3>
           <p className="text-sm max-w-md text-gray-500">
             Currently, we couldn't find any events that match your interests.
@@ -107,9 +112,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                     ? event.eventAreas?.map((area) => area.name).join(" & ")
                     : "Have yet to"}
                 </p>
-                <h3
-                  className="text-2xl cursor-pointer font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
-                >
+                <h3 className="text-2xl cursor-pointer font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
                   {event.eventName}
                 </h3>
                 <div className="flex items-center gap-2">
@@ -124,10 +127,24 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                 </div>
                 {event.startDate && event.endDate ? (
                   <div className="flex items-center gap-2 text-md text-slate-600">
+                    <ClipboardPenLine size={16} />
+                    <span>
+                      {format(
+                        new Date(event.registeredStartDate),
+                        "dd/MM/yyyy"
+                      )}{" "}
+                      -{" "}
+                      {format(new Date(event.registeredEndDate), "dd/MM/yyyy")}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-600">Invalid event dates</p>
+                )}
+                {event.startDate && event.endDate ? (
+                  <div className="flex items-center gap-2 text-md text-slate-600">
                     <CalendarDays size={16} />
                     <span>
-                      {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
-                      {format(new Date(event.endDate), "dd/MM/yyyy")}
+                      {format(new Date(event.startDate), "dd/MM/yyyy")}
                     </span>
                   </div>
                 ) : (
@@ -147,7 +164,9 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
           >
             Previous
           </button>
-          <span className="text-sm text-gray-700 mt-2">Page {pageNo} of {totalPages}</span>
+          <span className="text-sm text-gray-700 mt-2">
+            Page {pageNo} of {totalPages}
+          </span>
           <button
             disabled={pageNo === totalPages}
             onClick={() => setPageNo(pageNo + 1)}

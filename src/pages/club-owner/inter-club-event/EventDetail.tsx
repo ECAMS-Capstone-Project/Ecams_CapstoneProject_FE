@@ -112,7 +112,7 @@ export const EventDetailPage = () => {
       )}
 
       {/* Hiển thị nút Accept/Deny nếu club có status PENDING */}
-      {currentClubInEvent && clubStatus === "PENDING" && (
+      {currentClubInEvent && clubStatus === "WAITING" && (
         <div className="flex gap-4 justify-end">
           <Button
             onClick={() => setIsApproveDialogOpen(true)}

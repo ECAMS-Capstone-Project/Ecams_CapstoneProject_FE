@@ -46,6 +46,7 @@ const subtaskSchema = z
     startTime: z.date(),
     deadline: z.date(),
     status: z.string(),
+    priority: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.startTime && data.deadline) {
@@ -243,6 +244,31 @@ export const SubtaskDialog = ({
                         />
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Priority</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

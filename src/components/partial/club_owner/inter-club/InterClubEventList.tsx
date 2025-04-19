@@ -46,7 +46,7 @@ export const InterClubEventList = () => {
     pageNo
   );
   const events = interEvents?.data?.data || [];
-
+  console.log("events", events);
   const getStatusColor = (status: InterClubEventDTO["status"]) => {
     switch (status) {
       case "WAITING":
@@ -77,6 +77,7 @@ export const InterClubEventList = () => {
 
     return matchesSearch && matchesStatus;
   });
+  console.log("status", selectedStatus);
 
   return (
     <div className="space-y-4">

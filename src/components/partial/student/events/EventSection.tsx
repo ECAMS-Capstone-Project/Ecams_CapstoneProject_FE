@@ -11,7 +11,7 @@ import {
 import { EventCategoryFilter } from "./EventFilter";
 import { useState } from "react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
-import { CalendarDays, SearchXIcon } from "lucide-react";
+import { CalendarDays, ClipboardPenLine, SearchXIcon } from "lucide-react";
 import { format } from "date-fns";
 import LoadingAnimation from "@/components/ui/loading";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
@@ -159,10 +159,29 @@ export const EventSection = () => {
                       {/* Ngày bắt đầu - kết thúc */}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
+                          <ClipboardPenLine size={16} />
+                          <span>
+                            {format(
+                              new Date(event.registeredStartDate),
+                              "dd/MM/yyyy"
+                            )}{" "}
+                            -{" "}
+                            {format(
+                              new Date(event.registeredEndDate),
+                              "dd/MM/yyyy"
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-slate-600">
+                          Invalid event dates
+                        </p>
+                      )}
+                      {event.startDate && event.endDate ? (
+                        <div className="flex items-center gap-2 text-md text-slate-600">
                           <CalendarDays size={16} />
                           <span>
-                            {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
-                            {format(new Date(event.endDate), "dd/MM/yyyy")}
+                            {format(new Date(event.startDate), "dd/MM/yyyy")}
                           </span>
                         </div>
                       ) : (
@@ -237,10 +256,29 @@ export const EventSection = () => {
                       {/* Ngày bắt đầu - kết thúc */}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
+                          <ClipboardPenLine size={16} />
+                          <span>
+                            {format(
+                              new Date(event.registeredStartDate),
+                              "dd/MM/yyyy"
+                            )}{" "}
+                            -{" "}
+                            {format(
+                              new Date(event.registeredEndDate),
+                              "dd/MM/yyyy"
+                            )}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-slate-600">
+                          Invalid event dates
+                        </p>
+                      )}
+                      {event.startDate && event.endDate ? (
+                        <div className="flex items-center gap-2 text-md text-slate-600">
                           <CalendarDays size={16} />
                           <span>
-                            {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
-                            {format(new Date(event.endDate), "dd/MM/yyyy")}
+                            {format(new Date(event.startDate), "dd/MM/yyyy")}
                           </span>
                         </div>
                       ) : (

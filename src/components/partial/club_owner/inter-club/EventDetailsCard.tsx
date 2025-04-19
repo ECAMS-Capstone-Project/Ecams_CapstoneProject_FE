@@ -13,6 +13,7 @@ import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { formatPrice } from "@/lib/FormatPrice";
 import { Money } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
 
 interface EventDetailsCardProps {
   selectedEvent: InterClubEventDTO;
@@ -24,18 +25,29 @@ export const EventDetailsCard = ({ selectedEvent }: EventDetailsCardProps) => {
   return (
     <div className="bg-[#136cb9]/10 rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb] p-6">
       {/* Header với nút back */}
-      <div className="flex items-center gap-4 mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-white rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
-        </button>
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-4 mb-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 hover:bg-white rounded-full transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-[#136cb9]">
+              {selectedEvent.eventName}
+            </h1>
+            <p className="text-gray-600 mt-1">{selectedEvent.description}</p>
+          </div>
+        </div>
+
         <div>
-          <h1 className="text-2xl font-bold text-[#136cb9]">
-            {selectedEvent.eventName}
-          </h1>
-          <p className="text-gray-600 mt-1">{selectedEvent.description}</p>
+          <Button
+            variant="outline"
+            className="bg-white text-[#136cb9] border-[#136cb9]/20"
+          >
+            End Event
+          </Button>
         </div>
       </div>
 
