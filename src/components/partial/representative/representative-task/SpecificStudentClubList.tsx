@@ -17,7 +17,7 @@ interface SpecificStudentListProps {
     recommendedReasons?: Record<string, string>;
 }
 
-const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
+const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
     students,
     selected,
     isAssignAll,
@@ -319,4 +319,4 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     );
 };
 
-export default SpecificStudentList;
+export default SpecificStudentClubList;
