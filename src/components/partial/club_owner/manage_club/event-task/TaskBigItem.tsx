@@ -14,6 +14,7 @@ import { InterClubEventDTO } from "@/models/Event";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
+import { fixTime } from "@/lib/utils";
 
 interface TaskItemProps {
   task: InterTask;
@@ -87,7 +88,7 @@ export const TaskBigItem = ({
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Deadline: {format(new Date(task.deadline), "dd/MM/yyyy HH:mm")}
+                Deadline: {format(fixTime(new Date(task.deadline)),"dd/MM/yyyy HH:mm")}
               </div>
             </div>
           </div>

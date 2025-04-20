@@ -1,0 +1,356 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus, X, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CreateInterTaskRequest } from "@/models/InterTask";
+import { subtaskSchema } from "@/schema/InterTaskSchema";
+import useAuth from "@/hooks/useAuth";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { InterClubEventDTO } from "@/models/Event";
+import toast from "react-hot-toast";
+import { useEvents } from "@/hooks/staff/Event/useEvent";
+import { SubtaskDialog } from "../../inter-club/task/SubtaskDialog";
+import { EventTaskSchema } from "@/schema/EventTaskSchema";
+interface TaskCreateDialogProps {
+  onCreateTask: (task: CreateInterTaskRequest) => void;
+  eventId: string;
+  selectedEvent: InterClubEventDTO | null;
+}
+
+function fixTime(date: Date) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() + 7);
+  return adjustedDate;
+}
+
+export const TaskBigCreateDialog = ({
+  onCreateTask,
+  eventId,
+  selectedEvent,
+}: TaskCreateDialogProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+
+  const form = useForm<z.infer<typeof EventTaskSchema>>({
+    resolver: zodResolver(EventTaskSchema),
+    mode: "onChange",
+    defaultValues: {
+      taskName: "",
+      description: "",
+      startTime: new Date(),
+      deadline: new Date(),
+      listEventTaskDetails: [],
+      clubId: "",
+    },
+  });
+  console.log(form.formState.errors);
+  const { getEventDetailQuery } = useEvents();
+  const { data: event } = getEventDetailQuery(eventId, user?.userId || "");
+  console.log(event);
+
+  const onSubmit = async (values: z.infer<typeof EventTaskSchema>) => {
+    try {
+      setIsSubmitting(true);
+      console.log("test", values.deadline, event?.data?.endDate);
+
+      const taskData: CreateInterTaskRequest = {
+        ...values,
+        eventId,
+        createdBy: user?.userId || "",
+        clubId: values.clubId || "",
+        startTime: fixTime(values.startTime || new Date()),
+        deadline: fixTime(values.deadline || new Date()),
+        listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
+          ...detail,
+          startTime: fixTime(detail.startTime || new Date()),
+          deadline: fixTime(detail.deadline || new Date()),
+        })),
+      };
+      if (
+        values.deadline &&
+        event?.data?.startDate &&
+        fixTime(values.deadline) > new Date(event?.data?.startDate)
+      ) {        
+        toast.error("Task's deadline must be before the event end date!");
+        setIsSubmitting(false);
+        return;
+      }
+      await onCreateTask(taskData);
+      setIsOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error("Failed to create task:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddSubtask = async (subtask: z.infer<typeof subtaskSchema>) => {
+    const currentSubtasks = form.getValues("listEventTaskDetails");
+    form.setValue("listEventTaskDetails", [...currentSubtasks, subtask], {
+      shouldValidate: true,
+    });
+    await form.trigger("listEventTaskDetails");
+  };
+
+  const handleRemoveSubtask = (index: number) => {
+    const currentSubtasks = form.getValues("listEventTaskDetails");
+    form.setValue(
+      "listEventTaskDetails",
+      currentSubtasks.filter((_, i) => i !== index)
+    );
+  };
+
+  if (!selectedEvent) return null;
+
+  return (
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button variant="custom" className=" hover:bg-[#136CB9]/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Task
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-[#136CB9]">
+              Create New Task
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="taskName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Task Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter task name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter task description"
+                          className="resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Time</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  " text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto p-0 mb-0 pb-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deadline"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Deadline</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  " text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto p-0 mb-0 pb-0"
+                            align="start"
+                          >
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsSubtaskDialogOpen(true)}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Subtask
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {form
+                      .watch("listEventTaskDetails")
+                      .map((subtask, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 bg-gradient-to-r from-[#49BBBD]/5 to-[#136CB9]/5 rounded-lg border border-[#49BBBD]/20"
+                        >
+                          <div>
+                            <p className="font-medium">{subtask.detailName}</p>
+                            <p className="text-sm text-gray-500">
+                              {subtask.description}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {format(subtask.startTime || new Date(), "PPP")} -{" "}
+                              {format(subtask.deadline || new Date(), "PPP")}
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveSubtask(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#136CB9] hover:bg-[#136CB9]/90"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Task"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <SubtaskDialog
+        isOpen={isSubtaskDialogOpen}
+        onClose={() => setIsSubtaskDialogOpen(false)}
+        onSubmit={handleAddSubtask}
+        mainTaskStartTime={form.getValues("startTime")}
+        mainTaskDeadline={form.getValues("deadline")}
+      />
+    </>
+  );
+};
