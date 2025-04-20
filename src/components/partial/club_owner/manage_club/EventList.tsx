@@ -1,18 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@mui/material";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useCallback } from "react";
 import {
   EventResponse,
-  EventStatusEnum,
   GetEventInClubsAPI,
 } from "@/api/club-owner/ClubByUser";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
-import { EyeIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import toast from "react-hot-toast";
+import { CircleOff } from "lucide-react";
 
 interface Props {
   clubId: string;
@@ -55,6 +55,13 @@ export default function EventList({ clubId, isClubOwner }: Props) {
     loadEvents();
   }, [loadEvents]);
 
+  const statusMap = {
+    ACTIVE: { className: "border-green-600 text-green-600", label: "Active" },
+    ENDED: { className: "border-red-600 text-red-600", label: "Ended" },
+    PENDING: { className: "border-yellow-500 text-yellow-500", label: "Pending" },
+    ON_GOING: { className: "border-blue-600 text-blue-600", label: "On Going" },
+  };
+
   return (
     <div className="flex flex-col gap-4 mt-4">
       {/* 🔍 Thanh tìm kiếm */}
@@ -88,82 +95,85 @@ export default function EventList({ clubId, isClubOwner }: Props) {
         <>
           {/* Danh sách sự kiện */}
           <div>
-            {filteredEvents.map((evt, index) => (
-              <Card
-                key={index}
-                onClick={() =>
-                  navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner, clubId: clubId, clubEventId: evt.clubEventId } })
-                }
-                className="flex items-center  gap-4 rounded-3xl bg-white shadow-md border
-                   hover:scale-105 transition cursor-pointer no-underline"
-                style={{ height: "105px", marginBottom: "15px" }}
-              >
-                {/* Avatar của sự kiện */}
-                <div
-                  className="w-32 h-full flex justify-center items-center"
-                  style={{
-                    background: "linear-gradient(to right, #136CB5, #49BBBD)",
-                    borderTopLeftRadius: "20px",
-                    borderBottomLeftRadius: "20px",
-                    backgroundImage: `url(${evt.imageUrl})`,
+            {filteredEvents.map((evt, index) => {
+              const status = statusMap[evt.status as keyof typeof statusMap];
+              return (
+                <Card
+                  key={index}
+                  onClick={() => {
+                    if (evt.status !== "aPENDING") {
+                      navigate(`/club/event-task/${evt.eventId}`, {
+                        state: {
+                          isClubOwner: isClubOwner,
+                          clubId: clubId,
+                          clubEventId: evt.clubEventId,
+                        },
+                      });
+                    } else {
+                      toast('It is pending event!', {
+                        icon: <CircleOff />,
+                        style: {
+                          borderRadius: '10px',
+                          background: '#333',
+                          color: '#fff',
+                        },
+                      });
+                    }
                   }}
+                  className="flex items-center  gap-4 rounded-3xl bg-white shadow-md border
+                   hover:scale-105 transition cursor-pointer no-underline"
+                  style={{ height: "105px", marginBottom: "15px" }}
                 >
-                  <img
-                    src={
-                      evt.imageUrl ||
-                      "https://blog.topcv.vn/wp-content/uploads/2021/07/sk2uEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"
-                    } // Fake avatar
-                    alt="Club Avatar"
-                    className="w-20 h-20 rounded-full object-cover mr-4 mb-2 md:mb-0"
-                  />
-                </div>
-                <div className="flex justify-between items-center w-full">
-                  {/* Thông tin sự kiện */}
-                  <div className="flex flex-col py-2 pr-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl font-semibold">
-                        {evt.eventName}
+                  {/* Avatar của sự kiện */}
+                  <div
+                    className="w-32 h-full flex justify-center items-center"
+                    style={{
+                      background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                      borderTopLeftRadius: "20px",
+                      borderBottomLeftRadius: "20px",
+                      backgroundImage: `url(${evt.imageUrl})`,
+                    }}
+                  >
+                    <img
+                      src={
+                        evt.imageUrl ||
+                        "https://blog.topcv.vn/wp-content/uploads/2021/07/sk2uEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"
+                      } // Fake avatar
+                      alt="Club Avatar"
+                      className="w-20 h-20 rounded-full object-cover mr-4 mb-2 md:mb-0"
+                    />
+                  </div>
+                  <div className="flex justify-between items-center w-full">
+                    {/* Thông tin sự kiện */}
+                    <div className="flex flex-col py-2 pr-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl font-semibold">
+                          {evt.eventName}
+                        </span>
+                        {status && (
+                          <Badge
+                            variant="outline"
+                            className={status.className}
+                          >
+                            {status.label}
+                          </Badge>
+                        )}
+                      </div>
+
+                      <span className="text-sm text-gray-600">
+                        <b>Registration:</b>{" "}
+                        {format(evt.registeredStartDate, "dd/MM/yyyy")} -{" "}
+                        {format(evt.registeredEndDate, "dd/MM/yyyy")}
+                        {" · "}
+                        <b>Max:</b> {evt.maxParticipants ?? "N/A"}
+                        {" · "}
+                        <b>Type:</b> {evt.eventType ?? "N/A"}
                       </span>
-                      {evt.status === EventStatusEnum.ACTIVE && (
-                        <Badge
-                          variant="outline"
-                          className="border-green-600 text-green-600"
-                        >
-                          Active
-                        </Badge>
-                      )}
                     </div>
-
-                    <span className="text-sm text-gray-600">
-                      <b>Registration:</b>{" "}
-                      {format(evt.registeredStartDate, "dd/MM/yyyy")} -{" "}
-                      {format(evt.registeredEndDate, "dd/MM/yyyy")}
-                      {" · "}
-                      <b>Max:</b> {evt.maxParticipants ?? "N/A"}
-                      {" · "}
-                      <b>Type:</b> {evt.eventType ?? "N/A"}
-                    </span>
                   </div>
-
-                  <div className="flex justify-end gap-2 pr-4 z-50 relative w-fit">
-                    <Button
-                      variant={"custom"}
-                      className="z-[1000] w-fit"
-                      onClick={() =>
-                        navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner, clubId: clubId, clubEventId: evt.clubEventId } })
-                      }
-                    >
-                      <Link
-                        to={`/club/event-task/${evt.eventId}`}
-                        className="w-fit flex items-center gap-2"
-                      >
-                        <EyeIcon size={16} /> View task in event
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              )
+            })}
           </div>
 
           {/* 📌 Phân trang */}

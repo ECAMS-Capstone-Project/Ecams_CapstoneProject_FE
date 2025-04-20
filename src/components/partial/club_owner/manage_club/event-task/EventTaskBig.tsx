@@ -1,20 +1,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InterClubEventDTO } from "@/models/Event";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { CreateInterTaskRequest } from "@/models/InterTask";
-import useAuth from "@/hooks/useAuth";
-import { useClubs } from "@/hooks/student/useClub";
 import { TaskSearchBar } from "../../inter-club/task/TaskSearchBar";
 import { TaskPagination } from "../../inter-club/task/TaskPagination";
 import { TaskBigItem } from "./TaskBigItem";
 import { TaskBigCreateDialog } from "./TaskBigCreateDialog";
-
-interface Club {
-  id: string;
-  name: string;
-}
 
 interface InterClubTaskProps {
   selectedEvent: InterClubEventDTO | null;
@@ -23,19 +16,10 @@ interface InterClubTaskProps {
 }
 
 export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTaskProps) => {
-  const [, setClubs] = useState<Club[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageNo, setPageNo] = useState(1);
   const [pageSize] = useState(5);
 
-  useEffect(() => {
-    if (!selectedEvent) return;
-    const mockClubs: Club[] = selectedEvent.clubs.map((club) => ({
-      id: club.clubId,
-      name: club.clubName,
-    }));
-    setClubs(mockClubs);
-  }, [selectedEvent]);
 
   const { tasks, totalPages, createInterEventTask } = useInterTask(
     selectedEvent?.eventId,
@@ -62,18 +46,6 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
     );
   }
 
-  const isHostClub = selectedEvent?.clubs.find((club) => club.isHost === true);
-  const { user } = useAuth();
-  const { clubs } = useClubs(user?.universityId, 1, 20);
-
-  const club = clubs?.filter((club) =>
-    club.clubMembers?.some(
-      (member) =>
-        member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
-    )
-  );
-  const isHost = isHostClub?.clubId === club?.[0]?.clubId;
-
   return (
     <div className="h-[calc(100vh-200px)]">
       <div className="flex justify-between items-center mb-4">
@@ -81,11 +53,11 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-          <TaskBigCreateDialog
-            onCreateTask={handleCreateTask}
-            eventId={selectedEvent?.eventId || ""}
-            selectedEvent={selectedEvent}
-          />
+        <TaskBigCreateDialog
+          onCreateTask={handleCreateTask}
+          eventId={selectedEvent?.eventId || ""}
+          selectedEvent={selectedEvent}
+        />
       </div>
 
       <ScrollArea className="h-[calc(100vh-300px)]">
@@ -94,9 +66,7 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
             <TaskBigItem
               key={task.eventTaskId}
               task={task}
-              isHost={isHost}
               selectedEvent={selectedEvent}
-              currentClub={club?.[0]}
               isClubOwner={isClubOwner}
             />
           ))}

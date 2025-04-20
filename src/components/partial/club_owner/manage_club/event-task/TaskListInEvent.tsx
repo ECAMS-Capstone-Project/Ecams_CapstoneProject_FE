@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   CheckCircle2,
+  CircleDot,
   Clock,
   PlusCircle,
-  Users,
 } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
@@ -23,6 +23,7 @@ export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
   const location = useLocation();
   const isClubOwner = location.state?.isClubOwner as boolean;
+  const clubId = location.state?.clubId as string
   const task = location.state?.task as InterTask;
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 5;
@@ -72,6 +73,20 @@ export default function TaskListInEvent() {
 
     loadTasks();
   }, [eventId, pageNo, pageSize, isClubOwner, user]);
+  const priorityMap = {
+    HIGH: {
+      label: "High",
+      className: "bg-red-600 text-white",
+    },
+    MEDIUM: {
+      label: "Medium",
+      className: "bg-yellow-500 text-white",
+    },
+    LOW: {
+      label: "Low",
+      className: "bg-blue-500 text-white",
+    },
+  } as const;
 
   const handleNavigate = (taskId: string) => {
     navigate(`/club/task-detail/${taskId}`, { state: { isClubOwner } });
@@ -123,9 +138,9 @@ export default function TaskListInEvent() {
                   <p>
                     {task?.startTime
                       ? format(
-                          new Date(task.startTime),
-                          "dd/MM/yyyy - hh:mm"
-                        )
+                        new Date(task.startTime),
+                        "dd/MM/yyyy - hh:mm"
+                      )
                       : "N/A"}
                   </p>
                 </div>
@@ -137,9 +152,9 @@ export default function TaskListInEvent() {
                   <p>
                     {task?.deadline
                       ? format(
-                          new Date(task.deadline),
-                          "dd/MM/yyyy - hh:mm"
-                        )
+                        new Date(task.deadline),
+                        "dd/MM/yyyy - hh:mm"
+                      )
                       : "N/A"}
                   </p>
                 </div>
@@ -159,12 +174,14 @@ export default function TaskListInEvent() {
                   {getStatusText(task.status, task.completionPercentage)}
                 </span>
               </div>
-              <div className="space-y-2">
-                <h4 className="font-medium flex items-center gap-2 text-[#136CB9]">
-                  <Users className="h-4 w-4" />
-                  Assign to
-                </h4>
-                <span>{task.clubName}</span>
+              <div className="flex items-center gap-2">
+                <CircleDot className="w-5 h-5 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Quantity of sub task</p>
+                  <p>
+                    {task.eventTaskDetails.length}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -190,7 +207,7 @@ export default function TaskListInEvent() {
               <Button
                 onClick={() =>
                   navigate("/club/create-event-task", {
-                    state: { clubId: eventId },
+                    state: { clubId: clubId, task: task, eventId: eventId },
                   })
                 }
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
@@ -224,22 +241,27 @@ export default function TaskListInEvent() {
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mb-2">
                             <h3 className="text-xl font-semibold">
                               {task.detailName}
                             </h3>
+                            <Badge
+                              variant="secondary"
+                              className="bg-green-100 text-green-800 text-sm font-semibold px-2 py-1 rounded-md"
+                            >
+                              Active
+                            </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
                             {task.description}
                           </p>
                         </div>
                         <Badge
-                          className={`text-sm px-3 py-1 rounded-full ${
-                            task.status ? "bg-green-600" : "bg-yellow-500"
-                          }`}
+                          className={`text-sm px-3 py-1 rounded-full ${priorityMap[task.priority as keyof typeof priorityMap]?.className}`}
                         >
-                          {task.status ? "Active" : "Incomplete"}
+                          {priorityMap[task.priority as keyof typeof priorityMap]?.label || "Unknown"}
                         </Badge>
+
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground">
