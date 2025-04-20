@@ -32,23 +32,11 @@ import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 // Lazy import danh sách student
 const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"));
 
-// Interface cho student (đã cập nhật)
-interface Student {
-  studentId: string;
-  fullName: string;
-  userId: string;
-  roleName: string;
-  clubMemberId: string;
-}
-
 // Import API lấy danh sách member trong club và API tạo task
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
-import {
-  ClubMemberDTO,
-  GetMemberInClubsByStatusAPI,
-} from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
+import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -57,36 +45,7 @@ export default function CreateTaskClub() {
   const location = useLocation();
   const clubId = location.state?.clubId;
 
-  const [allStudents, setAllStudents] = useState<Student[]>([]);
-  useEffect(() => {
-    async function fetchMembers() {
-      try {
-        if (!clubId) return;
-        const response = await GetMemberInClubsByStatusAPI(
-          clubId,
-          100,
-          1,
-          "ACTIVE"
-        );
-        if (response.data) {
-          const members: ClubMemberDTO[] = response.data.data;
-          const students: Student[] = members
-            .filter((a) => a.clubRoleName != "CLUB_OWNER")
-            .map((m) => ({
-              studentId: m.studentId,
-              fullName: m.fullname,
-              roleName: m.clubRoleName,
-              userId: m.userId,
-              clubMemberId: m.clubMemberId,
-            }));
-          setAllStudents(students);
-        }
-      } catch (error: any) {
-        console.error("Failed to fetch club members", error);
-      }
-    }
-    fetchMembers();
-  }, [clubId]);
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,7 +79,8 @@ export default function CreateTaskClub() {
   const { handleSubmit, setValue, getValues, watch } = form;
   const assignAll = watch("assignAll");
   const selectedMembers = watch("selectedMembers");
-
+  const startTimeDate = watch("startTimeDate");
+  const deadlineTimeDate = watch("deadlineDate");
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
     const [hour, minute] = timeStr.split(":").map(Number);
@@ -128,6 +88,28 @@ export default function CreateTaskClub() {
     newDate.setHours(hour, minute, 0, 0);
     return newDate;
   };
+
+  useEffect(() => {
+    async function fetchMembers() {
+      if (!clubId || !startTimeDate || !deadlineTimeDate) return;
+
+      try {
+        const response = await GetAvailableMember(
+          clubId,
+          format(startTimeDate.toISOString(), "yyyy-MM-dd"),
+          format(deadlineTimeDate.toISOString(), "yyyy-MM-dd"),
+          "LOW"
+        );
+        if (response.data) {
+          setAllStudents(response.data);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch club members", error);
+      }
+    }
+
+    fetchMembers();
+  }, [clubId, startTimeDate, deadlineTimeDate]);
 
   // Submit form
   const onSubmit = async (values: TaskFormValues) => {
@@ -147,13 +129,13 @@ export default function CreateTaskClub() {
       // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
       const assignedMembers =
         assignAll && allStudents.length > 0
-          ? allStudents
-              .filter((student) => student.roleName != "CLUB_OWNER")
-              .map((student) => ({ clubMemberId: student.clubMemberId }))
+          ? allStudents.map((student) => ({
+            clubMemberId: student.clubMemberId,
+          }))
           : selectedMembers.map((id: string) => {
-              const stu = allStudents.find((s) => s.studentId === id);
-              return { clubMemberId: stu ? stu.clubMemberId : id };
-            });
+            const stu = allStudents.find((s) => s.studentId === id);
+            return { clubMemberId: stu ? stu.clubMemberId : id };
+          });
 
       const data = {
         clubId,
@@ -486,7 +468,7 @@ export default function CreateTaskClub() {
                                     key={id}
                                     className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
                                   >
-                                    {st.fullName} - {st.roleName}
+                                    {st.fullName} - {st.email}
                                   </span>
                                 );
                               })}

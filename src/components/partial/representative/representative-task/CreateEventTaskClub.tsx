@@ -45,8 +45,12 @@ import {
 } from "@/components/ui/select";
 import {
   AvailableMemberEventTask,
+  CreateSubTaskAPI,
+  EventSubTaskDTO,
   GetAvailableMember,
+  TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
+import { InterTask } from "@/models/InterTask";
 
 export default function CreateEventTaskClub() {
   const navigate = useNavigate();
@@ -54,27 +58,13 @@ export default function CreateEventTaskClub() {
   const { user } = useAuth();
   const location = useLocation();
   const clubId = location.state?.clubId;
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
-
+  const task = location.state?.task as InterTask;
+  const eventId = location.state?.eventId as string
+  const [recommendedStudents, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
+  const [recommendedReasons, setRecommendedReasons] = useState<Record<string, string>>({});
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
     []
   );
-  useEffect(() => {
-    async function fetchMembers() {
-      try {
-        if (!clubId) return;
-        const response = await GetAvailableMember(clubId, startDate, deadlineDate, "LOW");
-        if (response.data) {
-          const members: AvailableMemberEventTask[] = response.data;
-          setAllStudents(members);
-        }
-      } catch (error: any) {
-        console.error("Failed to fetch club members", error);
-      }
-    }
-    fetchMembers();
-  }, [clubId]);
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,6 +85,8 @@ export default function CreateEventTaskClub() {
     defaultValues: {
       detailName: "",
       description: "",
+      startTimeDate: new Date(),
+      deadlineDate: new Date(),
       assignedMembers: [],
       assignAll: false,
     },
@@ -102,6 +94,34 @@ export default function CreateEventTaskClub() {
   const { handleSubmit, setValue, getValues, watch } = form;
   const assignAll = watch("assignAll");
   const selectedMembers = watch("assignedMembers");
+
+  const startTimeDate = watch("startTimeDate");
+  const deadlineTimeDate = watch("deadlineDate");
+  const priority = watch("priority");
+
+  useEffect(() => {
+    async function fetchMembers() {
+      if (!clubId || !startTimeDate || !deadlineTimeDate || !priority) return;
+
+      try {
+        const response = await GetAvailableMember(
+          clubId,
+          format(startTimeDate.toISOString(), "yyyy-MM-dd"),
+          format(deadlineTimeDate.toISOString(), "yyyy-MM-dd"),
+          priority
+        );
+        if (response.data) {
+          setAllStudents(response.data);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch club members", error);
+      }
+    }
+
+    fetchMembers();
+  }, [clubId, startTimeDate, deadlineTimeDate, priority]);
+
+  const isReadyToFetch = startTimeDate && deadlineTimeDate && priority;
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
@@ -128,42 +148,41 @@ export default function CreateEventTaskClub() {
       const assignedMembers =
         assignAll && allStudents.length > 0
           ? allStudents.map((student) => ({
-              clubMemberId: student.clubMemberId,
-            }))
+            clubMemberId: student.clubMemberId,
+          }))
           : selectedMembers.map((id: string) => {
-              const stu = allStudents.find((s) => s.studentId === id);
-              return { clubMemberId: stu ? stu.clubMemberId : id };
-            });
+            const stu = allStudents.find((s) => s.studentId === id);
+            return { clubMemberId: stu ? stu.clubMemberId : id };
+          });
 
-      const data = {
+      const data: EventSubTaskDTO = {
         clubId,
-        eventId: location.state?.eventId, // lấy từ location nếu có
-        taskName: "test",
-        description: values.description,
-        startTime: fixTime(finalStartTime).toISOString(),
-        deadline: fixTime(finalDeadline).toISOString(),
-        status: "ON_GOING",
+        eventTaskId: task.eventTaskId,
+        eventId: eventId,
+        taskName: task.taskName,
+        description: task.description,
+        startTime: task.startTime,
+        deadline: task.deadline,
+        status: task.status,
         eventTaskDetails: [
           {
+            eventTaskId: task.eventTaskId,
             detailName: values.detailName,
             description: values.description,
             startTime: fixTime(finalStartTime).toISOString(),
             deadline: fixTime(finalDeadline).toISOString(),
             status: "ON_GOING",
-            priority: values.priority || "MEDIUM",
+            priority: values.priority || "LOW",
             assignedMembers,
           },
         ],
       };
 
       console.log("Mapped body:", data);
-      // await CreateTaskToStudent(data);
+      await CreateSubTaskAPI(task.eventTaskId, data);
       toast.success("Task created successfully!");
       navigate(-1);
     } catch (error: any) {
-      toast.error(
-        error.message || "An error occurred while creating/updating task."
-      );
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -191,6 +210,55 @@ export default function CreateEventTaskClub() {
     }
   };
 
+  const handleAIRecommend = async () => {
+    // if (!form.getValues("startTime") || !form.getValues("endTime")) {
+    //   toast.error("Please select start time and deadline first");
+    //   return;
+    // }
+
+    setIsLoading(true);
+    try {
+      const body = {
+        clubId: "ae57b2f6-8ec2-4d7d-87e3-4e347c52c2f0",
+        taskName: "Choose a song to play",
+        taskDescription: "Choose a song to play",
+        startTime: "2025-04-22T08:55:57.121Z",
+        endTime: "2025-04-23T08:55:57.121Z",
+        priority: "MEDIUM"
+      }
+
+      const response = await TaskRecommendedByAI(body.clubId, body);
+      const data = response.data;
+
+      // Update danh sách recommend
+      if (data) {
+        setRecommendedStudents(data);
+      }
+
+      // Lưu lại lý do recommend theo studentId
+      const reasonMap: Record<string, string> = {};
+      data?.forEach((student) => {
+        reasonMap[student.studentId] = student.reason || "";
+      });
+      setRecommendedReasons(reasonMap);
+
+      // Cập nhật luôn selected members
+      const recommendedIds = data?.map((s) => s.studentId);
+      form.setValue("assignedMembers", recommendedIds ?? []);
+    } catch (error) {
+      console.error("Recommendation failed", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    const hasErrors = !!Object.keys(form.formState.errors).length;
+    if (hasErrors) {
+      console.log("🔥 FORM ERRORS:", form.formState.errors);
+    }
+  }, [form.formState.errors]);
+
+
   return (
     <div className="min-h-[300px]">
       {/* Nút Back */}
@@ -209,7 +277,10 @@ export default function CreateEventTaskClub() {
       <div className="p-4 mx-7">
         <Form {...form}>
           <div className="flex justify-center">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-3/4">
+            <form onSubmit={handleSubmit((data) => {
+              onSubmit(data);
+            })}
+              className="space-y-6 w-3/4">
               {/* Task Name */}
               <Grid2 container spacing={2}>
                 <Grid2 size={6}>
@@ -235,7 +306,10 @@ export default function CreateEventTaskClub() {
                       <FormItem>
                         <FormLabel>Priority</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value)
+                            // setPriority(value as any)
+                          }}
                           defaultValue={field.value}
                         >
                           <FormControl>
@@ -303,7 +377,7 @@ export default function CreateEventTaskClub() {
                             selected={field.value}
                             onSelect={(date) => {
                               field.onChange(date);
-                              setStartDate(date ?? null)
+                              // setStartDate(date ?? null)
                             }}
                             disabled={(date) => date < new Date()}
                             initialFocus
@@ -359,7 +433,7 @@ export default function CreateEventTaskClub() {
                             selected={field.value}
                             onSelect={(date) => {
                               field.onChange(date);
-                              setDeadlineDate(date ?? null)
+                              // setDeadlineDate(date ?? null)
                             }}
                             disabled={(date) => date < new Date()}
                             initialFocus
@@ -430,7 +504,7 @@ export default function CreateEventTaskClub() {
                           </div>
 
                           <Button
-                            // onClick={handleAIRecommend}
+                            onClick={handleAIRecommend}
                             type="button"
                             disabled={isLoading}
                             className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white 
@@ -450,20 +524,22 @@ export default function CreateEventTaskClub() {
                             </span>
                           </Button>
                         </div>
-                        <Suspense
-                          fallback={
-                            <div className="p-2 text-center">
-                              Loading students...
-                            </div>
-                          }
-                        >
-                          <SpecificStudentList
-                            students={filteredStudents}
-                            selected={selectedMembers}
-                            isAssignAll={assignAll}
-                            handleToggleStudent={handleToggleStudent}
-                          />
-                        </Suspense>
+                        {!isReadyToFetch ? (
+                          <div className="text-sm text-red-500 italic">
+                            After selecting the Start Date, Deadline, and Privacy, a list of available students will be displayed.
+                          </div>
+                        ) : (
+                          <Suspense fallback={<div>Loading students...</div>}>
+                            <SpecificStudentList
+                              students={filteredStudents}
+                              isAssignAll={assignAll}
+                              selected={selectedMembers}
+                              handleToggleStudent={handleToggleStudent}
+                              recommendedStudents={recommendedStudents}
+                              recommendedReasons={recommendedReasons}
+                            />
+                          </Suspense>
+                        )}
 
                         <FormMessage />
 
