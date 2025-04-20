@@ -74,11 +74,12 @@ import { useEffect } from "react";
 import { EventDetailTask } from "@/components/partial/club_owner/manage_club/event-task/EventDetailTask";
 import StudentEventDetail from "@/components/partial/student/events/EventDetail/EventDetail";
 import TaskDetailCard from "@/components/partial/club_owner/manage_club/event-task/TaskDetailCard";
-import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
 import PackageListUpdatePage from "@/pages/representative/package/packageListUpdatePage";
 import PaymentUpdateConfirmation from "@/components/partial/representative/representative-update-package/confirm-payment-update";
 import StudentTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/StudentTaskSubmissionPage";
 import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-task/TaskListInEvent";
+import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
+import CreateEventTaskClub from "@/components/partial/representative/representative-task/CreateEventTaskClub";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -472,6 +473,10 @@ export const router = createBrowserRouter([
         path: "/club/create-task",
         element: <CreateTaskClub />,
         errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/create-event-task",
+        element: <CreateEventTaskClub />
       },
       {
         path: "/club/inter-club-event",
