@@ -70,11 +70,12 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
-              <Clock className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Registration Time: </span>
-              <span className="text-gray-800">
-                {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -{" "}
-                {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
+              <Money className="w-5 h-5 text-[#136cb9]" />
+              <span className="text-[#136cb9]">Price: </span>
+              <span className="font-bold text-[#49BBBD]">
+                {selectedEvent.price === 0
+                  ? "Free"
+                  : `${formatPrice(selectedEvent.price)}`}
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
@@ -100,15 +101,6 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
               <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
               <span className="text-gray-800">
                 {selectedEvent.clubs?.length || 0} clubs
-              </span>
-            </div>
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
-              <Money className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Price: </span>
-              <span className="font-bold text-[#49BBBD]">
-                {selectedEvent.price === 0
-                  ? "Free"
-                  : `${formatPrice(selectedEvent.price)}`}
               </span>
             </div>
           </div>

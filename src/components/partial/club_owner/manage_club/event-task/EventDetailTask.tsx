@@ -13,14 +13,16 @@ import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 export const EventDetailTask = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
-  const { getInterEventDetailQuery } = useEventDetail("dc9316c8-4b47-45b7-8ee6-aefbb2c34636");
+  const { getInterEventDetailQuery } = useEventDetail();
   const { user } = useAuth();
   const location = useLocation();
   const isClubOwner = location.state?.isClubOwner as boolean
+  const clubId = location.state?.clubId as string
+  const clubEventId = location.state?.clubEventId as string
 
   const { data: eventDetail, isLoading: isEventDetailLoading } =
     getEventDetailQuery(eventId, user?.userId || "");
-  const { data: event } = getInterEventDetailQuery("dc9316c8-4b47-45b7-8ee6-aefbb2c34636");
+  const { data: event } = getInterEventDetailQuery(clubEventId)
 
   if (isEventDetailLoading) {
     return (
@@ -89,7 +91,7 @@ export const EventDetailTask = () => {
               <EventParticipants eventId={event1.eventId} />
             </TabsContent>
             <TabsContent value="tasks" className="mt-0">
-              <EventTaskBig selectedEvent={event.data ?? null} isClubOwner={isClubOwner} />
+              <EventTaskBig selectedEvent={event.data ?? null} isClubOwner={isClubOwner} clubId={clubId} />
             </TabsContent>
           </div>
         </Tabs>

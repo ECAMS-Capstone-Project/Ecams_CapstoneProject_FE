@@ -92,7 +92,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
               <Card
                 key={index}
                 onClick={() =>
-                  navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner } })
+                  navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner, clubId: clubId, clubEventId: evt.clubEventId } })
                 }
                 className="flex items-center  gap-4 rounded-3xl bg-white shadow-md border
                    hover:scale-105 transition cursor-pointer no-underline"
@@ -150,7 +150,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                       variant={"custom"}
                       className="z-[1000] w-fit"
                       onClick={() =>
-                        navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner } })
+                        navigate(`/club/event-task/${evt.eventId}`, { state: { isClubOwner: isClubOwner, clubId: clubId, clubEventId: evt.clubEventId } })
                       }
                     >
                       <Link

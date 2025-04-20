@@ -7,9 +7,9 @@ import { CreateInterTaskRequest } from "@/models/InterTask";
 import useAuth from "@/hooks/useAuth";
 import { useClubs } from "@/hooks/student/useClub";
 import { TaskSearchBar } from "../../inter-club/task/TaskSearchBar";
-import { TaskCreateDialog } from "../../inter-club/task/TaskCreateDialog";
 import { TaskPagination } from "../../inter-club/task/TaskPagination";
 import { TaskBigItem } from "./TaskBigItem";
+import { TaskBigCreateDialog } from "./TaskBigCreateDialog";
 
 interface Club {
   id: string;
@@ -19,9 +19,10 @@ interface Club {
 interface InterClubTaskProps {
   selectedEvent: InterClubEventDTO | null;
   isClubOwner: boolean
+  clubId: string
 }
 
-export const EventTaskBig = ({ selectedEvent, isClubOwner }: InterClubTaskProps) => {
+export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTaskProps) => {
   const [, setClubs] = useState<Club[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [pageNo, setPageNo] = useState(1);
@@ -43,7 +44,8 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner }: InterClubTaskProps)
   );
 
   const handleCreateTask = async (newTask: CreateInterTaskRequest) => {
-    if (!newTask.taskName || !selectedEvent) return;
+    if (!newTask.taskName || !selectedEvent || !clubId) return;
+    newTask.clubId = clubId
     await createInterEventTask(newTask);
   };
 
@@ -79,13 +81,11 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner }: InterClubTaskProps)
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-        {isHostClub?.clubId === club?.[0]?.clubId && (
-          <TaskCreateDialog
+          <TaskBigCreateDialog
             onCreateTask={handleCreateTask}
             eventId={selectedEvent?.eventId || ""}
             selectedEvent={selectedEvent}
           />
-        )}
       </div>
 
       <ScrollArea className="h-[calc(100vh-300px)]">
