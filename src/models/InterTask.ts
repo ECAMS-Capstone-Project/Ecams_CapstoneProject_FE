@@ -21,6 +21,7 @@ export interface EventTaskDetail {
   startTime: Date;
   deadline: Date;
   status: string;
+  priority: string
 }
 
 export interface CreateInterTaskRequest {

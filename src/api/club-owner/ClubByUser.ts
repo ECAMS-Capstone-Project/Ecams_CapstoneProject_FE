@@ -76,7 +76,7 @@ export interface EventResponse {
   registeredEndDate: Date;
   price: number;
   maxParticipants?: number;
-  status: EventStatusEnum;
+  status: string;
   eventType: EventTypeEnum;
 }
 
