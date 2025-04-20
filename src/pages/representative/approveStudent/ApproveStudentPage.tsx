@@ -100,7 +100,7 @@ const ApproveStudentPage = () => {
               setIsLoading={setIsLoading}
             />
             <div>
-              <ExportButton studentList={stuList} />
+              <ExportButton universityId={user?.universityId} />
             </div>
           </div>
 

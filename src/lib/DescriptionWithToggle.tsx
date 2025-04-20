@@ -34,7 +34,7 @@ export const DescriptionWithToggle: React.FC<DescriptionProps> = ({ text }) => {
       >
         {displayedText}
         {/* Nếu chưa expanded và có nhiều hơn WORD_LIMIT từ => thêm "..." */}
-        {!isExpanded && isOverLimit && "..."}
+        {!isExpanded && isOverLimit && " ..."}
       </Typography>
 
       {/* Nút "..." hoặc "Show more" */}
@@ -42,7 +42,10 @@ export const DescriptionWithToggle: React.FC<DescriptionProps> = ({ text }) => {
         <Button
           variant="text"
           size="small"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
           // endIcon={<MoreHorizontal size={16} />}
           sx={{ textTransform: "none", padding: 0, minWidth: "20px" }}
         >
