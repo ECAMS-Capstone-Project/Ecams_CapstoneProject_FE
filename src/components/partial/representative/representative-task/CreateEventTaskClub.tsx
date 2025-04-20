@@ -27,59 +27,47 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn, fixTime } from "@/lib/utils";
 
-import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
-
 // Lazy import danh sách student
 const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"));
 
-// Interface cho student (đã cập nhật)
-interface Student {
-  studentId: string;
-  fullName: string;
-  userId: string;
-  roleName: string;
-  clubMemberId: string;
-}
-
-// Import API lấy danh sách member trong club và API tạo task
-import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
-import {
-  ClubMemberDTO,
-  GetMemberInClubsByStatusAPI,
-} from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
+import {
+  EventTaskDetailSchema,
+  TaskEventFormValues,
+} from "@/schema/TaskEventSchema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AvailableMemberEventTask,
+  GetAvailableMember,
+} from "@/api/student/ClubAgent";
 
-export default function CreateTaskClub() {
+export default function CreateEventTaskClub() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
   const clubId = location.state?.clubId;
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
 
-  const [allStudents, setAllStudents] = useState<Student[]>([]);
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
+    []
+  );
   useEffect(() => {
     async function fetchMembers() {
       try {
         if (!clubId) return;
-        const response = await GetMemberInClubsByStatusAPI(
-          clubId,
-          100,
-          1,
-          "ACTIVE"
-        );
+        const response = await GetAvailableMember(clubId, startDate, deadlineDate, "LOW");
         if (response.data) {
-          const members: ClubMemberDTO[] = response.data.data;
-          const students: Student[] = members
-            .filter((a) => a.clubRoleName != "CLUB_OWNER")
-            .map((m) => ({
-              studentId: m.studentId,
-              fullName: m.fullname,
-              roleName: m.clubRoleName,
-              userId: m.userId,
-              clubMemberId: m.clubMemberId,
-            }));
-          setAllStudents(students);
+          const members: AvailableMemberEventTask[] = response.data;
+          setAllStudents(members);
         }
       } catch (error: any) {
         console.error("Failed to fetch club members", error);
@@ -101,25 +89,19 @@ export default function CreateTaskClub() {
   );
 
   // React Hook Form
-  const form = useForm<TaskFormValues>({
-    resolver: zodResolver(TaskSchema),
+  const form = useForm<TaskEventFormValues>({
+    resolver: zodResolver(EventTaskDetailSchema),
     mode: "onChange",
     defaultValues: {
-      taskName: "",
+      detailName: "",
       description: "",
-      deadlineDate: new Date(),
-      deadlineTime: "",
-      startTimeDate: new Date(),
-      startTimeTime: "",
-      taskScore: 0,
+      assignedMembers: [],
       assignAll: false,
-      selectedMembers: [],
-      clubId: clubId,
     },
   });
   const { handleSubmit, setValue, getValues, watch } = form;
   const assignAll = watch("assignAll");
-  const selectedMembers = watch("selectedMembers");
+  const selectedMembers = watch("assignedMembers");
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
@@ -130,7 +112,7 @@ export default function CreateTaskClub() {
   };
 
   // Submit form
-  const onSubmit = async (values: TaskFormValues) => {
+  const onSubmit = async (values: TaskEventFormValues) => {
     if (!user) return;
     try {
       setIsLoading(true);
@@ -143,13 +125,11 @@ export default function CreateTaskClub() {
         values.startTimeTime
       );
 
-      // Nếu assignAll là true, lấy tất cả member (sử dụng clubMemberId)
-      // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
       const assignedMembers =
         assignAll && allStudents.length > 0
-          ? allStudents
-              .filter((student) => student.roleName != "CLUB_OWNER")
-              .map((student) => ({ clubMemberId: student.clubMemberId }))
+          ? allStudents.map((student) => ({
+              clubMemberId: student.clubMemberId,
+            }))
           : selectedMembers.map((id: string) => {
               const stu = allStudents.find((s) => s.studentId === id);
               return { clubMemberId: stu ? stu.clubMemberId : id };
@@ -157,17 +137,27 @@ export default function CreateTaskClub() {
 
       const data = {
         clubId,
-        createdBy: user.userId,
-        taskName: values.taskName,
+        eventId: location.state?.eventId, // lấy từ location nếu có
+        taskName: "test",
         description: values.description,
         startTime: fixTime(finalStartTime).toISOString(),
         deadline: fixTime(finalDeadline).toISOString(),
-        taskScore: values.taskScore,
-        assignedMembers,
+        status: "ON_GOING",
+        eventTaskDetails: [
+          {
+            detailName: values.detailName,
+            description: values.description,
+            startTime: fixTime(finalStartTime).toISOString(),
+            deadline: fixTime(finalDeadline).toISOString(),
+            status: "ON_GOING",
+            priority: values.priority || "MEDIUM",
+            assignedMembers,
+          },
+        ],
       };
 
-      console.log("CreateTask data:", data);
-      await CreateTaskToStudent(data);
+      console.log("Mapped body:", data);
+      // await CreateTaskToStudent(data);
       toast.success("Task created successfully!");
       navigate(-1);
     } catch (error: any) {
@@ -182,12 +172,12 @@ export default function CreateTaskClub() {
 
   // Toggle chọn sinh viên cụ thể (lưu studentId, sẽ convert sang clubMemberId khi submit)
   const handleToggleStudent = (studentId: string, checked: boolean) => {
-    const current = getValues("selectedMembers");
+    const current = getValues("assignedMembers");
     if (checked) {
-      setValue("selectedMembers", [...current, studentId]);
+      setValue("assignedMembers", [...current, studentId]);
     } else {
       setValue(
-        "selectedMembers",
+        "assignedMembers",
         current.filter((id: string) => id !== studentId)
       );
     }
@@ -197,7 +187,7 @@ export default function CreateTaskClub() {
   const handleAssignAllChange = (checked: boolean) => {
     setValue("assignAll", checked);
     if (checked) {
-      setValue("selectedMembers", []);
+      setValue("assignedMembers", []);
     }
   };
 
@@ -225,7 +215,7 @@ export default function CreateTaskClub() {
                 <Grid2 size={6}>
                   <FormField
                     control={form.control}
-                    name="taskName"
+                    name="detailName"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Task Name</FormLabel>
@@ -238,20 +228,27 @@ export default function CreateTaskClub() {
                   />
                 </Grid2>
                 <Grid2 size={6}>
-                  {/* Score */}
                   <FormField
                     control={form.control}
-                    name="taskScore"
+                    name="priority"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Score</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            type="number"
-                            placeholder="Enter score (0-100)"
-                          />
-                        </FormControl>
+                        <FormLabel>Priority</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="LOW">Low</SelectItem>
+                            <SelectItem value="MEDIUM">Medium</SelectItem>
+                            <SelectItem value="HIGH">High</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -304,7 +301,10 @@ export default function CreateTaskClub() {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              setStartDate(date ?? null)
+                            }}
                             disabled={(date) => date < new Date()}
                             initialFocus
                           />
@@ -357,7 +357,10 @@ export default function CreateTaskClub() {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
+                            onSelect={(date) => {
+                              field.onChange(date);
+                              setDeadlineDate(date ?? null)
+                            }}
                             disabled={(date) => date < new Date()}
                             initialFocus
                           />
@@ -410,7 +413,7 @@ export default function CreateTaskClub() {
               {/* Specific Students */}
               <FormField
                 control={form.control}
-                name="selectedMembers"
+                name="assignedMembers"
                 render={() => (
                   <FormItem>
                     {!assignAll && (
@@ -486,7 +489,7 @@ export default function CreateTaskClub() {
                                     key={id}
                                     className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
                                   >
-                                    {st.fullName} - {st.roleName}
+                                    {st.fullName} - {st.email}
                                   </span>
                                 );
                               })}
