@@ -4,17 +4,11 @@ import { Eye, ShieldCloseIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogProps, DialogTitle, IconButton, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-// Kiểu Student
-interface Student {
-    studentId: string;
-    fullName: string;
-    roleName: string;
-}
+import { AvailableMemberEventTask } from "@/api/student/ClubAgent";
 
 // Props từ code bạn
 interface SpecificStudentListProps {
-    students: Student[];          // Danh sách đã filter theo searchTerm
+    students: AvailableMemberEventTask[];          // Danh sách đã filter theo searchTerm
     selected: string[];           // Mảng studentId đã chọn
     isAssignAll: boolean;         // Nếu true => disable checkbox
     handleToggleStudent: (studentId: string, checked: boolean) => void;
@@ -28,11 +22,11 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
 }) => {
     const [open, setOpen] = useState(false);
     const [maxWidth] = React.useState<DialogProps['maxWidth']>('lg');
-    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+    const [selectedStudent, setSelectedStudent] = useState<AvailableMemberEventTask | null>(null);
 
     // Lọc bỏ các student có roleName là "CLUB_OWNER"
     const filteredStudents = students.filter(
-        (st) => st.roleName.toUpperCase() !== "CLUB_OWNER"
+        (st) => st.clubActivityPoint >= 0
     );
 
     // Mỗi lần load 5 sinh viên
@@ -110,7 +104,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
 
     const currentTaskId = "1";
 
-    const handleClick = (student: Student) => {
+    const handleClick = (student: AvailableMemberEventTask) => {
         setSelectedStudent(student);
         setOpen(true);
     };
@@ -133,7 +127,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                                 disabled={isAssignAll}
                             />
                             <span className="text-sm font-medium text-foreground">
-                                {st.fullName} - <span className="text-muted-foreground">{st.roleName}</span>
+                                {st.fullName} - <span className="text-muted-foreground">{st.email}</span>
                             </span>
                             <button
                                 className="p-1 rounded hover:bg-accent transition"
@@ -168,7 +162,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                                 />
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-800">{selectedStudent?.fullName}</h2>
-                                    <p className="text-sm text-gray-500 mt-1">{selectedStudent?.roleName}</p>
+                                    <p className="text-sm text-gray-500 mt-1">{selectedStudent?.email}</p>
                                     <p className="text-sm text-gray-500">ID: {selectedStudent?.studentId}</p>
                                 </div>
                             </div>
