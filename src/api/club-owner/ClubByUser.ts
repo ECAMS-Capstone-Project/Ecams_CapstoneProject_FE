@@ -61,6 +61,7 @@ enum EventTypeEnum {
 
 // Interface cho Event
 export interface EventResponse {
+  clubEventId: string
   eventId: string;
   representativeId?: string;
   representativeName?: string;
