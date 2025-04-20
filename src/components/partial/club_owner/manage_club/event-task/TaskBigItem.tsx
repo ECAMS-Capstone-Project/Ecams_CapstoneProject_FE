@@ -11,24 +11,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
-import { EventClubDTO } from "@/api/representative/EventAgent";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
 import { fixTime } from "@/lib/utils";
 
 interface TaskItemProps {
   task: InterTask;
-  isHost: boolean;
   selectedEvent: InterClubEventDTO;
-  currentClub: EventClubDTO;
   isClubOwner: boolean
 }
 
 export const TaskBigItem = ({
   task,
   selectedEvent,
-  currentClub,
-  isClubOwner
+  isClubOwner,
 }: TaskItemProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const navigate = useNavigate();
@@ -39,8 +35,6 @@ export const TaskBigItem = ({
       return "bg-yellow-100 text-yellow-800";
     return "bg-blue-100 text-blue-800";
   };
-
-  console.log(currentClub);
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100) return "Completed";
@@ -88,7 +82,7 @@ export const TaskBigItem = ({
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Deadline: {format(fixTime(new Date(task.deadline)),"dd/MM/yyyy HH:mm")}
+                Deadline: {format(fixTime(new Date(task.deadline)), "dd/MM/yyyy HH:mm")}
               </div>
             </div>
           </div>
@@ -110,7 +104,7 @@ export const TaskBigItem = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() =>
-                  navigate(`/club/event-subtask/${selectedEvent.eventId}`, { state: { isClubOwner: isClubOwner, task: task } })
+                  navigate(`/club/event-subtask/${selectedEvent.eventId}`, { state: { isClubOwner: isClubOwner, task: task, clubId: selectedEvent.clubs[0]?.clubId } })
                 }>
                   View
                 </DropdownMenuItem>

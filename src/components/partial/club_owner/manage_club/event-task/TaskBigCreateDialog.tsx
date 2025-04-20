@@ -72,10 +72,8 @@ export const TaskBigCreateDialog = ({
       clubId: "",
     },
   });
-  console.log(form.formState.errors);
   const { getEventDetailQuery } = useEvents();
   const { data: event } = getEventDetailQuery(eventId, user?.userId || "");
-  console.log(event);
 
   const onSubmit = async (values: z.infer<typeof EventTaskSchema>) => {
     try {
@@ -99,7 +97,7 @@ export const TaskBigCreateDialog = ({
         values.deadline &&
         event?.data?.startDate &&
         fixTime(values.deadline) > new Date(event?.data?.startDate)
-      ) {        
+      ) {
         toast.error("Task's deadline must be before the event end date!");
         setIsSubmitting(false);
         return;
