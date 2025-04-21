@@ -13,7 +13,6 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
-import { fixTime } from "@/lib/utils";
 
 interface TaskItemProps {
   task: InterTask;
@@ -67,10 +66,10 @@ export const TaskBigItem = ({
     <>
       <div className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="w-4/5">
             <h3 className="font-bold text-[#136CB9]">Task: {task.taskName}</h3>
             <div className="flex flex-col gap-1">
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-justify text-muted-foreground mt-1">
                 Description: {task.description}
               </p>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -82,7 +81,7 @@ export const TaskBigItem = ({
               </div>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Deadline: {format(fixTime(new Date(task.deadline)), "dd/MM/yyyy HH:mm")}
+                Deadline: {format((task.deadline), "dd/MM/yyyy HH:mm a")}
               </div>
             </div>
           </div>
@@ -108,12 +107,14 @@ export const TaskBigItem = ({
                 }>
                   View
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setIsEditOpen(true)}
-                  disabled={task.completionPercentage === 100}
-                >
-                  Edit
-                </DropdownMenuItem>
+                {isClubOwner && (
+                  <DropdownMenuItem
+                    onClick={() => setIsEditOpen(true)}
+                    disabled={task.completionPercentage === 100}
+                  >
+                    Edit
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

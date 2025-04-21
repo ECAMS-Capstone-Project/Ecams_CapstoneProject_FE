@@ -34,7 +34,6 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { InterClubEventDTO } from "@/models/Event";
-import toast from "react-hot-toast";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { SubtaskDialog } from "../../inter-club/task/SubtaskDialog";
 import { EventTaskSchema } from "@/schema/EventTaskSchema";
@@ -74,34 +73,46 @@ export const TaskBigCreateDialog = ({
   });
   const { getEventDetailQuery } = useEvents();
   const { data: event } = getEventDetailQuery(eventId, user?.userId || "");
-
+  const combineDateTime = (dateObj: Date, timeStr: string) => {
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const newDate = new Date(dateObj);
+    newDate.setHours(hour, minute, 0, 0);
+    return newDate;
+  };
   const onSubmit = async (values: z.infer<typeof EventTaskSchema>) => {
     try {
       setIsSubmitting(true);
       console.log("test", values.deadline, event?.data?.endDate);
-
+      const finalDeadline = combineDateTime(
+        values.deadline,
+        values.deadlineTime
+      );
+      const finalStartTime = combineDateTime(
+        values.startTime,
+        values.startTimeTime
+      );
       const taskData: CreateInterTaskRequest = {
         ...values,
         eventId,
         createdBy: user?.userId || "",
         clubId: values.clubId || "",
-        startTime: fixTime(values.startTime || new Date()),
-        deadline: fixTime(values.deadline || new Date()),
+        startTime: fixTime(finalStartTime || new Date()),
+        deadline: fixTime(finalDeadline || new Date()),
         listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
           ...detail,
           startTime: fixTime(detail.startTime || new Date()),
           deadline: fixTime(detail.deadline || new Date()),
         })),
       };
-      if (
-        values.deadline &&
-        event?.data?.startDate &&
-        fixTime(values.deadline) > new Date(event?.data?.startDate)
-      ) {
-        toast.error("Task's deadline must be before the event end date!");
-        setIsSubmitting(false);
-        return;
-      }
+      // if (
+      //   finalDeadline &&
+      //   event?.data?.startDate &&
+      //   fixTime(finalDeadline) > new Date(event?.data?.endDate)
+      // ) {
+      //   toast.error("Task's deadline must be before the event end date!");
+      //   setIsSubmitting(false);
+      //   return;
+      // }
       await onCreateTask(taskData);
       setIsOpen(false);
       form.reset();
@@ -262,6 +273,35 @@ export const TaskBigCreateDialog = ({
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="startTimeTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Time</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="deadlineTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Time</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
