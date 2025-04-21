@@ -178,10 +178,9 @@ export default function CreateEventTaskClub() {
         ],
       };
 
-      console.log("Mapped body:", data);
       await CreateSubTaskAPI(task.eventTaskId, data);
       toast.success("Task created successfully!");
-      navigate(-1);
+      window.history.back();
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -267,10 +266,10 @@ export default function CreateEventTaskClub() {
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft size={24} />
           </Button>
-          Create Task
+          Create Sub Task
         </h2>
         <p className="text-sm text-muted-foreground ml-11">
-          Create new task for your club
+          Create sub task for your event
         </p>
       </div>
 
