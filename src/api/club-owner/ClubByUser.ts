@@ -86,6 +86,7 @@ export interface ClubCondition {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 
 export interface ClubConditionCreateDTO {
@@ -93,6 +94,7 @@ export interface ClubConditionCreateDTO {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 
 export interface ClubConditionUpdateDTO {
@@ -100,6 +102,7 @@ export interface ClubConditionUpdateDTO {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 export interface ClubMemberRequestDTO {
   clubMemberId: string;

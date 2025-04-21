@@ -2,23 +2,24 @@
 
 import {
   CreateInterTask,
-  GetInterTask,
+  GetMemberEventTask,
   UpdateInterTask,
 } from "@/api/club-owner/InterEventTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export const useInterTask = (
+export const useMemberEventTask = (
   eventId?: string,
   pageNumber?: number,
-  pageSize?: number
+  pageSize?: number,
+  userId?: string
 ) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["interTasks", eventId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
-    queryFn: () => GetInterTask(eventId || "", pageNumber || 1, pageSize || 5),
+    queryFn: () => GetMemberEventTask(eventId || "", pageNumber || 1, pageSize || 5, userId || ""),
     refetchOnMount: true, // Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // Không tự động refetch khi chuyển tab
     enabled: !!eventId, // Chỉ chạy query khi uniId có giá trị
@@ -28,7 +29,7 @@ export const useInterTask = (
     mutationFn: CreateInterTask,
     onSuccess: () => {
       toast.success("Inter Event Task created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["interTasks"], exact: false }); // Tự động refetch danh sách ✅
+      queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
     },
     onError: (error: any) => {
       console.error("Error:", error.response.data.errors);

@@ -15,6 +15,8 @@ export const EventTaskSchema = z
       .refine((value) => !isNaN(Date.parse(value.toISOString())), {
         message: "Invalid deadline",
       }),
+    startTimeTime: z.string().min(1, "Please select a time"),
+    deadlineTime: z.string().min(1, "Please select a time"),
     status: z.string().optional(),
     listEventTaskDetails: z.array(
       z.object({
@@ -37,28 +39,32 @@ export const EventTaskSchema = z
     ),
   })
   .superRefine((data, ctx) => {
-    // Chỉ xác thực nếu cả startTime và deadline ở task tổng đều có giá trị
-    if (data.startTime && data.deadline) {
-      data.listEventTaskDetails.forEach((detail, index) => {
-        if (detail.startTime && detail.startTime < data.startTime) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message:
-              "Detail start time must be after or equal to the main task start time",
-            path: ["listEventTaskDetails", index, "startTime"],
-          });
-        }
-        if (detail.deadline && detail.deadline > data.deadline) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message:
-              "Detail deadline must be before or equal to the main task deadline",
-            path: ["listEventTaskDetails", index, "deadline"],
-          });
-        }
+    if (data.startTime && data.deadline && data.deadline < data.startTime) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Deadline must be after Start Time",
+        path: ["deadline"],
       });
     }
+
+    data.listEventTaskDetails.forEach((detail, index) => {
+      if (detail.startTime && detail.startTime < data.startTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Detail start time must be after task start time",
+          path: ["listEventTaskDetails", index, "startTime"],
+        });
+      }
+      if (detail.deadline && detail.deadline > data.deadline) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Detail deadline must be before task deadline",
+          path: ["listEventTaskDetails", index, "deadline"],
+        });
+      }
+    });
   });
+
 
 export const subtaskSchema = z.object({
   status: z.string().min(1, "Status is required"),
