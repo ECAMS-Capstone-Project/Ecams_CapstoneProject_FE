@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   CircleDot,
   Clock,
+  MoreHorizontal,
   PlusCircle,
 } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -15,9 +16,13 @@ import { motion } from "framer-motion";
 import useAuth from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { InterTask } from "@/models/InterTask";
+import { EventTaskDetail, InterTask } from "@/models/InterTask";
 import { cn } from "@/lib/utils";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import EditSubTaskDialog from "./EditSubTaskDialog";
+import { GetSubTaskEventAPI, GetSubTaskEventByUserAPI } from "@/api/club-owner/TaskAPI";
+import LoadingAnimation from "@/components/ui/loading";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -28,12 +33,14 @@ export default function TaskListInEvent() {
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 5;
   const [isLoading, setIsLoading] = useState(true);
-  const [totalPages] = useState(1);
   const { user } = useAuth();
   const navigate = useNavigate();
-
+  const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [subTaskList, setSubTaskList] = useState<EventTaskDetail[]>()
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalPages, setTotalPages] = useState<number | undefined>();
 
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100)
@@ -52,7 +59,7 @@ export default function TaskListInEvent() {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm.trim().toLowerCase());
+      setDebouncedSearch(searchTerm.trim());
     }, 500);
 
     return () => clearTimeout(handler);
@@ -60,10 +67,15 @@ export default function TaskListInEvent() {
 
   useEffect(() => {
     const loadTasks = async () => {
-      if (!user) return;
+      if (!user || !user.userId || !task.eventTaskId) return <LoadingAnimation />;
       setIsLoading(true);
       try {
-        console.log("haha");
+        const response = isClubOwner
+          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch)
+          : await GetSubTaskEventByUserAPI(task.eventTaskId, pageNo, debouncedSearch, user.userId);
+
+        setSubTaskList(response.data?.data || [])
+        setTotalPages(response.data?.totalPages)
       } catch (error) {
         console.error("Error loading tasks:", error);
       } finally {
@@ -72,32 +84,51 @@ export default function TaskListInEvent() {
     };
 
     loadTasks();
-  }, [eventId, pageNo, pageSize, isClubOwner, user]);
-  const priorityMap = {
-    HIGH: {
-      label: "High",
-      className: "bg-red-600 text-white",
-    },
-    MEDIUM: {
-      label: "Medium",
-      className: "bg-yellow-500 text-white",
-    },
-    LOW: {
-      label: "Low",
-      className: "bg-blue-500 text-white",
-    },
-  } as const;
+  }, [eventId, pageNo, pageSize, isClubOwner, user, task.eventTaskId, debouncedSearch]);
 
-  const handleNavigate = (taskId: string) => {
-    navigate(`/club/task-detail/${taskId}`, { state: { isClubOwner } });
+  const handleNavigate = (task: EventTaskDetail) => {
+    navigate(`/club/task-detail/${task.eventTaskDetailId}`, { state: { isClubOwner, taskDetail: task } });
   };
 
   // 🔎 Filter task theo search term đã debounce
   const filteredTasks = useMemo(() => {
-    return task.eventTaskDetails.filter((task) =>
-      task.detailName.toLowerCase().includes(debouncedSearch)
+    const priorityOrder: Record<"HIGH" | "MEDIUM" | "LOW", number> = {
+      HIGH: 1,
+      MEDIUM: 2,
+      LOW: 3,
+    };
+
+    // B1: Filter theo search term
+    const searchedTasks = subTaskList?.filter((task) =>
+      task.detailName?.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
-  }, [task.eventTaskDetails, debouncedSearch]);
+
+    // B2: Sort theo priority: HIGH -> MEDIUM -> LOW
+    const sortedTasks = searchedTasks?.sort((a, b) => {
+      return priorityOrder[a.priority as "HIGH" | "MEDIUM" | "LOW"] - priorityOrder[b.priority as "HIGH" | "MEDIUM" | "LOW"];
+    });
+
+    // B3: Paginate sau khi sort
+    return sortedTasks;
+  }, [subTaskList, debouncedSearch]);
+
+  const handleEditSubmit = async (updatedTask: EventTaskDetail) => {
+    try {
+      // Gọi API update
+      // await updateSubTaskAPI(updatedTask.eventTaskDetailId, {
+      //   detailName: updatedTask.detailName,
+      //   description: updatedTask.description,
+      // });
+      console.log(updatedTask);
+      // Cập nhật lại local state
+      const updatedDetails = task.eventTaskDetails.map((t) =>
+        t.eventTaskDetailId === updatedTask.eventTaskDetailId ? updatedTask : t
+      );
+      task.eventTaskDetails = updatedDetails;
+    } catch (error) {
+      console.error("Failed to update task", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -139,7 +170,7 @@ export default function TaskListInEvent() {
                     {task?.startTime
                       ? format(
                         new Date(task.startTime),
-                        "dd/MM/yyyy - hh:mm"
+                        "dd/MM/yyyy - HH:MM a"
                       )
                       : "N/A"}
                   </p>
@@ -153,7 +184,7 @@ export default function TaskListInEvent() {
                     {task?.deadline
                       ? format(
                         new Date(task.deadline),
-                        "dd/MM/yyyy - hh:mm"
+                        "dd/MM/yyyy - HH:MM a"
                       )
                       : "N/A"}
                   </p>
@@ -179,7 +210,7 @@ export default function TaskListInEvent() {
                 <div>
                   <p className="text-sm font-medium text-gray-700">Quantity of sub task</p>
                   <p>
-                    {task.eventTaskDetails.length}
+                    {subTaskList?.length}
                   </p>
                 </div>
               </div>
@@ -223,20 +254,24 @@ export default function TaskListInEvent() {
               Array.from({ length: pageSize }).map((_, index) => (
                 <Skeleton key={index} className="h-28 rounded-xl" />
               ))
-            ) : filteredTasks.length === 0 ? (
+            ) : filteredTasks?.length === 0 ? (
               <div className="text-center text-muted-foreground py-10">
                 💤 No tasks found.
               </div>
             ) : (
-              filteredTasks.map((task) => (
+              filteredTasks && filteredTasks.map((task) => (
                 <motion.div
-                  key={task.eventTaskId}
+                  key={task.eventTaskDetailId}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className="rounded-2xl border shadow-sm cursor-pointer hover:shadow-md transition"
-                    onClick={() => handleNavigate(task.eventTaskId)}
+                    className={`rounded-lg border border-[#136CB9]/20 ${task.priority.toUpperCase() === "HIGH"
+                      ? "bg-red-400"
+                      : task.priority.toUpperCase() === "MEDIUM"
+                        ? "bg-yellow-200"
+                        : "bg-blue-200"
+                      }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
@@ -247,21 +282,41 @@ export default function TaskListInEvent() {
                             </h3>
                             <Badge
                               variant="secondary"
-                              className="bg-green-100 text-green-800 text-sm font-semibold px-2 py-1 rounded-md"
+                              className={cn(
+                                "text-sm font-semibold px-2 py-1 rounded-md",
+                                {
+                                  ON_GOING: "bg-blue-100 text-blue-800",
+                                  COMPLETE: "bg-green-100 text-green-800",
+                                  REVIEWING: "bg-yellow-100 text-yellow-800",
+                                  OVERDUE: "bg-red-100 text-red-800",
+                                }[task.status] || "bg-gray-100 text-gray-800"
+                              )}
                             >
-                              Active
+                              {task.status}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
                             {task.description}
                           </p>
                         </div>
-                        <Badge
-                          className={`text-sm px-3 py-1 rounded-full ${priorityMap[task.priority as keyof typeof priorityMap]?.className}`}
-                        >
-                          {priorityMap[task.priority as keyof typeof priorityMap]?.label || "Unknown"}
-                        </Badge>
-
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => handleNavigate(task)}>
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => {
+                              setEditingTask(task);
+                              setIsEditDialogOpen(true);
+                            }}>
+                              Edit
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-muted-foreground">
@@ -269,11 +324,11 @@ export default function TaskListInEvent() {
                           <Clock className="h-4 w-4" />
                           <span>
                             <span className="text-foreground font-medium">
-                              Start:
+                              Start Time:
                             </span>{" "}
                             {format(
                               new Date(task.startTime),
-                              "dd/MM/yyyy - hh:mm a"
+                              "dd/MM/yyyy - HH:MM a"
                             )}
                           </span>
                         </div>
@@ -285,7 +340,7 @@ export default function TaskListInEvent() {
                             </span>{" "}
                             {format(
                               new Date(task.deadline),
-                              "dd/MM/yyyy - hh:mm a"
+                              "dd/MM/yyyy - HH:MM a"
                             )}
                           </span>
                         </div>
@@ -297,7 +352,7 @@ export default function TaskListInEvent() {
             )}
           </div>
 
-          {!isLoading && totalPages > 1 && (
+          {!isLoading && totalPages !== undefined && totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-4">
               <Button
                 variant="outline"
@@ -320,6 +375,12 @@ export default function TaskListInEvent() {
           )}
         </CardContent>
       </Card>
+      <EditSubTaskDialog
+        open={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        task={editingTask}
+        onSubmit={handleEditSubmit}
+      />
     </div>
   );
 }
