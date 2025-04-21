@@ -26,7 +26,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     recommendedReasons
 }) => {
     const [open, setOpen] = useState(false);
-    const [maxWidth] = React.useState<DialogProps['maxWidth']>('lg');
+    const [maxWidth] = React.useState<DialogProps['maxWidth']>('md');
     const [selectedStudent, setSelectedStudent] = useState<AvailableMemberEventTask | null>(null);
 
     // Lọc bỏ các student có roleName là "CLUB_OWNER"
@@ -120,7 +120,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                         </div>
                         <button
                             className="p-2 rounded-md hover:bg-accent transition"
-                            title="Xem chi tiết"
+                            title="View detail"
                             type="button"
                             onClick={() => handleClick(st.studentId)}
                         >
@@ -133,7 +133,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
 
             <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={() => setOpen(false)}>
                 <DialogTitle className="flex justify-between items-center">
-                    Chi tiết học sinh
+                    Detail of student
                     <IconButton onClick={() => setOpen(false)} size="small">
                         <ShieldCloseIcon fontSize="small" />
                     </IconButton>
@@ -141,7 +141,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                 <DialogContent className="space-y-6">
 
                     {/* 1. Thông tin sinh viên + lý do */}
-                    <Card className="shadow-lg border rounded-2xl p-6">
+                    <Card className="shadow-lg border rounded-2xl p-6 bg-[#ebf5f8]">
                         <CardHeader>
                             <div className="flex items-center gap-6 mb-4">
                                 <img
@@ -248,7 +248,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                     </Card>}
 
                     {/* 3. Related Tasks */}
-                    {selectedStudent?.relatedTasks && selectedStudent?.relatedTasks?.length > 0 ? (
+                    {selectedStudent?.relatedTasks && selectedStudent?.relatedTasks?.length > 0 && (
                         <Card className="shadow-lg border mt-6 rounded-2xl">
                             <CardHeader>
                                 <h2 className="text-xl font-semibold text-gray-800">Nhiệm vụ liên quan</h2>
@@ -300,11 +300,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                                 </div>
                             </CardContent>
                         </Card>
-                    ) : <Card className="py-4">
-                        <p className="text-sm text-center text-gray-500 italic">
-                            No related tasks found.
-                        </p>
-                    </Card>}
+                    )}
 
                 </DialogContent>
             </Dialog>
