@@ -70,6 +70,7 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                 conditionName: updatedCondition.conditionName,
                 conditionContent: updatedCondition.conditionContent,
                 description: updatedCondition.description,
+                isRequired: updatedCondition.isRequired
             };
             await UpdateClubCondition(data);
             toast.success("Update successfully");
@@ -127,8 +128,13 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                                     onClick={isClubOwner ? () => handleCardClick(c) : undefined}
                                 >
                                     <div className="flex justify-between items-center">
-                                        <div className="text-lg font-semibold">
-                                            {c.conditionName}
+                                        <div className="flex items-center align-middle space-x-2">
+                                            <div className="text-lg font-semibold">{c.conditionName}</div>
+                                            {c.isRequired && (
+                                                <Badge variant="default" className="bg-red-500 text-white">
+                                                    Required evidence
+                                                </Badge>
+                                            )}
                                         </div>
                                         {/* Nút Delete chỉ hiển thị cho club owner */}
                                         {isClubOwner && (
