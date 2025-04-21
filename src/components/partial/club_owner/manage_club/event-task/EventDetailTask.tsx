@@ -10,6 +10,7 @@ import EventParticipants from "@/pages/club-owner/event/EventParticipants";
 import { EventTaskBig } from "./EventTaskBig";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
+import { Loader2 } from "lucide-react";
 export const EventDetailTask = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
@@ -47,8 +48,15 @@ export const EventDetailTask = () => {
   //   }
   // };
 
-  if (!event1) return null;
-  if (!event) return null;
+
+  if (!event1 || !event) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 mr-2 animate-spin text-gray-500" />
+        <span className="text-sm text-gray-500">Loading event data...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto space-y-6 pb-8">
