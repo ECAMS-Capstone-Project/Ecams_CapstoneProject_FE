@@ -50,6 +50,8 @@
     "file-saver": "^2.0.5",
     "formik": "^2.4.6",
     "framer-motion": "^12.0.5",
+    "html-react-parser": "^5.2.3",
+    "jszip": "^3.10.1",
     "jwt-decode": "^4.0.0",
     "ldrs": "^1.0.2",
     "lodash": "^4.17.21",
