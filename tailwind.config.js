@@ -8,6 +8,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./node_modules/magic-ui/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: ["animate-shine", "group-hover:animate-shine"],
   theme: {
     extend: {
       borderRadius: {
@@ -68,12 +69,17 @@ module.exports = {
           "50%": { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "50% 0%" },
         },
+        shine: {
+          "0%": { left: "-75%" },
+          "100%": { left: "125%" },
+        },
       },
       animation: {
         marquee: "marquee var(--duration) infinite linear",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
         meteor: "meteor 5s linear infinite",
         gradient: "gradient 4s linear infinite",
+        shine: "shine 3s ease-in-out forwards",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
