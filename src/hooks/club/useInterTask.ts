@@ -4,6 +4,7 @@ import {
   CreateInterTask,
   GetInterTask,
   UpdateInterTask,
+  UpdateInterTask2,
 } from "@/api/club-owner/InterEventTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -38,6 +39,19 @@ export const useInterTask = (
   const { mutateAsync: updateInterEventTaskMutation, isPending: isUpdating } =
     useMutation({
       mutationFn: UpdateInterTask,
+      onSuccess: () => {
+        toast.success("Inter Event Task updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
+
+  const { mutateAsync: updateInterEventTaskMutation2, isPending: isUpdating2 } =
+    useMutation({
+      mutationFn: UpdateInterTask2,
       onSuccess: () => {
         toast.success("Inter Event Task updated successfully!");
         queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
@@ -101,6 +115,8 @@ export const useInterTask = (
     createInterEventTask: createInterEventTaskMutation,
     isPending,
     updateInterEventTask: updateInterEventTaskMutation,
+    updateInterEventTask2: updateInterEventTaskMutation2,
     isUpdating,
+    isUpdating2,
   };
 };

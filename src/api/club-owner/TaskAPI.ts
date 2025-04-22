@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import toast from "react-hot-toast";
-import { get, post, put } from "../agent";
+import { get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventTaskDetail } from "@/models/InterTask";
 import axiosMultipartForm from "../axiosMultipartForm";
@@ -134,7 +134,7 @@ export interface EventSubmissionTaskDetail {
     submissionFile: string[];
     taskScore: number;
     comment: string | null;
-    reviewer: string | null;
+    reviewer: MemberInTaskDTO | null;
     status: string;
 }
 
@@ -360,6 +360,35 @@ export const GradeStudentTaskAPI = async (data: SubmissionReviewDTO): Promise<Re
     try {
         const response = await put<ResponseDTO<string>>(`/EventTask/review`, data);
         return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const EndOneEventAPI = async (clubId: string, eventId: string): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await patch<ResponseDTO<string>>(`/InterClub/Club/${clubId}/Event/${eventId}/end`);
+        return response;
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);

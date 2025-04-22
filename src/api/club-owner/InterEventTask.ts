@@ -3,6 +3,7 @@ import {
   CreateInterTaskRequest,
   InterTask,
   UpdateInterTaskRequest,
+  UpdateInterTaskRequest2,
 } from "@/models/InterTask";
 import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
@@ -43,6 +44,24 @@ export const CreateInterTask = async (
 
 export const UpdateInterTask = async (
   task: UpdateInterTaskRequest
+): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
+  try {
+    const response = await put<ResponseDTO<UpdateInterTaskRequest>>(
+      `/EventTask/${task.eventTaskId}`,
+      task
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in UpdateInterTask API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const UpdateInterTask2 = async (
+  task: UpdateInterTaskRequest2
 ): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
   try {
     const response = await put<ResponseDTO<UpdateInterTaskRequest>>(

@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const combineDateTime = (date: Date | undefined, time: string | undefined) => {
+  if (!date || !time) return undefined;
+  const [hour, minute] = time.split(":").map(Number);
+  const combined = new Date(date);
+  combined.setHours(hour, minute, 0, 0);
+  return combined;
+};
+
 export const EventTaskSchema = z
   .object({
     clubId: z.string().optional(),
@@ -35,36 +43,60 @@ export const EventTaskSchema = z
           })
           .optional(),
         status: z.string().optional(),
+        priority: z.string().optional(),
       })
     ),
   })
   .superRefine((data, ctx) => {
-    if (data.startTime && data.deadline && data.deadline < data.startTime) {
+    const taskStart = combineDateTime(data.startTime, data.startTimeTime);
+    const taskDeadline = combineDateTime(data.deadline, data.deadlineTime);
+
+    if (taskStart && taskDeadline && taskDeadline < taskStart) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Deadline must be after Start Time",
-        path: ["deadline"],
+        path: ["deadlineTime"],
       });
     }
 
     data.listEventTaskDetails.forEach((detail, index) => {
-      if (detail.startTime && detail.startTime < data.startTime) {
+      const detailStart = detail.startTime;
+      const detailDeadline = detail.deadline;
+
+      if (detailStart && taskStart && detailStart < taskStart) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Detail start time must be after task start time",
           path: ["listEventTaskDetails", index, "startTime"],
         });
       }
-      if (detail.deadline && detail.deadline > data.deadline) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Detail deadline must be before task deadline",
-          path: ["listEventTaskDetails", index, "deadline"],
-        });
+
+      if (detailDeadline && taskDeadline && detailStart) {
+        const isSameDate =
+          detailDeadline.toDateString() === data.deadline.toDateString() ||
+          detailStart.toDateString() === data.startTime.toDateString();
+
+        if (isSameDate) {
+          const taskDeadlineTime = combineDateTime(data.deadline, data.deadlineTime);
+          const taskStartTime = combineDateTime(data.startTime, data.startTimeTime);
+
+          if (taskDeadlineTime && detailDeadline && detailDeadline > taskDeadlineTime) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Detail deadline must be before task deadline",
+              path: ["listEventTaskDetails", index, "deadline"],
+            });
+          } else if (taskStartTime && detailStart && detailStart < taskStartTime) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Start time detail must be after task start",
+              path: ["listEventTaskDetails", index, "startTime"],
+            });
+          }
+        }
       }
     });
   });
-
 
 export const subtaskSchema = z.object({
   status: z.string().min(1, "Status is required"),
@@ -72,4 +104,5 @@ export const subtaskSchema = z.object({
   description: z.string().min(1, "Description is required"),
   startTime: z.date().min(new Date(), "Start time is required"),
   deadline: z.date().min(new Date(), "Deadline is required"),
+  priority: z.string()
 });
