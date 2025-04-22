@@ -52,12 +52,12 @@ const ViewTaskSubmissionPage: React.FC = () => {
 
   const handleSaveScore = async () => {
     if (!isSubmitted && !isAllowedToReviewAsZero) {
-      alert("Không thể chấm điểm vì học sinh chưa nộp bài và chưa quá hạn.");
+      alert("Cannot grade because the student has not submitted the assignment and the deadline has not passed.");
       return;
     }
 
     if (score === null || score < 0 || score > 10) {
-      toast.error(`Điểm phải từ 0 đến 10`);
+      toast.error(`Grades must range from 0 to 10`);
       return;
     }
 
@@ -150,7 +150,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                   {taskDetail?.startTime
                     ? format(
                       new Date(taskDetail.startTime),
-                      "dd/MM/yyyy - HH:MM a"
+                      "dd/MM/yyyy - HH:mm a"
                     )
                     : "N/A"}
                 </p>
@@ -165,7 +165,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                   {taskDetail?.deadline
                     ? format(
                       new Date(taskDetail.deadline),
-                      "dd/MM/yyyy - HH:MM a"
+                      "dd/MM/yyyy - HH:mm a"
                     )
                     : "N/A"}
                 </p>
@@ -200,7 +200,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p className="text-sm font-medium text-gray-700">
                   Member assign
                 </p>
-                <p>{submission?.memberName ? submission?.memberName : "N/A"}</p>
+                <p>{submission?.memberName ? `${submission?.memberName} - ${submission.memberEmail}` : "N/A"}</p>
               </div>
             </div>
           </div>
@@ -208,7 +208,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
           <div>
             <p className="text-gray-700">
               <strong>Max score:</strong>{" "}
-              <Badge className="bg-green-100 text-green-700">
+              <Badge className="bg-green-100 text-green-700 text-base">
                 10
               </Badge>
             </p>
@@ -226,9 +226,9 @@ const ViewTaskSubmissionPage: React.FC = () => {
           </div>
           <Separator />
           {isSubmitted ? (
-            <Grid2 container>
+            <Grid2 container spacing={3}>
               <Grid2 size={{ xs: 12, md: 9.5 }}>
-                <div className="space-y-2 text-gray-700" style={{ width: "80%" }}>
+                <div className="space-y-2 text-gray-700">
                   <p className="flex items-center gap-2">
                     <User2 size={16} />
                     <strong>Member:</strong> {submission.memberName}
@@ -236,13 +236,13 @@ const ViewTaskSubmissionPage: React.FC = () => {
                   <p className="flex items-center gap-2">
                     <Clock size={16} />
                     <strong>Submit date:</strong>{" "}
-                    {formatDate(new Date(submission.submissionDate).toISOString(), "dd/MM/yyyy hh:mm")}
+                    {formatDate(new Date(submission.submissionDate).toISOString(), "dd/MM/yyyy - HH:mm a")}
                   </p>
                   <p className="flex text-justify items-center gap-2">
                     <SquareChartGantt size={16} />
                     <strong> Content:</strong>
                   </p>
-                  <p className="pl-4">
+                  <p className="pl-4 border p-2 bg-slate-100 text-justify rounded-md">
                     {parse(submission.studentSubmission || "")}
                   </p>
                 </div>
@@ -301,7 +301,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <strong>Score:</strong>
                 {score !== null ? (
-                  <Badge className="text-green-600 border border-green-300">
+                  <Badge className="text-green-400 text-base">
                     {score}
                   </Badge>
                 ) : (
