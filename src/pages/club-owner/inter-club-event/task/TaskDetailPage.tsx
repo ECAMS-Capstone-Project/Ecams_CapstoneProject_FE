@@ -1,11 +1,26 @@
-import { useLocation, useParams } from "react-router-dom";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useInterTask } from "@/hooks/club/useInterTask";
 import TaskDetailCard from "@/components/partial/club_owner/inter-club/task/TaskDetailCard";
-import { TaskSubmissionList } from "@/components/partial/club_owner/inter-club/task/TaskSubmissionList";
-import { TaskAssignedMembers } from "@/components/partial/club_owner/inter-club/task/TaskAssignedMembers";
+
 import { EventClubDTO } from "@/api/representative/EventAgent";
+import {
+  Calendar,
+  CheckCircle,
+  Circle,
+  ListTodo,
+  PlusCircle,
+} from "lucide-react";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { useClub } from "@/hooks/club/useClub";
+import { NewSubtaskDialog } from "@/components/partial/club_owner/inter-club/task/sub-task/NewSubtaskDialog";
+import { InterTaskSchema } from "@/schema/InterTaskSchema";
+import { z } from "zod";
+import { InterClubEventDTO } from "@/models/Event";
+import { UpdateInterTaskRequest } from "@/models/InterTask";
+import { fixTime } from "@/lib/utils";
 
 export const TaskDetailPage = () => {
   const { eventTaskId } = useParams();
@@ -13,8 +28,17 @@ export const TaskDetailPage = () => {
   const { data: response, isLoading } = getInterTaskDetailQuery(
     eventTaskId || ""
   );
+  const navigate = useNavigate();
   const { state } = useLocation();
   const currentClub = state?.currentClub as EventClubDTO;
+  const selectedEvent = state?.selectedEvent as InterClubEventDTO;
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const { members: clubMembers } = useClub(currentClub.clubId);
+  const { updateInterEventTask } = useInterTask();
+
+  const availableMembers = clubMembers.filter(
+    (member) => member.clubRoleName !== "CLUB_OWNER"
+  );
   if (isLoading) {
     return (
       <div className="container mx-auto py-6">
@@ -33,73 +57,174 @@ export const TaskDetailPage = () => {
 
   const task = response.data;
 
-  const submissions = [
-    {
-      id: "1",
-      fileName: "Submission 1",
-      fileUrl: "https://example.com/submission1.pdf",
-      submittedAt: "2021-01-01",
-      submittedBy: "John Doe",
-      content: "This is the content of the submission",
-      feedback: "This is the feedback of the submission",
-      grade: 10,
-    },
-    {
-      id: "2",
-      fileName: "Submission 2",
-      fileUrl: "https://example.com/submission2.pdf",
-      submittedAt: "2021-01-02",
-      submittedBy: "Jane Smith",
-      content: "This is the content of the submission 2",
-      feedback: "This is the feedback of the submission 2",
-      grade: 9,
-    },
-  ];
+  const getSubTaskStatusIcon = (status: string) => {
+    switch (status) {
+      case "COMPLETED":
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case "ON_GOING":
+        if (
+          task.eventTaskDetails.some(
+            (subTask) => subTask.priority.toUpperCase() === "HIGH"
+          )
+        ) {
+          return <Circle className="h-4 w-4 text-white" />;
+        } else if (
+          task.eventTaskDetails.some(
+            (subTask) => subTask.priority.toUpperCase() === "MEDIUM"
+          )
+        ) {
+          return <Circle className="h-4 w-4 text-yellow-600" />;
+        } else {
+          return <Circle className="h-4 w-4 text-blue-600" />;
+        }
+      default:
+        return <Circle className="h-4 w-4 text-gray-400" />;
+    }
+  };
+  const handleAddSubtask = async (values: z.infer<typeof InterTaskSchema>) => {
+    console.log("add subtask", values);
+    try {
+      const updateData: UpdateInterTaskRequest = {
+        eventTaskId: task.eventTaskId,
+        clubId: task.clubId,
+        eventId: selectedEvent.eventId,
+        taskName: task.taskName,
+        description: task.description,
+        startTime: fixTime(task.startTime),
+        deadline: fixTime(task.deadline),
+        status: task.status,
+        eventTaskDetails: values.listEventTaskDetails.map((detail) => ({
+          eventTaskId: task.eventTaskId,
+          detailName: detail.detailName,
+          description: detail.description,
+          startTime: fixTime(detail.startTime || new Date()),
+          deadline: fixTime(detail.deadline || new Date()),
+          status: detail.status || "ON_GOING",
+          priority: detail.priority,
+          assignedMembers: detail.assignedMembers || [],
+        })),
+      };
 
-  const assignedMembers = [
-    {
-      clubMemberId: "1",
-      fullname: "Member 1",
-      clubRoleName: "Member",
-      status: "completed",
-      avatar: "https://example.com/avatar1.png",
-      userId: "1",
-      studentId: "1",
-      joinedAt: "2021-01-01",
-      requestedDate: "2021-01-01",
-      clubActivityPoint: 100,
-      leftDate: "2021-01-01",
-      email: "member1@example.com",
-      leaveReason: "",
-    },
-  ];
-
+      await updateInterEventTask(updateData);
+    } catch (error) {
+      console.error("Failed to update task:", error);
+    }
+  };
   return (
     <div className="container mx-auto space-y-6">
       {/* Task Info Section */}
       <TaskDetailCard task={task} />
       {/* Tabs Section */}
-      <Tabs defaultValue="submission" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="submission">Submission</TabsTrigger>
-          <TabsTrigger value="assigned-members">Assigned Members</TabsTrigger>
-        </TabsList>
-        <TabsContent value="submission" className="mt-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Submissions</h3>
-            <TaskSubmissionList submissions={submissions} />
-          </div>
-        </TabsContent>
-        <TabsContent value="assigned-members" className="mt-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Assigned Members</h3>
-            <TaskAssignedMembers
-              members={assignedMembers}
-              currentClub={currentClub}
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Sub-tasks Section */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium flex items-center gap-2 text-[#136CB9] border-b border-[#136CB9]/20 pb-2">
+            <ListTodo className={`h-4 w-4 `} />
+            Sub-tasks
+          </h4>
+          <Button
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" />
+            New Sub-task
+          </Button>
+        </div>
+        <div className="space-y-3">
+          {task.eventTaskDetails.map((subTask) => (
+            <div
+              key={subTask.eventTaskDetailId}
+              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer ${
+                subTask.priority.toUpperCase() === "HIGH"
+                  ? "bg-pink-400"
+                  : subTask.priority.toUpperCase() === "MEDIUM"
+                  ? "bg-yellow-200"
+                  : "bg-blue-300"
+              }`}
+              onClick={() => {
+                navigate(
+                  `/club/inter-club-event/subtask/${subTask.eventTaskDetailId}`,
+                  {
+                    state: {
+                      currentClub,
+                      subTask: subTask,
+                      task: task,
+                      selectedEvent,
+                    },
+                  }
+                );
+              }}
+            >
+              <div className="flex items-center gap-3">
+                {getSubTaskStatusIcon(subTask.status)}
+                <div>
+                  <p
+                    className={`font-medium ${
+                      subTask.priority.toUpperCase() === "HIGH"
+                        ? "text-white"
+                        : subTask.priority.toUpperCase() === "MEDIUM"
+                        ? "text-yellow-800"
+                        : "text-[#136CB9]"
+                    }`}
+                  >
+                    {subTask.detailName}
+                  </p>
+                  <p
+                    className={`text-sm  ${
+                      subTask.priority.toUpperCase() === "HIGH"
+                        ? "text-white"
+                        : subTask.priority.toUpperCase() === "MEDIUM"
+                        ? "text-yellow-800"
+                        : "text-[#136CB9]"
+                    }`}
+                  >
+                    {subTask.description}
+                  </p>
+                </div>
+              </div>
+              <div
+                className={`text-sm flex items-center gap-2  ${
+                  subTask.priority.toUpperCase() === "HIGH"
+                    ? "text-white"
+                    : subTask.priority.toUpperCase() === "MEDIUM"
+                    ? "text-yellow-800"
+                    : "text-[#136CB9]"
+                }`}
+              >
+                <Calendar className="h-4 w-4" />
+                {format(new Date(subTask.deadline), "dd/MM/yyyy")}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <NewSubtaskDialog
+        isOpen={isCreateDialogOpen}
+        onClose={() => setIsCreateDialogOpen(false)}
+        onSubmit={(data) => {
+          // Chỉ gửi thông tin của subtask mới
+          handleAddSubtask({
+            taskName: task.taskName,
+            description: task.description,
+            startTime: fixTime(task.startTime),
+            deadline: fixTime(task.deadline),
+            status: task.status,
+            listEventTaskDetails: [
+              {
+                detailName: data.detailName,
+                description: data.description,
+                startTime: fixTime(data.startTime),
+                deadline: fixTime(data.deadline),
+                status: data.status,
+                priority: data.priority,
+                assignedMembers: data.assignedMembers || [],
+              },
+            ],
+          });
+        }}
+        members={availableMembers}
+        currentClub={currentClub}
+      />
     </div>
   );
 };

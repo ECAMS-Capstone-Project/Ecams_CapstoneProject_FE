@@ -1,12 +1,17 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function fixTime(date: Date | string) {
   const adjustedDate = new Date(date);
   adjustedDate.setHours(adjustedDate.getHours() + 7);
+  return adjustedDate;
+}
+export function fixTime2(date: Date | string) {
+  const adjustedDate = new Date(date);
+  adjustedDate.setHours(adjustedDate.getHours() - 7);
   return adjustedDate;
 }

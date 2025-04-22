@@ -51,6 +51,7 @@ export interface InterClub {
   isEventClub: boolean;
   status: string;
   isHost: boolean;
+  isEnd: boolean;
 }
 
 // Model cho Club Event
@@ -69,7 +70,7 @@ export interface InterClubEventDTO {
   trainingPoint: number;
   clubs: InterClub[]; // Danh sách câu lạc bộ liên quan đến sự kiện
   eventAreas?: EventAreas[]; // Các khu vực sự kiện
-  status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING";
+  status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING" | "ENDED";
   startDate: Date;
   endDate: Date;
 }

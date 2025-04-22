@@ -105,9 +105,12 @@ export const EventDetailPage = () => {
 
   return (
     <div className="container mx-auto space-y-6 pb-8">
-      {event.data && (
+      {event.data && currentClub && (
         <div className="space-y-6">
-          <EventDetailsCard selectedEvent={event.data} />
+          <EventDetailsCard
+            selectedEvent={event.data}
+            currentClub={currentClub}
+          />
         </div>
       )}
 

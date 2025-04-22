@@ -33,6 +33,10 @@ export const InterTaskSchema = z
           })
           .optional(),
         status: z.string().optional(),
+        priority: z.string().min(1, "Priority is required"),
+        assignedMembers: z
+          .array(z.object({ clubMemberId: z.string() }))
+          .optional(),
       })
     ),
   })
@@ -66,4 +70,6 @@ export const subtaskSchema = z.object({
   description: z.string().min(1, "Description is required"),
   startTime: z.date().min(new Date(), "Start time is required"),
   deadline: z.date().min(new Date(), "Deadline is required"),
+  priority: z.string().min(1, "Priority is required"),
+  assignedMembers: z.array(z.object({ clubMemberId: z.string() })).optional(),
 });

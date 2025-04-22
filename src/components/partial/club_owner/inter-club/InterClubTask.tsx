@@ -78,13 +78,14 @@ export const InterClubTask = ({ selectedEvent }: InterClubTaskProps) => {
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
-        {isHostClub?.clubId === club?.[0]?.clubId && (
-          <TaskCreateDialog
-            onCreateTask={handleCreateTask}
-            eventId={selectedEvent?.eventId || ""}
-            selectedEvent={selectedEvent}
-          />
-        )}
+        {isHostClub?.clubId === club?.[0]?.clubId &&
+          selectedEvent?.clubs.some((club) => club.isEnd === false) && (
+            <TaskCreateDialog
+              onCreateTask={handleCreateTask}
+              eventId={selectedEvent?.eventId || ""}
+              selectedEvent={selectedEvent}
+            />
+          )}
       </div>
 
       <ScrollArea className="h-[calc(100vh-300px)]">

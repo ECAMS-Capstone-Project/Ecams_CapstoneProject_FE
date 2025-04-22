@@ -70,6 +70,8 @@ interface SubtaskData {
   startTime: Date;
   deadline: Date;
   status: string;
+  priority: string;
+  assignedMembers?: string[];
 }
 // Thêm 7 giờ vào mọi timestamp
 function fixTime(date: Date) {
@@ -112,24 +114,17 @@ export const TaskEditDialog = ({
         startTime: fixTime(new Date(detail.startTime)),
         deadline: fixTime(new Date(detail.deadline)),
         status: detail.status,
+        priority: detail.priority,
       })),
     },
   });
-  console.log("form error", form.formState.errors);
 
   const onSubmit = async (values: z.infer<typeof InterTaskSchema>) => {
-    console.log("values", values);
     try {
-      const updateData: UpdateInterTaskRequest = {
-        eventTaskId: task.eventTaskId,
-        clubId: values.clubId || task.clubId,
-        eventId: selectedEvent.eventId,
-        taskName: values.taskName,
-        description: values.description,
-        startTime: fixTime(new Date(values.startTime || task.startTime)),
-        deadline: fixTime(new Date(values.deadline || task.deadline)),
-        status: values.status || task.status,
-        eventTaskDetails: values.listEventTaskDetails.map((detail, index) => ({
+      // Tách các subtask thành hai loại: đã tồn tại và mới
+      const existingSubtasks = values.listEventTaskDetails
+        .slice(0, task.eventTaskDetails.length)
+        .map((detail, index) => ({
           eventTaskDetailId: task.eventTaskDetails[index].eventTaskDetailId,
           eventTaskId: task.eventTaskId,
           detailName: detail.detailName,
@@ -147,7 +142,34 @@ export const TaskEditDialog = ({
             )
           ),
           status: detail.status || task.eventTaskDetails[index].status,
-        })),
+          priority: detail.priority || task.eventTaskDetails[index].priority,
+          assignedMembers: task.eventTaskDetails[index].assignedMembers || [],
+        }));
+
+      // Xử lý các subtask mới (không có eventTaskDetailId)
+      const newSubtasks = values.listEventTaskDetails
+        .slice(task.eventTaskDetails.length)
+        .map((detail) => ({
+          eventTaskId: task.eventTaskId,
+          detailName: detail.detailName,
+          description: detail.description,
+          startTime: fixTime(new Date(detail.startTime || task.startTime)),
+          deadline: fixTime(new Date(detail.deadline || task.deadline)),
+          status: detail.status || "ON_GOING",
+          priority: detail.priority,
+          assignedMembers: [],
+        }));
+
+      const updateData: UpdateInterTaskRequest = {
+        eventTaskId: task.eventTaskId,
+        clubId: values.clubId || task.clubId,
+        eventId: selectedEvent.eventId,
+        taskName: values.taskName,
+        description: values.description,
+        startTime: fixTime(new Date(values.startTime || task.startTime)),
+        deadline: fixTime(new Date(values.deadline || task.deadline)),
+        status: values.status || task.status || "ON_GOING", // Thêm giá trị mặc định để tránh undefined
+        eventTaskDetails: [...existingSubtasks, ...newSubtasks],
       };
 
       await onUpdate(task.eventTaskId, updateData);
@@ -165,6 +187,7 @@ export const TaskEditDialog = ({
       startTime: fixTime(currentSubtask.startTime || new Date()),
       deadline: fixTime(currentSubtask.deadline || new Date()),
       status: currentSubtask.status || "ON_GOING",
+      priority: currentSubtask.priority || "MEDIUM",
     };
 
     setEditingSubtask(subtaskToEdit);
@@ -178,6 +201,7 @@ export const TaskEditDialog = ({
     startTime: Date;
     deadline: Date;
     status: string;
+    priority: string;
   }) => {
     const currentSubtasks = form.getValues("listEventTaskDetails");
     console.log("Adding/Editing subtask:", data);
