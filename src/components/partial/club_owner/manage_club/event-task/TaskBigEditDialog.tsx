@@ -21,14 +21,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
-import { InterTaskSchema } from "@/schema/InterTaskSchema";
+import { InterTask, UpdateInterTaskRequest2 } from "@/models/InterTask";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
@@ -47,6 +46,8 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import { EventTaskSchema } from "@/schema/EventTaskSchema";
+import toast from "react-hot-toast";
 
 interface TaskEditDialogProps {
   task: InterTask;
@@ -54,18 +55,11 @@ interface TaskEditDialogProps {
   onClose: () => void;
   onUpdate: (
     taskId: string,
-    data: Partial<UpdateInterTaskRequest>
+    data: Partial<UpdateInterTaskRequest2>
   ) => Promise<void>;
   isHost?: boolean;
   isLoading?: boolean;
   selectedEvent: InterClubEventDTO;
-}
-
-// Thêm 7 giờ vào mọi timestamp
-function fixTime(date: Date) {
-  const adjustedDate = new Date(date);
-  adjustedDate.setHours(adjustedDate.getHours() + 7);
-  return adjustedDate;
 }
 
 export const TaskBigEditDialog = ({
@@ -77,58 +71,66 @@ export const TaskBigEditDialog = ({
   selectedEvent,
 }: TaskEditDialogProps) => {
   const [openClubSelect, setOpenClubSelect] = useState(false);
-  // const timeZone = "Asia/Ho_Chi_Minh";
-  const form = useForm<z.infer<typeof InterTaskSchema>>({
-    resolver: zodResolver(InterTaskSchema),
+
+  const form = useForm<z.infer<typeof EventTaskSchema>>({
+    resolver: zodResolver(EventTaskSchema),
     defaultValues: {
       taskName: task.taskName,
       description: task.description,
-      startTime: fixTime(new Date(task.startTime)),
-      deadline: fixTime(new Date(task.deadline)),
+      startTime: (new Date(task.startTime)),
+      deadline: (new Date(task.deadline)),
+      deadlineTime: format(new Date(task.deadline), "HH:mm"),
+      startTimeTime: format(new Date(task.startTime), "HH:mm"),
       status: task.status,
       clubId: task.clubId,
       listEventTaskDetails: task.eventTaskDetails.map((detail) => ({
         detailName: detail.detailName,
         description: detail.description,
-        startTime: fixTime(new Date(detail.startTime)),
-        deadline: fixTime(new Date(detail.deadline)),
+        startTime: (new Date(detail.startTime)),
+        priority: detail.priority,
+        deadline: (new Date(detail.deadline)),
         status: detail.status,
       })),
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof InterTaskSchema>) => {
-    console.log("values", values);
+  const combineDateTime = (dateObj: Date, timeStr: string) => {
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const newDate = new Date(dateObj);
+    newDate.setHours(hour, minute, 0, 0);
+    return newDate;
+  };
+
+  const onSubmit = async (values: z.infer<typeof EventTaskSchema>) => {
     try {
-      const updateData: UpdateInterTaskRequest = {
+      const finalDeadline = combineDateTime(
+        values.deadline,
+        values.deadlineTime
+      );
+      const finalStartTime = combineDateTime(
+        values.startTime,
+        values.startTimeTime
+      );
+      const updateData: UpdateInterTaskRequest2 = {
         eventTaskId: task.eventTaskId,
         clubId: values.clubId || task.clubId,
         eventId: selectedEvent.eventId,
         taskName: values.taskName,
         description: values.description,
-        startTime: fixTime(new Date(values.startTime || task.startTime)),
-        deadline: fixTime(new Date(values.deadline || task.deadline)),
-        status: values.status || task.status,
+        startTime: fixTime(finalStartTime).toISOString(),
+        deadline: fixTime(finalDeadline).toISOString(),
+        status: values.status || "ON_GOING",
         eventTaskDetails: values.listEventTaskDetails.map((detail, index) => ({
           eventTaskDetailId: task.eventTaskDetails[index].eventTaskDetailId,
           eventTaskId: task.eventTaskId,
           detailName: detail.detailName,
           description: detail.description,
-          startTime: fixTime(
-            new Date(
-              values.listEventTaskDetails[index].startTime ||
-              task.eventTaskDetails[index].startTime
-            )
-          ),
-          deadline: fixTime(
-            new Date(
-              values.listEventTaskDetails[index].deadline ||
-              task.eventTaskDetails[index].deadline
-            )
-          ),
+          startTime: fixTime(detail.startTime || new Date()).toISOString(),
+          deadline: fixTime(detail.deadline || new Date()).toISOString(),
           status: detail.status || task.eventTaskDetails[index].status,
         })),
       };
+      console.log(updateData);
 
       await onUpdate(task.eventTaskId, updateData);
       onClose();
@@ -148,7 +150,13 @@ export const TaskBigEditDialog = ({
             <DialogDescription>Edit the task details below</DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(
+              onSubmit,
+              (errors) => {
+                console.error("Zod validation errors:", errors);
+                toast.error("Check your detail time in sub task");
+              }
+            )} className="space-y-6">
               <div className="space-y-4 h-[300px)] p-2 overflow-y-auto">
                 <FormField
                   control={form.control}
@@ -177,6 +185,7 @@ export const TaskBigEditDialog = ({
                         <Textarea
                           placeholder="Enter task description"
                           className="resize-none"
+                          rows={5}
                           {...field}
                         />
                       </FormControl>
@@ -185,100 +194,118 @@ export const TaskBigEditDialog = ({
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start Time</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto p-0 mb-0 pb-0"
-                            align="start"
-                          >
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={(date) => {
-                                if (date) {
-                                  field.onChange(date);
-                                }
-                              }}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Start Time</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="deadline"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Deadline</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto p-0 mb-0 pb-0"
-                            align="start"
-                          >
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={(date) => {
-                                if (date) {
-                                  field.onChange(date);
-                                }
-                              }}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="startTimeTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <Input type="time" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Deadline</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="deadlineTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <Input type="time" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -287,10 +314,9 @@ export const TaskBigEditDialog = ({
                     name="clubId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Assign to Club</FormLabel>
+                        <FormLabel>Club Assign</FormLabel>
                         <Popover
                           open={openClubSelect}
-                          onOpenChange={setOpenClubSelect}
                         >
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -360,7 +386,14 @@ export const TaskBigEditDialog = ({
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className={cn(
+                              "font-bold border",
+                              field.value === "NOT_STARTED" && "bg-gray-100 text-gray-700",
+                              field.value === "ON_GOING" && "bg-blue-100 text-blue-800",
+                              field.value === "COMPLETED" && "bg-green-200 text-green-800",
+                              field.value === "REVIEWING" && "bg-yellow-100 text-yellow-800",
+                              field.value === "OVERDUE" && "bg-red-100 text-red-800",
+                            )}>
                               <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                           </FormControl>

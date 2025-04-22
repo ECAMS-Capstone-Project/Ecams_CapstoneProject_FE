@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
+import { InterTask, UpdateInterTaskRequest2 } from "@/models/InterTask";
 import { format } from "date-fns";
 import { Calendar, MoreHorizontal, Users2 } from "lucide-react";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
+import toast from "react-hot-toast";
 
 interface TaskItemProps {
   task: InterTask;
@@ -28,7 +29,7 @@ export const TaskBigItem = ({
   const [isEditOpen, setIsEditOpen] = useState(false);
   const navigate = useNavigate();
   const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100)
+    if (status === "COMPLETED")
       return "bg-green-100 text-green-800";
     if (percentage > 0 || status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
@@ -36,32 +37,43 @@ export const TaskBigItem = ({
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100) return "Completed";
+    if (status === "COMPLETED") return "Completed";
     if (percentage > 0 || status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     return "Overdue";
   };
-  const { updateInterEventTask, isUpdating } = useInterTask();
+  const { updateInterEventTask2, isUpdating2 } = useInterTask();
   const handleUpdateTask = async (
     taskId: string,
-    data: Partial<UpdateInterTaskRequest>
+    data: Partial<UpdateInterTaskRequest2>
   ) => {
     try {
-      await updateInterEventTask({
+      await updateInterEventTask2({
         eventTaskId: taskId,
         clubId: data.clubId || task.clubId,
         eventId: selectedEvent.eventId,
         taskName: data.taskName || task.taskName,
-        description: data.description || task.description,
-        startTime: data.startTime || task.startTime,
-        deadline: data.deadline || task.deadline,
+        description: data.description || "",
+        startTime: data.startTime || "",
+        deadline: data.deadline || "",
         status: data.status || task.status,
-        eventTaskDetails: data.eventTaskDetails || task.eventTaskDetails,
+        eventTaskDetails: data.eventTaskDetails ?? [],
       });
     } catch (error) {
       console.error(error);
     }
   };
+  const handleClick = () => {
+    const taskStart = new Date(task.startTime);
+    const now = new Date();
+
+    if (taskStart <= now) {
+      toast.error("This task has already started");
+    } else {
+      setIsEditOpen(true);
+    }
+  };
+
   return (
     <>
       <div className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
@@ -87,7 +99,7 @@ export const TaskBigItem = ({
           </div>
           <div className="flex items-center gap-2 h-full">
             <span
-              className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
+              className={`px-2 py-1 rounded-full text-sm ${getStatusColor(
                 task.status,
                 task.completionPercentage
               )}`}
@@ -109,7 +121,7 @@ export const TaskBigItem = ({
                 </DropdownMenuItem>
                 {isClubOwner && (
                   <DropdownMenuItem
-                    onClick={() => setIsEditOpen(true)}
+                    onClick={() => handleClick()}
                     disabled={task.completionPercentage === 100}
                   >
                     Edit
@@ -125,7 +137,7 @@ export const TaskBigItem = ({
         task={task}
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
-        isLoading={isUpdating}
+        isLoading={isUpdating2}
         selectedEvent={selectedEvent}
       />
     </>

@@ -16,13 +16,15 @@ import { motion } from "framer-motion";
 import useAuth from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { EventTaskDetail, InterTask } from "@/models/InterTask";
-import { cn } from "@/lib/utils";
+import { EventTaskDetail, EventTaskDetail2, InterTask, UpdateInterTaskRequest2 } from "@/models/InterTask";
+import { cn, fixTime } from "@/lib/utils";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import EditSubTaskDialog from "./EditSubTaskDialog";
 import { GetSubTaskEventAPI, GetSubTaskEventByUserAPI } from "@/api/club-owner/TaskAPI";
 import LoadingAnimation from "@/components/ui/loading";
+import toast from "react-hot-toast";
+import { useInterTask } from "@/hooks/club/useInterTask";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -41,6 +43,8 @@ export default function TaskListInEvent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalPages, setTotalPages] = useState<number | undefined>();
+  const [flag, setFlag] = useState<boolean>(false);
+  const { updateInterEventTask2, isUpdating2 } = useInterTask();
 
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100)
@@ -84,10 +88,10 @@ export default function TaskListInEvent() {
     };
 
     loadTasks();
-  }, [eventId, pageNo, pageSize, isClubOwner, user, task.eventTaskId, debouncedSearch]);
+  }, [eventId, pageNo, pageSize, isClubOwner, user, task.eventTaskId, debouncedSearch, flag]);
 
   const handleNavigate = (task: EventTaskDetail) => {
-    navigate(`/club/task-detail/${task.eventTaskDetailId}`, { state: { isClubOwner, taskDetail: task } });
+    navigate(`/club/task-detail/${task.eventTaskDetailId}`, { state: { isClubOwner, taskDetail: task, clubId: clubId, eventId: eventId, bigTask: task } });
   };
 
   // 🔎 Filter task theo search term đã debounce
@@ -112,19 +116,34 @@ export default function TaskListInEvent() {
     return sortedTasks;
   }, [subTaskList, debouncedSearch]);
 
-  const handleEditSubmit = async (updatedTask: EventTaskDetail) => {
+  const handleEditSubmit = async (updatedTask: EventTaskDetail2) => {
     try {
-      // Gọi API update
-      // await updateSubTaskAPI(updatedTask.eventTaskDetailId, {
-      //   detailName: updatedTask.detailName,
-      //   description: updatedTask.description,
-      // });
-      console.log(updatedTask);
-      // Cập nhật lại local state
-      const updatedDetails = task.eventTaskDetails.map((t) =>
-        t.eventTaskDetailId === updatedTask.eventTaskDetailId ? updatedTask : t
-      );
-      task.eventTaskDetails = updatedDetails;
+      const updateData: UpdateInterTaskRequest2 = {
+        eventTaskId: task.eventTaskId,
+        clubId: task.clubId,
+        eventId: eventId,
+        taskName: task.taskName,
+        description: task.description,
+        startTime: fixTime(task.startTime).toISOString(),
+        deadline: fixTime(task.deadline).toISOString(),
+        status: task.status,
+        eventTaskDetails: task.eventTaskDetails.map((detail) => {
+          if (detail.eventTaskDetailId === updatedTask.eventTaskDetailId) {
+            return {
+              ...updatedTask,
+              startTime: updatedTask.startTime,
+              deadline: updatedTask.deadline,
+            };
+          }
+          return {
+            ...detail,
+            startTime: fixTime(detail.startTime).toISOString(),
+            deadline: fixTime(detail.deadline).toISOString(),
+          };
+        }),
+      };
+      await updateInterEventTask2(updateData);
+      setFlag(pre => !pre)
     } catch (error) {
       console.error("Failed to update task", error);
     }
@@ -170,7 +189,7 @@ export default function TaskListInEvent() {
                     {task?.startTime
                       ? format(
                         new Date(task.startTime),
-                        "dd/MM/yyyy - HH:MM a"
+                        "dd/MM/yyyy - HH:mm a"
                       )
                       : "N/A"}
                   </p>
@@ -184,7 +203,7 @@ export default function TaskListInEvent() {
                     {task?.deadline
                       ? format(
                         new Date(task.deadline),
-                        "dd/MM/yyyy - HH:MM a"
+                        "dd/MM/yyyy - HH:mm a"
                       )
                       : "N/A"}
                   </p>
@@ -286,7 +305,7 @@ export default function TaskListInEvent() {
                                 "text-sm font-semibold px-2 py-1 rounded-md",
                                 {
                                   ON_GOING: "bg-blue-100 text-blue-800",
-                                  COMPLETE: "bg-green-100 text-green-800",
+                                  COMPLETED: "bg-green-100 text-green-800",
                                   REVIEWING: "bg-yellow-100 text-yellow-800",
                                   OVERDUE: "bg-red-100 text-red-800",
                                 }[task.status] || "bg-gray-100 text-gray-800"
@@ -309,12 +328,21 @@ export default function TaskListInEvent() {
                             <DropdownMenuItem onClick={() => handleNavigate(task)}>
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => {
-                              setEditingTask(task);
-                              setIsEditDialogOpen(true);
-                            }}>
-                              Edit
-                            </DropdownMenuItem>
+                            {isClubOwner && (
+                              <DropdownMenuItem onClick={() => {
+                                const taskStart = new Date(task.startTime);
+                                const now = new Date();
+                                if (taskStart <= now) {
+                                  toast.error("This task has already started");
+                                  return;
+                                } else {
+                                  setEditingTask(task);
+                                  setIsEditDialogOpen(true);
+                                }
+                              }}>
+                                Edit
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -328,7 +356,7 @@ export default function TaskListInEvent() {
                             </span>{" "}
                             {format(
                               new Date(task.startTime),
-                              "dd/MM/yyyy - HH:MM a"
+                              "dd/MM/yyyy - HH:mm a"
                             )}
                           </span>
                         </div>
@@ -340,7 +368,7 @@ export default function TaskListInEvent() {
                             </span>{" "}
                             {format(
                               new Date(task.deadline),
-                              "dd/MM/yyyy - HH:MM a"
+                              "dd/MM/yyyy - HH:mm a"
                             )}
                           </span>
                         </div>
@@ -379,7 +407,9 @@ export default function TaskListInEvent() {
         open={isEditDialogOpen}
         onClose={() => setIsEditDialogOpen(false)}
         task={editingTask}
+        bigTask={task}
         onSubmit={handleEditSubmit}
+        isUpdating={isUpdating2}
       />
     </div>
   );

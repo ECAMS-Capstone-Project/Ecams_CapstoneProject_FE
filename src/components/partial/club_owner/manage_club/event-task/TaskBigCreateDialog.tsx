@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, X, Loader2 } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateInterTaskRequest } from "@/models/InterTask";
-import { subtaskSchema } from "@/schema/InterTaskSchema";
 import useAuth from "@/hooks/useAuth";
 import {
   Popover,
@@ -35,8 +34,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { InterClubEventDTO } from "@/models/Event";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
-import { SubtaskDialog } from "../../inter-club/task/SubtaskDialog";
 import { EventTaskSchema } from "@/schema/EventTaskSchema";
+import toast from "react-hot-toast";
 interface TaskCreateDialogProps {
   onCreateTask: (task: CreateInterTaskRequest) => void;
   eventId: string;
@@ -55,7 +54,6 @@ export const TaskBigCreateDialog = ({
   selectedEvent,
 }: TaskCreateDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
 
@@ -73,8 +71,8 @@ export const TaskBigCreateDialog = ({
   });
   const { getEventDetailQuery } = useEvents();
   const { data: event } = getEventDetailQuery(eventId, user?.userId || "");
-  const combineDateTime = (dateObj: Date, timeStr: string) => {
-    const [hour, minute] = timeStr.split(":").map(Number);
+  const combineDateTime = (dateObj: Date, timeStr?: string) => {
+    const [hour, minute] = (timeStr?.split(":") ?? ["0", "0"]).map(Number);
     const newDate = new Date(dateObj);
     newDate.setHours(hour, minute, 0, 0);
     return newDate;
@@ -112,7 +110,7 @@ export const TaskBigCreateDialog = ({
       //   toast.error("Task's deadline must be before the event end date!");
       //   setIsSubmitting(false);
       //   return;
-      // }
+      // }      
       await onCreateTask(taskData);
       setIsOpen(false);
       form.reset();
@@ -123,23 +121,8 @@ export const TaskBigCreateDialog = ({
     }
   };
 
-  const handleAddSubtask = async (subtask: z.infer<typeof subtaskSchema>) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue("listEventTaskDetails", [...currentSubtasks, subtask], {
-      shouldValidate: true,
-    });
-    await form.trigger("listEventTaskDetails");
-  };
-
-  const handleRemoveSubtask = (index: number) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue(
-      "listEventTaskDetails",
-      currentSubtasks.filter((_, i) => i !== index)
-    );
-  };
-
   if (!selectedEvent) return null;
+
 
   return (
     <>
@@ -157,7 +140,13 @@ export const TaskBigCreateDialog = ({
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(
+              onSubmit,
+              (errors) => {
+                console.error("Zod validation errors:", errors);
+                toast.error("Error form");
+              }
+            )} className="space-y-6">
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -183,6 +172,7 @@ export const TaskBigCreateDialog = ({
                         <Textarea
                           placeholder="Enter task description"
                           className="resize-none"
+                          rows={5}
                           {...field}
                         />
                       </FormControl>
@@ -191,164 +181,117 @@ export const TaskBigCreateDialog = ({
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start Time</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  " text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto p-0 mb-0 pb-0"
-                            align="start"
-                          >
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="grid grid-cols-2">
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Start Time</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="deadline"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Deadline</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  " text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, "PPP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className="w-auto p-0 mb-0 pb-0"
-                            align="start"
-                          >
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startTimeTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Time</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="deadlineTime"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Time</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsSubtaskDialogOpen(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Subtask
-                    </Button>
+                    <FormField
+                      control={form.control}
+                      name="startTimeTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <Input type="time" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
-                  <div className="space-y-2">
-                    {form
-                      .watch("listEventTaskDetails")
-                      .map((subtask, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 bg-gradient-to-r from-[#49BBBD]/5 to-[#136CB9]/5 rounded-lg border border-[#49BBBD]/20"
-                        >
-                          <div>
-                            <p className="font-medium">{subtask.detailName}</p>
-                            <p className="text-sm text-gray-500">
-                              {subtask.description}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {format(subtask.startTime || new Date(), "PPP")} -{" "}
-                              {format(subtask.deadline || new Date(), "PPP")}
-                            </p>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveSubtask(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+
+                  <div className="flex gap-4">
+                    <FormField
+                      control={form.control}
+                      name="deadline"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Deadline</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="deadlineTime"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <Input type="time" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
               </div>
@@ -381,14 +324,6 @@ export const TaskBigCreateDialog = ({
           </Form>
         </DialogContent>
       </Dialog>
-
-      <SubtaskDialog
-        isOpen={isSubtaskDialogOpen}
-        onClose={() => setIsSubtaskDialogOpen(false)}
-        onSubmit={handleAddSubtask}
-        mainTaskStartTime={form.getValues("startTime")}
-        mainTaskDeadline={form.getValues("deadline")}
-      />
     </>
   );
 };

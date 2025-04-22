@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Clock, ArrowLeft } from "lucide-react";
@@ -8,18 +9,26 @@ import { motion } from "framer-motion";
 import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
-import { AssignMembersDialog } from "./AssignMemberDialog";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
-import { EventTaskDetail } from "@/models/InterTask";
+import { EventTaskDetail, InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
+import toast from "react-hot-toast";
+import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
+import { AssignMembersDialog } from "./AssignMemberDialog";
 
 const TaskDetailCard = () => {
   const { taskId = "" } = useParams();
   const location = useLocation();
   const isClubOwner = location.state?.isClubOwner as boolean;
   const taskDetail = location.state?.taskDetail as EventTaskDetail
+  const clubId = location.state?.clubId as string
+  const eventId = location.state?.eventId as string
+  const bigTask = location.state?.bigTask as InterTask
   const [submissionList, setSubmissionList] = useState<EventSubmissionTaskDetail[]>();
   const [currentPageSubmission, setCurrentPageSubmission] = useState(1);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
+    []
+  );
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -38,9 +47,27 @@ const TaskDetailCard = () => {
     fetchTaskDetail();
   }, [taskId, currentPageSubmission]);
 
-  const members = submissionList && submissionList.map(item => ({
-    memberEmail: item.memberEmail,
-    memberName: item.memberName,
+  useEffect(() => {
+    async function fetchMembers() {
+      try {
+        const response = await GetAvailableMember(
+          clubId,
+          new Date(taskDetail.startTime).toISOString(),
+          new Date(taskDetail.deadline).toISOString(),
+          taskDetail.priority
+        );
+        if (response.data) {
+          setAllStudents(response.data);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch club members", error);
+      }
+    }
+
+    fetchMembers();
+  }, [taskDetail, clubId]);
+
+  const membersSelected = submissionList && submissionList.map(item => ({
     clubMemberId: item.clubMemberId,
   })) || [];
 
@@ -61,13 +88,39 @@ const TaskDetailCard = () => {
     if (isClubOwner) {
       navigate('/club/task-submission', { state: { taskDetail: taskDetail, submission: data } })
     } else {
-      navigate('/club/task-submission-student', { state: { taskDetail: taskDetail, submission: data } })
+      if (new Date(taskDetail.startTime) > new Date()) {
+        return toast.error("Task has not start")
+      } else {
+        navigate('/club/task-submission-student', { state: { taskDetail: taskDetail, submission: data } })
+      }
     }
   }
 
-  const handleAssignMembers = (selectedIds: string[]) => {
-    // TODO: Implement assign members functionality
-    console.log("Selected members:", selectedIds);
+  const handleAssignMembers = async (
+    taskId: string,
+    updateData: Partial<UpdateInterTaskRequest>
+  ) => {
+    console.log("updateData", updateData);
+    // await updateInterEventTask({
+    //   eventTaskId: taskId,
+    //   clubId: currentClub.clubId,
+    //   eventId: selectedEvent.eventId,
+    //   taskName: task.taskName,
+    //   description: task.description,
+    //   startTime: task.startTime,
+    //   deadline: task.deadline,
+    //   status: task.status,
+    //   ...updateData,
+    //   eventTaskDetails: [
+    //     {
+    //       ...subtask,
+    //       assignedMembers: updateData.eventTaskDetails?.flatMap(
+    //         (detail) => detail.assignedMembers || []
+    //       ),
+    //     },
+    //   ],
+    // });
+    setIsAssignDialogOpen(false);
   };
 
 
@@ -104,14 +157,14 @@ const TaskDetailCard = () => {
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm font-medium text-gray-700">Start Time</p>
-                <p>{taskDetail?.startTime ? format(new Date(taskDetail.startTime), "dd/MM/yyyy - HH:MM a") : "N/A"}</p>
+                <p>{taskDetail?.startTime ? format(new Date(taskDetail.startTime), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm font-medium text-gray-700">Deadline</p>
-                <p>{taskDetail?.deadline ? format(new Date(taskDetail.deadline), "dd/MM/yyyy - HH:MM a") : "N/A"}</p>
+                <p>{taskDetail?.deadline ? format(new Date(taskDetail.deadline), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -203,9 +256,9 @@ const TaskDetailCard = () => {
                             ? "text-blue-600 bg-blue-100"
                             : data.status === "REVIEWING"
                               ? "text-yellow-600 bg-yellow-100"
-                              : data.status === "SUBMITTED"
-                                ? "text-green-600 bg-green-100"
-                                : "text-gray-600 bg-gray-100"
+                              : data.status === "COMPLETED"
+                                ? "text-green-900 bg-green-300"
+                                : "text-gray-600 bg-gray-300"
                             }`}
                         >
                           {data.status}
@@ -258,10 +311,17 @@ const TaskDetailCard = () => {
           )}
         </CardContent>
       </Card>
-      <AssignMembersDialog isOpen={isAssignDialogOpen}
+      <AssignMembersDialog
+        isOpen={isAssignDialogOpen}
         onClose={() => setIsAssignDialogOpen(false)}
         onAssign={handleAssignMembers}
-        members={members} />
+        members={allStudents}
+        subTask={taskDetail}
+        clubId={clubId}
+        task={bigTask}
+        eventId={eventId}
+        memberSelected={membersSelected}
+      />
     </div>
   );
 };
