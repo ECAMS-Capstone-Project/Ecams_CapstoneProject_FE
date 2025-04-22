@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 
-// shadcn/ui & Components
 import {
   Form,
   FormField,
@@ -24,7 +23,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Checkbox } from "@/components/ui/checkbox";
 import { cn, fixTime } from "@/lib/utils";
 
 // Lazy import danh sách student
@@ -51,6 +49,60 @@ import {
   TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
 import { InterTask } from "@/models/InterTask";
+import SpecificTaskList from "./SpecificTasktList";
+
+const fakeTasks = [
+  {
+    eventTaskDetailId: "etd001",
+    eventTaskId: "et001",
+    detailName: "Design Landing Page",
+    description: "Create a responsive landing page for the campaign.",
+    startTime: "2025-04-01T09:00:00",
+    deadline: "2025-04-15T17:00:00",
+    status: "In Progress",
+    priority: "High",
+  },
+  {
+    eventTaskDetailId: "etd002",
+    eventTaskId: "et002",
+    detailName: "Write Content",
+    description: "Write high-conversion copy for the homepage.",
+    startTime: "2025-04-02T10:00:00",
+    deadline: "2025-04-12T18:00:00",
+    status: "Pending",
+    priority: "Medium",
+  },
+  {
+    eventTaskDetailId: "etd003",
+    eventTaskId: "et003",
+    detailName: "Set Up Database",
+    description: "Initialize the PostgreSQL database and design schema.",
+    startTime: "2025-04-03T08:30:00",
+    deadline: "2025-04-20T16:00:00",
+    status: "Completed",
+    priority: "Low",
+  },
+  {
+    eventTaskDetailId: "etd004",
+    eventTaskId: "et003",
+    detailName: "Create ER Diagram",
+    description: "Draw entity-relationship diagram for core modules.",
+    startTime: "2025-04-04T11:00:00",
+    deadline: "2025-04-18T14:00:00",
+    status: "In Progress",
+    priority: "Medium",
+  },
+  {
+    eventTaskDetailId: "etd005",
+    eventTaskId: "et004",
+    detailName: "Client Review Meeting",
+    description: "Prepare slides and conduct a client meeting.",
+    startTime: "2025-04-06T13:00:00",
+    deadline: "2025-04-07T15:00:00",
+    status: "Pending",
+    priority: "High",
+  },
+];
 
 export default function CreateEventTaskClub() {
   const navigate = useNavigate();
@@ -68,17 +120,27 @@ export default function CreateEventTaskClub() {
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm2, setSearchTerm2] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [debouncedSearch2, setDebouncedSearch2] = useState(searchTerm2);
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 300);
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch2(searchTerm2), 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm2]);
 
   const filteredStudents = allStudents.filter((st) =>
     st.fullName.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
-  // React Hook Form
+  const filteredTasks = fakeTasks.filter((st) =>
+    st.detailName.toLowerCase().includes(debouncedSearch2.toLowerCase())
+  );
+
   const form = useForm<TaskEventFormValues>({
     resolver: zodResolver(EventTaskDetailSchema),
     mode: "onChange",
@@ -88,15 +150,16 @@ export default function CreateEventTaskClub() {
       startTimeDate: new Date(),
       deadlineDate: new Date(),
       assignedMembers: [],
-      assignAll: false,
     },
   });
   const { handleSubmit, setValue, getValues, watch } = form;
-  const assignAll = watch("assignAll");
   const selectedMembers = watch("assignedMembers");
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
 
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
+  const taskName = watch("detailName");
+  const taskDescription = watch("description");
   const priority = watch("priority");
 
   useEffect(() => {
@@ -146,7 +209,7 @@ export default function CreateEventTaskClub() {
       );
 
       const assignedMembers =
-        assignAll && allStudents.length > 0
+        allStudents.length > 0
           ? allStudents.map((student) => ({
             clubMemberId: student.clubMemberId,
           }))
@@ -201,29 +264,27 @@ export default function CreateEventTaskClub() {
     }
   };
 
-  // Khi assignAll thay đổi: nếu true, xóa selectedMembers; nếu false, cho phép chọn lại.
-  const handleAssignAllChange = (checked: boolean) => {
-    setValue("assignAll", checked);
-    if (checked) {
-      setValue("assignedMembers", []);
-    }
+  const handleToggleTask = (taskId: string, checked: boolean) => {
+    setSelectedTasks((prev) => {
+      if (checked) {
+        return [...prev, taskId];
+      } else {
+        return prev.filter((id) => id !== taskId);
+      }
+    });
   };
 
   const handleAIRecommend = async () => {
-    // if (!form.getValues("startTime") || !form.getValues("endTime")) {
-    //   toast.error("Please select start time and deadline first");
-    //   return;
-    // }
 
     setIsLoading(true);
     try {
       const body = {
-        clubId: "ae57b2f6-8ec2-4d7d-87e3-4e347c52c2f0",
-        taskName: "Choose a song to play",
-        taskDescription: "Choose a song to play",
-        startTime: "2025-04-22T08:55:57.121Z",
-        endTime: "2025-04-23T08:55:57.121Z",
-        priority: "MEDIUM"
+        clubId: clubId as string,
+        taskName: taskName.trim().toString(),
+        taskDescription: taskDescription.trim().toString(),
+        startTime: startTimeDate.toISOString(),
+        endTime: deadlineTimeDate.toISOString(),
+        priority: priority
       }
 
       const response = await TaskRecommendedByAI(body.clubId, body);
@@ -242,8 +303,8 @@ export default function CreateEventTaskClub() {
       setRecommendedReasons(reasonMap);
 
       // Cập nhật luôn selected members
-      const recommendedIds = data?.map((s) => s.studentId);
-      form.setValue("assignedMembers", recommendedIds ?? []);
+      // const recommendedIds = data?.map((s) => s.studentId);
+      // form.setValue("assignedMembers", recommendedIds ?? []);
     } catch (error) {
       console.error("Recommendation failed", error);
     } finally {
@@ -346,142 +407,152 @@ export default function CreateEventTaskClub() {
                   </FormItem>
                 )}
               />
+              <div className="grid grid-cols-2 gap-2">
+                {/* Start Time: Date & Time */}
+                <div className="flex space-x-4">
+                  <div style={{ width: "50%" }}>
+                    <FormField
+                      control={form.control}
+                      name="startTimeDate"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Start Time Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "text-left font-normal w-full",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Pick a date"}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  field.onChange(date);
+                                  // setStartDate(date ?? null)
+                                }}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div style={{ width: "50%" }}>
+                    <FormField
+                      control={form.control}
+                      name="startTimeTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Time</FormLabel>
+                          <FormControl className="w-full">
+                            <input className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
+             placeholder:text-muted-foreground focus-visible:outline-none 
+             focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                              {...field} type="time" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
-              {/* Start Time: Date & Time */}
-              <div className="flex space-x-4 w-1/3">
-                <FormField
-                  control={form.control}
-                  name="startTimeDate"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Start Time Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "text-left font-normal w-full",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value
-                              ? format(field.value, "PPP")
-                              : "Pick a date"}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              field.onChange(date);
-                              // setStartDate(date ?? null)
-                            }}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="startTimeTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Time</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="time" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Deadline: Date & Time */}
+                <div className="flex space-x-4">
+                  <div style={{ width: "50%" }}>
+                    <FormField
+                      control={form.control}
+                      name="deadlineDate"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Deadline Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "text-left font-normal w-full",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value
+                                  ? format(field.value, "PPP")
+                                  : "Pick a date"}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  field.onChange(date);
+                                  // setDeadlineDate(date ?? null)
+                                }}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div style={{ width: "50%" }}>
+                    <FormField
+                      control={form.control}
+                      name="deadlineTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Time</FormLabel>
+                          <FormControl className="w-full">
+                            <input className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
+             placeholder:text-muted-foreground focus-visible:outline-none 
+             focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                              {...field} type="time" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Deadline: Date & Time */}
-              <div className="flex space-x-4 w-1/3">
-                <FormField
-                  control={form.control}
-                  name="deadlineDate"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Deadline Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "text-left font-normal w-full",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value
-                              ? format(field.value, "PPP")
-                              : "Pick a date"}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              field.onChange(date);
-                              // setDeadlineDate(date ?? null)
-                            }}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="deadlineTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deadline Time</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="time" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Assign All */}
-              <FormField
-                control={form.control}
-                name="assignAll"
-                render={() => (
-                  <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={assignAll}
-                        onCheckedChange={handleAssignAllChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Assign all members</FormLabel>
-                      <p className="text-sm text-muted-foreground">
-                        {assignAll
-                          ? "All members in the club will be assigned"
-                          : "If checked, all members in the club will be assigned"}
-                      </p>
-                    </div>
-                  </FormItem>
-                )}
-              />
+              <>
+                <label className="block text-sm font-medium mb-2">Task list</label>
+                <div className="flex gap-3">
+                  <div className="mb-1 w-1/4">
+                    <Input
+                      placeholder="Search task"
+                      value={searchTerm2}
+                      onChange={(e) => setSearchTerm2(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <Suspense fallback={<div>Loading task...</div>}>
+                  <SpecificTaskList
+                    handleToggleTask={handleToggleTask}
+                    tasks={filteredTasks}
+                    selected={selectedTasks}
+                  />
+                </Suspense>
+                {/* {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>} */}
+              </>
 
               {/* Specific Students */}
               <FormField
@@ -489,89 +560,86 @@ export default function CreateEventTaskClub() {
                 name="assignedMembers"
                 render={() => (
                   <FormItem>
-                    {!assignAll && (
-                      <>
-                        <FormLabel>Specific Students</FormLabel>
-                        <div className="flex gap-3">
-                          {/* Search bar */}
-                          <div className="mb-2 w-1/4">
-                            <Input
-                              placeholder="Search students..."
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                          </div>
+                    <>
+                      <FormLabel>Assigned Member</FormLabel>
+                      <div className="flex gap-3">
+                        {/* Search bar */}
+                        <div className="mb-2 w-1/4">
+                          <Input
+                            placeholder="Search students"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                          />
+                        </div>
 
-                          <Button
-                            onClick={handleAIRecommend}
-                            type="button"
-                            disabled={isLoading}
-                            className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white 
+                        <Button
+                          onClick={handleAIRecommend}
+                          type="button"
+                          disabled={isLoading || !taskName || !taskDescription || allStudents.length <= 0}
+                          className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white 
                     px-6 py-2 rounded-lg font-semibold transition-all duration-300 
                     hover:scale-105 hover:shadow-lg group"
-                          >
-                            <span
-                              className="absolute inset-0 before:content-[''] before:absolute before:top-0 before:left-[-75%] 
+                        >
+                          <span
+                            className="absolute inset-0 before:content-[''] before:absolute before:top-0 before:left-[-75%] 
                       before:w-[50%] before:h-full before:bg-white before:opacity-20 before:rotate-12
                       before:animate-none group-hover:before:animate-shine pointer-events-none"
-                            />
-                            <span className="relative z-10 flex items-center gap-2">
-                              <Sparkles className="h-4 w-4" />
-                              {isLoading
-                                ? "Is loading..."
-                                : "AI Recommendation"}
-                            </span>
-                          </Button>
+                          />
+                          <span className="relative z-10 flex items-center gap-2">
+                            <Sparkles className="h-4 w-4" />
+                            {isLoading
+                              ? "Is loading..."
+                              : "AI Recommendation"}
+                          </span>
+                        </Button>
+                      </div>
+                      {!isReadyToFetch ? (
+                        <div className="text-sm text-red-500 italic">
+                          After selecting the Start Date, Deadline, and Privacy, a list of available students will be displayed.
                         </div>
-                        {!isReadyToFetch ? (
-                          <div className="text-sm text-red-500 italic">
-                            After selecting the Start Date, Deadline, and Privacy, a list of available students will be displayed.
-                          </div>
-                        ) : (
-                          <Suspense fallback={<div>Loading students...</div>}>
-                            <SpecificStudentList
-                              students={filteredStudents}
-                              isAssignAll={assignAll}
-                              selected={selectedMembers}
-                              handleToggleStudent={handleToggleStudent}
-                              recommendedStudents={recommendedStudents}
-                              recommendedReasons={recommendedReasons}
-                            />
-                          </Suspense>
-                        )}
+                      ) : (
+                        <Suspense fallback={<div>Loading students...</div>}>
+                          <SpecificStudentList
+                            students={filteredStudents}
+                            selected={selectedMembers}
+                            handleToggleStudent={handleToggleStudent}
+                            recommendedStudents={recommendedStudents}
+                            recommendedReasons={recommendedReasons}
+                          />
+                        </Suspense>
+                      )}
 
-                        <FormMessage />
+                      <FormMessage />
 
-                        <div className="mt-3">
-                          <p className="text-sm font-semibold">
-                            Selected Students:
-                          </p>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {selectedMembers &&
-                              selectedMembers.length === 0 && (
-                                <span className="text-sm text-muted-foreground">
-                                  No students selected.
+                      <div className="mt-3">
+                        <p className="text-sm font-semibold">
+                          Selected Students:
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {selectedMembers &&
+                            selectedMembers.length === 0 && (
+                              <span className="text-sm text-muted-foreground">
+                                No students selected.
+                              </span>
+                            )}
+                          {selectedMembers &&
+                            selectedMembers.map((id) => {
+                              const st = allStudents.find(
+                                (s) => s.studentId === id
+                              );
+                              if (!st) return null;
+                              return (
+                                <span
+                                  key={id}
+                                  className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
+                                >
+                                  {st.fullName} - {st.email}
                                 </span>
-                              )}
-                            {selectedMembers &&
-                              selectedMembers.map((id) => {
-                                const st = allStudents.find(
-                                  (s) => s.studentId === id
-                                );
-                                if (!st) return null;
-                                return (
-                                  <span
-                                    key={id}
-                                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
-                                  >
-                                    {st.fullName} - {st.email}
-                                  </span>
-                                );
-                              })}
-                          </div>
+                              );
+                            })}
                         </div>
-                      </>
-                    )}
+                      </div>
+                    </>
                   </FormItem>
                 )}
               />

@@ -17,7 +17,6 @@ export const DescriptionWithToggle: React.FC<DescriptionProps> = ({ text }) => {
 
   return (
     <div>
-      {/* Phần hiển thị mô tả */}
       <Typography
         variant="body2"
         style={{ textAlign: "justify" }}
@@ -27,7 +26,6 @@ export const DescriptionWithToggle: React.FC<DescriptionProps> = ({ text }) => {
         {!isExpanded && isOverLimit && " ..."}
       </Typography>
 
-      {/* Nút "..." hoặc "Show more" */}
       {isOverLimit && (
         <Button
           variant="text"
