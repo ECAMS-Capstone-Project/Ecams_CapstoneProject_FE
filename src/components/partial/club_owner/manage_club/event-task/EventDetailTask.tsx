@@ -68,7 +68,7 @@ export const EventDetailTask = () => {
       />
       {event1 && (
         <div className="space-y-6">
-          <EventDetailsTaskCard selectedEvent={event1} />
+          <EventDetailsTaskCard selectedEvent={event1} clubId={clubId} />
         </div>
       )}
 

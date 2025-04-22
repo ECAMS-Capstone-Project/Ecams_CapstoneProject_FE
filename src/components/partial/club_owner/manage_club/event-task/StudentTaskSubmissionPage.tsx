@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CalendarDays, CheckCircle2, Pencil, ArrowLeft } from "lucide-react";
+import { CalendarDays, CheckCircle2, Pencil, ArrowLeft, CircleDot, UserRound } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
@@ -12,6 +12,7 @@ import { EventTaskDetail } from "@/models/InterTask";
 import { EventSubmissionTaskDetail, SubmitTaskByStudent } from "@/api/club-owner/TaskAPI";
 import toast from "react-hot-toast";
 import parse from "html-react-parser";
+import LoadingAnimation from "@/components/ui/loading";
 
 const StudentTaskSubmissionPage: React.FC = () => {
     const navigate = useNavigate();
@@ -59,7 +60,6 @@ const StudentTaskSubmissionPage: React.FC = () => {
         }
     };
 
-
     return (
         <div className="max-w-full mx-auto space-y-6">
             <EventTaskBreadcrumb
@@ -99,8 +99,15 @@ const StudentTaskSubmissionPage: React.FC = () => {
                                 <strong>Deadline:</strong> {deadline.toLocaleString()}
                             </span>
                         </p>
-                        <p>
-                            <strong>Your score:</strong>{" "}
+                        <p className="flex items-center gap-2">
+                            <UserRound size={16} className="text-muted-foreground" />
+                            <span>
+                                <strong>Review by:</strong> {submission.reviewer ? `${submission.reviewer.fullname}` : "N/A"}
+                            </span>
+                        </p>
+                        <p className="flex items-center gap-2">
+                            <CircleDot size={16} className="text-muted-foreground" />
+                            <strong> Your score:</strong>{" "}
                             <Badge className="bg-green-100 text-green-700 text-base">{submission.submissionScore} / 10</Badge>
                         </p>
                     </div>
@@ -118,12 +125,12 @@ const StudentTaskSubmissionPage: React.FC = () => {
 
                     {hasSubmitted ? (
                         <div className="space-y-3 text-gray-700">
-                            <p className="flex items-center gap-2">
+                            <p className="flex items-center gap-2 pb-2">
                                 <CheckCircle2 size={16} />
                                 <strong>Submitted on:</strong> {new Date(submission.submissionDate).toLocaleString()}
                             </p>
                             <div>
-                                <strong>Your Submission:</strong>
+                                <strong className="text-blue-600">Your Submission:</strong>
                                 <div
                                     className="prose border mt-2 p-4 bg-white rounded"
                                 >
@@ -166,18 +173,29 @@ const StudentTaskSubmissionPage: React.FC = () => {
                                 }}
                                 className="bg-white"
                             />
-                            <div className="space-y-2">
+                            <div className="space-y-2 mt-2">
                                 <label className="font-semibold">Attach files</label>
-                                <input
-                                    type="file"
-                                    multiple
-                                    lang="en"
-                                    accept="image/*,.pdf,.doc,.docx,.txt,.zip"
-                                    onChange={handleFileChange}
-                                    className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
-                   file:rounded file:border-0 file:text-sm file:font-semibold
-                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                />
+
+                                {/* Custom File Upload */}
+                                <div className="relative w-fit">
+                                    <label
+                                        htmlFor="customFileUpload"
+                                        className="cursor-pointer inline-block file:mr-4 py-2 px-4 rounded bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 border border-blue-400"
+                                    >
+                                        Choose Files
+                                    </label>
+                                    <input
+                                        id="customFileUpload"
+                                        type="file"
+                                        multiple
+                                        lang="en"
+                                        accept="image/*,.pdf,.doc,.docx,.txt,.zip"
+                                        onChange={handleFileChange}
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </div>
+
+                                {/* List of Selected Files */}
                                 {files.length > 0 && (
                                     <ul className="ml-2 space-y-2">
                                         {files.map((file, index) => (
@@ -197,7 +215,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
                             </div>
                             <div className="flex justify-end gap-4">
                                 <Button onClick={handleSubmit} disabled={isSubmitting || !content.trim()}>
-                                    {isSubmitting ? "Submitting..." : "Submit"}
+                                    {isSubmitting ? <LoadingAnimation /> : "Submit"}
                                 </Button>
                             </div>
                         </>
