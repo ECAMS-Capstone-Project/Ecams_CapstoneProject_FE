@@ -46,7 +46,7 @@ const subtaskSchema = z
     startTime: z.date(),
     deadline: z.date(),
     status: z.string(),
-    priority: z.string().optional(),
+    priority: z.string().min(1, "Priority is required"),
   })
   .superRefine((data, ctx) => {
     if (data.startTime && data.deadline) {
@@ -69,6 +69,7 @@ interface SubtaskDialogProps {
     startTime: Date;
     deadline: Date;
     status?: string;
+    priority?: string;
   };
   mainTaskStartTime: Date;
   mainTaskDeadline: Date;
@@ -99,6 +100,7 @@ export const SubtaskDialog = ({
           startTime: new Date(),
           deadline: new Date(),
           status: "ON_GOING",
+          priority: "MEDIUM",
         },
   });
 
