@@ -85,16 +85,25 @@ const TaskDetailCard = () => {
   );
 
   const handleClick = (data: EventSubmissionTaskDetail) => {
-    if (isClubOwner) {
-      navigate('/club/task-submission', { state: { taskDetail: taskDetail, submission: data } })
-    } else {
+    const isUserSubmission = data.memberEmail === user?.email;
+    const isSubmitted = data.submissionDate !== "0001-01-01T00:00:00";
+
+    if (isUserSubmission && isClubOwner && !isSubmitted) {
+      // Club owner chính là người nộp và chưa nộp => bắt đi nộp trước
+      navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
+    } else if (isClubOwner) {
+      // Club owner (đã nộp hoặc không phải người nộp) => vào trang quản lý
+      navigate('/club/task-submission', { state: { taskDetail, submission: data } });
+    } else if (isUserSubmission) {
       if (new Date(taskDetail.startTime) > new Date()) {
-        return toast.error("Task has not start")
+        toast.error("Task has not started yet");
       } else {
-        navigate('/club/task-submission-student', { state: { taskDetail: taskDetail, submission: data } })
+        // Thành viên thường được phép nộp
+        navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
       }
     }
-  }
+  };
+
 
   const handleAssignMembers = async (
     taskId: string,
