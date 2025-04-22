@@ -21,8 +21,16 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ring2 } from "ldrs";
 import PoliciesDialog from "../auth/policiesDiablog";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, XCircle } from "lucide-react";
 import { UniversityData } from "@/data/UniversityData";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { AddCircleOutlineRounded } from "@mui/icons-material";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -67,8 +75,19 @@ const schema = z.object({
 
 type SignUpFormValues = z.infer<typeof schema>;
 
+interface UniversityOption {
+  label: string;
+  code?: string;
+  inputValue?: string;
+}
+
 const AdditionInfoUniversityForm: React.FC = () => {
   const [open, setOpen] = React.useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogValue, setDialogValue] = useState({
+    name: "",
+    shortName: "",
+  });
   ring2.register();
   const navigate = useNavigate();
   const [preview, setPreview] = useState<string | null>(null);
@@ -154,6 +173,39 @@ const AdditionInfoUniversityForm: React.FC = () => {
     label: university.name,
     code: university.code,
   }));
+
+  const handleClose = () => {
+    setDialogValue({
+      name: "",
+      shortName: "",
+    });
+    setDialogOpen(false);
+  };
+
+  const handleSubmitNewUniversity = () => {
+    setValue("UniversityName", dialogValue.name);
+    setValue("ShortName", dialogValue.shortName);
+    handleClose();
+  };
+
+  const filterOptions = (
+    options: UniversityOption[],
+    params: { inputValue: string }
+  ) => {
+    const filtered = options.filter((option) =>
+      option.label.toLowerCase().includes(params.inputValue.toLowerCase())
+    );
+
+    if (params.inputValue !== "") {
+      filtered.push({
+        inputValue: params.inputValue,
+        label: `Add "${params.inputValue}"`,
+      });
+    }
+
+    return filtered;
+  };
+
   return (
     <Box
       display="flex"
@@ -186,21 +238,54 @@ const AdditionInfoUniversityForm: React.FC = () => {
                   control={control}
                   render={({ field }) => (
                     <Autocomplete
-                      options={universityOptions.map((option) => option.label)}
-                      getOptionLabel={(option) => option || ""}
                       value={field.value || null}
-                      onChange={(_event, newValue) => {
-                        field.onChange(newValue); // Cập nhật giá trị của UniversityName
-                        // Cập nhật luôn giá trị cho ShortName bằng code của trường được chọn, nếu có
-                        setValue(
-                          "ShortName",
-                          newValue
-                            ? universityOptions.find(
-                                (option) => option.label === newValue
-                              )?.code || ""
-                            : ""
-                        );
+                      onChange={(event, newValue) => {
+                        console.log(event);
+                        if (typeof newValue === "string") {
+                          setTimeout(() => {
+                            setDialogOpen(true);
+                            setDialogValue({
+                              name: newValue,
+                              shortName: "",
+                            });
+                          });
+                        } else if (newValue && newValue.inputValue) {
+                          setDialogOpen(true);
+                          setDialogValue({
+                            name: newValue.inputValue,
+                            shortName: "",
+                          });
+                        } else {
+                          field.onChange(newValue?.label || "");
+                          setValue(
+                            "ShortName",
+                            newValue
+                              ? universityOptions.find(
+                                  (option) => option.label === newValue.label
+                                )?.code || ""
+                              : ""
+                          );
+                        }
                       }}
+                      filterOptions={filterOptions}
+                      selectOnFocus
+                      clearOnBlur
+                      handleHomeEndKeys
+                      id="university-name"
+                      options={universityOptions}
+                      getOptionLabel={(option) => {
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        if (option.inputValue) {
+                          return option.inputValue;
+                        }
+                        return option.label;
+                      }}
+                      renderOption={(props, option) => (
+                        <li {...props}>{option.label}</li>
+                      )}
+                      freeSolo
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -417,6 +502,67 @@ const AdditionInfoUniversityForm: React.FC = () => {
           </form>
         </Grid2>
       </Grid2>
+
+      <Dialog open={dialogOpen} onOpenChange={handleClose}>
+        <DialogContent>
+          <DialogTitle className="text-2xl font-bold text-[#136CB9]">
+            Add a new university
+          </DialogTitle>
+          <DialogDescription>
+            Did you miss any university in our list? Please, add it!
+          </DialogDescription>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            value={dialogValue.name}
+            onChange={(event) =>
+              setDialogValue({
+                ...dialogValue,
+                name: event.target.value,
+              })
+            }
+            label="University Name"
+            type="text"
+            fullWidth
+            variant="standard"
+          />
+          <TextField
+            margin="dense"
+            id="shortName"
+            value={dialogValue.shortName}
+            onChange={(event) =>
+              setDialogValue({
+                ...dialogValue,
+                shortName: event.target.value,
+              })
+            }
+            label="Short Name"
+            type="text"
+            fullWidth
+            variant="standard"
+          />
+          <DialogFooter>
+            <Button
+              onClick={handleClose}
+              variant="outlined"
+              color="primary"
+              startIcon={<XCircle size={18} />}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitNewUniversity}
+              variant="contained"
+              style={{ background: "#136CB9" }}
+              endIcon={<AddCircleOutlineRounded />}
+            >
+              Add
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <PoliciesDialog
         open={open}
         setOpen={setOpen}
