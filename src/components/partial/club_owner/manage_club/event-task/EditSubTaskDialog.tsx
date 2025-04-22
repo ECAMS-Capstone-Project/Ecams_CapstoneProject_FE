@@ -16,7 +16,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import LoadingAnimation from "@/components/ui/loading";
-import { cn, fixTime } from "@/lib/utils";
+import { fixTime } from "@/lib/utils";
 import SpecificTaskList from "@/components/partial/representative/representative-task/SpecificTasktList";
 
 interface EditSubTaskDialogProps {
@@ -33,7 +33,6 @@ type FormState = {
     name: string;
     desc: string;
     priority: string;
-    status: string;
     startDate: Date | undefined;
     startTime: string;
     deadlineDate: Date | undefined;
@@ -107,7 +106,6 @@ export default function EditSubTaskDialog({
         name: "",
         desc: "",
         priority: "LOW",
-        status: "ON_GOING",
         startDate: undefined,
         startTime: "00:00",
         deadlineDate: undefined,
@@ -137,7 +135,6 @@ export default function EditSubTaskDialog({
                 name: task.detailName,
                 desc: task.description || "",
                 priority: task.priority,
-                status: task.status,
                 startDate: new Date(
                     start.getFullYear(),
                     start.getMonth(),
@@ -221,7 +218,7 @@ export default function EditSubTaskDialog({
             detailName: form.name,
             description: form.desc,
             priority: form.priority,
-            status: form.status,
+            status: task.status,
             startTime: fixTime(isoFormattedStart).toISOString(),
             deadline: fixTime(isoFormattedDeadline).toISOString(),
         };
@@ -333,39 +330,6 @@ export default function EditSubTaskDialog({
                                 <p className="text-red-500 text-sm">{errors.deadlineDate}</p>
                             )}
                         </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-
-                    <div className="space-y-1">
-                        <Label>Status</Label>
-                        <Select
-                            value={form.status}
-                            onValueChange={(val) => setForm({ ...form, status: val })}
-                            disabled={task?.status === "COMPLETED"}
-                        >
-                            <SelectTrigger
-                                className={cn(
-                                    "font-bold border",
-                                    form.status === "NOT_STARTED" && "bg-gray-100 text-gray-700",
-                                    form.status === "ON_GOING" && "bg-blue-100 text-blue-800",
-                                    form.status === "COMPLETED" && "bg-green-200 text-green-800",
-                                    form.status === "REVIEWING" && "bg-yellow-100 text-yellow-800",
-                                    form.status === "OVERDUE" && "bg-red-100 text-red-800",
-                                    task?.status === "COMPLETED" && "cursor-not-allowed"
-                                )}
-                            >
-                                <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                                <SelectItem value="ON_GOING">On Going</SelectItem>
-                                <SelectItem value="COMPLETED">Completed</SelectItem>
-                                <SelectItem value="REVIEWING">Reviewing</SelectItem>
-                                <SelectItem value="OVERDUE">Overdue</SelectItem>
-                            </SelectContent>
-                        </Select>
                     </div>
                 </div>
 

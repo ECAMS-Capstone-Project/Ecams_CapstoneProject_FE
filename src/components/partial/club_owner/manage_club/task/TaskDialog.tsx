@@ -34,13 +34,20 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
     fetchTask();
   }, [initialData.taskId, initialData.clubMemberId]);
 
+  const [files, setFiles] = useState<File[]>([]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
+
   // Task được coi là đã nộp nếu submissionStatus là "COMPLETED"
   const isSubmitted = taskDetail?.submissionStatus === "COMPLETED";
   const isDeadlineOver = taskDetail?.deadline
     ? new Date(taskDetail.deadline).getTime() < Date.now()
     : false;
 
-  console.log(isDeadlineOver, isSubmitted);
 
 
   // Xử lý submit: validate editorContent trước khi gọi API
@@ -49,10 +56,12 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
       toast.error("Submission content cannot be empty");
       return;
     }
+    const fileNames: string[] = files.map(file => file.name);
     const data = {
       taskId: initialData.taskId,
       clubMemberId: initialData.clubMemberId,
       studentSubmission: editorContent,
+      listSubmissions: fileNames
     };
     await SendStudentSubmission(data);
     if (setFlag) {
@@ -174,12 +183,54 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                 Overdue deadline, you can't submit this task.
               </div>
             ) : (
-              <ReactQuill
-                theme="snow"
-                value={editorContent}
-                onChange={setEditorContent}
-                className="max-h-[400px] overflow-y-auto"
-              />
+              <div>
+                <ReactQuill
+                  theme="snow"
+                  value={editorContent}
+                  onChange={setEditorContent}
+                  className="max-h-[400px] overflow-y-auto"
+                />
+                <div className="space-y-2 mt-2">
+                  <label className="font-semibold">Attach files</label>
+
+                  {/* Custom File Upload */}
+                  <div className="relative w-fit">
+                    <label
+                      htmlFor="customFileUpload"
+                      className="cursor-pointer inline-block file:mr-4 py-2 px-4 rounded bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 border border-blue-400"
+                    >
+                      Choose Files
+                    </label>
+                    <input
+                      id="customFileUpload"
+                      type="file"
+                      multiple
+                      lang="en"
+                      accept="image/*,.pdf,.doc,.docx,.txt,.zip"
+                      onChange={handleFileChange}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* List of Selected Files */}
+                  {files.length > 0 && (
+                    <ul className="ml-2 space-y-2">
+                      {files.map((file, index) => (
+                        <li key={index} className="flex items-center gap-4">
+                          {file.type.startsWith("image/") && (
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`preview-${index}`}
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                          )}
+                          <span className="text-sm text-gray-700">Attach files {index}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 

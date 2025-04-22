@@ -16,7 +16,6 @@ import { Task } from "@/models/Task";
 import { Grid2 } from "@mui/material";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
-
 interface TaskDialogClubOwnerProps {
   initialData: Task;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,7 +49,6 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
     currentPage * submissionsPerPage
   );
 
-
   // State để mở dialog chi tiết submission
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
@@ -73,7 +71,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
 
   const handleSaveFeedback = async (data: ReviewSubmissionRequest) => {
     try {
-      setIsSubmitting(true); // ✅ Bắt đầu loading
+      setIsSubmitting(true);
 
       await SendReviewSubmission(data);
 
@@ -85,7 +83,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
     } catch (error) {
       console.error("Failed to send feedback", error);
     } finally {
-      setIsSubmitting(false); // ✅ Kết thúc loading
+      setIsSubmitting(false);
     }
   };
 
@@ -242,6 +240,7 @@ const TaskDialogClubOwner: React.FC<TaskDialogClubOwnerProps> = ({ initialData, 
           taskScore={taskDetail ? taskDetail.taskScore : 0}
           isSubmitting={isSubmitting}
           deadline={taskDetail?.deadline || null}
+          setFlag={setFlag}
         />
       )}
     </div>
