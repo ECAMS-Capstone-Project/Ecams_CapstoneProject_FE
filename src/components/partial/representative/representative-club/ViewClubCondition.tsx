@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { ConfirmDialog } from "./DeleteClubConditionDialog";
+import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 
 interface Props {
     clubId: string;
@@ -131,8 +132,8 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                                         <div className="flex items-center align-middle space-x-2">
                                             <div className="text-lg font-semibold">{c.conditionName}</div>
                                             {c.isRequired && (
-                                                <Badge variant="default" className="bg-red-500 text-white">
-                                                    Required evidence
+                                                <Badge variant="default" className="bg-red-400 text-white">
+                                                    Required
                                                 </Badge>
                                             )}
                                         </div>
@@ -157,7 +158,7 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                                         {c.conditionContent}
                                     </Badge>
                                     <p className="mt-2 text-sm text-gray-500 text-justify">
-                                        {c.description}
+                                        <DescriptionWithToggle text={c.description} />
                                     </p>
                                 </Card>
                             ))}

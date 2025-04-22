@@ -21,6 +21,10 @@ interface JoinClubDialogProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+export interface ConditionEvidence {
+  conditionId: string;
+  evidenceFile: File;
+}
 
 export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
   club,
@@ -29,6 +33,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
   onSuccess,
 }) => {
   const [reason, setReason] = useState("");
+  const [conditionEvidences, setConditionEvidences] = useState<ConditionEvidence[]>([]);
   const { createClubJoinedRequest, isPending } = useClubs();
   const { user } = useAuth();
   const handleSubmit = async () => {
@@ -36,13 +41,16 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
       toast.error("Please provide a reason for joining the club!");
       return;
     }
-
+    if (conditionEvidences.length <= 0) {
+      toast.error("Please provide evidence for joining the club!");
+      return;
+    }
     try {
-      // TODO: Call API to register for club here
       await createClubJoinedRequest({
-        clubId: club.clubId,
-        reason: reason,
-        userId: user?.userId || "",
+        ClubId: club.clubId,
+        Reason: reason,
+        UserId: user?.userId || "",
+        ConditionEvidences: conditionEvidences
       });
 
       onClose();
@@ -54,10 +62,10 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-7xl max-h-[900px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
-            Register to join {club.clubName}
+            Register to join club {club.clubName}
           </DialogTitle>
           <DialogDescription className="text-base text-gray-600">
             Please fill in all the required information below
@@ -65,11 +73,11 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
         </DialogHeader>
 
         <div className="mt-4 px-4">
-          <ClubRequirements clubId={club.clubId} />
+          <ClubRequirements clubId={club.clubId} conditionEvidences={conditionEvidences} setConditionEvidences={setConditionEvidences} />
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Why do you want to join our club?
+                Why do you want to join our club? <span className="text-red-600">*</span>
               </label>
               <textarea
                 placeholder="Share why you want to join this club..."
