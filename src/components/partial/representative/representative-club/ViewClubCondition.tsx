@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import LoadingAnimation from "@/components/ui/loading";
 import { Typography } from "@mui/material";
 import {
     ClubCondition,
@@ -18,6 +17,7 @@ import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { ConfirmDialog } from "./DeleteClubConditionDialog";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
+import DialogLoading from "@/components/ui/dialog-loading";
 
 interface Props {
     clubId: string;
@@ -101,8 +101,8 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
 
     if (loading) {
         return (
-            <div>
-                <LoadingAnimation />
+            <div className="flex justify-center mt-20">
+                <DialogLoading />
             </div>
         );
     }
@@ -137,10 +137,9 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
                                                 </Badge>
                                             )}
                                         </div>
-                                        {/* Nút Delete chỉ hiển thị cho club owner */}
                                         {isClubOwner && (
                                             <Button
-                                                variant="destructive"
+                                                variant="outline"
                                                 size="sm"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
