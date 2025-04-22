@@ -11,6 +11,7 @@ import useAuth from "@/hooks/useAuth";
 import ImportButton from "./ImportButton";
 import { Button } from "@/components/ui/button";
 import ExportButton from "./ExportButton";
+import { PlusCircle } from "lucide-react";
 
 // Lazy load bảng (nếu muốn)
 const ApproveStudentTable = React.lazy(
@@ -87,22 +88,23 @@ const ApproveStudentPage = () => {
               title="Manage student"
               description={`View all information of students in ${user?.universityName}`}
             />
+            <div className="flex justify-end px-6 gap-4">
+              <div>
+                <ExportButton studentList={stuList} />
+              </div>
+              <div className="flex justify-end">
+                <Button variant="custom" onClick={handleOpenImport}>
+                  <PlusCircle /> Import student
+                </Button>
+              </div>
+              <ImportButton
+                visible={isImportOpen}
+                onClose={handleCloseImport}
+                setIsLoading={setIsLoading}
+              />
+            </div>
           </div>
           <Separator />
-
-          <div className="flex justify-end px-6 py-4 gap-4">
-            <div className="flex justify-end mb-4">
-              <Button onClick={handleOpenImport}>Import Syllabus</Button>
-            </div>
-            <ImportButton
-              visible={isImportOpen}
-              onClose={handleCloseImport}
-              setIsLoading={setIsLoading}
-            />
-            <div>
-              <ExportButton studentList={stuList} />
-            </div>
-          </div>
 
           <Tabs
             // Điều khiển tab bằng state
