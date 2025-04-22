@@ -209,14 +209,10 @@ export default function CreateEventTaskClub() {
       );
 
       const assignedMembers =
-        allStudents.length > 0
-          ? allStudents.map((student) => ({
-            clubMemberId: student.clubMemberId,
-          }))
-          : selectedMembers.map((id: string) => {
-            const stu = allStudents.find((s) => s.studentId === id);
-            return { clubMemberId: stu ? stu.clubMemberId : id };
-          });
+        selectedMembers.map((id: string) => {
+          const stu = allStudents.find((s) => s.studentId === id);
+          return { clubMemberId: stu ? stu.clubMemberId : id };
+        });
 
       const data: EventSubTaskDTO = {
         clubId,
@@ -311,6 +307,7 @@ export default function CreateEventTaskClub() {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     const hasErrors = !!Object.keys(form.formState.errors).length;
     if (hasErrors) {
