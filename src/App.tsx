@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
