@@ -90,8 +90,7 @@ const ApproveStudentPage = () => {
             />
             <div className="flex justify-end px-6 gap-4">
               <div>
-                <ExportButton studentList={stuList} />
-              </div>
+              <ExportButton universityId={user?.universityId} />              </div>
               <div className="flex justify-end">
                 <Button variant="custom" onClick={handleOpenImport}>
                   <PlusCircle /> Import student
