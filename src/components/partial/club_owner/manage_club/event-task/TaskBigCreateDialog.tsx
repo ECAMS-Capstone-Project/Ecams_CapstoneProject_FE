@@ -100,6 +100,7 @@ export const TaskBigCreateDialog = ({
           ...detail,
           startTime: fixTime(detail.startTime || new Date()),
           deadline: fixTime(detail.deadline || new Date()),
+          priority: detail.priority || "",
         })),
       };
       // if (
@@ -110,7 +111,7 @@ export const TaskBigCreateDialog = ({
       //   toast.error("Task's deadline must be before the event end date!");
       //   setIsSubmitting(false);
       //   return;
-      // }      
+      // }
       await onCreateTask(taskData);
       setIsOpen(false);
       form.reset();
@@ -122,7 +123,6 @@ export const TaskBigCreateDialog = ({
   };
 
   if (!selectedEvent) return null;
-
 
   return (
     <>
@@ -140,13 +140,13 @@ export const TaskBigCreateDialog = ({
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(
-              onSubmit,
-              (errors) => {
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (errors) => {
                 console.error("Zod validation errors:", errors);
                 toast.error("Error form");
-              }
-            )} className="space-y-6">
+              })}
+              className="space-y-6"
+            >
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -208,7 +208,10 @@ export const TaskBigCreateDialog = ({
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0 mb-0 pb-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -264,7 +267,10 @@ export const TaskBigCreateDialog = ({
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0 mb-0 pb-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
