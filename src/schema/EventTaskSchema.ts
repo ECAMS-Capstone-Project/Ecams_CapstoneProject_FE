@@ -77,16 +77,30 @@ export const EventTaskSchema = z
           detailStart.toDateString() === data.startTime.toDateString();
 
         if (isSameDate) {
-          const taskDeadlineTime = combineDateTime(data.deadline, data.deadlineTime);
-          const taskStartTime = combineDateTime(data.startTime, data.startTimeTime);
+          const taskDeadlineTime = combineDateTime(
+            data.deadline,
+            data.deadlineTime
+          );
+          const taskStartTime = combineDateTime(
+            data.startTime,
+            data.startTimeTime
+          );
 
-          if (taskDeadlineTime && detailDeadline && detailDeadline > taskDeadlineTime) {
+          if (
+            taskDeadlineTime &&
+            detailDeadline &&
+            detailDeadline > taskDeadlineTime
+          ) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message: "Detail deadline must be before task deadline",
               path: ["listEventTaskDetails", index, "deadline"],
             });
-          } else if (taskStartTime && detailStart && detailStart < taskStartTime) {
+          } else if (
+            taskStartTime &&
+            detailStart &&
+            detailStart < taskStartTime
+          ) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
               message: "Start time detail must be after task start",
@@ -104,5 +118,5 @@ export const subtaskSchema = z.object({
   description: z.string().min(1, "Description is required"),
   startTime: z.date().min(new Date(), "Start time is required"),
   deadline: z.date().min(new Date(), "Deadline is required"),
-  priority: z.string()
+  priority: z.string(),
 });
