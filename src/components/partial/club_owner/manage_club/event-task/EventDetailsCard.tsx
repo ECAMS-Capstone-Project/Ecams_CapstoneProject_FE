@@ -12,13 +12,25 @@ import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { formatPrice } from "@/lib/FormatPrice";
 import { Money } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import ConfirmEndEventDialog from "./ConfirmEndEventDialog";
+import { EndOneEventAPI } from "@/api/club-owner/TaskAPI";
+import toast from "react-hot-toast";
 
 interface EventDetailsCardProps {
   selectedEvent: Event;
+  clubId: string
 }
 
-export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) => {
+export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCardProps) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState<boolean>(false);
+  const handleSubmit = async () => {
+    await EndOneEventAPI(clubId, selectedEvent.eventId)
+    toast.success("End event successfully")
+    window.history.back();
+  };
 
   return (
     <div className="relative h-[550px] rounded-xl overflow-hidden shadow-md border border-gray-200">
@@ -34,16 +46,23 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
       {/* Content */}
       <div className="relative z-20 p-6 h-full overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
-          </button>
+        <div className="flex justify-between align-middle">
+          <div className="flex items-center gap-4 mb-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-white">{selectedEvent.eventName}</h1>
+              <p className="text-gray-200 mt-1">{selectedEvent.description}</p>
+            </div>
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{selectedEvent.eventName}</h1>
-            <p className="text-gray-200 mt-1">{selectedEvent.description}</p>
+            <Button onClick={() => setOpen(true)} variant={"custom"} className="font-bold">
+              End event
+            </Button>
           </div>
         </div>
 
@@ -70,11 +89,12 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
-              <Clock className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Registration Time: </span>
-              <span className="text-gray-800">
-                {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -{" "}
-                {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
+              <Money className="w-5 h-5 text-[#136cb9]" />
+              <span className="text-[#136cb9]">Price: </span>
+              <span className="font-bold text-[#49BBBD]">
+                {selectedEvent.price === 0
+                  ? "Free"
+                  : `${formatPrice(selectedEvent.price)}`}
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
@@ -102,15 +122,6 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
                 {selectedEvent.clubs?.length || 0} clubs
               </span>
             </div>
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
-              <Money className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Price: </span>
-              <span className="font-bold text-[#49BBBD]">
-                {selectedEvent.price === 0
-                  ? "Free"
-                  : `${formatPrice(selectedEvent.price)}`}
-              </span>
-            </div>
           </div>
         </div>
 
@@ -135,6 +146,7 @@ export const EventDetailsTaskCard = ({ selectedEvent }: EventDetailsCardProps) =
           </div>
         </div>
       </div>
+      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} />
     </div>
   );
 };

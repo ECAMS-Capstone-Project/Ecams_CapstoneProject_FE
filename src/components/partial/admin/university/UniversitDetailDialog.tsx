@@ -93,7 +93,7 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
   // };
 
   return (
-    <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
+    <div className=" min-h-[200px] sm:min-h-[300px] h-auto max-h-[80vh] overflow-y-auto">
       {isLoading ? (
         <div className="flex justify-center items-center h-full w-full">
           <DialogLoading />
@@ -275,6 +275,7 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                         </FormItem>
                       )}
                     />
+
                     {/* <FormField
                 control={form.control}
                 name="subscriptionStatus"
@@ -294,26 +295,24 @@ export const UniversityFormDialog: React.FC<UniversityDetailProps> = ({
                 )}
               /> */}
                   </div>
-                  {/* {mode === "pending" || mode === "view" && (
                   <FormField
-                  control={form.control}
-                  name="logoLink"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo</FormLabel>
-                      <FormControl>
-                        <Avatar className="w-fit h-32">
-                          <AvatarImage src={field.value} />
-                          <AvatarFallback>
-                            {initialData?.shortName}
-                          </AvatarFallback>
-                        </Avatar>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                  )} */}
+                    control={form.control}
+                    name="verifyImageUrl"
+                    render={({ field }) => (
+                      <FormItem className="mt-2">
+                        <FormLabel>Verify Image</FormLabel>
+                        <FormControl className="w-full flex justify-center items-center">
+                          <img
+                            src={field.value}
+                            alt="Verify Image"
+                            className="max-w-[90%] max-h-[70vh] object-contain mx-auto" // Điều chỉnh lại kích thước và căn giữa
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   {/* Các nút hành động */}
                   <div className="flex w-full justify-end mt-4 space-x-3">
                     {mode === "pending" && (

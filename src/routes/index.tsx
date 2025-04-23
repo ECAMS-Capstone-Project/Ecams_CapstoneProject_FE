@@ -75,10 +75,12 @@ import { TaskDetailPage } from "@/pages/club-owner/inter-club-event/task/TaskDet
 import { EventDetailTask } from "@/components/partial/club_owner/manage_club/event-task/EventDetailTask";
 import StudentEventDetail from "@/components/partial/student/events/EventDetail/EventDetail";
 import TaskDetailCard from "@/components/partial/club_owner/manage_club/event-task/TaskDetailCard";
-import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
 import PackageListUpdatePage from "@/pages/representative/package/packageListUpdatePage";
 import PaymentUpdateConfirmation from "@/components/partial/representative/representative-update-package/confirm-payment-update";
 import StudentTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/StudentTaskSubmissionPage";
+import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-task/TaskListInEvent";
+import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
+import CreateEventTaskClub from "@/components/partial/representative/representative-task/CreateEventTaskClub";
 import { SubtaskDetailPage } from "@/pages/club-owner/inter-club-event/task/SubtaskDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -475,6 +477,10 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
+        path: "/club/create-event-task",
+        element: <CreateEventTaskClub />
+      },
+      {
         path: "/club/inter-club-event",
         element: <InterClubEvent />,
         errorElement: <ErrorException />,
@@ -513,8 +519,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/club/task-submission-student",
-        element: <StudentTaskSubmissionPage />,
+        element: <StudentTaskSubmissionPage />
       },
+      {
+        path: "/club/event-subtask/:eventId",
+        element: <TaskListInEvent />
+      }
     ],
     errorElement: <ErrorException />,
   },

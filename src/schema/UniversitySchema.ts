@@ -16,15 +16,13 @@ export const universitySchema = z.object({
     .string()
     .min(10, "Contact phone must be at least 10 characters.")
     .max(15, "Contact phone cannot exceed 15 characters."),
-  logoLink: z
-    .string()
-    .url("Invalid URL.")
-    .min(1, "Logo link is required."),
+  logoLink: z.string().url("Invalid URL.").min(1, "Logo link is required."),
   location: z.string().optional(),
   websiteUrl: z.string().url("Invalid URL.").optional(),
   subscriptionStatus: z.string().min(1, "Subscription status is required."),
   createdDate: z.date().optional(),
   updatedDate: z.date().optional(),
+  verifyImageUrl: z.string().url("Invalid URL.").optional(),
 });
 // Infer kiểu từ schema
 export type University = z.infer<typeof universitySchema>;

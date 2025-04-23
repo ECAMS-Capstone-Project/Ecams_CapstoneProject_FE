@@ -1,3 +1,5 @@
+import { ConditionEvidence } from "@/components/partial/student/club-register/JoinClubDialog";
+
 interface ClubFieldResponseDTO {
   fieldId: string;
   fieldName: string;
@@ -29,9 +31,10 @@ export interface ClubResponse {
 }
 
 export interface ClubJoinedRequest {
-  clubId: string;
-  reason: string;
-  userId: string;
+    ClubId: string;
+    Reason: string;
+    UserId: string;
+    ConditionEvidences: ConditionEvidence[]
 }
 
 export interface isInClubResponse {

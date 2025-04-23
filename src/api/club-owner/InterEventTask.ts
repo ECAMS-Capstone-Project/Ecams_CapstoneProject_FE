@@ -7,6 +7,7 @@ import {
   InterTaskSubmission,
   ReviewInterTaskSubmissionRequest,
   UpdateInterTaskRequest,
+  UpdateInterTaskRequest2,
 } from "@/models/InterTask";
 import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
@@ -64,94 +65,37 @@ export const UpdateInterTask = async (
   }
 };
 
-export const GetInterTaskDetail = async (
-  eventTaskId: string
-): Promise<ResponseDTO<InterTask>> => {
-  const response = await get<ResponseDTO<InterTask>>(
-    `/EventTask/${eventTaskId}`
-  );
-  return response;
-};
-export const GetAIRecommendation = async (
-  task: AIRecommend,
-  clubId: string
-): Promise<ResponseDTO<AIRecommendResponse[]>> => {
+export const UpdateInterTask2 = async (
+  task: UpdateInterTaskRequest2
+): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
   try {
-    const response = await post<ResponseDTO<AIRecommendResponse[]>>(
-      `/Tasks/Club/${clubId}/recommend-members`,
+    const response = await put<ResponseDTO<UpdateInterTaskRequest>>(
+      `/EventTask/${task.eventTaskId}`,
       task
     );
     return response;
   } catch (error: any) {
     console.error(
-      "Error in AI Recommendation API call:",
+      "Error in UpdateInterTask API call:",
       error.response || error
     );
     throw error;
   }
 };
 
-export const GetAvailableMember = async (
-  clubId: string,
-  startTime: string,
-  deadline: string,
-  priority: string,
-  taskId?: string
-): Promise<ResponseDTO<AvailableMember>> => {
+export const GetMemberEventTask = async (
+  eventId: string,
+  pageSize: number,
+  pageNo: number,
+  userId: string
+): Promise<ResponseDTO<ResponseData<InterTask>>> => {
   try {
-    const response = await get<ResponseDTO<AvailableMember>>(
-      `Tasks/Club/${clubId}/available-members?` +
-        (taskId ? `TaskId=${taskId}&` : "") +
-        `StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
+    const response = await get<ResponseDTO<ResponseData<InterTask>>>(
+      `/EventTask/clubEvent/${eventId}/User/${userId}?PageNumber=${pageNo}&PageSize=${pageSize}`
     );
-    return response;
+    return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
-    console.error(
-      "Error in GetAvailableMember API call:",
-      error.response || error
-    );
-    throw error;
-  }
-};
-export const GetInterTaskSubmission = async (
-  eventTaskDetailId: string,
-  memberName?: string,
-  status?: string,
-  pageSize?: number,
-  pageNo?: number
-): Promise<ResponseDTO<ResponseData<InterTaskSubmission>>> => {
-  try {
-    const response = await get<ResponseDTO<ResponseData<InterTaskSubmission>>>(
-      `EventTask/EventTaskDetail/${eventTaskDetailId}/submissions?${
-        memberName ? `MemberName=${memberName}&` : ""
-      }${
-        status ? `Status=${status}&` : ""
-      }PageNumber=${pageNo}&PageSize=${pageSize}`
-    );
-    return response;
-  } catch (error: any) {
-    console.error(
-      "Error in GetInterTaskSubmission API call:",
-      error.response || error
-    );
-    throw error;
-  }
-};
-
-export const ReviewInterTaskSubmission = async (
-  review: ReviewInterTaskSubmissionRequest
-): Promise<ResponseDTO<ReviewInterTaskSubmissionRequest>> => {
-  try {
-    const response = await put<ResponseDTO<ReviewInterTaskSubmissionRequest>>(
-      `/EventTask/review`,
-      review
-    );
-    return response;
-  } catch (error: any) {
-    console.error(
-      "Error in ReviewInterTaskSubmission API call:",
-      error.response || error
-    );
+    console.error("Error in UniversityList API call:", error.response || error);
     throw error;
   }
 };

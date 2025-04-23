@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarIcon } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 
 // shadcn/ui & Components
@@ -18,7 +18,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn, fixTime } from "@/lib/utils";
@@ -26,22 +30,13 @@ import { cn, fixTime } from "@/lib/utils";
 import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 
 // Lazy import danh sách student
-const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"));
-
-// Interface cho student (đã cập nhật)
-interface Student {
-  studentId: string;
-  fullName: string;
-  userId: string;
-  roleName: string;
-  clubMemberId: string;
-}
 
 // Import API lấy danh sách member trong club và API tạo task
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
-import { ClubMemberDTO, GetMemberInClubsByStatusAPI } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
+import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
+import SpecificStudentClubList from "./SpecificStudentClubList";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -50,30 +45,7 @@ export default function CreateTaskClub() {
   const location = useLocation();
   const clubId = location.state?.clubId;
 
-  const [allStudents, setAllStudents] = useState<Student[]>([]);
-  useEffect(() => {
-    async function fetchMembers() {
-      try {
-        if (!clubId) return;
-        const response = await GetMemberInClubsByStatusAPI(clubId, 100, 1, "ACTIVE");
-        if (response.data) {
-          const members: ClubMemberDTO[] = response.data.data;
-          const students: Student[] = members.filter(a => a.clubRoleName != "CLUB_OWNER").map((m) => ({
-            studentId: m.studentId,
-            fullName: m.fullname,
-            roleName: m.clubRoleName,
-            userId: m.userId,
-            clubMemberId: m.clubMemberId,
-          }));
-          setAllStudents(students);
-        }
-      } catch (error: any) {
-        console.error("Failed to fetch club members", error);
-        toast.error("Failed to load club members");
-      }
-    }
-    fetchMembers();
-  }, [clubId]);
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,7 +79,8 @@ export default function CreateTaskClub() {
   const { handleSubmit, setValue, getValues, watch } = form;
   const assignAll = watch("assignAll");
   const selectedMembers = watch("selectedMembers");
-
+  const startTimeDate = watch("startTimeDate");
+  const deadlineTimeDate = watch("deadlineDate");
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
     const [hour, minute] = timeStr.split(":").map(Number);
@@ -116,20 +89,49 @@ export default function CreateTaskClub() {
     return newDate;
   };
 
+  useEffect(() => {
+    async function fetchMembers() {
+      if (!clubId || !startTimeDate || !deadlineTimeDate) return;
+
+      try {
+        const response = await GetAvailableMember(
+          clubId,
+          format(startTimeDate.toISOString(), "yyyy-MM-dd"),
+          format(deadlineTimeDate.toISOString(), "yyyy-MM-dd"),
+          "LOW"
+        );
+        if (response.data) {
+          setAllStudents(response.data);
+        }
+      } catch (error: any) {
+        console.error("Failed to fetch club members", error);
+      }
+    }
+
+    fetchMembers();
+  }, [clubId, startTimeDate, deadlineTimeDate]);
+
   // Submit form
   const onSubmit = async (values: TaskFormValues) => {
     if (!user) return;
     try {
       setIsLoading(true);
-      const finalDeadline = combineDateTime(values.deadlineDate, values.deadlineTime);
-      const finalStartTime = combineDateTime(values.startTimeDate, values.startTimeTime);
+      const finalDeadline = combineDateTime(
+        values.deadlineDate,
+        values.deadlineTime
+      );
+      const finalStartTime = combineDateTime(
+        values.startTimeDate,
+        values.startTimeTime
+      );
 
       // Nếu assignAll là true, lấy tất cả member (sử dụng clubMemberId)
       // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
       const assignedMembers =
         assignAll && allStudents.length > 0
-          ? allStudents.filter((student) => student.roleName != "CLUB_OWNER")
-            .map((student) => ({ clubMemberId: student.clubMemberId }))
+          ? allStudents.map((student) => ({
+            clubMemberId: student.clubMemberId,
+          }))
           : selectedMembers.map((id: string) => {
             const stu = allStudents.find((s) => s.studentId === id);
             return { clubMemberId: stu ? stu.clubMemberId : id };
@@ -151,7 +153,9 @@ export default function CreateTaskClub() {
       toast.success("Task created successfully!");
       navigate(-1);
     } catch (error: any) {
-      toast.error(error.message || "An error occurred while creating/updating task.");
+      toast.error(
+        error.message || "An error occurred while creating/updating task."
+      );
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -164,7 +168,10 @@ export default function CreateTaskClub() {
     if (checked) {
       setValue("selectedMembers", [...current, studentId]);
     } else {
-      setValue("selectedMembers", current.filter((id: string) => id !== studentId));
+      setValue(
+        "selectedMembers",
+        current.filter((id: string) => id !== studentId)
+      );
     }
   };
 
@@ -221,7 +228,11 @@ export default function CreateTaskClub() {
                       <FormItem>
                         <FormLabel>Score</FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" placeholder="Enter score (0-100)" />
+                          <Input
+                            {...field}
+                            type="number"
+                            placeholder="Enter score (0-100)"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -260,9 +271,14 @@ export default function CreateTaskClub() {
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            className={cn("text-left font-normal w-full", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "text-left font-normal w-full",
+                              !field.value && "text-muted-foreground"
+                            )}
                           >
-                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </PopoverTrigger>
@@ -308,9 +324,14 @@ export default function CreateTaskClub() {
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            className={cn("text-left font-normal w-full", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "text-left font-normal w-full",
+                              !field.value && "text-muted-foreground"
+                            )}
                           >
-                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </PopoverTrigger>
@@ -351,7 +372,10 @@ export default function CreateTaskClub() {
                 render={() => (
                   <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
-                      <Checkbox checked={assignAll} onCheckedChange={handleAssignAllChange} />
+                      <Checkbox
+                        checked={assignAll}
+                        onCheckedChange={handleAssignAllChange}
+                      />
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>Assign all members</FormLabel>
@@ -374,17 +398,45 @@ export default function CreateTaskClub() {
                     {!assignAll && (
                       <>
                         <FormLabel>Specific Students</FormLabel>
-                        {/* Search bar */}
-                        <div className="mb-2 w-1/4">
-                          <Input
-                            placeholder="Search students..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                          />
-                        </div>
+                        <div className="flex gap-3">
+                          {/* Search bar */}
+                          <div className="mb-2 w-1/4">
+                            <Input
+                              placeholder="Search students..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                          </div>
 
-                        <Suspense fallback={<div className="p-2 text-center">Loading students...</div>}>
-                          <SpecificStudentList
+                          <Button
+                            // onClick={handleAIRecommend}
+                            type="button"
+                            disabled={isLoading}
+                            className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white 
+                    px-6 py-2 rounded-lg font-semibold transition-all duration-300 
+                    hover:scale-105 hover:shadow-lg group"
+                          >
+                            <span
+                              className="absolute inset-0 before:content-[''] before:absolute before:top-0 before:left-[-75%] 
+                      before:w-[50%] before:h-full before:bg-white before:opacity-20 before:rotate-12
+                      before:animate-none group-hover:before:animate-shine pointer-events-none"
+                            />
+                            <span className="relative z-10 flex items-center gap-2">
+                              <Sparkles className="h-4 w-4" />
+                              {isLoading
+                                ? "Is loading..."
+                                : "AI Recommendation"}
+                            </span>
+                          </Button>
+                        </div>
+                        <Suspense
+                          fallback={
+                            <div className="p-2 text-center">
+                              Loading students...
+                            </div>
+                          }
+                        >
+                          <SpecificStudentClubList
                             students={filteredStudents}
                             selected={selectedMembers}
                             isAssignAll={assignAll}
@@ -395,20 +447,28 @@ export default function CreateTaskClub() {
                         <FormMessage />
 
                         <div className="mt-3">
-                          <p className="text-sm font-semibold">Selected Students:</p>
+                          <p className="text-sm font-semibold">
+                            Selected Students:
+                          </p>
                           <div className="flex flex-wrap gap-2 mt-1">
-                            {selectedMembers && selectedMembers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">
-                                No students selected.
-                              </span>
-                            )}
+                            {selectedMembers &&
+                              selectedMembers.length === 0 && (
+                                <span className="text-sm text-muted-foreground">
+                                  No students selected.
+                                </span>
+                              )}
                             {selectedMembers &&
                               selectedMembers.map((id) => {
-                                const st = allStudents.find((s) => s.studentId === id);
+                                const st = allStudents.find(
+                                  (s) => s.studentId === id
+                                );
                                 if (!st) return null;
                                 return (
-                                  <span key={id} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
-                                    {st.fullName} - {st.roleName}
+                                  <span
+                                    key={id}
+                                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
+                                  >
+                                    {st.fullName} - {st.email}
                                   </span>
                                 );
                               })}
