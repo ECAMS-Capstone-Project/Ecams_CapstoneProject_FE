@@ -100,7 +100,7 @@ const TaskDetailCard = () => {
     taskId: string,
     updateData: Partial<UpdateInterTaskRequest>
   ) => {
-    console.log("updateData", updateData);
+    console.log("updateData", updateData, taskId);
     // await updateInterEventTask({
     //   eventTaskId: taskId,
     //   clubId: currentClub.clubId,

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,13 +30,13 @@ import { cn, fixTime } from "@/lib/utils";
 import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 
 // Lazy import danh sách student
-const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"));
 
 // Import API lấy danh sách member trong club và API tạo task
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
 import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
+import SpecificStudentClubList from "./SpecificStudentClubList";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -436,7 +436,7 @@ export default function CreateTaskClub() {
                             </div>
                           }
                         >
-                          <SpecificStudentList
+                          <SpecificStudentClubList
                             students={filteredStudents}
                             selected={selectedMembers}
                             isAssignAll={assignAll}
