@@ -33,7 +33,6 @@ export const StudentClubDetail: React.FC = () => {
       </div>
     );
   }
-  console.log(isInClub?.data?.isMember);
   const club = ClubDetail?.data;
   // const events = eventData?.data?.data;
 

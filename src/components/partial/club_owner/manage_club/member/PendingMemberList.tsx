@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { useEffect, useState } from "react";
 import { ClubMemberDTO, GetMemberRequestInClubsAPI } from "@/api/club-owner/ClubByUser";
@@ -32,6 +33,7 @@ export default function PendingMemberList({ clubId }: props) {
   useEffect(() => {
     loadUniversity();
   }, [clubId, pageNo, pageSize, flag]);
+  console.log(memberList);
 
   return (
     <div className="space-y-2">

@@ -3,6 +3,7 @@ import {
   CreateInterTaskRequest,
   InterTask,
   UpdateInterTaskRequest,
+  UpdateInterTaskRequest2,
 } from "@/models/InterTask";
 import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
@@ -55,6 +56,41 @@ export const UpdateInterTask = async (
       "Error in UpdateInterTask API call:",
       error.response || error
     );
+    throw error;
+  }
+};
+
+export const UpdateInterTask2 = async (
+  task: UpdateInterTaskRequest2
+): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
+  try {
+    const response = await put<ResponseDTO<UpdateInterTaskRequest>>(
+      `/EventTask/${task.eventTaskId}`,
+      task
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in UpdateInterTask API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const GetMemberEventTask = async (
+  eventId: string,
+  pageSize: number,
+  pageNo: number,
+  userId: string
+): Promise<ResponseDTO<ResponseData<InterTask>>> => {
+  try {
+    const response = await get<ResponseDTO<ResponseData<InterTask>>>(
+      `/EventTask/clubEvent/${eventId}/User/${userId}?PageNumber=${pageNo}&PageSize=${pageSize}`
+    );
+    return response; // Trả về toàn bộ phản hồi
+  } catch (error: any) {
+    console.error("Error in UniversityList API call:", error.response || error);
     throw error;
   }
 };

@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { del, get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { FieldDTO } from "./RequestClubAPI";
-import { ClubJoinedRequest, ClubResponse } from "@/models/Club";
+import { ClubResponse } from "@/models/Club";
 import { Task } from "@/models/Task";
 import axiosMultipartForm from "../axiosMultipartForm";
 
@@ -13,6 +13,17 @@ export enum ClubStatusEnum {
   Pending = 2,
   // ... tùy chỉnh thêm
 }
+
+interface Condition {
+  conditionId: string;
+  conditionName: string;
+  conditionContent: string;
+  description: string;
+  evidenceLink: string;
+  isRequired: boolean;
+}
+
+
 export interface ClubMemberDTO {
   userId: string;
   studentId: string;
@@ -27,6 +38,8 @@ export interface ClubMemberDTO {
   email: string;
   status: string;
   leaveReason: string | null;
+  conditionEvidences: Condition[]
+  reason: string
 }
 
 export interface ClubResponseDTO {
@@ -61,6 +74,7 @@ enum EventTypeEnum {
 
 // Interface cho Event
 export interface EventResponse {
+  clubEventId: string
   eventId: string;
   representativeId?: string;
   representativeName?: string;
@@ -75,7 +89,7 @@ export interface EventResponse {
   registeredEndDate: Date;
   price: number;
   maxParticipants?: number;
-  status: EventStatusEnum;
+  status: string;
   eventType: EventTypeEnum;
 }
 
@@ -85,6 +99,7 @@ export interface ClubCondition {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 
 export interface ClubConditionCreateDTO {
@@ -92,6 +107,7 @@ export interface ClubConditionCreateDTO {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 
 export interface ClubConditionUpdateDTO {
@@ -99,6 +115,7 @@ export interface ClubConditionUpdateDTO {
   conditionName: string;
   conditionContent: string;
   description: string;
+  isRequired: boolean;
 }
 export interface ClubMemberRequestDTO {
   clubMemberId: string;
@@ -377,11 +394,12 @@ export const GetTaskInClubsAPI = async (
 export const GetEventInClubsAPI = async (
   clubId: string,
   pageSize: number,
-  pageNo: number
+  pageNo: number,
+  status: string
 ): Promise<ResponseDTO<ResponseData<EventResponse>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<EventResponse>>>(
-      `/Clubs/${clubId}/events?PageNumber=${pageNo}&PageSize=${pageSize}`
+      `/Clubs/${clubId}/events?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`
     );
     return response; // Trả về toàn bộ phản hồi
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -513,15 +531,16 @@ export const GetMemberRequestInClubsAPI = async (
 };
 
 export const CreateClubJoinedRequest = async (
-  data: ClubJoinedRequest,
+  data: FormData,
   clubId: string
 ): Promise<ResponseDTO<string>> => {
   try {
-    const response = await post<ResponseDTO<string>>(
+    const response = await axiosMultipartForm.post(
       `/Clubs/${clubId}/requests`,
       data
     );
-    return response; // Trả về toàn bộ phản hồi
+    const apiResponse = response.data as ResponseDTO<string>;
+    return apiResponse;
   } catch (error: any) {
     if (error.response.status == 400) {
       toast.error("Something went wrong. Please try again.");

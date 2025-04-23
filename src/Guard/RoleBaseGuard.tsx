@@ -46,6 +46,10 @@ export default function RoleBasedGuard({
     navigate("/admin");
   };
 
+  const handleNavigateDashboardRe = () => {
+    navigate("/representative");
+  };
+
   const handleNavigateLogin = async () => {
     await logout();
     navigate("/login");
@@ -74,10 +78,6 @@ export default function RoleBasedGuard({
     );
   }
 
-  // if (currentRole === "Null") {
-  //   return <HomePage />;
-  // }
-
   if (
     !currentRole.some((role) => accessibleRoles.includes(role)) ||
     currentStatus !== status
@@ -102,11 +102,16 @@ export default function RoleBasedGuard({
               <Button onClick={handleNavigateDashboard}>Back to Admin</Button>
             )}
             {currentRole && currentRole.includes("REPRESENTATIVE") && (
-              <Button onClick={handleNavigateDashboard}>Back to Staff</Button>
+              <Button onClick={handleNavigateDashboardRe}>Back to Representative</Button>
             )}
             {currentRole &&
               currentRole.includes("STUDENT") &&
               currentStatus == "CHECKING" && (
+                <Button onClick={handleNavigateLogin}>Back to Log in</Button>
+              )}
+            {currentRole &&
+              currentRole.includes("STUDENT") &&
+              currentStatus == "PENDING" && (
                 <Button onClick={handleNavigateLogin}>Back to Log in</Button>
               )}
             {(!currentRole || currentRole.includes("null")) && (

@@ -27,6 +27,7 @@ export function EditClubConditionDialog({
     const [conditionName, setConditionName] = useState("");
     const [conditionContent, setConditionContent] = useState("");
     const [description, setDescription] = useState("");
+    const [checkbox, setCheckBox] = useState<boolean>(false);
 
     // State lưu lỗi cho từng field
     const [errors, setErrors] = useState<{
@@ -41,6 +42,7 @@ export function EditClubConditionDialog({
             setConditionName(condition.conditionName);
             setConditionContent(condition.conditionContent);
             setDescription(condition.description);
+            setCheckBox(condition.isRequired)
             setErrors({});
         }
     }, [condition]);
@@ -76,7 +78,8 @@ export function EditClubConditionDialog({
             if (
                 conditionName === condition.conditionName &&
                 conditionContent === condition.conditionContent &&
-                description === condition.description
+                description === condition.description &&
+                checkbox == condition.isRequired
             ) {
                 onClose();
                 return;
@@ -87,6 +90,7 @@ export function EditClubConditionDialog({
                 conditionName,
                 conditionContent,
                 description,
+                isRequired: checkbox
             });
         }
     };
@@ -143,6 +147,10 @@ export function EditClubConditionDialog({
                         {errors.description && (
                             <p className="text-red-500 text-sm">{errors.description}</p>
                         )}
+                    </div>
+                    <div className="flex items-center space-x-2 mt-4">
+                        <input type="checkbox" id="isRequired" checked={checkbox} onChange={(e) => setCheckBox(e.target.checked)} />
+                        <label htmlFor="isRequired">This condition is required</label>
                     </div>
                 </div>
                 <DialogFooter>

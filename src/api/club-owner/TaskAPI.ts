@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import toast from "react-hot-toast";
-import { get, post, put } from "../agent";
+import { get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
+import { EventTaskDetail } from "@/models/InterTask";
+import axiosMultipartForm from "../axiosMultipartForm";
 
 export interface TaskDetailDTO {
     taskId: string;
@@ -121,6 +123,30 @@ export interface Submission {
     status: string;
 }
 
+export interface EventSubmissionTaskDetail {
+    eventTaskDetailId: string;
+    clubMemberId: string;
+    memberEmail: string;
+    memberName: string;
+    studentSubmission: string | null;
+    submissionDate: string;
+    submissionScore: number;
+    submissionFile: string[];
+    taskScore: number;
+    comment: string | null;
+    reviewer: MemberInTaskDTO | null;
+    status: string;
+}
+
+export interface SubmissionReviewDTO {
+    eventTaskDetailId: string;
+    clubMemberId: string;
+    comment: string;
+    submissionScore: number;
+    reviewedBy: string;
+}
+
+
 export const GetTaskDetail = async (taskId: string): Promise<ResponseDTO<TaskDetailDTO>> => {
     try {
         const response = await get<ResponseDTO<TaskDetailDTO>>(`/Tasks/${taskId}`);
@@ -149,16 +175,20 @@ export const SendReviewSubmission = async (data: ReviewSubmissionRequest): Promi
         return response; // Trả về toàn bộ phản hồi
     } catch (error: any) {
         if (error.response.status == 400) {
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         } else if (error.response.status == 500) {
             toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -175,13 +205,16 @@ export const CreateTaskToStudent = async (data: CreateTaskRequest): Promise<Resp
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -209,15 +242,19 @@ export const SendStudentSubmission = async (data: StudentSubmissionRequest): Pro
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 500) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {
@@ -234,15 +271,140 @@ export const UpdateTaskAPI = async (data: UpdateTaskRequest): Promise<ResponseDT
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 500) {
             toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
-            console.log(error.response.data.errors);
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GetMemberSubmissionTaskEvent = async (eventDetailId: string, pageNumber: number): Promise<ResponseDTO<ResponseData<EventSubmissionTaskDetail>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventSubmissionTaskDetail>>>(`/EventTask/EventTaskDetail/${eventDetailId}/submissions?PageNumber=${pageNumber}&PageSize=5`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: number, search: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/EventTask/${eventDetailId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const GetSubTaskEventByUserAPI = async (eventDetailId: string, pageNumber: number, search: string, userId: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/${eventDetailId}/User/${userId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        return response; // Trả về toàn bộ phản hồi
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
+    }
+};
+
+export const SubmitTaskByStudent = async (clubMemberId: string, eventTaskDetailId: string, studentSubmission: string, data: FormData): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await axiosMultipartForm.put(`/EventTask/submit?ClubMemberId=${clubMemberId}&EventTaskDetailId=${eventTaskDetailId}&StudentSubmission=${studentSubmission}`, data);
+        const apiResponse = response.data as ResponseDTO<string>;
+        return apiResponse;
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const GradeStudentTaskAPI = async (data: SubmissionReviewDTO): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await put<ResponseDTO<string>>(`/EventTask/review`, data);
+        return response; // Trả về toàn bộ phản hồi
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
+            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
+        } else {
+            console.error("Network Error:", error.message);
+            throw new Error("Network error. Please try again later.");
+        }
+    }
+};
+
+export const EndOneEventAPI = async (clubId: string, eventId: string): Promise<ResponseDTO<string>> => {
+    try {
+        const response = await patch<ResponseDTO<string>>(`/InterClub/Club/${clubId}/Event/${eventId}/end`);
+        return response;
+    } catch (error: any) {
+        if (error.response.status == 400) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 401) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 404) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        } else if (error.response.status == 500) {
+            toast.error(error.response.data.message);
+            throw new Error(error.response.data.message || "API Error");
+        }
+        if (error.response) {
+            toast.error(error.response.data.message);
             console.error("API Error:", error.response.data);
             throw new Error(error.response.data.message || "API Error");
         } else {

@@ -8,6 +8,9 @@ import { GetStudentInUniversityAPI } from "@/api/representative/StudentAPI";
 import StudentRequest from "@/models/StudentRequest";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAuth from "@/hooks/useAuth";
+import ImportButton from "./ImportButton";
+import { Button } from "@/components/ui/button";
+import ExportButton from "./ExportButton";
 
 // Lazy load bảng (nếu muốn)
 const ApproveStudentTable = React.lazy(
@@ -26,7 +29,10 @@ const ApproveStudentPage = () => {
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
+  const handleOpenImport = () => setIsImportOpen(true);
+  const handleCloseImport = () => setIsImportOpen(false);
   // State để refresh data sau khi duyệt
   const [flag, setFlag] = useState<boolean>(false);
 
@@ -83,6 +89,20 @@ const ApproveStudentPage = () => {
             />
           </div>
           <Separator />
+
+          <div className="flex justify-end px-6 py-4 gap-4">
+            <div className="flex justify-end mb-4">
+              <Button onClick={handleOpenImport}>Import Syllabus</Button>
+            </div>
+            <ImportButton
+              visible={isImportOpen}
+              onClose={handleCloseImport}
+              setIsLoading={setIsLoading}
+            />
+            <div>
+              <ExportButton universityId={user?.universityId} />
+            </div>
+          </div>
 
           <Tabs
             // Điều khiển tab bằng state

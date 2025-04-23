@@ -104,11 +104,10 @@ const Pricing: React.FC = () => {
 
   const handleClick = async (plan: Package) => {
     if (user) {
-      const response = await CheckBuyPackageAPI({
+      await CheckBuyPackageAPI({
         packageId: plan.packageId,
         representativeId: user.universityId || "",
       });
-      console.log(response);
       navigate("/payment-confirm", {
         state: { selectedPlan: plan },
       });
@@ -241,7 +240,7 @@ const Pricing: React.FC = () => {
         )}
         <Box display="flex" justifyContent="center">
           <Button
-            onClick={() => navigate("/representative")}
+            onClick={() => navigate(-1)}
             variant="contained"
             color="primary"
             sx={{
@@ -252,7 +251,7 @@ const Pricing: React.FC = () => {
               width: 250,
             }}
           >
-            Back To Home Page
+            Back To Page
           </Button>
         </Box>
       </Container>
