@@ -80,6 +80,7 @@ export interface AvailableMember {
   currentTasks?: {
     eventTaskDetailId: string;
     eventTaskId: string;
+    clubMemberId: string;
     detailName: string;
     description: string;
     startTime: string;

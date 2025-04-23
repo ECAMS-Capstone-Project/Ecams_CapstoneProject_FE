@@ -40,7 +40,14 @@ export const EventSchema = z
     universityId: z.string().uuid(),
     representativeId: z.string().optional(), // Validate UUID cho representativeId
     representativeName: z.string().optional(), // Có thể là string hoặc null
-    clubId: z.string().optional(), // Có thể là string hoặc null
+    clubs: z
+      .array(
+        z.object({
+          ClubId: z.string(),
+          IsHost: z.boolean(),
+        })
+      )
+      .optional(), // Có thể là string hoặc null
     clubName: z.string().optional(), // Có thể là string hoặc null
     eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
     // startDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ

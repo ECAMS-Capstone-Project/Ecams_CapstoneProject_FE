@@ -127,7 +127,7 @@ export const NewSubtaskDialog = ({
   currentClub,
   members,
 }: SubtaskDialogProps) => {
-  const [showAIRecommendations, setShowAIRecommendations] = useState(false);
+  const [, setShowAIRecommendations] = useState(false);
   const [aiRecommendations, setAIRecommendations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -182,6 +182,7 @@ export const NewSubtaskDialog = ({
     console.log("payload:", newSubtask);
     onSubmit(newSubtask);
     form.reset();
+
     onClose();
   };
   const { getAvailableMemberQuery } = useInterTask();
@@ -200,16 +201,17 @@ export const NewSubtaskDialog = ({
 
   // Thêm hàm filter members
   const filteredMembers = (
-    showAIRecommendations
-      ? [
-          ...aiRecommendations.map((rec) => ({
-            ...rec,
-            isRecommended: true, // Đánh dấu thành viên này là được AI đề xuất
-          })),
-          ...availableMembers, // Giữ lại các thành viên có sẵn
-        ]
-      : availableMembers
-      ? availableMembers
+    availableMembers
+      ? availableMembers.map((member) => {
+          const recommendation = aiRecommendations.find(
+            (rec) => rec.clubMemberId === member.clubMemberId
+          );
+          return {
+            ...member,
+            isRecommended: !!recommendation,
+            recommendationDetails: recommendation,
+          };
+        })
       : members
   ).filter((member: AvailableMember | ClubMemberDTO) => {
     const searchStr = searchQuery.toLowerCase();
@@ -223,7 +225,7 @@ export const NewSubtaskDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl ">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[#136CB9]">
             {initialValues ? "Edit Subtask" : "Add Subtask"}
@@ -235,352 +237,452 @@ export const NewSubtaskDialog = ({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="detailName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subtask Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter subtask name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter subtask description"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex space-x-4">
-                <FormField
-                  control={form.control}
-                  name="startTime"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Start Time Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="startTimeTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Time</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="time" className="w-[120px]" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="flex space-x-4">
-                <FormField
-                  control={form.control}
-                  name="deadline"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Deadline Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date < new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="deadlineTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deadline Time</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="time" className="w-[120px]" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {initialValues && (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="ON_GOING">On Going</SelectItem>
-                        <SelectItem value="COMPLETED">Completed</SelectItem>
-                        <SelectItem value="REVIEWING">Reviewing</SelectItem>
-                        <SelectItem value="OVERDUE">Overdue</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            <FormField
-              control={form.control}
-              name="priority"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Priority</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="assignedMembers"
-              render={({ field }) => (
-                <FormItem className="space-y-4">
-                  <FormLabel>Assign to Member</FormLabel>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          placeholder="Search members..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-9 bg-gray-50 border-gray-200"
-                        />
-                      </div>
-                      <a
-                        className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap"
-                        onClick={async () => {
-                          try {
-                            setIsLoading(true);
-                            const response = await GetAIRecommendation(
-                              {
-                                taskName: form.getValues("detailName"),
-                                taskDescription: form.getValues("description"),
-                                startTime: fixTime(
-                                  form.getValues("startTime")
-                                ).toISOString(),
-                                endTime: fixTime(
-                                  form.getValues("deadline")
-                                ).toISOString(),
-                                priority: form.getValues("priority"),
-                                clubId: currentClub.clubId,
-                                taskId: "",
-                              },
-                              currentClub.clubId
-                            );
-                            if (response.data) {
-                              setAIRecommendations(response.data);
-                              setShowAIRecommendations(true);
-                              form.setValue("assignedMembers", []);
-                            } else {
-                              toast.error(response.message);
-                            }
-                          } catch (error: any) {
-                            toast.error(error.response.data.message);
-                          } finally {
-                            setIsLoading(false);
-                          }
-                        }}
-                      >
-                        <span className="relative z-10 flex items-center gap-1">
-                          <Sparkles className="h-4 w-4" />
-                          {isLoading ? "Loading..." : "AI Recommendation"}
-                        </span>
-                      </a>
-                    </div>
-
-                    {showAIRecommendations && (
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          setShowAIRecommendations(false);
-                        }}
-                      >
-                        Back to All Members
-                      </Button>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="">
+            <ScrollArea className="h-[70vh] rounded-md">
+              <div className="space-y-4 px-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="detailName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Subtask Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter subtask name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="priority"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Priority</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="LOW">Low</SelectItem>
+                            <SelectItem value="MEDIUM">Medium</SelectItem>
+                            <SelectItem value="HIGH">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter subtask description"
+                          className="resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                    <ScrollArea className="h-[150px] rounded-md border">
-                      <div className="p-4 space-y-2">
-                        {filteredMembers.map((member) => (
-                          <div
-                            key={member.clubMemberId}
-                            className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <Checkbox
-                                id={member.clubMemberId}
-                                checked={field.value?.some(
-                                  (m) => m.clubMemberId === member.clubMemberId
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
+                  <FormField
+                    control={form.control}
+                    name="startTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "text-left font-normal",
+                                  !field.value && "text-muted-foreground"
                                 )}
-                                onCheckedChange={(checked) => {
-                                  const newValue = field.value || [];
-                                  if (checked) {
-                                    form.setValue("assignedMembers", [
-                                      ...newValue,
-                                      { clubMemberId: member.clubMemberId },
-                                    ]);
-                                  } else {
-                                    form.setValue(
-                                      "assignedMembers",
-                                      newValue.filter(
-                                        (m) =>
-                                          m.clubMemberId !== member.clubMemberId
-                                      )
-                                    );
-                                  }
-                                }}
-                              />
-                              <label
-                                htmlFor={member.clubMemberId}
-                                className="flex items-center gap-2 cursor-pointer text-sm"
                               >
-                                <span className="font-medium">
-                                  {member.fullName || member.fullname}
-                                </span>
-                                {showAIRecommendations ? (
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-indigo-50 text-indigo-700 border-indigo-200"
-                                  >
-                                    Recommended
-                                  </Badge>
+                                {field.value ? (
+                                  format(field.value, "PPP")
                                 ) : (
-                                  <Badge
-                                    variant="outline"
-                                    className="bg-green-50 text-green-700 border-green-200"
-                                  >
-                                    Available
-                                  </Badge>
+                                  <span>Pick a date</span>
                                 )}
-                              </label>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-gray-100"
-                              onClick={() => setSelectedMember(member)}
-                            >
-                              <Eye className="h-4 w-4 text-gray-500" />
-                            </Button>
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="startTimeTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deadline"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Deadline Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "text-left font-normal",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deadlineTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {initialValues && (
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="ON_GOING">On Going</SelectItem>
+                            <SelectItem value="COMPLETED">Completed</SelectItem>
+                            <SelectItem value="REVIEWING">Reviewing</SelectItem>
+                            <SelectItem value="OVERDUE">Overdue</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={form.control}
+                  name="assignedMembers"
+                  render={() => (
+                    <FormItem className="space-y-4">
+                      <FormLabel>Task Dependencies</FormLabel>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1 relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              placeholder="Search task..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              className="pl-9 bg-gray-50 border-gray-200"
+                            />
                           </div>
-                        ))}
+                        </div>
+                        {/* <ScrollArea className="h-[150px] rounded-md border">
+                          <div className="p-4 space-y-2">
+                            {filteredMembers.map((member) => (
+                              <div
+                                key={member.clubMemberId}
+                                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <Checkbox
+                                    id={member.clubMemberId}
+                                    checked={field.value?.some(
+                                      (m) =>
+                                        m.clubMemberId === member.clubMemberId
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      const newValue = field.value || [];
+                                      if (checked) {
+                                        form.setValue("assignedMembers", [
+                                          ...newValue,
+                                          { clubMemberId: member.clubMemberId },
+                                        ]);
+                                      } else {
+                                        form.setValue(
+                                          "assignedMembers",
+                                          newValue.filter(
+                                            (m) =>
+                                              m.clubMemberId !==
+                                              member.clubMemberId
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={member.clubMemberId}
+                                    className="flex items-center gap-2 cursor-pointer text-sm"
+                                  >
+                                    <span className="font-medium">
+                                      {(member as AvailableMember).fullName ||
+                                        (member as ClubMemberDTO).fullname}
+                                    </span>
+                                    <div className="flex gap-1">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-green-50 text-green-700 border-green-200"
+                                      >
+                                        Available
+                                      </Badge>
+                                      {(member as any).isRecommended && (
+                                        <Badge
+                                          variant="outline"
+                                          className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                                        >
+                                          Recommended
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </label>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 hover:bg-gray-100"
+                                  onClick={() => setSelectedMember(member)}
+                                >
+                                  <Eye className="h-4 w-4 text-gray-500" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea> */}
                       </div>
-                    </ScrollArea>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="assignedMembers"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <FormLabel>Assigned Member</FormLabel>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1 relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              placeholder="Search members..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              className="pl-9 bg-gray-50 border-gray-200"
+                            />
+                          </div>
+                          <a
+                            className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap"
+                            onClick={async () => {
+                              try {
+                                setIsLoading(true);
+                                const response = await GetAIRecommendation(
+                                  {
+                                    taskName: form.getValues("detailName"),
+                                    taskDescription:
+                                      form.getValues("description"),
+                                    startTime: fixTime(
+                                      form.getValues("startTime")
+                                    ).toISOString(),
+                                    endTime: fixTime(
+                                      form.getValues("deadline")
+                                    ).toISOString(),
+                                    priority: form.getValues("priority"),
+                                    clubId: currentClub.clubId,
+                                    taskId: "",
+                                  },
+                                  currentClub.clubId
+                                );
+                                if (response.data) {
+                                  setAIRecommendations(response.data);
+                                  setShowAIRecommendations(true);
+                                  form.setValue("assignedMembers", []);
+                                } else {
+                                  toast.error(response.message);
+                                }
+                              } catch (error: any) {
+                                toast.error(error.response.data.message);
+                              } finally {
+                                setIsLoading(false);
+                              }
+                            }}
+                          >
+                            <span className="relative z-10 flex items-center gap-1">
+                              <Sparkles className="h-4 w-4" />
+                              {isLoading ? "Loading..." : "AI Recommendation"}
+                            </span>
+                          </a>
+                        </div>
+
+                        {/* {showAIRecommendations && (
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => {
+                              setShowAIRecommendations(false);
+                            }}
+                          >
+                            Back to All Members
+                          </Button>
+                        )} */}
+
+                        <ScrollArea className="h-[150px] rounded-md border">
+                          <div className="p-4 space-y-2">
+                            {filteredMembers.map((member) => (
+                              <div
+                                key={member.clubMemberId}
+                                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <Checkbox
+                                    id={member.clubMemberId}
+                                    checked={field.value?.some(
+                                      (m) =>
+                                        m.clubMemberId === member.clubMemberId
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      const newValue = field.value || [];
+                                      if (checked) {
+                                        form.setValue("assignedMembers", [
+                                          ...newValue,
+                                          { clubMemberId: member.clubMemberId },
+                                        ]);
+                                      } else {
+                                        form.setValue(
+                                          "assignedMembers",
+                                          newValue.filter(
+                                            (m) =>
+                                              m.clubMemberId !==
+                                              member.clubMemberId
+                                          )
+                                        );
+                                      }
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={member.clubMemberId}
+                                    className="flex items-center gap-2 cursor-pointer text-sm"
+                                  >
+                                    <span className="font-medium">
+                                      {(member as AvailableMember).fullName ||
+                                        (member as ClubMemberDTO).fullname}
+                                    </span>
+                                    <div className="flex gap-1">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-green-50 text-green-700 border-green-200"
+                                      >
+                                        Available
+                                      </Badge>
+                                      {(member as any).isRecommended && (
+                                        <Badge
+                                          variant="outline"
+                                          className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                                        >
+                                          Recommended
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </label>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  type="button"
+                                  className="h-8 w-8 hover:bg-gray-100"
+                                  onClick={() => setSelectedMember(member)}
+                                >
+                                  <Eye className="h-4 w-4 text-gray-500" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </ScrollArea>
             <div className="flex justify-end gap-4">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

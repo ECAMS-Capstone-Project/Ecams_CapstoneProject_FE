@@ -122,13 +122,15 @@ export const TaskDetailPage = () => {
             <ListTodo className={`h-4 w-4 `} />
             Sub-tasks
           </h4>
-          <Button
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
-          >
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Sub-task
-          </Button>
+          {task.clubId === currentClub.clubId && (
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
+            >
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New Sub-task
+            </Button>
+          )}
         </div>
         <div className="space-y-3">
           {task.eventTaskDetails.map((subTask) => (
@@ -196,6 +198,22 @@ export const TaskDetailPage = () => {
               </div>
             </div>
           ))}
+          {task.eventTaskDetails.length === 0 && (
+            <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
+              <img
+                src="https://img.freepik.com/free-vector/flat-scrum-task-board-with-color-stick-paper-notes_88138-931.jpg?t=st=1745413930~exp=1745417530~hmac=39a15caf14ef23431d71ab10bd019f2f864edee0b85c4d5d7fab0d769fb86f01&w=2000"
+                alt="No sub-tasks"
+                className="w-1/5 mb-4 opacity-90"
+              />
+              <h3 className="text-2xl font-semibold text-[#136CB5] mb-2">
+                No sub-tasks yet
+              </h3>
+              <p className="text-sm max-w-md text-gray-500">
+                Currently, the assigned club have not created any sub-tasks for
+                this task yet. Check back later! 💡
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <NewSubtaskDialog

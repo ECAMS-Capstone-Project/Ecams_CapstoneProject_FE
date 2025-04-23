@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, X, Loader2, Pencil, Check, ChevronsUpDown } from "lucide-react";
+import { Loader2, Check, ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,11 +28,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, combineDateTime } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-import { SubtaskDialog } from "./SubtaskDialog";
 import {
   Select,
   SelectContent,
@@ -64,15 +63,6 @@ interface TaskEditDialogProps {
   currentClub: EventClubDTO;
 }
 
-interface SubtaskData {
-  detailName: string;
-  description: string;
-  startTime: Date;
-  deadline: Date;
-  status: string;
-  priority: string;
-  assignedMembers?: string[];
-}
 // Thêm 7 giờ vào mọi timestamp
 function fixTime(date: Date) {
   const adjustedDate = new Date(date);
@@ -90,13 +80,6 @@ export const TaskEditDialog = ({
   selectedEvent,
   currentClub,
 }: TaskEditDialogProps) => {
-  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
-  const [editingSubtaskIndex, setEditingSubtaskIndex] = useState<number | null>(
-    null
-  );
-  const [editingSubtask, setEditingSubtask] = useState<SubtaskData | null>(
-    null
-  );
   const [openClubSelect, setOpenClubSelect] = useState(false);
   // const timeZone = "Asia/Ho_Chi_Minh";
   const form = useForm<z.infer<typeof InterTaskSchema>>({
@@ -105,7 +88,9 @@ export const TaskEditDialog = ({
       taskName: task.taskName,
       description: task.description,
       startTime: fixTime(new Date(task.startTime)),
+      startTimeTime: new Date(task.startTime).toTimeString().slice(0, 5),
       deadline: fixTime(new Date(task.deadline)),
+      deadlineTime: new Date(task.deadline).toTimeString().slice(0, 5),
       status: task.status,
       clubId: task.clubId,
       listEventTaskDetails: task.eventTaskDetails.map((detail) => ({
@@ -159,15 +144,22 @@ export const TaskEditDialog = ({
           priority: detail.priority,
           assignedMembers: [],
         }));
-
+      const finalStartTime = combineDateTime(
+        values.startTime,
+        values.startTimeTime || "00:00"
+      );
+      const finalDeadline = combineDateTime(
+        values.deadline,
+        values.deadlineTime || "00:00"
+      );
       const updateData: UpdateInterTaskRequest = {
         eventTaskId: task.eventTaskId,
         clubId: values.clubId || task.clubId,
         eventId: selectedEvent.eventId,
         taskName: values.taskName,
         description: values.description,
-        startTime: fixTime(new Date(values.startTime || task.startTime)),
-        deadline: fixTime(new Date(values.deadline || task.deadline)),
+        startTime: fixTime(finalStartTime),
+        deadline: fixTime(finalDeadline),
         status: values.status || task.status || "ON_GOING", // Thêm giá trị mặc định để tránh undefined
         eventTaskDetails: [...existingSubtasks, ...newSubtasks],
       };
@@ -179,59 +171,59 @@ export const TaskEditDialog = ({
     }
   };
 
-  const handleEditSubtask = (index: number) => {
-    const currentSubtask = form.getValues("listEventTaskDetails")[index];
-    const subtaskToEdit = {
-      detailName: currentSubtask.detailName,
-      description: currentSubtask.description,
-      startTime: fixTime(currentSubtask.startTime || new Date()),
-      deadline: fixTime(currentSubtask.deadline || new Date()),
-      status: currentSubtask.status || "ON_GOING",
-      priority: currentSubtask.priority || "MEDIUM",
-    };
+  // const handleEditSubtask = (index: number) => {
+  //   const currentSubtask = form.getValues("listEventTaskDetails")[index];
+  //   const subtaskToEdit = {
+  //     detailName: currentSubtask.detailName,
+  //     description: currentSubtask.description,
+  //     startTime: fixTime(currentSubtask.startTime || new Date()),
+  //     deadline: fixTime(currentSubtask.deadline || new Date()),
+  //     status: currentSubtask.status || "ON_GOING",
+  //     priority: currentSubtask.priority || "MEDIUM",
+  //   };
 
-    setEditingSubtask(subtaskToEdit);
-    setEditingSubtaskIndex(index);
-    setIsSubtaskDialogOpen(true);
-  };
+  //   setEditingSubtask(subtaskToEdit);
+  //   setEditingSubtaskIndex(index);
+  //   setIsSubtaskDialogOpen(true);
+  // };
 
-  const handleAddSubtask = (data: {
-    detailName: string;
-    description: string;
-    startTime: Date;
-    deadline: Date;
-    status: string;
-    priority: string;
-  }) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    console.log("Adding/Editing subtask:", data);
+  // const handleAddSubtask = (data: {
+  //   detailName: string;
+  //   description: string;
+  //   startTime: Date;
+  //   deadline: Date;
+  //   status: string;
+  //   priority: string;
+  // }) => {
+  //   const currentSubtasks = form.getValues("listEventTaskDetails");
+  //   console.log("Adding/Editing subtask:", data);
 
-    if (editingSubtaskIndex !== null) {
-      // Đang edit subtask
-      const updatedSubtasks = [...currentSubtasks];
-      updatedSubtasks[editingSubtaskIndex] = data;
-      form.setValue("listEventTaskDetails", updatedSubtasks);
-      setEditingSubtaskIndex(null);
-    } else {
-      // Thêm subtask mới
-      form.setValue("listEventTaskDetails", [...currentSubtasks, data]);
-    }
-    setIsSubtaskDialogOpen(false);
-  };
+  //   if (editingSubtaskIndex !== null) {
+  //     // Đang edit subtask
+  //     const updatedSubtasks = [...currentSubtasks];
+  //     updatedSubtasks[editingSubtaskIndex] = data;
+  //     form.setValue("listEventTaskDetails", updatedSubtasks);
+  //     setEditingSubtaskIndex(null);
+  //   } else {
+  //     // Thêm subtask mới
+  //     form.setValue("listEventTaskDetails", [...currentSubtasks, data]);
+  //   }
+  //   setIsSubtaskDialogOpen(false);
+  // };
 
-  const handleCloseSubtaskDialog = () => {
-    setIsSubtaskDialogOpen(false);
-    setEditingSubtaskIndex(null);
-    setEditingSubtask(null);
-  };
+  // const handleCloseSubtaskDialog = () => {
+  //   setIsSubtaskDialogOpen(false);
+  //   setEditingSubtaskIndex(null);
+  //   setEditingSubtask(null);
+  // };
 
-  const handleRemoveSubtask = (index: number) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue(
-      "listEventTaskDetails",
-      currentSubtasks.filter((_, i) => i !== index)
-    );
-  };
+  // const handleRemoveSubtask = (index: number) => {
+  //   const currentSubtasks = form.getValues("listEventTaskDetails");
+  //   form.setValue(
+  //     "listEventTaskDetails",
+  //     currentSubtasks.filter((_, i) => i !== index)
+  //   );
+  // };
 
   return (
     <>
@@ -245,7 +237,7 @@ export const TaskEditDialog = ({
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-4 h-[calc(100vh-250px)] overflow-y-auto">
+              <div className="space-y-4 h-[calc(100vh-500px)] overflow-y-auto">
                 <FormField
                   control={form.control}
                   name="taskName"
@@ -283,23 +275,22 @@ export const TaskEditDialog = ({
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-4 gap-2">
                   <FormField
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Start Time</FormLabel>
+                        <FormLabel>Start Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "text-left font-normal",
+                                  " text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
-                                disabled={!isHost}
                               >
                                 {field.value ? (
                                   format(field.value, "PPP")
@@ -317,16 +308,25 @@ export const TaskEditDialog = ({
                             <Calendar
                               mode="single"
                               selected={field.value}
-                              onSelect={(date) => {
-                                if (date) {
-                                  field.onChange(date);
-                                }
-                              }}
+                              onSelect={field.onChange}
                               disabled={(date) => date < new Date()}
                               initialFocus
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="startTimeTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -344,10 +344,9 @@ export const TaskEditDialog = ({
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "text-left font-normal",
+                                  " text-left font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
-                                disabled={!isHost}
                               >
                                 {field.value ? (
                                   format(field.value, "PPP")
@@ -365,16 +364,25 @@ export const TaskEditDialog = ({
                             <Calendar
                               mode="single"
                               selected={field.value}
-                              onSelect={(date) => {
-                                if (date) {
-                                  field.onChange(date);
-                                }
-                              }}
+                              onSelect={field.onChange}
                               disabled={(date) => date < new Date()}
                               initialFocus
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="deadlineTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -479,7 +487,7 @@ export const TaskEditDialog = ({
                   />
                 </div>
 
-                {isHost && (
+                {/* {isHost && (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
@@ -546,7 +554,7 @@ export const TaskEditDialog = ({
                     </div>
                   </div>
                 )}
-                {!isHost && currentClub.clubId === task.clubId && (
+                 {!isHost && currentClub.clubId === task.clubId && (
                   <div className="space-y-4 h-[calc(100vh-600px)] overflow-y-auto">
                     <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
                     <div className="space-y-2">
@@ -619,7 +627,7 @@ export const TaskEditDialog = ({
                         ))}
                     </div>
                   </div>
-                )}
+                )}  */}
               </div>
 
               <div className="flex justify-end gap-4">
@@ -651,14 +659,14 @@ export const TaskEditDialog = ({
         </DialogContent>
       </Dialog>
 
-      <SubtaskDialog
+      {/* <SubtaskDialog
         isOpen={isSubtaskDialogOpen}
         onClose={handleCloseSubtaskDialog}
         onSubmit={handleAddSubtask}
         initialValues={editingSubtask || undefined}
         mainTaskStartTime={form.getValues("startTime")}
         mainTaskDeadline={form.getValues("deadline")}
-      />
+      /> */}
     </>
   );
 };

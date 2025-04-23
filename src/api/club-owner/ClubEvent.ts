@@ -5,6 +5,7 @@ import { ResponseData, ResponseDTO } from "../BaseResponse";
 import axiosMultipartForm from "../axiosMultipartForm";
 import toast from "react-hot-toast";
 import { InterClubEventDTO } from "@/models/Event";
+import { AvailableClubResponse } from "@/models/Club";
 
 export interface InterClubEvent {
   eventId: string;
@@ -162,6 +163,22 @@ export const endInterEvent = async (
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in end event API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const GetAvailableClub = async (
+  uniId: string,
+  startDate: string,
+  endDate: string
+): Promise<ResponseDTO<AvailableClubResponse>> => {
+  try {
+    const response = await get<ResponseDTO<AvailableClubResponse>>(
+      `/Clubs/University/${uniId}/available-clubs?StartDate=${startDate}&EndDate=${endDate}`
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Error in UniversityList API call:", error.response || error);
     throw error;
   }
 };

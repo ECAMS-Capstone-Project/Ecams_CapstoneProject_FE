@@ -188,6 +188,7 @@ export const SubtaskDetailPage = () => {
         currentClub={currentClub}
         task={task}
         selectedEvent={selectedEvent}
+        submissions={submissions || []}
       />
 
       <SubmissionDetailDialog
