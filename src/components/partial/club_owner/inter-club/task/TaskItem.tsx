@@ -3,7 +3,6 @@ import { InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
 import { format } from "date-fns";
 import { Calendar, MoreHorizontal, Users2 } from "lucide-react";
 import { useState } from "react";
-import { TaskDetailDialog } from "./TaskDetailDialog";
 import {
   DropdownMenuTrigger,
   DropdownMenu,
@@ -14,6 +13,7 @@ import { TaskEditDialog } from "./TaskEditDialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { EventClubDTO } from "@/api/representative/EventAgent";
+import { useNavigate } from "react-router-dom";
 
 interface TaskItemProps {
   task: InterTask;
@@ -28,18 +28,17 @@ export const TaskItem = ({
   selectedEvent,
   currentClub,
 }: TaskItemProps) => {
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const navigate = useNavigate();
   const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100)
-      return "bg-green-100 text-green-800";
+    if (status === "ENDED") return "bg-green-100 text-green-800";
     if (percentage > 0 || status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     return "bg-blue-100 text-blue-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100) return "Completed";
+    if (status === "ENDED") return "Completed";
     if (percentage > 0 || status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     return "Overdue";
@@ -65,6 +64,15 @@ export const TaskItem = ({
       console.error(error);
     }
   };
+  // const isAssigned = task.eventTaskDetails.map(
+  //   (detail) => (
+  //     detail.assignedMembers && detail.assignedMembers.length > 0,
+  //     detail.assignedMembers &&
+  //       detail.assignedMembers.length > 0 &&
+  //       console.log("num of assigned", detail.assignedMembers.length)
+  //   )
+  // );
+
   return (
     <>
       <div className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
@@ -105,15 +113,25 @@ export const TaskItem = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setIsDetailOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() =>
+                    navigate(
+                      `/club/inter-club-event/task/${task.eventTaskId}`,
+                      {
+                        state: {
+                          currentClub: currentClub,
+                          selectedEvent: selectedEvent,
+                        },
+                      }
+                    )
+                  }
+                >
                   View
                 </DropdownMenuItem>
+
                 <DropdownMenuItem
                   onClick={() => setIsEditOpen(true)}
-                  disabled={
-                    task.completionPercentage === 100 ||
-                    (currentClub.clubId !== task.clubId && !isHost)
-                  }
+                  disabled={task.completionPercentage === 100 || !isHost}
                 >
                   Edit
                 </DropdownMenuItem>
@@ -123,11 +141,6 @@ export const TaskItem = ({
         </div>
       </div>
 
-      <TaskDetailDialog
-        task={task}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-      />
       <TaskEditDialog
         onUpdate={handleUpdateTask}
         task={task}

@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, X, Loader2 } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateInterTaskRequest } from "@/models/InterTask";
-import { InterTaskSchema, subtaskSchema } from "@/schema/InterTaskSchema";
+import { InterTaskSchema } from "@/schema/InterTaskSchema";
 import useAuth from "@/hooks/useAuth";
 import {
   Popover,
@@ -41,7 +41,6 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { InterClubEventDTO } from "@/models/Event";
-import { SubtaskDialog } from "./SubtaskDialog";
 import toast from "react-hot-toast";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 interface TaskCreateDialogProps {
@@ -55,6 +54,19 @@ function fixTime(date: Date) {
   adjustedDate.setHours(adjustedDate.getHours() + 7);
   return adjustedDate;
 }
+const combineDateTime = (dateObj: Date, timeStr: string) => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+
+  // Tạo date mới và set giờ phút
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth();
+  const date = dateObj.getDate();
+
+  // Tạo date với timezone local
+  const newDate = new Date(year, month, date, hours, minutes, 0);
+
+  return newDate;
+};
 
 export const TaskCreateDialog = ({
   onCreateTask,
@@ -63,7 +75,6 @@ export const TaskCreateDialog = ({
 }: TaskCreateDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openClubSelect, setOpenClubSelect] = useState(false);
-  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
 
@@ -74,7 +85,9 @@ export const TaskCreateDialog = ({
       taskName: "",
       description: "",
       startTime: new Date(),
+      startTimeTime: "00:00",
       deadline: new Date(),
+      deadlineTime: "00:00",
       listEventTaskDetails: [],
       clubId: "",
     },
@@ -88,14 +101,21 @@ export const TaskCreateDialog = ({
     try {
       setIsSubmitting(true);
       console.log("test", values.deadline, event?.data?.endDate);
-
+      const startTime = combineDateTime(
+        values.startTime,
+        values.startTimeTime || "00:00"
+      );
+      const deadline = combineDateTime(
+        values.deadline,
+        values.deadlineTime || "00:00"
+      );
       const taskData: CreateInterTaskRequest = {
         ...values,
         eventId,
         createdBy: user?.userId || "",
         clubId: values.clubId || "",
-        startTime: fixTime(values.startTime || new Date()),
-        deadline: fixTime(values.deadline || new Date()),
+        startTime: fixTime(startTime),
+        deadline: fixTime(deadline),
         listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
           ...detail,
           startTime: fixTime(detail.startTime || new Date()),
@@ -121,21 +141,21 @@ export const TaskCreateDialog = ({
     }
   };
 
-  const handleAddSubtask = async (subtask: z.infer<typeof subtaskSchema>) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue("listEventTaskDetails", [...currentSubtasks, subtask], {
-      shouldValidate: true,
-    });
-    await form.trigger("listEventTaskDetails");
-  };
+  // const handleAddSubtask = async (subtask: z.infer<typeof subtaskSchema>) => {
+  //   const currentSubtasks = form.getValues("listEventTaskDetails");
+  //   form.setValue("listEventTaskDetails", [...currentSubtasks, subtask], {
+  //     shouldValidate: true,
+  //   });
+  //   await form.trigger("listEventTaskDetails");
+  // };
 
-  const handleRemoveSubtask = (index: number) => {
-    const currentSubtasks = form.getValues("listEventTaskDetails");
-    form.setValue(
-      "listEventTaskDetails",
-      currentSubtasks.filter((_, i) => i !== index)
-    );
-  };
+  // const handleRemoveSubtask = (index: number) => {
+  //   const currentSubtasks = form.getValues("listEventTaskDetails");
+  //   form.setValue(
+  //     "listEventTaskDetails",
+  //     currentSubtasks.filter((_, i) => i !== index)
+  //   );
+  // };
 
   if (!selectedEvent) return null;
 
@@ -255,13 +275,13 @@ export const TaskCreateDialog = ({
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2  md:grid-cols-4 gap-2">
                   <FormField
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Start Time</FormLabel>
+                        <FormLabel>Start Date</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -294,6 +314,19 @@ export const TaskCreateDialog = ({
                             />
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="startTimeTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -341,9 +374,22 @@ export const TaskCreateDialog = ({
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="deadlineTime"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Time</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="time" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium text-[#136CB9]">Subtasks</h4>
                     <Button
@@ -385,7 +431,7 @@ export const TaskCreateDialog = ({
                         </div>
                       ))}
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="flex justify-end gap-4">
@@ -416,14 +462,14 @@ export const TaskCreateDialog = ({
           </Form>
         </DialogContent>
       </Dialog>
-
+      {/* 
       <SubtaskDialog
         isOpen={isSubtaskDialogOpen}
         onClose={() => setIsSubtaskDialogOpen(false)}
         onSubmit={handleAddSubtask}
         mainTaskStartTime={form.getValues("startTime")}
         mainTaskDeadline={form.getValues("deadline")}
-      />
+      /> */}
     </>
   );
 };

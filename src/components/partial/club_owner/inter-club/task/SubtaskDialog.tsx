@@ -44,8 +44,11 @@ const subtaskSchema = z
     detailName: z.string().min(1, "Subtask name is required"),
     description: z.string().min(1, "Description is required"),
     startTime: z.date(),
+    startTimeTime: z.string().min(1, "Start time is required"),
     deadline: z.date(),
+    deadlineTime: z.string().min(1, "Deadline time is required"),
     status: z.string(),
+    priority: z.string().min(1, "Priority is required"),
   })
   .superRefine((data, ctx) => {
     if (data.startTime && data.deadline) {
@@ -68,10 +71,25 @@ interface SubtaskDialogProps {
     startTime: Date;
     deadline: Date;
     status?: string;
+    priority?: string;
   };
   mainTaskStartTime: Date;
   mainTaskDeadline: Date;
 }
+
+const combineDateTime = (dateObj: Date, timeStr: string) => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+
+  // Tạo date mới và set giờ phút
+  const year = dateObj.getFullYear();
+  const month = dateObj.getMonth();
+  const date = dateObj.getDate();
+
+  // Tạo date với timezone local
+  const newDate = new Date(year, month, date, hours, minutes, 0);
+
+  return newDate;
+};
 
 export const SubtaskDialog = ({
   isOpen,
@@ -96,8 +114,11 @@ export const SubtaskDialog = ({
           detailName: "",
           description: "",
           startTime: new Date(),
+          startTimeTime: "00:00",
           deadline: new Date(),
+          deadlineTime: "00:00",
           status: "ON_GOING",
+          priority: "MEDIUM",
         },
   });
 
@@ -111,15 +132,16 @@ export const SubtaskDialog = ({
       );
       return;
     }
-
-    onSubmit(values);
+    const startTime = combineDateTime(values.startTime, values.startTimeTime);
+    const deadline = combineDateTime(values.deadline, values.deadlineTime);
+    onSubmit({ ...values, startTime, deadline });
     form.reset();
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-[#136CB9]">
             {initialValues ? "Edit Subtask" : "Add Subtask"}
@@ -207,7 +229,19 @@ export const SubtaskDialog = ({
                   </FormItem>
                 )}
               />
-
+              <FormField
+                control={form.control}
+                name="startTimeTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Start Time</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="time" className="w-[120px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="deadline"
@@ -243,6 +277,44 @@ export const SubtaskDialog = ({
                         />
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="deadlineTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Deadline Time</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="time" className="w-[120px]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Priority</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

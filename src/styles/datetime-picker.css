@@ -1,0 +1,119 @@
+.MuiDateTimePickerToolbar-root {
+  color: #136cb9;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiPickersLayout-root {
+  background-color: white;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiPickersLayout-contentWrapper {
+  background-color: white;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiDateTimePickerToolbar-timeDigitsContainer {
+  color: #136cb9;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiClock-clock {
+  background-color: white !important;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiClockPicker-root {
+  background-color: white;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiPickersDay-root {
+  color: #136cb9;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiPickersDay-today {
+  border-color: #136cb9 !important;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiPickersDay-root.Mui-selected {
+  background-color: #136cb9 !important;
+  color: white !important;
+}
+
+.MuiClockPointer-root {
+  background-color: #136cb9 !important;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiClockPointer-thumb {
+  background-color: #136cb9 !important;
+  border-color: #136cb9 !important;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiClock-pin {
+  background-color: #136cb9 !important;
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiButtonBase-root.MuiPickersDay-root:not(.Mui-selected):hover {
+  background-color: rgba(19, 108, 185, 0.1);
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+.MuiDateTimePicker-root {
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiDialog-root,
+.MuiPopover-root {
+  z-index: 10000 !important; /* Đảm bảo Dialog và Popover không che khuất Picker */
+}
+
+.MuiPickerTime-root {
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+.MuiPickersDay-root {
+  pointer-events: auto !important; /* Đảm bảo ngày có thể được click */
+}
+.MuiPickerTime-root {
+  z-index: 9999 !important; /* Đảm bảo rằng Picker có z-index cao */
+}
+
+.MuiDateTimePicker-root,
+.MuiClockPicker-root,
+.MuiPickerTime-root {
+  z-index: 99999 !important; /* Tăng z-index cao hơn nữa */
+}
+
+.MuiClock-clock,
+.MuiPickersLayout-root {
+  z-index: 99999 !important; /* Tăng z-index cho các phần tử con */
+}
+
+.MuiDateTimePickerToolbar-root,
+.MuiDateTimePickerToolbar-timeDigitsContainer {
+  z-index: 99999 !important;
+}
+
+.MuiClockPointer-root,
+.MuiClockPointer-thumb,
+.MuiClock-pin {
+  z-index: 99999 !important; /* Đảm bảo các phần tử giờ không bị che khuất */
+}
+
+.MuiClockPicker-root {
+  pointer-events: auto !important; /* Đảm bảo các sự kiện click được nhận */
+}
+
+.MuiMultiSectionDigitalClock-root {
+  z-index: 99999 !important; /* Đảm bảo Divider có z-index cao */
+}
+.MuiList-root {
+  z-index: 99999 !important; /* Đảm bảo Divider có z-index cao */
+}
+.MuiMenuItem-root {
+  z-index: 99999 !important; /* Đảm bảo Divider có z-index cao */
+}

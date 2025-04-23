@@ -8,8 +8,11 @@ interface InterClubChatProps {
 
 export const InterClubChat = ({ selectedEvent }: InterClubChatProps) => {
   if (!selectedEvent) return null;
+  const eventEnd = selectedEvent.clubs
+    .map((club) => club.isEnd)
+    .includes(false) as boolean;
 
-  return (
+  return eventEnd !== false ? (
     <div className="flex flex-col h-[calc(100vh-300px)]">
       <ChatHeader
         selectedClub={{
@@ -19,6 +22,12 @@ export const InterClubChat = ({ selectedEvent }: InterClubChatProps) => {
         }}
       />
       <ChatMessages eventId={selectedEvent.eventId} />
+    </div>
+  ) : (
+    <div className="flex flex-col h-[calc(100vh-300px)] items-center justify-center">
+      <h1 className="text-2xl font-bold text-[#136CB9]">
+        Chat data is not existed any more because the event is ended!
+      </h1>
     </div>
   );
 };

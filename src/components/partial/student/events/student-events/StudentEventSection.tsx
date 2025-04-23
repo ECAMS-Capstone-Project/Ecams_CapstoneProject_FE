@@ -226,12 +226,12 @@ export const StudentEventSection = () => {
                             <div className="pt-2">
                               <span
                                 className={`px-3 py-1 text-xs rounded-full ${
-                                  new Date(event.endDate) > new Date()
+                                  event.status === "ACTIVE"
                                     ? "bg-green-100 text-green-700"
                                     : "bg-gray-100 text-gray-700"
                                 }`}
                               >
-                                {new Date(event.endDate) > new Date()
+                                {event.status === "ACTIVE"
                                   ? "Upcoming"
                                   : "Completed"}
                               </span>

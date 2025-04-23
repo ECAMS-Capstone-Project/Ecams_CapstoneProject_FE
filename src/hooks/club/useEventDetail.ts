@@ -1,23 +1,36 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { approveInterEvent, createInterClubEvent, GetEventParticipants, GetInterClubEventDetail, GetInterEvent, GetInterEventRequest, rejectInterEvent } from "@/api/club-owner/ClubEvent";
+import {
+  approveInterEvent,
+  createInterClubEvent,
+  endInterEvent,
+  GetEventParticipants,
+  GetInterClubEventDetail,
+  GetInterEvent,
+  GetInterEventRequest,
+  rejectInterEvent,
+} from "@/api/club-owner/ClubEvent";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export const useEventDetail = (eventId?: string,pageNumber?: number, pageSize?: number) => {
+export const useEventDetail = (
+  eventId?: string,
+  pageNumber?: number,
+  pageSize?: number
+) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
-
     queryKey: ["participants", eventId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
-    queryFn: () => GetEventParticipants(eventId || "", pageNumber || 1, pageSize || 5),
+    queryFn: () =>
+      GetEventParticipants(eventId || "", pageNumber || 1, pageSize || 5),
     refetchOnMount: true, // Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // Không tự động refetch khi chuyển tab
     enabled: !!eventId, // Chỉ chạy query khi uniId có giá trị
   });
-  const {mutateAsync:createInterClubEventMutation, isPending} = useMutation({
+  const { mutateAsync: createInterClubEventMutation, isPending } = useMutation({
     mutationFn: createInterClubEvent,
     onSuccess: () => {
       toast.success("Event created successfully!");
@@ -29,16 +42,24 @@ export const useEventDetail = (eventId?: string,pageNumber?: number, pageSize?: 
     },
   });
 
-  const GetInterClubEvent = (clubId: string, pageNumber: number, pageSize: number) => {
+  const GetInterClubEvent = (
+    clubId: string,
+    pageNumber: number,
+    pageSize: number
+  ) => {
     return useQuery({
-      queryKey: ["interEvents",clubId,  pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
+      queryKey: ["interEvents", clubId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
       queryFn: () => GetInterEvent(clubId, pageNumber, pageSize), // Gọi API lấy thông tin Event Club
       enabled: !!clubId, // Chỉ thực hiện khi có uniId
     });
   };
-  const GetInterClubEventRequest = (clubId: string, pageNumber: number, pageSize: number) => {
+  const GetInterClubEventRequest = (
+    clubId: string,
+    pageNumber: number,
+    pageSize: number
+  ) => {
     return useQuery({
-      queryKey: ["interEventRequest",clubId,  pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
+      queryKey: ["interEventRequest", clubId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
       queryFn: () => GetInterEventRequest(clubId, pageNumber, pageSize), // Gọi API lấy thông tin Event Club
       enabled: !!clubId, // Chỉ thực hiện khi có uniId
     });
@@ -49,26 +70,38 @@ export const useEventDetail = (eventId?: string,pageNumber?: number, pageSize?: 
       queryKey: ["interEventDetail", eventId], // Query key động dựa trên eventId
       queryFn: () => GetInterClubEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
       enabled: !!eventId, // Chỉ thực hiện khi có eventId
-   
     });
   };
 
-  const { mutateAsync: approveInterEventMutation, isPending: isApproving } = useMutation({
-    mutationFn:approveInterEvent,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["interEventDetail"] });
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Error approving event");
-    },
-  });
-  
-  
-    const {mutateAsync: rejectInterEventMutation, isPending: isRejecting} = useMutation({
+  const { mutateAsync: approveInterEventMutation, isPending: isApproving } =
+    useMutation({
+      mutationFn: approveInterEvent,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["interEventDetail"] });
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data?.message || "Error approving event");
+      },
+    });
+
+  const { mutateAsync: rejectInterEventMutation, isPending: isRejecting } =
+    useMutation({
       mutationFn: rejectInterEvent,
       onSuccess: () => {
         // refetch();
-        queryClient.invalidateQueries( {queryKey:["interEventDetail"]}); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["interEventDetail"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        toast.error(error.response.data.message || "Error approving event");
+      },
+    });
+  const { mutateAsync: endInterEventMutation, isPending: isEnding } =
+    useMutation({
+      mutationFn: ({ eventId, clubId }: { eventId: string; clubId: string }) =>
+        endInterEvent(eventId, clubId),
+      onSuccess: () => {
+        // refetch();
+        queryClient.invalidateQueries({ queryKey: ["interEventDetail"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         toast.error(error.response.data.message || "Error approving event");
@@ -79,15 +112,17 @@ export const useEventDetail = (eventId?: string,pageNumber?: number, pageSize?: 
     participants: data?.data?.data || [],
     totalPages: data?.data?.totalPages || 1,
     isLoading,
-   refetchEvents: refetch,
-   createInterClubEvent: createInterClubEventMutation,
-   isPending,
-   GetInterClubEvent,
-   getInterEventDetailQuery,
-   GetInterClubEventRequest,
-   approveInterEvent: approveInterEventMutation,
-   isApproving,
-   rejectInterEvent: rejectInterEventMutation,
-   isRejecting
+    refetchEvents: refetch,
+    createInterClubEvent: createInterClubEventMutation,
+    isPending,
+    GetInterClubEvent,
+    getInterEventDetailQuery,
+    GetInterClubEventRequest,
+    approveInterEvent: approveInterEventMutation,
+    isApproving,
+    rejectInterEvent: rejectInterEventMutation,
+    isRejecting,
+    endInterEvent: endInterEventMutation,
+    isEnding,
   };
 };

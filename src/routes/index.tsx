@@ -71,6 +71,7 @@ import RepresentativeInformationPage from "@/pages/representative/request-to-cha
 import UniversityRepresentativeHistory from "@/pages/representative/history-representative/UniversityRepresentativeHistory";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
+import { TaskDetailPage } from "@/pages/club-owner/inter-club-event/task/TaskDetailPage";
 import { EventDetailTask } from "@/components/partial/club_owner/manage_club/event-task/EventDetailTask";
 import StudentEventDetail from "@/components/partial/student/events/EventDetail/EventDetail";
 import TaskDetailCard from "@/components/partial/club_owner/manage_club/event-task/TaskDetailCard";
@@ -80,6 +81,7 @@ import StudentTaskSubmissionPage from "@/components/partial/club_owner/manage_cl
 import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-task/TaskListInEvent";
 import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
 import CreateEventTaskClub from "@/components/partial/representative/representative-task/CreateEventTaskClub";
+import { SubtaskDetailPage } from "@/pages/club-owner/inter-club-event/task/SubtaskDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -88,9 +90,10 @@ const PrivateRoute = ({ element, ...rest }: any) => {
 
   useEffect(() => {
     const handleLogout = async () => {
-
       if (
-        (user?.email !== "ecams@admin.com" && (user?.roles.includes("REPRESENTATIVE") || user?.roles.includes("ADMIN"))) &&
+        user?.email !== "ecams@admin.com" &&
+        (user?.roles.includes("REPRESENTATIVE") ||
+          user?.roles.includes("ADMIN")) &&
         userStatus !== "ACTIVE"
       ) {
         await logout();
@@ -98,7 +101,6 @@ const PrivateRoute = ({ element, ...rest }: any) => {
       } else {
         return;
       }
-
     };
     handleLogout();
   }, [userStatus, logout, user?.roles, user?.email]);
@@ -318,7 +320,7 @@ export const router = createBrowserRouter([
   {
     path: "/view-package-update",
     element: <PackageListUpdatePage />,
-    errorElement: <ErrorException />
+    errorElement: <ErrorException />,
   },
   {
     path: "/payment-confirm",
@@ -328,7 +330,7 @@ export const router = createBrowserRouter([
   {
     path: "/payment-update-confirm",
     element: <PaymentUpdateConfirmation />,
-    errorElement: <ErrorException />
+    errorElement: <ErrorException />,
   },
   {
     path: "/events/payment-confirm",
@@ -494,16 +496,26 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
+        path: "/club/inter-club-event/task/:eventTaskId",
+        element: <TaskDetailPage />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/club/inter-club-event/subtask/:eventTaskDetailId",
+        element: <SubtaskDetailPage />,
+        errorElement: <ErrorException />,
+      },
+      {
         path: "/club/event-task/:eventId",
-        element: <EventDetailTask />
+        element: <EventDetailTask />,
       },
       {
         path: "/club/task-detail/:taskId",
-        element: <TaskDetailCard />
+        element: <TaskDetailCard />,
       },
       {
         path: "/club/task-submission",
-        element: <ViewTaskSubmissionPage />
+        element: <ViewTaskSubmissionPage />,
       },
       {
         path: "/club/task-submission-student",

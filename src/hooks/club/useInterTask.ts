@@ -1,8 +1,13 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   CreateInterTask,
+  GetAvailableMember,
   GetInterTask,
+  GetInterTaskDetail,
+  GetInterTaskSubmission,
+  ReviewInterTaskSubmission,
   UpdateInterTask,
   UpdateInterTask2,
 } from "@/api/club-owner/InterEventTask";
@@ -42,6 +47,7 @@ export const useInterTask = (
       onSuccess: () => {
         toast.success("Inter Event Task updated successfully!");
         queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         console.error("Error:", error.response.data.errors);
@@ -55,6 +61,7 @@ export const useInterTask = (
       onSuccess: () => {
         toast.success("Inter Event Task updated successfully!");
         queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         console.error("Error:", error.response.data.errors);
@@ -77,24 +84,71 @@ export const useInterTask = (
   //   });
   // };
 
-  // const getInterEventDetailQuery = (eventId: string) => {
-  //   return useQuery({
-  //     queryKey: ["interEventDetail", eventId], // Query key động dựa trên eventId
-  //     queryFn: () => GetInterClubEventDetail(eventId), // Gọi API lấy chi tiết sự kiện
-  //     enabled: !!eventId, // Chỉ thực hiện khi có eventId
+  const getInterTaskDetailQuery = (eventTaskId: string) => {
+    return useQuery({
+      queryKey: ["interTaskDetail", eventTaskId], // Query key động dựa trên eventId
+      queryFn: () => GetInterTaskDetail(eventTaskId), // Gọi API lấy chi tiết sự kiện
+      enabled: !!eventTaskId, // Chỉ thực hiện khi có eventId
+    });
+  };
+  const getAvailableMemberQuery = (
+    clubId: string,
+    startTime: string,
+    deadline: string,
+    priority: string,
+    taskId?: string
+  ) => {
+    return useQuery({
+      queryKey: ["availableMember", clubId, startTime, deadline, priority], // Query key động dựa trên eventId
+      queryFn: () =>
+        GetAvailableMember(clubId, startTime, deadline, priority, taskId), // Gọi API lấy chi tiết sự kiện
+      enabled: !!clubId && !!startTime && !!deadline && !!priority, // Chỉ thực hiện khi có eventId
+    });
+  };
 
-  //   });
-  // };
+  const getInterTaskSubmissionQuery = (
+    eventTaskDetailId: string,
+    memberName?: string,
+    status?: string,
+    pageSize?: number,
+    pageNo?: number
+  ) => {
+    return useQuery({
+      queryKey: [
+        "interTaskSubmission",
+        eventTaskDetailId,
+        memberName,
+        status,
+        pageSize,
+        pageNo,
+      ], // Query key động dựa trên eventId
+      queryFn: () =>
+        GetInterTaskSubmission(
+          eventTaskDetailId,
+          memberName,
+          status,
+          pageSize,
+          pageNo
+        ), // Gọi API lấy chi tiết sự kiện
+      enabled: !!eventTaskDetailId,
+    });
+  };
 
-  // const { mutateAsync: approveInterEventMutation, isPending: isApproving } = useMutation({
-  //   mutationFn:approveInterEvent,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["interEventDetail"] });
-  //   },
-  //   onError: (error: any) => {
-  //     toast.error(error.response?.data?.message || "Error approving event");
-  //   },
-  // });
+  const {
+    mutateAsync: reviewInterTaskSubmissionMutation,
+    isPending: isReviewing,
+  } = useMutation({
+    mutationFn: ReviewInterTaskSubmission,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["interTaskSubmission"] });
+      toast.success("Submission reviewed successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Error reviewing submission"
+      );
+    },
+  });
 
   //   const {mutateAsync: rejectInterEventMutation, isPending: isRejecting} = useMutation({
   //     mutationFn: rejectInterEvent,
@@ -117,6 +171,11 @@ export const useInterTask = (
     updateInterEventTask: updateInterEventTaskMutation,
     updateInterEventTask2: updateInterEventTaskMutation2,
     isUpdating,
+    getInterTaskDetailQuery,
+    getAvailableMemberQuery,
+    getInterTaskSubmissionQuery,
+    reviewInterTaskSubmission: reviewInterTaskSubmissionMutation,
+    isReviewing,
     isUpdating2,
   };
 };

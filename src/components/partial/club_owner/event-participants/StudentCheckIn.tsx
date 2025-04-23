@@ -25,12 +25,17 @@ export const StudentEventCheckIn = () => {
   // const location = useLocation();
   // const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const { checkInStudent, isCheckingIn, getCheckInInfoQuery } =
-    useEventSchedule(user?.userId || "");
+  const {
+    checkInStudent,
+    isCheckingIn,
+    getCheckInInfoQuery,
+    getUserCanCheckIn,
+  } = useEventSchedule(user?.userId || "");
   const [userId, setUserId] = useState("");
   const [eventId, setEventId] = useState("");
+  const [canCheckIn, setCanCheckIn] = useState<boolean | null>(null);
+
   const navigate = useNavigate();
-  console.log("isAuthenticated", isAuthenticated);
   useEffect(() => {
     // Lấy URL hiện tại của trang
     const urlParams = new URLSearchParams(window.location.search);
@@ -45,18 +50,35 @@ export const StudentEventCheckIn = () => {
       if (!isAuthenticated) {
         const currentPath = `/club/event-check-in?userId=${user}&eventId=${event}`;
         localStorage.setItem("redirectAfterLogin", currentPath);
-        console.log("currentPath", currentPath);
         navigate("/login");
         return;
       }
     }
   }, [isAuthenticated, navigate]);
-  console.log("from url", userId, eventId);
+  useEffect(() => {
+    const fetchCanCheckIn = async () => {
+      try {
+        const response = await getUserCanCheckIn({
+          eventId: eventId || "",
+          userId: user?.userId || "",
+        });
+        // Lấy dữ liệu từ response
+        setCanCheckIn(response.data || false);
+      } catch (err) {
+        console.error("Error in checking user:", err);
+      }
+    };
+
+    if (eventId && user?.userId) {
+      fetchCanCheckIn();
+    }
+  }, [eventId, user, getUserCanCheckIn]);
 
   // TODO: Lấy ticketId từ QR code và gọi API để lấy thông tin
   const { data: checkInInfo } = getCheckInInfoQuery(userId, eventId);
+
   const token = localStorage.getItem("accessToken");
-  console.log("token", token);
+
   const handleCheckIn = async () => {
     try {
       checkInStudent(
@@ -85,7 +107,7 @@ export const StudentEventCheckIn = () => {
       );
     }
   };
-  console.log("checkInInfo", checkInInfo);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-3 sm:p-4 md:p-6 rounded-lg">
       {/* Header */}
@@ -102,7 +124,25 @@ export const StudentEventCheckIn = () => {
       </div>
 
       {checkInInfo?.data?.startDate &&
-      new Date() >= new Date(checkInInfo.data.startDate) ? (
+      checkInInfo?.data?.endDate &&
+      new Date() < new Date(checkInInfo.data.startDate) ? (
+        <div className="flex justify-center items-center  h-full mt-20">
+          <AnimatedGradientText>
+            <span className="text-center inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold">
+              You can only check in for this event after it starts and before it
+              ends!
+            </span>
+          </AnimatedGradientText>
+        </div>
+      ) : !canCheckIn ? (
+        <div className="flex justify-center items-center h-full mt-20">
+          <AnimatedGradientText>
+            <span className="inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold">
+              You don't have permission to check in for this event!
+            </span>
+          </AnimatedGradientText>
+        </div>
+      ) : (
         <Card className="w-full md:max-w-2xl max-w-lg mx-auto border-t-4 border-t-[#136CB9] shadow-lg">
           <div className="p-4 sm:p-6">
             {/* Ticket Status */}
@@ -285,18 +325,6 @@ export const StudentEventCheckIn = () => {
             </Button>
           </div>
         </Card>
-      ) : (
-        <div className="flex justify-center items-center h-full mt-10">
-          <AnimatedGradientText>
-            <span
-              className={
-                "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-              }
-            >
-              You can only check in for this event after it starts!
-            </span>
-          </AnimatedGradientText>
-        </div>
       )}
     </div>
   );

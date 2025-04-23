@@ -6,121 +6,125 @@ import { EventTaskDetail } from "@/models/InterTask";
 import axiosMultipartForm from "../axiosMultipartForm";
 
 export interface TaskDetailDTO {
-    taskId: string;
-    taskName: string;
-    description: string;
-    startTime: string; // ISO date string
-    deadline: string;  // ISO date string
-    taskScore: number;
-    creator: MemberInTaskDTO;
-    status: boolean;
-    assignedMember: MemberInTaskDTO[];
-    submissions: Submission[]
+  taskId: string;
+  taskName: string;
+  description: string;
+  startTime: string; // ISO date string
+  deadline: string; // ISO date string
+  taskScore: number;
+  creator: MemberInTaskDTO;
+  status: boolean;
+  assignedMember: MemberInTaskDTO[];
+  submissions: Submission[];
 }
 
 export interface MemberInTaskDTO {
-    userId: string;
-    studentId: string;
-    clubMemberId: string;
-    clubRoleName: string;
-    joinedAt: string;      // ISO date string
-    requestedDate: string; // ISO date string
-    clubActivityPoint: number;
-    leftDate: string | null;
-    avatar: string;
-    fullname: string;
-    email: string;
+  userId: string;
+  studentId: string;
+  clubMemberId: string;
+  clubRoleName: string;
+  joinedAt: string; // ISO date string
+  requestedDate: string; // ISO date string
+  clubActivityPoint: number;
+  leftDate: string | null;
+  avatar: string;
+  fullname: string;
+  email: string;
 }
 
-export type UserTaskStatusEnum = "ON_GOING" | "COMPLETED" | "REVIEWING" | "OVERDUE";
+export type UserTaskStatusEnum =
+  | "ON_GOING"
+  | "COMPLETED"
+  | "REVIEWING"
+  | "OVERDUE";
 
 export interface StudentSubmission {
-    userId: string;
-    studentId: string | null;
-    clubMemberId: string;
-    clubRoleName: string;
-    joinedAt: string;
-    requestedDate: string;
-    reason: string;
-    leaveReason: string | null;
-    clubActivityPoint: number;
-    leftDate: string | null;
-    avatar: string;
-    fullname: string;
-    email: string;
-    status: UserTaskStatusEnum;
+  userId: string;
+  studentId: string | null;
+  clubMemberId: string;
+  clubRoleName: string;
+  joinedAt: string;
+  requestedDate: string;
+  reason: string;
+  leaveReason: string | null;
+  clubActivityPoint: number;
+  leftDate: string | null;
+  avatar: string;
+  fullname: string;
+  email: string;
+  status: UserTaskStatusEnum;
 }
 
 export interface ReviewSubmissionRequest {
-    taskId: string;
-    clubMemberId: string;
-    comment: string;
-    submissionScore: number;
-    reviewedBy: string;
+  taskId: string;
+  clubMemberId: string;
+  comment: string;
+  submissionScore: number;
+  reviewedBy: string;
 }
 
 export interface StudentSubmissionRequest {
-    taskId: string;
-    clubMemberId: string;
-    studentSubmission: string;
+  taskId: string;
+  clubMemberId: string;
+  studentSubmission: string;
 }
 
 export interface CreateTaskRequest {
-    clubId: string;
-    createdBy: string;
-    taskName: string;
-    description: string;
-    startTime: string; // ISO date string
-    deadline: string;  // ISO date string
-    taskScore: number;
-    assignedMembers: AssignedMember[];
+  clubId: string;
+  createdBy: string;
+  taskName: string;
+  description: string;
+  startTime: string; // ISO date string
+  deadline: string; // ISO date string
+  taskScore: number;
+  assignedMembers: AssignedMember[];
 }
 
 export interface UpdateTaskRequest {
-    taskId: string;
-    status: boolean;
-    clubId: string;
-    taskName: string;
-    description: string;
-    startTime: string; // ISO date string
-    deadline: string;  // ISO date string
-    taskScore: number;
-    assignedMembers: AssignedMember[];
+  taskId: string;
+  status: boolean;
+  clubId: string;
+  taskName: string;
+  description: string;
+  startTime: string; // ISO date string
+  deadline: string; // ISO date string
+  taskScore: number;
+  assignedMembers: AssignedMember[];
 }
 
 export interface AssignedMember {
-    clubMemberId: string;
+  clubMemberId: string;
 }
 
 export interface TaskDetailForStudent {
-    taskId: string;
-    taskName: string;
-    description: string;
-    startTime: string;        // ISO date string
-    deadline: string;         // ISO date string
-    taskStatus: boolean;
-    studentSubmission: string;
-    taskScore: number;
-    submissionScore: number;
-    submissionDate: string;   // ISO date string
-    comment: string | null;
-    creator: MemberInTaskDTO;
-    reviewer: MemberInTaskDTO | null;
-    submissionStatus: UserTaskStatusEnum;
+  taskId: string;
+  taskName: string;
+  description: string;
+  startTime: string; // ISO date string
+  deadline: string; // ISO date string
+  taskStatus: boolean;
+  studentSubmission: string;
+  taskScore: number;
+  submissionScore: number;
+  submissionDate: string; // ISO date string
+  comment: string | null;
+  creator: MemberInTaskDTO;
+  reviewer: MemberInTaskDTO | null;
+  submissionStatus: UserTaskStatusEnum;
 }
 
 export interface Submission {
-    taskId: string;
-    clubMemberId: string;
-    memberEmail: string;
-    memberName: string;
-    studentSubmission: string;
-    submissionDate: string;
-    submissionScore: number;
-    taskScore: number;
-    comment: string | null;
-    reviewer: string | null;
-    status: string;
+  taskId: string;
+  clubMemberId: string;
+  memberEmail: string;
+  memberName: string;
+  studentSubmission: string;
+  submissionDate: string;
+  submissionScore: number;
+  taskScore: number;
+  comment: string | null;
+  reviewer: string | null;
+  status: string;
 }
 
 export interface EventSubmissionTaskDetail {
@@ -158,15 +162,19 @@ export const GetTaskDetail = async (taskId: string): Promise<ResponseDTO<TaskDet
     }
 };
 
-export const GetMemberSubmission = async (taskId: string): Promise<ResponseDTO<ResponseData<StudentSubmission>>> => {
-    try {
-        const response = await get<ResponseDTO<ResponseData<StudentSubmission>>>(`/Tasks/${taskId}/submissions?PageNumber=1&PageSize=10`);
-        return response; // Trả về toàn bộ phản hồi
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        console.error("Error in UniversityList API call:", error.response || error);
-        throw error;
-    }
+export const GetMemberSubmission = async (
+  taskId: string
+): Promise<ResponseDTO<ResponseData<StudentSubmission>>> => {
+  try {
+    const response = await get<ResponseDTO<ResponseData<StudentSubmission>>>(
+      `/Tasks/${taskId}/submissions?PageNumber=1&PageSize=10`
+    );
+    return response; // Trả về toàn bộ phản hồi
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error("Error in UniversityList API call:", error.response || error);
+    throw error;
+  }
 };
 
 export const SendReviewSubmission = async (data: ReviewSubmissionRequest): Promise<ResponseDTO<string>> => {
@@ -176,16 +184,16 @@ export const SendReviewSubmission = async (data: ReviewSubmissionRequest): Promi
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
-            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 401) {
             toast.error(error.response.data.message);
-            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 404) {
             toast.error(error.response.data.message);
-            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
         } else if (error.response.status == 500) {
             toast.error(error.response.data.message);
-            console.error("API Error:", error.response.data);
+            throw new Error(error.response.data.message || "API Error");
         }
         if (error.response) {
             toast.error(error.response.data.message);
@@ -224,15 +232,20 @@ export const CreateTaskToStudent = async (data: CreateTaskRequest): Promise<Resp
     }
 };
 
-export const GetTaskDetailByMember = async (taskId: string, memberId: string): Promise<ResponseDTO<TaskDetailForStudent>> => {
-    try {
-        const response = await get<ResponseDTO<TaskDetailForStudent>>(`/Tasks/${taskId}/member/${memberId}`);
-        return response; // Trả về toàn bộ phản hồi
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        console.error("Error in UniversityList API call:", error.response || error);
-        throw error;
-    }
+export const GetTaskDetailByMember = async (
+  taskId: string,
+  memberId: string
+): Promise<ResponseDTO<TaskDetailForStudent>> => {
+  try {
+    const response = await get<ResponseDTO<TaskDetailForStudent>>(
+      `/Tasks/${taskId}/member/${memberId}`
+    );
+    return response; // Trả về toàn bộ phản hồi
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error("Error in UniversityList API call:", error.response || error);
+    throw error;
+  }
 };
 
 export const SendStudentSubmission = async (data: StudentSubmissionRequest): Promise<ResponseDTO<string>> => {

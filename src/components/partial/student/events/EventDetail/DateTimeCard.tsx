@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
-import { Calendar, CalendarCheck } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface DateTimeCardProps {
   event: Event;
@@ -19,12 +19,6 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
           <Calendar size={18} />
           {event?.startDate
             ? format(new Date(event.startDate), "iiii, PP")
-            : "Invalid date"}
-        </p>
-        <p className="text-gray-700 flex items-center gap-2">
-          <CalendarCheck size={18} />
-          {event?.endDate
-            ? format(new Date(event.endDate), "iiii, PP")
             : "Invalid date"}
         </p>
       </div>

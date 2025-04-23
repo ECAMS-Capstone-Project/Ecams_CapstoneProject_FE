@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Calendar, Building2 } from "lucide-react";
+import {
+  Search,
+  Calendar,
+  Building2,
+  Users,
+  Image as ImageIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import useAuth from "@/hooks/useAuth";
@@ -40,13 +46,7 @@ export const InterClubEventList = () => {
     pageNo
   );
   const events = interEvents?.data?.data || [];
-  // const { GetInterClubEventRequest } = useEventDetail();
-  // const { data: interEventRequest } = GetInterClubEventRequest(
-  //   clubId || "",
-  //   pageSize,
-  //   pageNo
-  // );
-
+  console.log("events", events);
   const getStatusColor = (status: InterClubEventDTO["status"]) => {
     switch (status) {
       case "WAITING":
@@ -77,6 +77,7 @@ export const InterClubEventList = () => {
 
     return matchesSearch && matchesStatus;
   });
+  console.log("status", selectedStatus);
 
   return (
     <div className="space-y-4">
@@ -112,53 +113,73 @@ export const InterClubEventList = () => {
           {filteredEvents.map((event) => (
             <div
               key={event.eventId}
-              className="bg-white rounded-xl border border-[#e5e7eb] p-4 hover:border-[#136cb9] transition-all duration-200 cursor-pointer"
+              className="bg-white rounded-xl border border-[#e5e7eb] p-5 hover:border-[#136cb9] hover:shadow-md transition-all duration-200 cursor-pointer"
               onClick={() => handleEventSelect(event.clubEventId)}
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#136cb9] mb-1">
-                    {event.eventName}
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* Phần ảnh sự kiện */}
+                <div className="w-full md:w-48 h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                  {event.imageUrl ? (
+                    <img
+                      src={event.imageUrl}
+                      alt={event.eventName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <ImageIcon className="h-10 w-10 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Phần thông tin sự kiện */}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-semibold text-[#136cb9]">
+                      {event.eventName}
+                    </h3>
+                    <span
+                      className={cn(
+                        "px-3 py-1 rounded-full text-sm font-medium",
+                        getStatusColor(
+                          event.status as InterClubEventDTO["status"]
+                        )
+                      )}
+                    >
+                      {event.status}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">
                     {event.description}
                   </p>
-                </div>
-                <span
-                  className={cn(
-                    "px-3 py-1 rounded-full text-sm font-medium",
-                    getStatusColor(event.status as InterClubEventDTO["status"])
-                  )}
-                >
-                  {event.status}
-                </span>
-              </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#136cb9]" />
-                  <span className="text-sm text-muted-foreground">
-                    {format(event.registeredEndDate, "MMM d")} -{" "}
-                    {format(event.registeredEndDate, "MMM d")}
-                  </span>
-                </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
+                      <Calendar className="h-4 w-4 text-[#136cb9]" />
+                      <span className="text-sm text-muted-foreground">
+                        {format(event.registeredEndDate, "MMM d")} -{" "}
+                        {format(event.registeredEndDate, "MMM d")}
+                      </span>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-[#136cb9]" />
-                  <span className="text-sm text-muted-foreground">
-                    {event.clubs.length} clubs
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {event.price === 0
-                      ? "Free"
-                      : `${event.price.toLocaleString()} VND`}
-                  </span>
+                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
+                      <Building2 className="h-4 w-4 text-[#136cb9]" />
+                      <span className="text-sm text-muted-foreground">
+                        {event.clubs.length} clubs
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
+                      <Users className="h-4 w-4 text-[#136cb9]" />
+                      <span className="text-sm text-muted-foreground">
+                        {event.price === 0
+                          ? "Free"
+                          : `${event.price.toLocaleString()} VND`}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Hiển thị câu lạc bộ tạo sự kiện */}
             </div>
           ))}
         </div>
