@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { InterTask } from "@/models/InterTask";
 import { format } from "date-fns";
@@ -9,25 +10,33 @@ import {
   Clock,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CompleteTaskDialog from "./CompleteTaskDialog";
+import { EventClubDTO } from "@/api/representative/EventAgent";
 
 interface TaskDetailCardProps {
   task: InterTask;
+  eventId: string;
+  currentClub: EventClubDTO;
 }
 
-export default function TaskDetailCard({ task }: TaskDetailCardProps) {
+export default function TaskDetailCard({
+  task,
+  eventId,
+  currentClub,
+}: TaskDetailCardProps) {
   const navigate = useNavigate();
-
+  const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
   const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100)
-      return "bg-green-100 text-green-800";
+    if (status === "COMPLETED") return "bg-green-100 text-green-800";
     if (percentage > 0 || status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     return "bg-blue-100 text-blue-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100) return "Completed";
+    if (status === "COMPLETED") return "Completed";
     if (percentage > 0 || status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     return "Overdue";
@@ -44,11 +53,24 @@ export default function TaskDetailCard({ task }: TaskDetailCardProps) {
             >
               <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
             </button>
-            <div>
-              <h1 className="text-2xl font-bold text-[#136cb9]">
-                {task.taskName}
-              </h1>
-              <p className="text-muted-foreground mt-2">{task.description}</p>
+            <div className="flex justify-between w-full">
+              <div>
+                <h1 className="text-2xl font-bold text-[#136cb9]">
+                  {task.taskName}
+                </h1>
+                <p className="text-muted-foreground mt-2">{task.description}</p>
+              </div>
+              {task.status !== "COMPLETED" &&
+                task.clubId === currentClub.clubId && (
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCompleteDialogOpen(true)}
+                    >
+                      Complete Task
+                    </Button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -102,6 +124,12 @@ export default function TaskDetailCard({ task }: TaskDetailCardProps) {
           </div>
         </div>
       </div>
+      <CompleteTaskDialog
+        open={isCompleteDialogOpen}
+        onClose={() => setIsCompleteDialogOpen(false)}
+        task={task}
+        eventId={eventId}
+      />
     </div>
   );
 }
