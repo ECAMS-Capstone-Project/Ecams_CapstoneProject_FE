@@ -40,7 +40,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
-import { AvailableMember } from "@/models/InterTask";
+import {
+  AvailableMember,
+  InterTask,
+  TaskDependencyResponseDTO,
+} from "@/models/InterTask";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +54,8 @@ import "@/styles/datetime-picker.css";
 import { MemberInfoDialog } from "../MemberInfoDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import { newSubtaskSchema } from "@/schema/InterTaskSchema";
+import { isArray } from "lodash";
 
 const subtaskSchema = z
   .object({
@@ -61,7 +67,9 @@ const subtaskSchema = z
     deadlineTime: z.string().min(1, "Deadline time is required"),
     status: z.string(),
     priority: z.string().min(1, "Priority is required"),
-    assignedMembers: z.array(z.object({ clubMemberId: z.string() })).optional(),
+    assignedMemberIds: z.array(z.string()).optional(),
+    taskDependencyIds: z.array(z.string()).optional(),
+    isDependencyExtended: z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.startTime && data.deadline) {
@@ -117,6 +125,7 @@ interface SubtaskDialogProps {
   };
   members: ClubMemberDTO[];
   currentClub: EventClubDTO;
+  task: InterTask;
 }
 
 export const NewSubtaskDialog = ({
@@ -126,6 +135,7 @@ export const NewSubtaskDialog = ({
   initialValues,
   currentClub,
   members,
+  task,
 }: SubtaskDialogProps) => {
   const [, setShowAIRecommendations] = useState(false);
   const [aiRecommendations, setAIRecommendations] = useState<any[]>([]);
@@ -142,8 +152,8 @@ export const NewSubtaskDialog = ({
     }
   }, [initialValues]);
 
-  const form = useForm<z.infer<typeof subtaskSchema>>({
-    resolver: zodResolver(subtaskSchema),
+  const form = useForm<z.infer<typeof newSubtaskSchema>>({
+    resolver: zodResolver(newSubtaskSchema),
     mode: "onChange",
     defaultValues: initialValues
       ? initialValues
@@ -154,38 +164,37 @@ export const NewSubtaskDialog = ({
           startTimeTime: "00:00",
           deadline: new Date(),
           deadlineTime: "00:00",
-          status: "ON_GOING",
+          status: "",
           priority: "MEDIUM",
-          assignedMembers: [],
+          assignedMemberIds: [],
+          taskDependencyIds: [],
         },
   });
 
-  const handleSubmit = (values: z.infer<typeof subtaskSchema>) => {
+  const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
     // Combine date and time
-    const finalStartTime = combineDateTime(
-      values.startTime,
-      values.startTimeTime
-    );
-    const finalDeadline = combineDateTime(values.deadline, values.deadlineTime);
+    const startTime = values.startTimeTime
+      ? combineDateTime(values.startTime, values.startTimeTime)
+      : values.startTime;
+    const deadline = values.deadlineTime
+      ? combineDateTime(values.deadline, values.deadlineTime)
+      : values.deadline;
 
     // Tạo subtask mới với assignedMembers đúng format và thời gian đã combine
     const newSubtask = {
       ...values,
-      startTime: fixTime2(finalStartTime),
-      deadline: fixTime2(finalDeadline),
-      assignedMembers:
-        values.assignedMembers?.map((member) => ({
-          clubMemberId: member.clubMemberId,
-        })) || [],
+      startTime: fixTime2(startTime),
+      deadline: fixTime2(deadline),
+      assignedMemberIds: values.assignedMemberIds || [],
+      taskDependencyIds: values.taskDependencyIds || [],
     };
 
-    console.log("payload:", newSubtask);
     onSubmit(newSubtask);
     form.reset();
 
     onClose();
   };
-  const { getAvailableMemberQuery } = useInterTask();
+  const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
 
   const { data: avaiMembers } = getAvailableMemberQuery(
     currentClub.clubId,
@@ -195,9 +204,35 @@ export const NewSubtaskDialog = ({
   );
   const availableMembers = (avaiMembers?.data ?? []) as AvailableMember[];
 
+  const { data: subtaskDependency } = getSubtaskDependencyQuery(
+    task.eventTaskId,
+    fixTime(
+      combineDateTime(
+        form.getValues("startTime"),
+        form.getValues("startTimeTime")
+      )
+    ).toISOString(),
+    fixTime(
+      combineDateTime(
+        form.getValues("deadline"),
+        form.getValues("deadlineTime")
+      )
+    ).toISOString(),
+    form.getValues("priority")
+  );
+
   const getMemberRecommendation = (memberId: string) => {
     return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
   };
+
+  const filteredSubtaskDependency =
+    subtaskDependency?.data && Array.isArray(subtaskDependency.data)
+      ? subtaskDependency.data.filter((subtask: any) => {
+          const searchStr = searchQuery.toLowerCase();
+          const name = subtask.detailName.toLowerCase();
+          return name.includes(searchStr);
+        })
+      : [];
 
   // Thêm hàm filter members
   const filteredMembers = (
@@ -439,7 +474,7 @@ export const NewSubtaskDialog = ({
 
                 <FormField
                   control={form.control}
-                  name="assignedMembers"
+                  name="taskDependencyIds"
                   render={() => (
                     <FormItem className="space-y-4">
                       <FormLabel>Task Dependencies</FormLabel>
@@ -455,77 +490,72 @@ export const NewSubtaskDialog = ({
                             />
                           </div>
                         </div>
-                        {/* <ScrollArea className="h-[150px] rounded-md border">
-                          <div className="p-4 space-y-2">
-                            {filteredMembers.map((member) => (
-                              <div
-                                key={member.clubMemberId}
-                                className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Checkbox
-                                    id={member.clubMemberId}
-                                    checked={field.value?.some(
-                                      (m) =>
-                                        m.clubMemberId === member.clubMemberId
-                                    )}
-                                    onCheckedChange={(checked) => {
-                                      const newValue = field.value || [];
-                                      if (checked) {
-                                        form.setValue("assignedMembers", [
-                                          ...newValue,
-                                          { clubMemberId: member.clubMemberId },
-                                        ]);
-                                      } else {
-                                        form.setValue(
-                                          "assignedMembers",
-                                          newValue.filter(
-                                            (m) =>
-                                              m.clubMemberId !==
-                                              member.clubMemberId
-                                          )
-                                        );
-                                      }
-                                    }}
-                                  />
-                                  <label
-                                    htmlFor={member.clubMemberId}
-                                    className="flex items-center gap-2 cursor-pointer text-sm"
-                                  >
-                                    <span className="font-medium">
-                                      {(member as AvailableMember).fullName ||
-                                        (member as ClubMemberDTO).fullname}
-                                    </span>
-                                    <div className="flex gap-1">
-                                      <Badge
-                                        variant="outline"
-                                        className="bg-green-50 text-green-700 border-green-200"
-                                      >
-                                        Available
-                                      </Badge>
-                                      {(member as any).isRecommended && (
-                                        <Badge
-                                          variant="outline"
-                                          className="bg-indigo-50 text-indigo-700 border-indigo-200"
+                        {isArray(subtaskDependency?.data) &&
+                          subtaskDependency?.data.length == 0 && (
+                            <div className="p-4 space-y-2">
+                              <p>No task dependencies found</p>
+                            </div>
+                          )}
+                        {isArray(subtaskDependency?.data) &&
+                          subtaskDependency?.data.length > 0 && (
+                            <ScrollArea className="h-[150px] rounded-md border">
+                              <div className="p-4 space-y-2">
+                                {filteredSubtaskDependency.map(
+                                  (dependency: TaskDependencyResponseDTO) => (
+                                    <div
+                                      key={dependency.eventTaskDetailId}
+                                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <Checkbox
+                                          id={dependency.eventTaskDetailId}
+                                          checked={form
+                                            .getValues("taskDependencyIds")
+                                            ?.some(
+                                              (m) =>
+                                                m ===
+                                                dependency.eventTaskDetailId
+                                            )}
+                                          onCheckedChange={(checked) => {
+                                            const newValue =
+                                              form.getValues(
+                                                "taskDependencyIds"
+                                              ) || [];
+                                            if (checked) {
+                                              form.setValue(
+                                                "taskDependencyIds",
+                                                [
+                                                  ...newValue,
+                                                  dependency.eventTaskDetailId,
+                                                ]
+                                              );
+                                            } else {
+                                              form.setValue(
+                                                "taskDependencyIds",
+                                                newValue.filter(
+                                                  (m) =>
+                                                    m !==
+                                                    dependency.eventTaskDetailId
+                                                )
+                                              );
+                                            }
+                                          }}
+                                        />
+                                        <label
+                                          htmlFor={dependency.eventTaskDetailId}
+                                          className="flex items-center gap-2 cursor-pointer text-sm"
                                         >
-                                          Recommended
-                                        </Badge>
-                                      )}
+                                          <span className="font-medium">
+                                            {dependency.detailName}
+                                          </span>
+                                        </label>
+                                      </div>
                                     </div>
-                                  </label>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 hover:bg-gray-100"
-                                  onClick={() => setSelectedMember(member)}
-                                >
-                                  <Eye className="h-4 w-4 text-gray-500" />
-                                </Button>
+                                  )
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        </ScrollArea> */}
+                            </ScrollArea>
+                          )}
                       </div>
                       <FormMessage />
                     </FormItem>
@@ -534,7 +564,7 @@ export const NewSubtaskDialog = ({
 
                 <FormField
                   control={form.control}
-                  name="assignedMembers"
+                  name="assignedMemberIds"
                   render={({ field }) => (
                     <FormItem className="space-y-4">
                       <FormLabel>Assigned Member</FormLabel>
@@ -574,7 +604,7 @@ export const NewSubtaskDialog = ({
                                 if (response.data) {
                                   setAIRecommendations(response.data);
                                   setShowAIRecommendations(true);
-                                  form.setValue("assignedMembers", []);
+                                  form.setValue("assignedMemberIds", []);
                                 } else {
                                   toast.error(response.message);
                                 }
@@ -615,23 +645,20 @@ export const NewSubtaskDialog = ({
                                   <Checkbox
                                     id={member.clubMemberId}
                                     checked={field.value?.some(
-                                      (m) =>
-                                        m.clubMemberId === member.clubMemberId
+                                      (m) => m === member.clubMemberId
                                     )}
                                     onCheckedChange={(checked) => {
                                       const newValue = field.value || [];
                                       if (checked) {
-                                        form.setValue("assignedMembers", [
+                                        form.setValue("assignedMemberIds", [
                                           ...newValue,
-                                          { clubMemberId: member.clubMemberId },
+                                          member.clubMemberId,
                                         ]);
                                       } else {
                                         form.setValue(
-                                          "assignedMembers",
+                                          "assignedMemberIds",
                                           newValue.filter(
-                                            (m) =>
-                                              m.clubMemberId !==
-                                              member.clubMemberId
+                                            (m) => m !== member.clubMemberId
                                           )
                                         );
                                       }

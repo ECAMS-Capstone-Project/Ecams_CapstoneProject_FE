@@ -17,13 +17,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useClub } from "@/hooks/club/useClub";
 import { NewSubtaskDialog } from "@/components/partial/club_owner/inter-club/task/sub-task/NewSubtaskDialog";
-import { InterTaskSchema } from "@/schema/InterTaskSchema";
+import { newSubtaskSchema } from "@/schema/InterTaskSchema";
 import { z } from "zod";
 import { InterClubEventDTO } from "@/models/Event";
 import {
   EventTaskDetail,
-  EventTaskDetail2,
-  UpdateInterTaskRequest,
+  SubtaskCreateRequest,
+  UpdateSubtaskRequest,
 } from "@/models/InterTask";
 import { fixTime } from "@/lib/utils";
 import EditSubTaskDialog2 from "@/components/partial/club_owner/inter-club/task/sub-task/EditSubtaskDialog";
@@ -53,8 +53,12 @@ export const TaskDetailPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { members: clubMembers } = useClub(currentClub.clubId);
-  const { updateInterEventTask, updateInterEventTask2, isUpdating } =
-    useInterTask();
+  const {
+    isUpdating,
+    createSubtask,
+    updateSubtask,
+    // isCreatingSubtask,
+  } = useInterTask();
   const queryClient = useQueryClient();
 
   const availableMembers = clubMembers.filter(
@@ -102,46 +106,33 @@ export const TaskDetailPage = () => {
         return <Circle className="h-4 w-4 text-gray-400" />;
     }
   };
-  const handleAddSubtask = async (values: z.infer<typeof InterTaskSchema>) => {
+  const handleAddSubtask = async (values: z.infer<typeof newSubtaskSchema>) => {
     console.log("add subtask", values);
     try {
-      const updateData: UpdateInterTaskRequest = {
+      const createData: SubtaskCreateRequest = {
         eventTaskId: task.eventTaskId,
-        clubId: task.clubId,
-        eventId: selectedEvent.eventId,
-        taskName: task.taskName,
-        description: task.description,
-        startTime: fixTime(task.startTime),
-        deadline: fixTime(task.deadline),
-        status: task.status,
-        eventTaskDetails: values.listEventTaskDetails.map((detail) => ({
-          eventTaskId: task.eventTaskId,
-          detailName: detail.detailName,
-          description: detail.description,
-          startTime: fixTime(detail.startTime || new Date()),
-          deadline: fixTime(detail.deadline || new Date()),
-          status: detail.status || "ON_GOING",
-          priority: detail.priority,
-          assignedMembers: detail.assignedMembers || [],
-        })),
+        detailName: values.detailName,
+        description: values.description,
+        startTime: fixTime(values.startTime || new Date()).toISOString(),
+        deadline: fixTime(values.deadline || new Date()).toISOString(),
+        priority: values.priority,
+        assignedMemberIds: values.assignedMemberIds || [],
+        taskDependencyIds: values.taskDependencyIds || [],
       };
 
-      await updateInterEventTask(updateData);
+      await createSubtask({
+        subtask: createData,
+        eventTaskId: task.eventTaskId,
+      });
     } catch (error) {
       console.error("Failed to update task:", error);
     }
   };
-  const handleEditSubtask = async (updatedTask: EventTaskDetail2) => {
-    await updateInterEventTask2({
+  const handleEditSubtask = async (updatedTask: UpdateSubtaskRequest) => {
+    await updateSubtask({
       eventTaskId: task.eventTaskId,
-      clubId: currentClub.clubId,
-      eventId: selectedEvent.eventId,
-      taskName: task.taskName,
-      description: task.description,
-      startTime: fixTime(task.startTime).toISOString(),
-      deadline: fixTime(task.deadline).toISOString(),
-      status: task.status,
-      eventTaskDetails: [updatedTask],
+      eventTaskDetailId: updatedTask.eventTaskDetailId,
+      subtask: updatedTask,
     });
     queryClient.invalidateQueries({
       queryKey: ["interTasks", selectedEvent.eventId, 1, 99],
@@ -263,7 +254,7 @@ export const TaskDetailPage = () => {
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
-                              const taskStart = new Date(task.startTime);
+                              const taskStart = new Date(subTask.startTime);
                               const now = new Date();
                               if (taskStart <= now) {
                                 toast.error("This task has already started");
@@ -281,6 +272,7 @@ export const TaskDetailPage = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setIsDeleteDialogOpen(true);
+                            setEditingTask(subTask);
                           }}
                         >
                           Delete
@@ -317,26 +309,21 @@ export const TaskDetailPage = () => {
         onSubmit={(data) => {
           // Chỉ gửi thông tin của subtask mới
           handleAddSubtask({
-            taskName: task.taskName,
-            description: task.description,
-            startTime: fixTime(task.startTime),
-            deadline: fixTime(task.deadline),
-            status: task.status,
-            listEventTaskDetails: [
-              {
-                detailName: data.detailName,
-                description: data.description,
-                startTime: fixTime(data.startTime),
-                deadline: fixTime(data.deadline),
-                status: data.status,
-                priority: data.priority,
-                assignedMembers: data.assignedMembers || [],
-              },
-            ],
+            detailName: data.detailName,
+            description: data.description,
+            startTime: fixTime(data.startTime),
+            startTimeTime: data.startTimeTime,
+            deadline: fixTime(data.deadline),
+            deadlineTime: data.deadlineTime,
+            status: data.status,
+            priority: data.priority,
+            assignedMemberIds: data.assignedMemberIds || [],
+            taskDependencyIds: data.taskDependencyIds || [],
           });
         }}
         members={availableMembers}
         currentClub={currentClub}
+        task={task}
       />
 
       <EditSubTaskDialog2
@@ -348,6 +335,7 @@ export const TaskDetailPage = () => {
         isUpdating={isUpdating}
       />
       <DeleteSubtaskDialog
+        subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
       />

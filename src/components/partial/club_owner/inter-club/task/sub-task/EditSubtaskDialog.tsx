@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Dialog,
   DialogContent,
@@ -8,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   EventTaskDetail,
-  EventTaskDetail2,
   InterTask,
+  UpdateSubtaskRequest,
 } from "@/models/InterTask";
 import { Suspense, useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -29,14 +30,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import LoadingAnimation from "@/components/ui/loading";
-import { cn, fixTime } from "@/lib/utils";
+import { cn, combineDateTime, fixTime } from "@/lib/utils";
 import SpecificTaskList from "@/components/partial/representative/representative-task/SpecificTasktList";
+import { useInterTask } from "@/hooks/club/useInterTask";
 
 interface EditSubTaskDialogProps {
   open: boolean;
   onClose: () => void;
   task: EventTaskDetail | null;
-  onSubmit: (updatedTask: EventTaskDetail2) => void;
+  onSubmit: (updatedTask: UpdateSubtaskRequest) => void;
   bigTask: InterTask;
   isUpdating: boolean;
   initialSelectedTasks?: EventTaskDetail[];
@@ -51,62 +53,12 @@ type FormState = {
   startTime: string;
   deadlineDate: Date | undefined;
   deadlineTime: string;
+  isDependencyExtended: boolean;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
 };
 
 type ErrorState = Partial<Record<keyof FormState, string>>;
-
-const fakeTasks = [
-  {
-    eventTaskDetailId: "etd001",
-    eventTaskId: "et001",
-    detailName: "Design Landing Page",
-    description: "Create a responsive landing page for the campaign.",
-    startTime: "2025-04-01T09:00:00",
-    deadline: "2025-04-15T17:00:00",
-    status: "In Progress",
-    priority: "High",
-  },
-  {
-    eventTaskDetailId: "etd002",
-    eventTaskId: "et002",
-    detailName: "Write Content",
-    description: "Write high-conversion copy for the homepage.",
-    startTime: "2025-04-02T10:00:00",
-    deadline: "2025-04-12T18:00:00",
-    status: "Pending",
-    priority: "Medium",
-  },
-  {
-    eventTaskDetailId: "etd003",
-    eventTaskId: "et003",
-    detailName: "Set Up Database",
-    description: "Initialize the PostgreSQL database and design schema.",
-    startTime: "2025-04-03T08:30:00",
-    deadline: "2025-04-20T16:00:00",
-    status: "Completed",
-    priority: "Low",
-  },
-  {
-    eventTaskDetailId: "etd004",
-    eventTaskId: "et003",
-    detailName: "Create ER Diagram",
-    description: "Draw entity-relationship diagram for core modules.",
-    startTime: "2025-04-04T11:00:00",
-    deadline: "2025-04-18T14:00:00",
-    status: "In Progress",
-    priority: "Medium",
-  },
-  {
-    eventTaskDetailId: "etd005",
-    eventTaskId: "et004",
-    detailName: "Client Review Meeting",
-    description: "Prepare slides and conduct a client meeting.",
-    startTime: "2025-04-06T13:00:00",
-    deadline: "2025-04-07T15:00:00",
-    status: "Pending",
-    priority: "High",
-  },
-];
 
 export default function EditSubTaskDialog2({
   open,
@@ -120,24 +72,57 @@ export default function EditSubTaskDialog2({
     name: "",
     desc: "",
     priority: "LOW",
-    status: "ON_GOING",
+    status: "NOT_STARTED",
     startDate: undefined,
     startTime: "00:00",
     deadlineDate: undefined,
     deadlineTime: "00:00",
+    isDependencyExtended: false,
+    taskDependencyIds: [],
+    assignedMemberIds: [],
   });
   const [searchTerm2, setSearchTerm2] = useState("");
   const [debouncedSearch2, setDebouncedSearch2] = useState(searchTerm2);
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [showDependencyCheckbox, setShowDependencyCheckbox] = useState(false);
+  const [originalTimes, setOriginalTimes] = useState({
+    startDate: undefined as Date | undefined,
+    startTime: "",
+    deadlineDate: undefined as Date | undefined,
+    deadlineTime: "",
+  });
+  const { getSubtaskDependencyQuery } = useInterTask();
+  const { data: subtaskDependency } = getSubtaskDependencyQuery(
+    task?.eventTaskId || "",
+    form.startDate && form.startTime
+      ? fixTime(combineDateTime(form.startDate, form.startTime)).toISOString()
+      : "",
+    form.deadlineDate && form.deadlineTime
+      ? fixTime(
+          combineDateTime(form.deadlineDate, form.deadlineTime)
+        ).toISOString()
+      : "",
+    form.priority
+  );
 
+  const filteredSubtaskDependency =
+    subtaskDependency?.data && Array.isArray(subtaskDependency.data)
+      ? subtaskDependency.data.filter((subtask: any) => {
+          const searchStr = debouncedSearch2.toLowerCase();
+          const name = subtask.detailName.toLowerCase();
+          return name.includes(searchStr);
+        })
+      : [];
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch2(searchTerm2), 500);
     return () => clearTimeout(timer);
   }, [searchTerm2]);
 
-  const filteredTasks = fakeTasks.filter((st) =>
-    st.detailName.toLowerCase().includes(debouncedSearch2.toLowerCase())
-  );
+  // const filteredTasks = subtaskDependency?.data && Array.isArray(subtaskDependency.data)
+  //   ? subtaskDependency.data.filter((st: any) =>
+  //       st.detailName.toLowerCase().includes(debouncedSearch2.toLowerCase())
+  //     )
+  //   : [];
 
   const [errors, setErrors] = useState<ErrorState>({});
 
@@ -163,21 +148,64 @@ export default function EditSubTaskDialog2({
           deadline.getDate()
         ),
         deadlineTime: format(deadline, "HH:mm"),
+        isDependencyExtended: false,
+        taskDependencyIds:
+          task?.taskDependencies?.map(
+            (dependency) => dependency.eventTaskDetailId
+          ) || [],
+        assignedMemberIds:
+          task?.memberEventTasks?.map((member) => member.clubMemberId) || [],
       });
-      // if (initialSelectedTasks && initialSelectedTasks.length > 0) {
-      //     setSelectedTasks(initialSelectedTasks.map(t => t.eventTaskDetailId));
-      // }
+
+      setSelectedTasks((task as any).taskDependencyIds || []);
+
+      setOriginalTimes({
+        startDate: new Date(
+          start.getFullYear(),
+          start.getMonth(),
+          start.getDate()
+        ),
+        startTime: format(start, "HH:mm"),
+        deadlineDate: new Date(
+          deadline.getFullYear(),
+          deadline.getMonth(),
+          deadline.getDate()
+        ),
+        deadlineTime: format(deadline, "HH:mm"),
+      });
+
       setErrors({});
     }
   }, [task]);
 
+  useEffect(() => {
+    const hasTimeChanged =
+      form.startDate?.getTime() !== originalTimes.startDate?.getTime() ||
+      form.startTime !== originalTimes.startTime ||
+      form.deadlineDate?.getTime() !== originalTimes.deadlineDate?.getTime() ||
+      form.deadlineTime !== originalTimes.deadlineTime;
+
+    setShowDependencyCheckbox(hasTimeChanged);
+  }, [
+    form.startDate,
+    form.startTime,
+    form.deadlineDate,
+    form.deadlineTime,
+    originalTimes,
+  ]);
+
   const handleToggleTask = (taskId: string, checked: boolean) => {
     setSelectedTasks((prev) => {
-      if (checked) {
-        return [...prev, taskId];
-      } else {
-        return prev.filter((id) => id !== taskId);
-      }
+      const newSelectedTasks = checked
+        ? [...prev, taskId]
+        : prev.filter((id) => id !== taskId);
+
+      setForm((prevForm) => ({
+        ...prevForm,
+        taskDependencyIds: newSelectedTasks,
+      }));
+
+      return newSelectedTasks;
     });
   };
 
@@ -223,27 +251,31 @@ export default function EditSubTaskDialog2({
   };
 
   const handleSave = async () => {
-    if (!validate() || !task) return;
+    if (!validate() || !task || !form.startDate || !form.deadlineDate) return;
 
     const isoFormattedStart = format(
-      new Date(`${format(form.startDate!, "yyyy-MM-dd")}T${form.startTime}`),
+      new Date(`${format(form.startDate, "yyyy-MM-dd")}T${form.startTime}`),
       "yyyy-MM-dd'T'HH:mm"
     );
     const isoFormattedDeadline = format(
       new Date(
-        `${format(form.deadlineDate!, "yyyy-MM-dd")}T${form.deadlineTime}`
+        `${format(form.deadlineDate, "yyyy-MM-dd")}T${form.deadlineTime}`
       ),
       "yyyy-MM-dd'T'HH:mm"
     );
 
-    const updatedTask: EventTaskDetail2 = {
-      ...task,
+    const updatedTask: UpdateSubtaskRequest = {
+      eventTaskDetailId: task.eventTaskDetailId,
+      eventTaskId: task.eventTaskId,
       detailName: form.name,
       description: form.desc,
       priority: form.priority,
       status: form.status,
       startTime: fixTime(isoFormattedStart).toISOString(),
       deadline: fixTime(isoFormattedDeadline).toISOString(),
+      isDependencyExtended: form.isDependencyExtended,
+      taskDependencyIds: form.taskDependencyIds,
+      assignedMemberIds: form.assignedMemberIds,
     };
 
     await onSubmit(updatedTask);
@@ -315,7 +347,8 @@ export default function EditSubTaskDialog2({
                     selected={form.startDate}
                     onSelect={(date) => setForm({ ...form, startDate: date })}
                     disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
+                      date <
+                      (task?.startTime ? new Date(task?.startTime) : date)
                     }
                   />
                 </PopoverContent>
@@ -375,6 +408,25 @@ export default function EditSubTaskDialog2({
               )}
             </div>
           </div>
+          {showDependencyCheckbox && (
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isDependencyExtended"
+                checked={form.isDependencyExtended}
+                onChange={(e) =>
+                  setForm({ ...form, isDependencyExtended: e.target.checked })
+                }
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="isDependencyExtended"
+                className="text-base font-semibold text-[#3ca1a2]"
+              >
+                Extend the dates of the task dependencies of this subtask.
+              </label>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -410,31 +462,35 @@ export default function EditSubTaskDialog2({
               </Select>
             </div>
           </div>
-
-          <div className="pl-1">
-            <label className="block text-sm font-medium mb-2">
-              Choose task
-            </label>
-            <div className="flex gap-3">
-              {/* Search bar */}
-              <div className="mb-2 w-1/4">
-                <Input
-                  placeholder="Search task"
-                  value={searchTerm2}
-                  onChange={(e) => setSearchTerm2(e.target.value)}
-                />
+          {task?.taskDependencies && task?.taskDependencies.length > 0 && (
+            <div className="pl-1">
+              <label className="block text-sm font-medium mb-2">
+                Choose task
+              </label>
+              <div className="flex gap-3">
+                {/* Search bar */}
+                <div className="mb-2 w-1/4">
+                  <Input
+                    placeholder="Search task"
+                    value={searchTerm2}
+                    onChange={(e) => setSearchTerm2(e.target.value)}
+                  />
+                </div>
               </div>
+
+              <Suspense fallback={<div>Loading task...</div>}>
+                <SpecificTaskList
+                  handleToggleTask={handleToggleTask}
+                  tasks={filteredSubtaskDependency}
+                  selected={selectedTasks}
+                  taskDependencies={task?.taskDependencies || []}
+                />
+              </Suspense>
+              {/* {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>} */}
             </div>
-            <Suspense fallback={<div>Loading task...</div>}>
-              <SpecificTaskList
-                handleToggleTask={handleToggleTask}
-                tasks={filteredTasks}
-                selected={selectedTasks}
-              />
-            </Suspense>
-            {/* {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>} */}
-          </div>
+          )}
         </div>
+
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={onClose}>
             Cancel

@@ -32,13 +32,7 @@ import { cn, combineDateTime } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { InterClubEventDTO } from "@/models/Event";
 import {
   Command,
@@ -78,7 +72,6 @@ export const TaskEditDialog = ({
   isHost,
   isLoading,
   selectedEvent,
-  currentClub,
 }: TaskEditDialogProps) => {
   const [openClubSelect, setOpenClubSelect] = useState(false);
   // const timeZone = "Asia/Ho_Chi_Minh";
@@ -117,13 +110,13 @@ export const TaskEditDialog = ({
           startTime: fixTime(
             new Date(
               values.listEventTaskDetails[index].startTime ||
-              task.eventTaskDetails[index].startTime
+                task.eventTaskDetails[index].startTime
             )
           ),
           deadline: fixTime(
             new Date(
               values.listEventTaskDetails[index].deadline ||
-              task.eventTaskDetails[index].deadline
+                task.eventTaskDetails[index].deadline
             )
           ),
           status: detail.status || task.eventTaskDetails[index].status,
@@ -413,8 +406,8 @@ export const TaskEditDialog = ({
                               >
                                 {field.value
                                   ? selectedEvent.clubs.find(
-                                    (club) => club.clubId === field.value
-                                  )?.clubName
+                                      (club) => club.clubId === field.value
+                                    )?.clubName
                                   : "Select club"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
@@ -457,7 +450,7 @@ export const TaskEditDialog = ({
                       </FormItem>
                     )}
                   />
-
+                  {/* 
                   <FormField
                     control={form.control}
                     name="status"
@@ -484,7 +477,7 @@ export const TaskEditDialog = ({
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
                 </div>
 
                 {/* {isHost && (

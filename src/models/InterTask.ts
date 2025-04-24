@@ -26,6 +26,15 @@ export interface EventTaskDetail {
     clubMemberId: string;
   }[];
   memberEventTasks: MemberEventTask[];
+  taskDependencies: {
+    eventTaskDetailId: string;
+    detailName: string;
+    description: string;
+    startTime: string;
+    deadline: string;
+    status: string;
+    priority: string;
+  }[];
 }
 
 export interface MemberEventTask {
@@ -187,6 +196,30 @@ export interface UpdateInterTaskRequest2 {
   status: string;
   eventTaskDetails: UpdateInterTaskDetailRequest2[];
 }
+export interface UpdateSubtaskRequest {
+  eventTaskDetailId: string;
+  eventTaskId: string;
+  detailName: string;
+  description: string;
+  priority: string;
+  startTime: string;
+  deadline: string;
+  isDependencyExtended: boolean;
+  status: string;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+}
+export interface SubtaskCreateRequest {
+  eventTaskId: string;
+  detailName: string;
+  description: string;
+  priority: string;
+  startTime: string;
+  deadline: string;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+}
+
 export interface UpdateInterTaskDetailRequest2 {
   eventTaskDetailId: string;
   detailName: string;
@@ -202,6 +235,17 @@ export interface EventTaskDetail2 {
   description: string;
   startTime: string;
   deadline: string;
+  status: string;
+  priority: string;
+  isDependencyExtended: boolean;
+}
+
+export interface TaskDependencyResponseDTO {
+  eventTaskDetailId: string;
+  detailName: string;
+  description: string;
+  startTime: string; // ISO 8601 date string
+  deadline?: string | null; // optional or null
   status: string;
   priority: string;
 }
