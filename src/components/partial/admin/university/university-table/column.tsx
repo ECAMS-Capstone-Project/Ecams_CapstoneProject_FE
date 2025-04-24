@@ -8,6 +8,7 @@ import {
   ChevronDown,
   CircleEllipsis,
   EyeIcon,
+  Loader2,
   XCircleIcon,
 } from "lucide-react";
 import { University } from "@/models/University";
@@ -93,9 +94,11 @@ export const UniColumns = (
       const status = row.getValue("status") as string;
       const [currentStatus, setCurrentStatus] = useState(status);
       const [isDialogOpen, setIsDialogOpen] = useState(false);
+      const [loading, setLoading] = useState(false);
       const reactivateUni = async () => {
         try {
           // Gửi API để cập nhật trạng thái
+          setLoading(true);
           await reactiveUni(row.original.universityId); // Hàm này là một giả định
           toast.success("Reactivate University Successfully.");
           setCurrentStatus("ACTIVE");
@@ -103,6 +106,8 @@ export const UniColumns = (
         } catch (error) {
           console.error("Failed to update status:", error);
           toast.error("Failed to update status.");
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -114,23 +119,29 @@ export const UniColumns = (
                 className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
                   currentStatus === "ACTIVE"
                     ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                    : currentStatus === "INACTIVE"
+                    : currentStatus === "INACTIVE" && !loading
                     ? "bg-[#FFF5BA] text-[#5A3825]"
                     : currentStatus === "PENDING"
                     ? "bg-[#FFE6CC] text-[#CC6600]"
+                    : currentStatus === "INACTIVE" && loading
+                    ? "bg-[#94d7e4] text-[#3e6a9b]"
                     : ""
                 } w-auto`}
               >
                 {currentStatus === "ACTIVE" && (
                   <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
                 )}
-                {currentStatus === "INACTIVE" && (
+                {currentStatus === "INACTIVE" && !loading && (
                   <XCircleIcon size={12} className=" text-[#5A3825]" />
                 )}
                 {currentStatus === "PENDING" && (
                   <CircleEllipsis size={12} className=" text-[#CC6600]" />
                 )}
-                <span>{currentStatus}</span>
+                {currentStatus === "INACTIVE" && loading && (
+                  <Loader2 size={12} className=" text-[#3e6a9b]" />
+                )}
+
+                <span>{loading ? "Loading..." : currentStatus}</span>
                 <ChevronDown size={16} />
               </div>
             </DropdownMenuTrigger>
