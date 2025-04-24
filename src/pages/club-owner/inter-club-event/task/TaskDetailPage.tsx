@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Circle,
   ListTodo,
+  MoreHorizontal,
   PlusCircle,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -19,12 +20,28 @@ import { NewSubtaskDialog } from "@/components/partial/club_owner/inter-club/tas
 import { InterTaskSchema } from "@/schema/InterTaskSchema";
 import { z } from "zod";
 import { InterClubEventDTO } from "@/models/Event";
-import { UpdateInterTaskRequest } from "@/models/InterTask";
+import {
+  EventTaskDetail,
+  EventTaskDetail2,
+  UpdateInterTaskRequest,
+} from "@/models/InterTask";
 import { fixTime } from "@/lib/utils";
+import EditSubTaskDialog2 from "@/components/partial/club_owner/inter-club/task/sub-task/EditSubtaskDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import toast from "react-hot-toast";
+import DeleteSubtaskDialog from "@/components/partial/club_owner/inter-club/task/sub-task/DeleteSubtaskDialog";
 
 export const TaskDetailPage = () => {
   const { eventTaskId } = useParams();
   const { getInterTaskDetailQuery } = useInterTask();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const { data: response, isLoading } = getInterTaskDetailQuery(
     eventTaskId || ""
   );
@@ -32,9 +49,13 @@ export const TaskDetailPage = () => {
   const { state } = useLocation();
   const currentClub = state?.currentClub as EventClubDTO;
   const selectedEvent = state?.selectedEvent as InterClubEventDTO;
+  const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { members: clubMembers } = useClub(currentClub.clubId);
-  const { updateInterEventTask } = useInterTask();
+  const { updateInterEventTask, updateInterEventTask2, isUpdating } =
+    useInterTask();
+  const queryClient = useQueryClient();
 
   const availableMembers = clubMembers.filter(
     (member) => member.clubRoleName !== "CLUB_OWNER"
@@ -110,10 +131,33 @@ export const TaskDetailPage = () => {
       console.error("Failed to update task:", error);
     }
   };
+  const handleEditSubtask = async (updatedTask: EventTaskDetail2) => {
+    await updateInterEventTask2({
+      eventTaskId: task.eventTaskId,
+      clubId: currentClub.clubId,
+      eventId: selectedEvent.eventId,
+      taskName: task.taskName,
+      description: task.description,
+      startTime: fixTime(task.startTime).toISOString(),
+      deadline: fixTime(task.deadline).toISOString(),
+      status: task.status,
+      eventTaskDetails: [updatedTask],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["interTasks", selectedEvent.eventId, 1, 99],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["interTaskDetail", task.eventTaskId],
+    }); // Tự động refetch danh sách ✅
+  };
   return (
     <div className="container mx-auto space-y-6">
       {/* Task Info Section */}
-      <TaskDetailCard task={task} />
+      <TaskDetailCard
+        task={task}
+        eventId={selectedEvent.eventId}
+        currentClub={currentClub}
+      />
       {/* Tabs Section */}
       {/* Sub-tasks Section */}
       <div className="space-y-4">
@@ -122,21 +166,22 @@ export const TaskDetailPage = () => {
             <ListTodo className={`h-4 w-4 `} />
             Sub-tasks
           </h4>
-          {task.clubId === currentClub.clubId && (
-            <Button
-              onClick={() => setIsCreateDialogOpen(true)}
-              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              New Sub-task
-            </Button>
-          )}
+          {task.clubId === currentClub.clubId &&
+            task.status !== "COMPLETED" && (
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
+              >
+                <PlusCircle className="h-4 w-4 mr-2" />
+                New Sub-task
+              </Button>
+            )}
         </div>
         <div className="space-y-3">
           {task.eventTaskDetails.map((subTask) => (
             <div
               key={subTask.eventTaskDetailId}
-              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer ${
+              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer z-10 ${
                 subTask.priority.toUpperCase() === "HIGH"
                   ? "bg-pink-400"
                   : subTask.priority.toUpperCase() === "MEDIUM"
@@ -195,6 +240,56 @@ export const TaskDetailPage = () => {
               >
                 <Calendar className="h-4 w-4" />
                 {format(new Date(subTask.deadline), "dd/MM/yyyy")}
+                {task.clubId === currentClub.clubId && (
+                  // <Button
+                  //   variant="ghost"
+                  //   className="w-10 h-10 z-50 relative hover:bg-transparent "
+                  //   type="button"
+
+                  // >
+                  <>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="z-50 relative  rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        {task.clubId === currentClub.clubId && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const taskStart = new Date(task.startTime);
+                              const now = new Date();
+                              if (taskStart <= now) {
+                                toast.error("This task has already started");
+                                return;
+                              } else {
+                                setEditingTask(subTask);
+                                setIsEditDialogOpen(true);
+                              }
+                            }}
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDeleteDialogOpen(true);
+                          }}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                  // </Button>
+                )}
               </div>
             </div>
           ))}
@@ -242,6 +337,19 @@ export const TaskDetailPage = () => {
         }}
         members={availableMembers}
         currentClub={currentClub}
+      />
+
+      <EditSubTaskDialog2
+        open={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        task={editingTask}
+        onSubmit={handleEditSubtask}
+        bigTask={task}
+        isUpdating={isUpdating}
+      />
+      <DeleteSubtaskDialog
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
       />
     </div>
   );
