@@ -91,6 +91,7 @@ export interface EventResponse {
   maxParticipants?: number;
   status: string;
   eventType: EventTypeEnum;
+  clubs?: []
 }
 
 export interface ClubCondition {
