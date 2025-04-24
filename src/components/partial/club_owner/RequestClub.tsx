@@ -38,7 +38,7 @@ const clubSchema = z.object({
         z.object({
             email: z.string().email("Invalid email"),
         })
-    ).min(3, "You must add at least 3 members"),
+    ).min(2, "You must add at least 2 members"),
 });
 
 type ClubFormData = z.infer<typeof clubSchema>;
