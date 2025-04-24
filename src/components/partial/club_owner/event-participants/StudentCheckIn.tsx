@@ -90,7 +90,7 @@ export const StudentEventCheckIn = () => {
         {
           onSuccess: () => {
             toast.success("Successfully checked in participant");
-            navigate(`/club/event-participants/${eventId}`, {
+            navigate(`/club/event-task/${eventId}`, {
               state: {
                 previousPath: "/club/event-check-in",
               },
