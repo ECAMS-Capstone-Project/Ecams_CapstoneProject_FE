@@ -249,3 +249,26 @@ export interface TaskDependencyResponseDTO {
   status: string;
   priority: string;
 }
+
+export interface CreateInterTaskRequest2 {
+  clubId: string;
+  eventId: string;
+  taskName: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  createdBy: string;
+}
+export interface UpdateInterTaskRequest3 {
+  eventTaskId: string;
+  eventTaskDetailId: string;
+  detailName: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  priority: string;
+  status: string;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+  isDependencyExtended: boolean;
+}

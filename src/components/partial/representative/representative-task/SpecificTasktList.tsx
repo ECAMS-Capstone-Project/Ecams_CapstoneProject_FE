@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { TaskDependencyResponseDTO } from "@/models/InterTask";
 
-// Props
 interface SpecificTaskListProps {
   tasks: TaskDependencyResponseDTO[];
   selected: string[];

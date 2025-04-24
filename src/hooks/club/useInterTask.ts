@@ -5,6 +5,7 @@ import {
   CreateInterTask,
   CreateSubtask,
   DeleteSubtask,
+  CreateInterTask2,
   GetAvailableMember,
   GetInterTask,
   GetInterTaskDetail,
@@ -14,8 +15,10 @@ import {
   UpdateInterTask,
   UpdateInterTask2,
   UpdateSubtask,
+  UpdateInterTask3,
 } from "@/api/club-owner/InterEventTask";
 import { SubtaskCreateRequest, UpdateSubtaskRequest } from "@/models/InterTask";
+import { UpdateInterTaskRequest3 } from "@/models/InterTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -67,6 +70,40 @@ export const useInterTask = (
         toast.success("Inter Event Task updated successfully!");
         queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
         queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
+
+  const { mutateAsync: updateInterEventTaskMutation3, isPending: isUpdating3 } =
+    useMutation({
+      mutationFn: (params: {
+        subtask: UpdateInterTaskRequest3;
+        eventTaskDetailId: string;
+      }) => UpdateInterTask3(params.subtask, params.eventTaskDetailId),
+
+      onSuccess: () => {
+        toast.success("Inter Event Task updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
+
+  const { mutateAsync: createInterEventTaskMutation2, isPending: isPending2 } =
+    useMutation({
+      mutationFn: CreateInterTask2,
+      onSuccess: () => {
+        toast.success("Inter Event Task created successfully!");
+        queryClient.invalidateQueries({
+          queryKey: ["interTasks"],
+          exact: false,
+        }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         console.error("Error:", error.response.data.errors);
@@ -236,6 +273,10 @@ export const useInterTask = (
     getAvailableMemberQuery,
     getInterTaskSubmissionQuery,
     reviewInterTaskSubmission: reviewInterTaskSubmissionMutation,
+    createInterEventTask2: createInterEventTaskMutation2,
+    updateInterEventTask3: updateInterEventTaskMutation3,
+    isUpdating3,
+    isPending2,
     isReviewing,
     isUpdating2,
     createSubtask: createSubtaskMutation,

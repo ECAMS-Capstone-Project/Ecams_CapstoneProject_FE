@@ -83,14 +83,6 @@ export const TaskBigEditDialog = ({
       startTimeTime: format(new Date(task.startTime), "HH:mm"),
       status: task.status,
       clubId: task.clubId,
-      listEventTaskDetails: task.eventTaskDetails.map((detail) => ({
-        detailName: detail.detailName,
-        description: detail.description,
-        startTime: (new Date(detail.startTime)),
-        priority: detail.priority,
-        deadline: (new Date(detail.deadline)),
-        status: detail.status,
-      })),
     },
   });
 
@@ -120,17 +112,7 @@ export const TaskBigEditDialog = ({
         startTime: fixTime(finalStartTime).toISOString(),
         deadline: fixTime(finalDeadline).toISOString(),
         status: values.status || "ON_GOING",
-        eventTaskDetails: values.listEventTaskDetails.map((detail, index) => ({
-          eventTaskDetailId: task.eventTaskDetails[index].eventTaskDetailId,
-          eventTaskId: task.eventTaskId,
-          detailName: detail.detailName,
-          description: detail.description,
-          startTime: fixTime(detail.startTime || new Date()).toISOString(),
-          deadline: fixTime(detail.deadline || new Date()).toISOString(),
-          status: detail.status || task.eventTaskDetails[index].status,
-        })),
       };
-      console.log(updateData);
 
       await onUpdate(task.eventTaskId, updateData);
       onClose();

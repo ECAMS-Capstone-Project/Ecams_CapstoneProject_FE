@@ -51,6 +51,7 @@ export default function TaskListInEvent() {
   const navigate = useNavigate();
   const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [subTaskList, setSubTaskList] = useState<EventTaskDetail[]>();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -363,6 +364,11 @@ export default function TaskListInEvent() {
                                 Edit
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuItem
+                              onClick={() => handleNavigate(task)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -430,6 +436,11 @@ export default function TaskListInEvent() {
         bigTask={task}
         onSubmit={handleEditSubmit}
         isUpdating={isUpdating2}
+      />
+      <DeleteSubtaskDialog
+        subtask={editingTask}
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
       />
     </div>
   );

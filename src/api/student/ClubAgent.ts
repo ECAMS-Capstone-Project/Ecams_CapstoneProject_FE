@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isInClubResponse } from "@/models/Club";
-import { get, post, put } from "../agent";
+import { get, post } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventClubDTO } from "../representative/EventAgent";
 import toast from "react-hot-toast";
+import { TaskDependencyResponseDTO } from "@/components/partial/representative/representative-task/SpecificTasktList";
 
 export interface EventTaskDetailAIResponseDTO {
   eventTaskDetailId: string;
@@ -51,21 +52,16 @@ export interface EventSubTaskDTO {
   eventTaskDetails: EventSubTaskDetail[];
 }
 
-interface EventSubTaskDetail {
+export interface EventSubTaskDetail {
   eventTaskId: string;
   detailName: string;
   description: string;
   startTime: string;
   deadline: string;
-  status: string;
   priority: string;
-  assignedMembers: AssignedMember[];
+  assignedMemberIds: string[];
+  taskDependencyIds?: string[];
 }
-
-interface AssignedMember {
-  clubMemberId: string;
-}
-
 
 export const getClub = async (
   uniId: string,
@@ -153,10 +149,10 @@ export const TaskRecommendedByAI = async (clubId: string, data: TaskRecommendedA
   }
 };
 
-export const CreateSubTaskAPI = async (eventTaskId: string, data: EventSubTaskDTO): Promise<ResponseDTO<string>> => {
+export const CreateSubTaskAPI = async (eventTaskId: string, data: EventSubTaskDetail): Promise<ResponseDTO<string>> => {
   try {
-    const response = await put<ResponseDTO<string>>(
-      `/EventTask/${eventTaskId}/`, data);
+    const response = await post<ResponseDTO<string>>(
+      `/EventTask/${eventTaskId}/eventTaskDetail`, data);
 
     return response;
   } catch (error: any) {
@@ -178,5 +174,27 @@ export const CreateSubTaskAPI = async (eventTaskId: string, data: EventSubTaskDT
       console.error("Network Error:", error.message);
       throw new Error("Network error. Please try again later.");
     }
+  }
+};
+
+export const GetAvailableTask = async (
+  eventTaskId: string, startTime: string, deadline: string, priority: string
+): Promise<ResponseDTO<TaskDependencyResponseDTO[]>> => {
+  try {
+    const response = await get<ResponseDTO<TaskDependencyResponseDTO[]>>(
+      `/EventTask/${eventTaskId}/dependencies?StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`,
+      {
+        param: {
+          StartTime: startTime,
+          Deadline: deadline,
+          Priority: priority
+        }
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error fetching university list:", error);
+    throw error;
   }
 };
