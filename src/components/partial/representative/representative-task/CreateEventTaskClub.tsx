@@ -25,9 +25,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn, fixTime } from "@/lib/utils";
 
-// Lazy import danh sách student
-const SpecificStudentList = React.lazy(() => import("./SpecificStudentList"));
-
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
 import {
@@ -50,6 +47,7 @@ import {
 } from "@/api/student/ClubAgent";
 import { InterTask } from "@/models/InterTask";
 import SpecificTaskList from "./SpecificTasktList";
+import SpecificStudentList from "./SpecificStudentList";
 
 const fakeTasks = [
   {
