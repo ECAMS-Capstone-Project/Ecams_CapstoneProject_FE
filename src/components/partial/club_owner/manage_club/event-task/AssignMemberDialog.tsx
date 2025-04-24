@@ -20,7 +20,10 @@ import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import { fixTime } from "@/lib/utils";
-import { AvailableMemberEventTask, TaskRecommendedByAI } from "@/api/student/ClubAgent";
+import {
+  AvailableMemberEventTask,
+  TaskRecommendedByAI,
+} from "@/api/student/ClubAgent";
 import { MemberInfoDialog } from "./AssignMemberInfoDialog";
 
 interface AssignMembersDialogProps {
@@ -37,7 +40,7 @@ interface AssignMembersDialogProps {
   eventId: string;
   memberSelected: {
     clubMemberId: string;
-  }[]
+  }[];
 }
 
 export const AssignMembersDialog = ({
@@ -49,7 +52,7 @@ export const AssignMembersDialog = ({
   task,
   clubId,
   eventId,
-  memberSelected
+  memberSelected,
 }: AssignMembersDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -61,13 +64,20 @@ export const AssignMembersDialog = ({
   const [selectedMember, setSelectedMember] = useState<
     AvailableMemberEventTask | ClubMemberDTO | null
   >(null);
-
   useEffect(() => {
     if (isOpen) {
-      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
+      // Khởi tạo selectedMembers với cả memberSelected và các thành viên đã được assign
+      const assignedMembers = subTask.memberEventTasks.map(
+        (m) => m.clubMemberId
+      );
+      setSelectedMembers([
+        ...new Set([
+          ...memberSelected.map((m) => m.clubMemberId),
+          ...assignedMembers,
+        ]),
+      ]);
     }
-  }, [isOpen, memberSelected]);
-
+  }, [isOpen, memberSelected, subTask.memberEventTasks, selectedMembers]);
   const filteredMembers = members.filter((member) => {
     if (!member) return false;
     const availableMember = member as AvailableMemberEventTask;
@@ -83,7 +93,6 @@ export const AssignMembersDialog = ({
   });
 
   console.log(members);
-
 
   const handleSelectMember = (memberId: string, checked: boolean) => {
     console.log(
@@ -106,7 +115,6 @@ export const AssignMembersDialog = ({
       return prevSelectedMembers;
     });
   };
-  console.log("selectedMembers", selectedMembers);
   const isMemberAssignedToSubtask = (
     currentId: string,
     eventTaskDetailId: string
@@ -117,7 +125,6 @@ export const AssignMembersDialog = ({
 
   const handleAssign = () => {
     console.log("selectedMembers", selectedMembers);
-
     // Update existing subtasks with the selected members only for the relevant subtask
     const updatedSubtasks = task.eventTaskDetails.map((detail) => {
       // For the subtask being updated, assign the selected members
@@ -125,7 +132,9 @@ export const AssignMembersDialog = ({
         return {
           ...detail,
           assignedMembers: [
-            ...detail.assignedMembers,
+            ...detail.memberEventTasks.map((member) => ({
+              clubMemberId: member.clubMemberId,
+            })),
             ...selectedMembers.map((memberId: string) => ({
               clubMemberId: memberId, // Wrap the memberId inside the expected structure
             })),
@@ -154,17 +163,14 @@ export const AssignMembersDialog = ({
   const handleAIRecommend = async () => {
     try {
       setIsLoading(true);
-      const response = await TaskRecommendedByAI(
-        clubId,
-        {
-          taskName: subTask.detailName,
-          taskDescription: subTask.description,
-          startTime: new Date(subTask.startTime).toISOString(),
-          endTime: new Date(subTask.deadline).toISOString(),
-          priority: subTask.priority,
-          clubId: clubId,
-        }
-      );
+      const response = await TaskRecommendedByAI(clubId, {
+        taskName: subTask.detailName,
+        taskDescription: subTask.description,
+        startTime: new Date(subTask.startTime).toISOString(),
+        endTime: new Date(subTask.deadline).toISOString(),
+        priority: subTask.priority,
+        clubId: clubId,
+      });
       if (response.data) {
         setAIRecommendations(response.data);
         setSelectedMembers([]);
@@ -256,15 +262,19 @@ export const AssignMembersDialog = ({
                     <Checkbox
                       id={member.clubMemberId}
                       checked={
-                        isMemberAssignedToSubtask(
-                          (member as AvailableMemberEventTask).currentTasks?.find(
-                            (task) => task.eventTaskDetailId === subTask.eventTaskDetailId
-                          )?.eventTaskDetailId || "",
-                          subTask.eventTaskDetailId
+                        subTask.memberEventTasks.some(
+                          (members) =>
+                            members.clubMemberId === member.clubMemberId
                         ) ||
                         selectedMembers.includes(member.clubMemberId) ||
                         memberSelected.some(
                           (m) => m.clubMemberId === member.clubMemberId
+                        ) ||
+                        isMemberAssignedToSubtask(
+                          subTask.memberEventTasks.find(
+                            (m) => m.clubMemberId === member.clubMemberId
+                          )?.eventTaskDetailId || "",
+                          subTask.eventTaskDetailId
                         )
                       }
                       onCheckedChange={(checked) =>
@@ -300,20 +310,22 @@ export const AssignMembersDialog = ({
                             </Badge>
                           )}
                           {isMemberAssignedToSubtask(
-                            (member as AvailableMemberEventTask).currentTasks?.find(
+                            (
+                              member as AvailableMemberEventTask
+                            ).currentTasks?.find(
                               (task) =>
                                 task.eventTaskDetailId ===
                                 subTask.eventTaskDetailId
                             )?.eventTaskDetailId || "",
                             subTask.eventTaskDetailId
                           ) && (
-                              <Badge
-                                variant="outline"
-                                className="bg-green-50 text-green-700 border-green-200"
-                              >
-                                Assigned
-                              </Badge>
-                            )}
+                            <Badge
+                              variant="outline"
+                              className="bg-green-50 text-green-700 border-green-200"
+                            >
+                              Assigned
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <Button

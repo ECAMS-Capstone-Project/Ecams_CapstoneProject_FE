@@ -25,6 +25,41 @@ export interface EventTaskDetail {
   assignedMembers: {
     clubMemberId: string;
   }[];
+  memberEventTasks: MemberEventTask[];
+}
+
+export interface MemberEventTask {
+  eventTaskDetailId: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  studentSubmission: string | null;
+  taskScore: number;
+  submissionScore: number;
+  submissionDate: string;
+  comment: string | null;
+  creator: {
+    userId: string;
+    studentId: string;
+    clubMemberId: string;
+    clubRoleName: string;
+    joinedAt: string;
+    requestedDate: string;
+    reason: string;
+    leaveReason: string | null;
+    clubActivityPoint: number;
+    leftDate: string | null;
+    avatar: string;
+    fullname: string;
+    email: string;
+    status: string;
+  };
+  reviewer: null;
+  eventTaskId: null;
+  clubMemberId: string;
+  detailName: string;
+  priority: string;
+  status: string;
 }
 
 export interface CreateInterTaskRequest {
@@ -168,5 +203,5 @@ export interface EventTaskDetail2 {
   startTime: string;
   deadline: string;
   status: string;
-  priority: string
+  priority: string;
 }
