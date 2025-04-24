@@ -124,8 +124,14 @@ export const TaskDetailPage = () => {
         subtask: createData,
         eventTaskId: task.eventTaskId,
       });
+      if (response.statusCode === 200) {
+        setIsCreateDialogOpen(false);
+      } else {
+        setIsCreateDialogOpen(true);
+      }
     } catch (error) {
-      console.error("Failed to update task:", error);
+      console.error("Failed to create subtask:", error);
+      throw error; // Ném lỗi để NewSubtaskDialog biết và không đóng dialog
     }
   };
   const handleEditSubtask = async (updatedTask: UpdateSubtaskRequest) => {
@@ -306,20 +312,24 @@ export const TaskDetailPage = () => {
       <NewSubtaskDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
-        onSubmit={(data) => {
-          // Chỉ gửi thông tin của subtask mới
-          handleAddSubtask({
-            detailName: data.detailName,
-            description: data.description,
-            startTime: fixTime(data.startTime),
-            startTimeTime: data.startTimeTime,
-            deadline: fixTime(data.deadline),
-            deadlineTime: data.deadlineTime,
-            status: data.status,
-            priority: data.priority,
-            assignedMemberIds: data.assignedMemberIds || [],
-            taskDependencyIds: data.taskDependencyIds || [],
-          });
+        onSubmit={async (data) => {
+          try {
+            await handleAddSubtask({
+              detailName: data.detailName,
+              description: data.description,
+              startTime: fixTime(data.startTime),
+              startTimeTime: data.startTimeTime,
+              deadline: fixTime(data.deadline),
+              deadlineTime: data.deadlineTime,
+              status: data.status,
+              priority: data.priority,
+              assignedMemberIds: data.assignedMemberIds || [],
+              taskDependencyIds: data.taskDependencyIds || [],
+            });
+          } catch (error) {
+            // Giữ dialog mở khi có lỗi
+            console.error("Error in onSubmit:", error);
+          }
         }}
         members={availableMembers}
         currentClub={currentClub}

@@ -77,7 +77,7 @@ export const InterClubEventList = () => {
 
     return matchesSearch && matchesStatus;
   });
-  console.log("status", selectedStatus);
+  console.log("evenet", events);
 
   return (
     <div className="space-y-4">
@@ -157,7 +157,7 @@ export const InterClubEventList = () => {
                     <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
                       <Calendar className="h-4 w-4 text-[#136cb9]" />
                       <span className="text-sm text-muted-foreground">
-                        {format(event.registeredEndDate, "MMM d")} -{" "}
+                        {format(event.registeredStartDate, "MMM d")} -{" "}
                         {format(event.registeredEndDate, "MMM d")}
                       </span>
                     </div>

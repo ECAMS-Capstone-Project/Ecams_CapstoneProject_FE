@@ -191,10 +191,12 @@ export const NewSubtaskDialog = ({
       taskDependencyIds: values.taskDependencyIds || [],
     };
 
-    onSubmit(newSubtask);
-    form.reset();
-
-    onClose();
+    try {
+      onSubmit(newSubtask);
+    } catch (error) {
+      // Giữ dialog mở khi có lỗi
+      console.error("Error submitting subtask:", error);
+    }
   };
   const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
 
