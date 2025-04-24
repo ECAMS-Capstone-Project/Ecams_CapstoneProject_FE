@@ -5,7 +5,7 @@ import {
   EventTaskDetail,
   InterTask,
   InterTaskSubmission,
-  UpdateInterTaskRequest,
+  UpdateInterTaskRequest3,
 } from "@/models/InterTask";
 import { useState } from "react";
 import { AssignMembersDialog } from "@/components/partial/club_owner/inter-club/task/AssignMembersDialog";
@@ -13,7 +13,6 @@ import { toast } from "react-hot-toast";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { useClub } from "@/hooks/club/useClub";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
-import { InterClubEventDTO } from "@/models/Event";
 import useAuth from "@/hooks/useAuth";
 import saveAs from "file-saver";
 import JSZip from "jszip";
@@ -29,7 +28,6 @@ export const SubtaskDetailPage = () => {
   const currentClub = state?.currentClub as EventClubDTO;
   const subtask = state?.subTask as EventTaskDetail;
   const task = state?.task as InterTask;
-  const selectedEvent = state?.selectedEvent as InterClubEventDTO;
   const navigate = useNavigate();
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +39,7 @@ export const SubtaskDetailPage = () => {
   const { user } = useAuth();
   const {
     getAvailableMemberQuery,
-    updateInterEventTask,
+    updateInterEventTask3,
     getInterTaskSubmissionQuery,
     reviewInterTaskSubmission,
   } = useInterTask();
@@ -65,30 +63,14 @@ export const SubtaskDetailPage = () => {
   );
   const submissions = submissionsData?.data?.data;
 
-  const handleAssignMembers = async (
-    taskId: string,
-    updateData: Partial<UpdateInterTaskRequest>
-  ) => {
-    console.log("updateData", updateData);
-    await updateInterEventTask({
-      eventTaskId: taskId,
-      clubId: currentClub.clubId,
-      eventId: selectedEvent.eventId,
-      taskName: task.taskName,
-      description: task.description,
-      startTime: task.startTime,
-      deadline: task.deadline,
-      status: task.status,
-      ...updateData,
-      eventTaskDetails: [
-        {
-          ...subtask,
-          assignedMembers: updateData.eventTaskDetails?.flatMap(
-            (detail) => detail.assignedMembers || []
-          ),
-        },
-      ],
-    });
+  const membersSelected = submissions && submissions.map(item => ({
+    clubMemberId: item.clubMemberId,
+  })) || [];
+
+  const handleAssignMembers = async (updateData: UpdateInterTaskRequest3) => {
+    updateData.priority = subtask.priority
+    updateData.eventTaskDetailId = subtask.eventTaskDetailId
+    await updateInterEventTask3({ subtask: updateData, eventTaskDetailId: subtask.eventTaskDetailId });
     setIsAssignDialogOpen(false);
     queryClient.invalidateQueries({
       queryKey: [
@@ -185,10 +167,9 @@ export const SubtaskDetailPage = () => {
             : availableClubMembers
         }
         subTask={subtask}
-        currentClub={currentClub}
         task={task}
-        selectedEvent={selectedEvent}
-        submissions={submissions || []}
+        clubId={task.clubId}
+        memberSelected={membersSelected}
       />
 
       <SubmissionDetailDialog
