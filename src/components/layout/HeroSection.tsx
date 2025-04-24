@@ -27,7 +27,7 @@ export const HeroSection = () => {
       {/* Ẩn ảnh khi màn hình nhỏ hơn 640px */}
       <div className="hero-image w-full md:w-1/2 hidden sm:block">
         <img
-          src="https://res.cloudinary.com/ecams/image/upload/v1739170806/unsplash_ugaOk9LkmQY_l2jbgn.png"
+          src="https://res.cloudinary.com/ecams/image/upload/v1745535187/unsplash_ugaOk9LkmQY_m8p51m.png"
           alt="Hero Image"
           className="w-full h-auto rounded-tr-2xl rounded-br-2xl"
         />

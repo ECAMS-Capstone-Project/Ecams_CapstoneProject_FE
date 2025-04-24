@@ -164,12 +164,14 @@ export const NewSubtaskDialog = ({
           startTimeTime: "00:00",
           deadline: new Date(),
           deadlineTime: "00:00",
-          status: "",
+          status: "NOT_STARTED",
           priority: "MEDIUM",
           assignedMemberIds: [],
           taskDependencyIds: [],
         },
   });
+
+  console.log("form.formState.errors", form.formState.errors);
 
   const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
     // Combine date and time

@@ -158,14 +158,15 @@ export const EventDetailsCard = ({
                 new Date(selectedEvent.registeredStartDate),
                 "dd/MM/yyyy"
               )}{" "}
-              -{format(new Date(selectedEvent.registeredEndDate), "dd/MM/yyyy")}
+              -{" "}
+              {format(new Date(selectedEvent.registeredEndDate), "dd/MM/yyyy")}
             </span>
           </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Clock className="w-5 h-5 text-[#136cb9]" />
             <span className="text-[#136cb9]">Registration Time: </span>
             <span className="text-gray-700">
-              {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -
+              {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -{" "}
               {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
             </span>
           </div>
