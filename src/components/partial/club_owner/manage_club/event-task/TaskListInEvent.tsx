@@ -119,6 +119,7 @@ export default function TaskListInEvent() {
 
   const handleEditSubmit = async (updatedTask: EventTaskDetail2) => {
     try {
+      console.log(updatedTask);
       const updateData: UpdateInterTaskRequest2 = {
         eventTaskId: task.eventTaskId,
         clubId: task.clubId,
