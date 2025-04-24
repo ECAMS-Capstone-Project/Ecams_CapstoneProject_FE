@@ -9,37 +9,31 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Search, Users, Eye, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  AvailableMember,
   EventTaskDetail,
-  UpdateInterTaskRequest,
   InterTask,
-  InterTaskSubmission,
+  UpdateInterTaskRequest3,
 } from "@/models/InterTask";
 // import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
 import { toast } from "react-hot-toast";
-import { MemberInfoDialog } from "./MemberInfoDialog";
 import { Badge } from "@/components/ui/badge";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
-import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
-import { EventClubDTO } from "@/api/representative/EventAgent";
 import { fixTime } from "@/lib/utils";
-import { InterClubEventDTO } from "@/models/Event";
+import { AvailableMemberEventTask, TaskRecommendedByAI } from "@/api/student/ClubAgent";
+import { MemberInfoDialog } from "../../manage_club/event-task/AssignMemberInfoDialog";
 
 interface AssignMembersDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAssign: (
-    taskId: string,
-    data: Partial<UpdateInterTaskRequest>
-  ) => Promise<void>;
-  members: AvailableMember[] | ClubMemberDTO[];
+  onAssign: (data: UpdateInterTaskRequest3) => Promise<void>;
+  members: AvailableMemberEventTask[] | ClubMemberDTO[];
   subTask: EventTaskDetail;
-  currentClub: EventClubDTO;
+  clubId: string;
   task: InterTask;
-  selectedEvent: InterClubEventDTO;
-  submissions: InterTaskSubmission[];
+  memberSelected: {
+    clubMemberId: string;
+  }[]
 }
 
 export const AssignMembersDialog = ({
@@ -49,30 +43,29 @@ export const AssignMembersDialog = ({
   members,
   subTask,
   task,
-  currentClub,
-  selectedEvent,
-  submissions,
+  clubId,
+  memberSelected
 }: AssignMembersDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMembers, setSelectedMembers] = useState<string[]>(() => {
-    // Initialize với tất cả người đã được assign và đã submit
-    const submittedMembers = submissions.map((m) => m.clubMemberId);
-    const assignedMembers =
-      subTask.assignedMembers?.map((m) => m.clubMemberId) || [];
-    return [...new Set([...submittedMembers, ...assignedMembers])];
-  });
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [, setAssignAll] = useState(false);
   const [aiRecommendations, setAIRecommendations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAIRecommendations, setShowAIRecommendations] = useState(false);
   const [selectedMember, setSelectedMember] = useState<
-    AvailableMember | ClubMemberDTO | null
+    AvailableMemberEventTask | ClubMemberDTO | null
   >(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
+    }
+  }, [isOpen, memberSelected]);
 
   const filteredMembers = members.filter((member) => {
     if (!member) return false;
-    const availableMember = member as AvailableMember;
+    const availableMember = member as AvailableMemberEventTask;
     const clubMember = member as ClubMemberDTO;
     return (
       (availableMember.fullName?.toLowerCase() || "").includes(
@@ -84,61 +77,78 @@ export const AssignMembersDialog = ({
     );
   });
 
+  console.log(members);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
+    }
+  }, [isOpen, memberSelected]);
+
   const handleSelectMember = (memberId: string, checked: boolean) => {
+    console.log(
+      `Checkbox for member ${memberId} is ${checked ? "checked" : "unchecked"}`
+    );
+
+    // Check if the task detail is selected and update the selectedMembers accordingly
     setSelectedMembers((prevSelectedMembers) => {
       if (checked) {
-        return [...prevSelectedMembers, memberId];
+        // Add the member to the selectedMembers if not already present
+        if (!prevSelectedMembers.includes(memberId)) {
+          console.log(`Adding member ${memberId} to selectedMembers`);
+          return [...prevSelectedMembers, memberId];
+        }
       } else {
+        // Remove the member from the selectedMembers if unchecked
+        console.log(`Removing member ${memberId} from selectedMembers`);
         return prevSelectedMembers.filter((id) => id !== memberId);
       }
+      return prevSelectedMembers;
     });
   };
-
-  const isCurrentlyAssigned = (memberId: string) => {
-    return submissions.some((m) => m.clubMemberId === memberId) || false;
+  console.log("selectedMembers", selectedMembers);
+  const isMemberAssignedToSubtask = (
+    currentId: string,
+    eventTaskDetailId: string
+  ) => {
+    // Check if the member is assigned to the current task detail by matching the taskDetailId
+    return currentId === eventTaskDetailId; // Adjust if you need task-specific matching logic
   };
 
   const handleAssign = () => {
-    const updatedSubtasks = task.eventTaskDetails.map((detail) => {
-      if (detail.eventTaskDetailId === subTask.eventTaskDetailId) {
-        return {
-          ...detail,
-          assignedMembers: selectedMembers.map((id) => ({ clubMemberId: id })),
-        };
-      }
-      return detail;
-    });
+    console.log("selectedMembers", selectedMembers);
 
-    const updateData: UpdateInterTaskRequest = {
+    const updateData: UpdateInterTaskRequest3 = {
       eventTaskId: task.eventTaskId,
-      clubId: currentClub.clubId,
-      eventId: selectedEvent.eventId,
-      taskName: task.taskName,
+      eventTaskDetailId: "",
+      priority: "",
+      detailName: task.taskName,
       description: task.description,
       startTime: fixTime(new Date(task.startTime)),
       deadline: fixTime(new Date(task.deadline)),
       status: task.status || "ON_GOING",
-      eventTaskDetails: updatedSubtasks,
+      assignedMemberIds: [...selectedMembers],
+      taskDependencyIds: [],
+      isDependencyExtended: false
     };
 
-    onAssign(task.eventTaskId, updateData);
+    onAssign(updateData);
     onClose();
   };
 
   const handleAIRecommend = async () => {
     try {
       setIsLoading(true);
-      const response = await GetAIRecommendation(
+      const response = await TaskRecommendedByAI(
+        clubId,
         {
           taskName: subTask.detailName,
           taskDescription: subTask.description,
           startTime: new Date(subTask.startTime).toISOString(),
           endTime: new Date(subTask.deadline).toISOString(),
           priority: subTask.priority,
-          clubId: currentClub.clubId,
-          taskId: subTask.eventTaskDetailId,
-        },
-        currentClub.clubId
+          clubId: clubId,
+        }
       );
       if (response.data) {
         setAIRecommendations(response.data);
@@ -207,19 +217,6 @@ export const AssignMembersDialog = ({
                       {isLoading ? "Loading..." : "AI Recommendation"}
                     </span>
                   </a>
-
-                  {/* <center>
-                    <button
-                      className="codepro-custom-btn codepro-btn-6"
-                      title="Code Pro"
-                      onClick={() => window.open("https://www.code.pro.vn/")}
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        <Sparkles className="h-4 w-4" />
-                        {isLoading ? "Loading..." : "AI Recommendation"}
-                      </span>
-                    </button>
-                  </center> */}
                 </div>
               </div>
             </div>
@@ -258,7 +255,7 @@ export const AssignMembersDialog = ({
                     >
                       <div className="space-y-1">
                         <span className="text-sm font-medium text-gray-900">
-                          {(member as AvailableMember).fullName ||
+                          {(member as AvailableMemberEventTask).fullName ||
                             (member as ClubMemberDTO).fullname}
                         </span>
                         <div className="flex items-center gap-2">
@@ -276,14 +273,21 @@ export const AssignMembersDialog = ({
                               Recommended
                             </Badge>
                           )}
-                          {isCurrentlyAssigned(member.clubMemberId) && (
-                            <Badge
-                              variant="outline"
-                              className="bg-green-50 text-green-700 border-green-200"
-                            >
-                              Assigned
-                            </Badge>
-                          )}
+                          {isMemberAssignedToSubtask(
+                            (member as AvailableMemberEventTask).currentTasks?.find(
+                              (task) =>
+                                task.eventTaskDetailId ===
+                                subTask.eventTaskDetailId
+                            )?.eventTaskDetailId || "",
+                            subTask.eventTaskDetailId
+                          ) && (
+                              <Badge
+                                variant="outline"
+                                className="bg-green-50 text-green-700 border-green-200"
+                              >
+                                Assigned
+                              </Badge>
+                            )}
                         </div>
                       </div>
                       <Button
@@ -325,7 +329,7 @@ export const AssignMembersDialog = ({
         <MemberInfoDialog
           isOpen={!!selectedMember}
           onClose={() => setSelectedMember(null)}
-          member={selectedMember as AvailableMember}
+          member={selectedMember as AvailableMemberEventTask}
           recommendation={getMemberRecommendation(selectedMember.clubMemberId)}
         />
       )}
