@@ -37,6 +37,7 @@ import {
 import LoadingAnimation from "@/components/ui/loading";
 import toast from "react-hot-toast";
 import { useInterTask } from "@/hooks/club/useInterTask";
+import DeleteSubtaskDialog from "../../inter-club/task/sub-task/DeleteSubtaskDialog";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();

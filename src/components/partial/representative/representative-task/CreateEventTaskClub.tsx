@@ -46,10 +46,8 @@ import {
   GetAvailableTask,
   TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
-import { InterTask } from "@/models/InterTask";
-import SpecificTaskList, {
-  TaskDependencyResponseDTO,
-} from "./SpecificTasktList";
+import { InterTask, TaskDependencyResponseDTO } from "@/models/InterTask";
+import SpecificTaskList from "./SpecificTasktList";
 import SpecificStudentList from "./SpecificStudentList";
 
 export default function CreateEventTaskClub() {

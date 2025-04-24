@@ -3,16 +3,26 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { User, Clock, ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { EventSubmissionTaskDetail, GetMemberSubmissionTaskEvent } from "@/api/club-owner/TaskAPI";
+import {
+  EventSubmissionTaskDetail,
+  GetMemberSubmissionTaskEvent,
+} from "@/api/club-owner/TaskAPI";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
-import { EventTaskDetail, InterTask, UpdateInterTaskRequest3 } from "@/models/InterTask";
+import {
+  EventTaskDetail,
+  InterTask,
+  UpdateInterTaskRequest3,
+} from "@/models/InterTask";
 import toast from "react-hot-toast";
-import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
+import {
+  AvailableMemberEventTask,
+  GetAvailableMember,
+} from "@/api/student/ClubAgent";
 import { AssignMembersDialog } from "./AssignMemberDialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 
@@ -20,10 +30,11 @@ const TaskDetailCard = () => {
   const { taskId = "" } = useParams();
   const location = useLocation();
   const isClubOwner = location.state?.isClubOwner as boolean;
-  const taskDetail = location.state?.taskDetail as EventTaskDetail
-  const clubId = location.state?.clubId as string
-  const bigTask = location.state?.bigTask as InterTask
-  const [submissionList, setSubmissionList] = useState<EventSubmissionTaskDetail[]>();
+  const taskDetail = location.state?.taskDetail as EventTaskDetail;
+  const clubId = location.state?.clubId as string;
+  const bigTask = location.state?.bigTask as InterTask;
+  const [submissionList, setSubmissionList] =
+    useState<EventSubmissionTaskDetail[]>();
   const [currentPageSubmission, setCurrentPageSubmission] = useState(1);
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState<boolean>(false);
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
@@ -33,11 +44,16 @@ const TaskDetailCard = () => {
   const { user } = useAuth();
   const { updateInterEventTask3 } = useInterTask();
 
+  const [flag, setFlag] = useState<boolean>(false);
+
   useEffect(() => {
     if (!taskId) return;
     async function fetchTaskDetail() {
       try {
-        const response = await GetMemberSubmissionTaskEvent(taskId, currentPageSubmission);
+        const response = await GetMemberSubmissionTaskEvent(
+          taskId,
+          currentPageSubmission
+        );
         if (response.data) {
           setSubmissionList(response.data.data);
         }
@@ -46,7 +62,7 @@ const TaskDetailCard = () => {
       }
     }
     fetchTaskDetail();
-  }, [taskId, currentPageSubmission]);
+  }, [taskId, currentPageSubmission, flag]);
 
   useEffect(() => {
     async function fetchMembers() {
@@ -68,9 +84,12 @@ const TaskDetailCard = () => {
     fetchMembers();
   }, [taskDetail, clubId]);
 
-  const membersSelected = submissionList && submissionList.map(item => ({
-    clubMemberId: item.clubMemberId,
-  })) || [];
+  const membersSelected =
+    (submissionList &&
+      submissionList.map((item) => ({
+        clubMemberId: item.clubMemberId,
+      }))) ||
+    [];
 
   const sortedSubmissions = [
     ...(submissionList ?? []).filter((s) => s.memberEmail === user?.email),
@@ -79,7 +98,9 @@ const TaskDetailCard = () => {
 
   // Pagination logic for Submissions
   const itemsPerPage = 5;
-  const totalPagesSubmission = Math.ceil(sortedSubmissions.length / itemsPerPage);
+  const totalPagesSubmission = Math.ceil(
+    sortedSubmissions.length / itemsPerPage
+  );
   const paginatedSubmissions = sortedSubmissions.slice(
     (currentPageSubmission - 1) * itemsPerPage,
     currentPageSubmission * itemsPerPage
@@ -91,29 +112,37 @@ const TaskDetailCard = () => {
 
     if (isUserSubmission && isClubOwner && !isSubmitted) {
       // Club owner chính là người nộp và chưa nộp => bắt đi nộp trước
-      navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
+      navigate("/club/task-submission-student", {
+        state: { taskDetail, submission: data },
+      });
     } else if (isClubOwner) {
       // Club owner (đã nộp hoặc không phải người nộp) => vào trang quản lý
-      navigate('/club/task-submission', { state: { taskDetail, submission: data } });
+      navigate("/club/task-submission", {
+        state: { taskDetail, submission: data },
+      });
     } else if (isUserSubmission) {
       if (new Date(taskDetail.startTime) > new Date()) {
         toast.error("Task has not started yet");
       } else {
         // Thành viên thường được phép nộp
-        navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
+        navigate("/club/task-submission-student", {
+          state: { taskDetail, submission: data },
+        });
       }
     }
   };
 
-
   const handleAssignMembers = async (updateData: UpdateInterTaskRequest3) => {
-    updateData.eventTaskDetailId = taskDetail.eventTaskDetailId
-    updateData.priority = taskDetail.priority
-    updateData.detailName = taskDetail.detailName
-    await updateInterEventTask3({ subtask: updateData, eventTaskDetailId: taskDetail.eventTaskDetailId });
+    updateData.eventTaskDetailId = taskDetail.eventTaskDetailId;
+    updateData.priority = taskDetail.priority;
+    updateData.detailName = taskDetail.detailName;
+    await updateInterEventTask3({
+      subtask: updateData,
+      eventTaskDetailId: taskDetail.eventTaskDetailId,
+    });
     setIsAssignDialogOpen(false);
+    setFlag((pre) => !pre);
   };
-
 
   return (
     <div className="max-w-full mx-auto space-y-6 ">
@@ -137,7 +166,9 @@ const TaskDetailCard = () => {
                 <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-blue-600">{taskDetail?.detailName}</h1>
+                <h1 className="text-2xl font-bold text-blue-600">
+                  {taskDetail?.detailName}
+                </h1>
               </div>
             </div>
             <p className="mt-1">{taskDetail?.description}</p>
@@ -148,14 +179,28 @@ const TaskDetailCard = () => {
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm font-bold text-gray-700">Start Time</p>
-                <p>{taskDetail?.startTime ? format(new Date(taskDetail.startTime), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
+                <p>
+                  {taskDetail?.startTime
+                    ? format(
+                        new Date(taskDetail.startTime),
+                        "dd/MM/yyyy - HH:mm a"
+                      )
+                    : "N/A"}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="text-sm font-bold text-gray-700">Deadline</p>
-                <p>{taskDetail?.deadline ? format(new Date(taskDetail.deadline), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
+                <p>
+                  {taskDetail?.deadline
+                    ? format(
+                        new Date(taskDetail.deadline),
+                        "dd/MM/yyyy - HH:mm a"
+                      )
+                    : "N/A"}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -172,7 +217,9 @@ const TaskDetailCard = () => {
                   <span className="w-5 h-5 rounded-full bg-[#D6E4FF] inline-block" />
                   <div>
                     <p className="text-sm font-medium text-gray-700">Status</p>
-                    <p className="text-sm font-medium text-[#007BFF]">InActive</p>
+                    <p className="text-sm font-medium text-[#007BFF]">
+                      InActive
+                    </p>
                   </div>
                 </>
               )}
@@ -180,7 +227,9 @@ const TaskDetailCard = () => {
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-blue-500" />
               <div>
-                <p className="text-sm font-bold text-gray-700">Number of member in task</p>
+                <p className="text-sm font-bold text-gray-700">
+                  Number of member in task
+                </p>
                 <p>{submissionList?.length}</p>
               </div>
             </div>
@@ -194,7 +243,10 @@ const TaskDetailCard = () => {
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               📥 Submissions
             </h3>
-            <Button variant={'custom'} onClick={() => setIsAssignDialogOpen(true)}>
+            <Button
+              variant={"custom"}
+              onClick={() => setIsAssignDialogOpen(true)}
+            >
               Assign Member
             </Button>
           </div>
@@ -215,7 +267,11 @@ const TaskDetailCard = () => {
                         }
                       }}
                       className={`border rounded-xl p-5 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-200 space-y-3 
-                      ${isUserSubmission ? "bg-blue-50 border-blue-300" : "bg-white border-gray-200"}`}
+                      ${
+                        isUserSubmission
+                          ? "bg-blue-50 border-blue-300"
+                          : "bg-white border-gray-200"
+                      }`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex gap-3">
@@ -231,45 +287,57 @@ const TaskDetailCard = () => {
                             {/* Tên + số lượng nộp */}
                             <p className="text-sm font-semibold text-black uppercase">
                               {data.memberName}{" "}
-                              <span className="font-medium text-gray-600">({1})</span>
+                              <span className="font-medium text-gray-600">
+                                ({1})
+                              </span>
                             </p>
 
                             {/* Thời gian */}
                             <p className="text-xs text-gray-500">
                               {data?.submissionDate === "0001-01-01T00:00:00"
                                 ? "Not submitted"
-                                : format(new Date(data.submissionDate), "dd-MM-yyyy HH:mm:ss")}
+                                : format(
+                                    new Date(data.submissionDate),
+                                    "dd-MM-yyyy HH:mm:ss"
+                                  )}
                             </p>
                           </div>
                         </div>
                         <span
-                          className={`text-sm font-medium px-2 py-0.5 rounded-full ${data.status === "ON_GOING"
-                            ? "text-blue-600 bg-blue-100"
-                            : data.status === "REVIEWING"
+                          className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                            data.status === "ON_GOING"
+                              ? "text-blue-600 bg-blue-100"
+                              : data.status === "REVIEWING"
                               ? "text-yellow-600 bg-yellow-100"
                               : data.status === "COMPLETED"
-                                ? "text-green-900 bg-green-300"
-                                : "text-gray-600 bg-gray-300"
-                            }`}
+                              ? "text-green-900 bg-green-300"
+                              : "text-gray-600 bg-gray-300"
+                          }`}
                         >
                           {data.status}
                         </span>
                       </div>
 
                       <p className="text-sm text-gray-700">
-                        <span className="font-medium">📧 Email:</span> {data.memberEmail}
+                        <span className="font-medium">📧 Email:</span>{" "}
+                        {data.memberEmail}
                       </p>
 
                       <p className="text-sm text-gray-700">
                         <span className="font-medium">🕒 Submitted at:</span>{" "}
                         {data?.submissionDate === "0001-01-01T00:00:00"
                           ? "Not submitted"
-                          : format(new Date(data.submissionDate), "dd/MM/yyyy - hh:mm")}
+                          : format(
+                              new Date(data.submissionDate),
+                              "dd/MM/yyyy - hh:mm"
+                            )}
                       </p>
 
                       <p className="text-sm text-gray-700">
                         <span className="font-medium">📝 Content:</span>{" "}
-                        <DescriptionWithToggle text={data?.studentSubmission || "Not submitted"} ></DescriptionWithToggle>
+                        <DescriptionWithToggle
+                          text={data?.studentSubmission || "Not submitted"}
+                        ></DescriptionWithToggle>
                       </p>
                     </div>
                   </motion.div>

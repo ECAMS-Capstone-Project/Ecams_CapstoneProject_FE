@@ -194,7 +194,6 @@ export interface UpdateInterTaskRequest2 {
   startTime: string;
   deadline: string;
   status: string;
-  eventTaskDetails: UpdateInterTaskDetailRequest2[];
 }
 export interface UpdateSubtaskRequest {
   eventTaskDetailId: string;
