@@ -14,7 +14,7 @@ export const TaskSchema = z
         }),
         startTimeTime: z.string().nonempty("Start time is required"),
         taskScore: z.preprocess((a) => Number(a), z.number().min(0).max(100)),
-        assignAll: z.boolean(),
+        assignAll: z.boolean().optional(),
         selectedMembers: z.array(z.string()),
     })
     .refine(

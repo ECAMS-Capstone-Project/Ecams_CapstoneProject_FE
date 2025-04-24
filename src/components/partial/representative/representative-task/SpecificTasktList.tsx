@@ -216,6 +216,9 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
           )}
         </DialogContent>
       </Dialog>
+      {displayed.length === 0 && (
+        <p className="text-sm text-muted-foreground">No task found.</p>
+      )}
     </div>
   );
 };

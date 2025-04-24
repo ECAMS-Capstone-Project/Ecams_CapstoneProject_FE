@@ -99,9 +99,6 @@ const EventSchema1 = z
       ),
     description: z.string(),
     eventType: z.string().min(1, "Event Type Require"),
-    trainingPoint: z.coerce.number().min(0, {
-      message: "Training point must be a positive number",
-    }),
   })
   .refine((data) => {
     return data.registeredEndDate >= data.registeredStartDate;
@@ -212,7 +209,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
           { AreaId: "", Date: new Date(), StartTime: "8", EndTime: "17" },
         ],
         eventType: "",
-        trainingPoint: 0,
       },
   })
 
@@ -234,7 +230,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       console.log(values.imageUrl);
       const formData = new FormData()
       if (clubId) {
-        formData.append("ClubId", clubId)
+        formData.append("Clubs", `[{"ClubId":"${clubId}", "IsHost":true}]`)
       } else {
         toast.error("Club Id is not available")
       }
@@ -251,7 +247,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
         fixTime(values.registeredEndDate).toISOString()
       )
       formData.append("Price", values.price.toString())
-      formData.append("TrainingPoint", values.trainingPoint.toString())
       formData.append("MaxParticipants", values.maxParticipants.toString())
       formData.append("EventType", values.eventType)
       if ((values.imageUrl as any) instanceof File) {
@@ -282,7 +277,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       }
       onSuccess?.()
     } catch (error: any) {
-      toast.error(error.message || "An error occurred")
       console.error("Error:", error)
     } finally {
       setIsLoading(false)
@@ -509,19 +503,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                               />
                             </PopoverContent>
                           </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="trainingPoint"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Training point</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

@@ -85,16 +85,25 @@ const TaskDetailCard = () => {
   );
 
   const handleClick = (data: EventSubmissionTaskDetail) => {
-    if (isClubOwner) {
-      navigate('/club/task-submission', { state: { taskDetail: taskDetail, submission: data } })
-    } else {
+    const isUserSubmission = data.memberEmail === user?.email;
+    const isSubmitted = data.submissionDate !== "0001-01-01T00:00:00";
+
+    if (isUserSubmission && isClubOwner && !isSubmitted) {
+      // Club owner chính là người nộp và chưa nộp => bắt đi nộp trước
+      navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
+    } else if (isClubOwner) {
+      // Club owner (đã nộp hoặc không phải người nộp) => vào trang quản lý
+      navigate('/club/task-submission', { state: { taskDetail, submission: data } });
+    } else if (isUserSubmission) {
       if (new Date(taskDetail.startTime) > new Date()) {
-        return toast.error("Task has not start")
+        toast.error("Task has not started yet");
       } else {
-        navigate('/club/task-submission-student', { state: { taskDetail: taskDetail, submission: data } })
+        // Thành viên thường được phép nộp
+        navigate('/club/task-submission-student', { state: { taskDetail, submission: data } });
       }
     }
-  }
+  };
+
 
   const handleAssignMembers = async (
     taskId: string,
@@ -156,14 +165,14 @@ const TaskDetailCard = () => {
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
-                <p className="text-sm font-medium text-gray-700">Start Time</p>
+                <p className="text-sm font-bold text-gray-700">Start Time</p>
                 <p>{taskDetail?.startTime ? format(new Date(taskDetail.startTime), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-blue-500" />
               <div>
-                <p className="text-sm font-medium text-gray-700">Deadline</p>
+                <p className="text-sm font-bold text-gray-700">Deadline</p>
                 <p>{taskDetail?.deadline ? format(new Date(taskDetail.deadline), "dd/MM/yyyy - HH:mm a") : "N/A"}</p>
               </div>
             </div>
@@ -172,7 +181,7 @@ const TaskDetailCard = () => {
                 <>
                   <span className="w-5 h-5 rounded-full bg-green-500 inline-block" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Status</p>
+                    <p className="text-sm font-bold text-gray-700">Status</p>
                     <p className="text-green-600 font-semibold">Active</p>
                   </div>
                 </>
@@ -189,7 +198,7 @@ const TaskDetailCard = () => {
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-blue-500" />
               <div>
-                <p className="text-sm font-medium text-gray-700">Number of member in task</p>
+                <p className="text-sm font-bold text-gray-700">Number of member in task</p>
                 <p>{submissionList?.length}</p>
               </div>
             </div>
@@ -311,17 +320,19 @@ const TaskDetailCard = () => {
           )}
         </CardContent>
       </Card>
-      <AssignMembersDialog
-        isOpen={isAssignDialogOpen}
-        onClose={() => setIsAssignDialogOpen(false)}
-        onAssign={handleAssignMembers}
-        members={allStudents}
-        subTask={taskDetail}
-        clubId={clubId}
-        task={bigTask}
-        eventId={eventId}
-        memberSelected={membersSelected}
-      />
+      {isClubOwner && (
+        <AssignMembersDialog
+          isOpen={isAssignDialogOpen}
+          onClose={() => setIsAssignDialogOpen(false)}
+          onAssign={handleAssignMembers}
+          members={allStudents}
+          subTask={taskDetail}
+          clubId={clubId}
+          task={bigTask}
+          eventId={eventId}
+          memberSelected={membersSelected}
+        />
+      )}
     </div>
   );
 };

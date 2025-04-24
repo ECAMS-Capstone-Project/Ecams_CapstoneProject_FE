@@ -138,6 +138,9 @@ export const TaskRecommendedByAI = async (clubId: string, data: TaskRecommendedA
     } else if (error.response.status == 404) {
       toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
+    } else if (error.response.status == 204) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
     }
     if (error.response) {
       toast.error(error.response.data.message);

@@ -14,6 +14,7 @@ import ClubRequirements from "./ClubCondition";
 import { XCircleIcon } from "lucide-react";
 import { useClubs } from "@/hooks/student/useClub";
 import useAuth from "@/hooks/useAuth";
+import { ClubCondition } from "@/api/club-owner/ClubByUser";
 
 interface JoinClubDialogProps {
   club: ClubResponse;
@@ -36,15 +37,24 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
   const [conditionEvidences, setConditionEvidences] = useState<ConditionEvidence[]>([]);
   const { createClubJoinedRequest, isPending } = useClubs();
   const { user } = useAuth();
+  const [allConditions, setAllConditions] = useState<ClubCondition[]>([]);
+
   const handleSubmit = async () => {
     if (!reason.trim()) {
       toast.error("Please provide a reason for joining the club!");
       return;
     }
-    if (conditionEvidences.length <= 0) {
-      toast.error("Please provide evidence for joining the club!");
+    const missingRequiredConditions = allConditions.filter((condition) =>
+      condition.isRequired &&
+      !conditionEvidences.find((evi) => evi.conditionId === condition.conditionId)
+    );
+
+    if (missingRequiredConditions.length > 0) {
+      const missingNames = missingRequiredConditions.map((c) => c.conditionName).join(", ");
+      toast.error(`Please upload evidence for required condition(s): ${missingNames}`);
       return;
     }
+
     try {
       await createClubJoinedRequest({
         ClubId: club.clubId,
@@ -73,7 +83,7 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
         </DialogHeader>
 
         <div className="mt-4 px-4">
-          <ClubRequirements clubId={club.clubId} conditionEvidences={conditionEvidences} setConditionEvidences={setConditionEvidences} />
+          <ClubRequirements clubId={club.clubId} conditionEvidences={conditionEvidences} setConditionEvidences={setConditionEvidences} setAllConditions={setAllConditions} />
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

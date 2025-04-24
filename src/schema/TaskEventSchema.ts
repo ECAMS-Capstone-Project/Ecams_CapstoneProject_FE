@@ -10,7 +10,6 @@ export const EventTaskDetailSchema = z
     deadlineTime: z.string().min(1, "Deadline time is required"),
     priority: z.string().min(1, "Priority is required"),
     assignedMembers: z.array(z.string()),
-    assignAll: z.boolean(),
   })
   .refine((data) => {
     const start = new Date(data.startTimeDate);
