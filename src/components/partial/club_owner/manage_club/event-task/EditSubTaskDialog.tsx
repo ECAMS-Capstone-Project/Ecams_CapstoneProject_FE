@@ -114,6 +114,9 @@ export default function EditSubTaskDialog({
     const [searchTerm2, setSearchTerm2] = useState("");
     const [debouncedSearch2, setDebouncedSearch2] = useState(searchTerm2);
     const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+    const [showExtendCheckbox, setShowExtendCheckbox] = useState(false);
+    const [extendDependencies, setExtendDependencies] = useState(false);
+    const [originalForm, setOriginalForm] = useState<FormState | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedSearch2(searchTerm2), 500);
@@ -131,29 +134,36 @@ export default function EditSubTaskDialog({
             const start = new Date(task.startTime);
             const deadline = new Date(task.deadline);
 
-            setForm({
+            const newForm = {
                 name: task.detailName,
                 desc: task.description || "",
                 priority: task.priority,
-                startDate: new Date(
-                    start.getFullYear(),
-                    start.getMonth(),
-                    start.getDate()
-                ),
+                startDate: new Date(start.getFullYear(), start.getMonth(), start.getDate()),
                 startTime: format(start, "HH:mm"),
-                deadlineDate: new Date(
-                    deadline.getFullYear(),
-                    deadline.getMonth(),
-                    deadline.getDate()
-                ),
+                deadlineDate: new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate()),
                 deadlineTime: format(deadline, "HH:mm"),
-            });
-            // if (initialSelectedTasks && initialSelectedTasks.length > 0) {
-            //     setSelectedTasks(initialSelectedTasks.map(t => t.eventTaskDetailId));
-            // }
+            };
+
+            setForm(newForm);
+            setOriginalForm(newForm);
+            setShowExtendCheckbox(false);
+            setExtendDependencies(false);
             setErrors({});
         }
     }, [task]);
+
+    useEffect(() => {
+        if (!originalForm) return;
+
+        const changed =
+            form.startDate?.toDateString() !== originalForm.startDate?.toDateString() ||
+            form.startTime !== originalForm.startTime ||
+            form.deadlineDate?.toDateString() !== originalForm.deadlineDate?.toDateString() ||
+            form.deadlineTime !== originalForm.deadlineTime;
+
+        setShowExtendCheckbox(changed);
+    }, [form, originalForm]);
+
 
 
     const handleToggleTask = (taskId: string, checked: boolean) => {
@@ -332,6 +342,20 @@ export default function EditSubTaskDialog({
                         </div>
                     </div>
                 </div>
+                {showExtendCheckbox && (
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="extendDependencies"
+                            checked={extendDependencies}
+                            onChange={(e) => setExtendDependencies(e.target.checked)}
+                        />
+                        <Label htmlFor="extendDependencies">
+                            Extend the dates of task dependencies of this subtask
+                        </Label>
+                    </div>
+                )}
+
 
                 <div className="pl-1">
                     <label className="block text-sm font-medium mb-2">Choose task</label>
