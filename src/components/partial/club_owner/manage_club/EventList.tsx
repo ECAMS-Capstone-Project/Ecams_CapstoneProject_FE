@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
 import { Card } from "@/components/ui/card";
 import toast from "react-hot-toast";
-import { CircleOff } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 
 interface Props {
   clubId: string;
@@ -122,7 +122,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                 <Card
                   key={index}
                   onClick={() => {
-                    if (evt.status !== "sPENDING") {
+                    if (evt.status !== "PENDING") {
                       navigate(`/club/event-task/${evt.eventId}`, {
                         state: {
                           isClubOwner,
@@ -132,11 +132,11 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                       });
                     } else {
                       toast("It is pending event!", {
-                        icon: <CircleOff />,
+                        icon: <TriangleAlert className="text-red-700" />,
                         style: {
                           borderRadius: "10px",
-                          background: "#333",
-                          color: "#fff",
+                          background: "#FDEE21",
+                          color: "black",
                         },
                       });
                     }

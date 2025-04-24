@@ -234,7 +234,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       console.log(values.imageUrl);
       const formData = new FormData()
       if (clubId) {
-        formData.append("ClubId", clubId)
+        formData.append("Clubs", `[{"ClubId":"${clubId}", "IsHost":true}]`)
       } else {
         toast.error("Club Id is not available")
       }
