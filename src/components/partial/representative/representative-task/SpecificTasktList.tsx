@@ -7,21 +7,19 @@ import { format } from "date-fns";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 // Fake Task Type
-interface TaskItem {
+export interface TaskDependencyResponseDTO {
     eventTaskDetailId: string;
-    eventTaskId: string;
     detailName: string;
     description: string;
-    startTime: string;
-    deadline: string;
+    startTime: string; // ISO 8601 date string
+    deadline?: string | null; // optional or null
     status: string;
     priority: string;
 }
 
 
-// Props
 interface SpecificTaskListProps {
-    tasks: TaskItem[];
+    tasks: TaskDependencyResponseDTO[];
     selected: string[];
     handleToggleTask: (taskId: string, checked: boolean) => void;
 }
@@ -32,7 +30,7 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
     handleToggleTask,
 }) => {
     const [open1, setOpen1] = useState(false);
-    const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null);
+    const [selectedTask, setSelectedTask] = useState<TaskDependencyResponseDTO | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [page, setPage] = useState(1);
     const CHUNK_SIZE = 5;
@@ -70,7 +68,7 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
         };
     }, [page, tasks.length]);
 
-    const handleClick = (task: TaskItem) => {
+    const handleClick = (task: TaskDependencyResponseDTO) => {
         setSelectedTask(task);
         setOpen1(true);
     };
@@ -80,17 +78,17 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
             ref={containerRef}
             className="border p-3 rounded space-y-2 max-h-96 overflow-y-auto"
         >
-            {displayed.map((task) => {
-                const isChecked = selected.includes(task.eventTaskId);
+            {displayed.map((task, index) => {
+                const isChecked = selected.includes(task.eventTaskDetailId);
                 return (
                     <div
-                        key={task.eventTaskId}
+                        key={index}
                         className="grid grid-cols-[auto_1fr_auto] items-center w-full rounded-xl border border-muted bg-background px-4 py-3 shadow-sm hover:shadow-md transition gap-3"
                     >
                         <Checkbox
                             checked={isChecked}
                             onCheckedChange={(checked) =>
-                                handleToggleTask(task.eventTaskId, !!checked)
+                                handleToggleTask(task.eventTaskDetailId, !!checked)
                             }
                         />
                         <div className="flex flex-col gap-1">
@@ -98,7 +96,7 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
                                 {task.detailName}
                             </span>
                             <span className="text-sm text-muted-foreground">
-                                Deadline: {task.deadline}
+                                Deadline: {task.deadline ? format(new Date(task.deadline), "yyyy-MM-dd - HH:mm") : "No deadline"}
                             </span>
                             <span className="text-sm text-muted-foreground">
                                 Status:{" "}
@@ -172,7 +170,9 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
                                     </p>
                                     <p className="text-base text-muted-foreground">
                                         <b>Deadline:</b>{" "}
-                                        <span className="text-foreground">{format(selectedTask.deadline, "yyyy-MM-dd - HH:mm")}</span>
+                                        <span className="text-foreground">
+                                            {selectedTask.deadline ? format(new Date(selectedTask.deadline), "yyyy-MM-dd - HH:mm") : "No deadline"}
+                                        </span>
                                     </p>
                                     <p className="text-base text-muted-foreground">
                                         <b>Status:</b>{" "}

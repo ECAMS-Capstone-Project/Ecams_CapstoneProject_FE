@@ -3,11 +3,13 @@ import {
   AIRecommend,
   AvailableMember,
   CreateInterTaskRequest,
+  CreateInterTaskRequest2,
   InterTask,
   InterTaskSubmission,
   ReviewInterTaskSubmissionRequest,
   UpdateInterTaskRequest,
   UpdateInterTaskRequest2,
+  UpdateInterTaskRequest3,
 } from "@/models/InterTask";
 import { get, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
@@ -34,6 +36,24 @@ export const CreateInterTask = async (
 ): Promise<ResponseDTO<CreateInterTaskRequest>> => {
   try {
     const response = await post<ResponseDTO<CreateInterTaskRequest>>(
+      `/EventTask/event-task`,
+      task
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in CreateInterTask API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const CreateInterTask2 = async (
+  task: CreateInterTaskRequest2
+): Promise<ResponseDTO<CreateInterTaskRequest2>> => {
+  try {
+    const response = await post<ResponseDTO<CreateInterTaskRequest2>>(
       `/EventTask/event-task`,
       task
     );
@@ -101,8 +121,8 @@ export const GetAvailableMember = async (
   try {
     const response = await get<ResponseDTO<AvailableMember>>(
       `Tasks/Club/${clubId}/available-members?` +
-        (taskId ? `TaskId=${taskId}&` : "") +
-        `StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
+      (taskId ? `TaskId=${taskId}&` : "") +
+      `StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
     );
     return response;
   } catch (error: any) {
@@ -122,10 +142,8 @@ export const GetInterTaskSubmission = async (
 ): Promise<ResponseDTO<ResponseData<InterTaskSubmission>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<InterTaskSubmission>>>(
-      `EventTask/EventTaskDetail/${eventTaskDetailId}/submissions?${
-        memberName ? `MemberName=${memberName}&` : ""
-      }${
-        status ? `Status=${status}&` : ""
+      `EventTask/EventTaskDetail/${eventTaskDetailId}/submissions?${memberName ? `MemberName=${memberName}&` : ""
+      }${status ? `Status=${status}&` : ""
       }PageNumber=${pageNo}&PageSize=${pageSize}`
     );
     return response;
@@ -163,6 +181,24 @@ export const UpdateInterTask2 = async (
   try {
     const response = await put<ResponseDTO<UpdateInterTaskRequest>>(
       `/EventTask/${task.eventTaskId}`,
+      task
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in UpdateInterTask API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const UpdateInterTask3 = async (
+  task: UpdateInterTaskRequest3, eventTaskDetailId: string
+): Promise<ResponseDTO<UpdateInterTaskRequest3>> => {
+  try {
+    const response = await put<ResponseDTO<UpdateInterTaskRequest3>>(
+      `/EventTask/${task.eventTaskId}/eventTaskDetail/${eventTaskDetailId}`,
       task
     );
     return response;

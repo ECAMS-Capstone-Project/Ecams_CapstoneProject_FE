@@ -41,75 +41,25 @@ import {
 import {
   AvailableMemberEventTask,
   CreateSubTaskAPI,
-  EventSubTaskDTO,
+  EventSubTaskDetail,
   GetAvailableMember,
+  GetAvailableTask,
   TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
 import { InterTask } from "@/models/InterTask";
-import SpecificTaskList from "./SpecificTasktList";
+import SpecificTaskList, {
+  TaskDependencyResponseDTO,
+} from "./SpecificTasktList";
 import SpecificStudentList from "./SpecificStudentList";
-
-const fakeTasks = [
-  {
-    eventTaskDetailId: "etd001",
-    eventTaskId: "et001",
-    detailName: "Design Landing Page",
-    description: "Create a responsive landing page for the campaign.",
-    startTime: "2025-04-01T09:00:00",
-    deadline: "2025-04-15T17:00:00",
-    status: "In Progress",
-    priority: "High",
-  },
-  {
-    eventTaskDetailId: "etd002",
-    eventTaskId: "et002",
-    detailName: "Write Content",
-    description: "Write high-conversion copy for the homepage.",
-    startTime: "2025-04-02T10:00:00",
-    deadline: "2025-04-12T18:00:00",
-    status: "Pending",
-    priority: "Medium",
-  },
-  {
-    eventTaskDetailId: "etd003",
-    eventTaskId: "et003",
-    detailName: "Set Up Database",
-    description: "Initialize the PostgreSQL database and design schema.",
-    startTime: "2025-04-03T08:30:00",
-    deadline: "2025-04-20T16:00:00",
-    status: "Completed",
-    priority: "Low",
-  },
-  {
-    eventTaskDetailId: "etd004",
-    eventTaskId: "et003",
-    detailName: "Create ER Diagram",
-    description: "Draw entity-relationship diagram for core modules.",
-    startTime: "2025-04-04T11:00:00",
-    deadline: "2025-04-18T14:00:00",
-    status: "In Progress",
-    priority: "Medium",
-  },
-  {
-    eventTaskDetailId: "etd005",
-    eventTaskId: "et004",
-    detailName: "Client Review Meeting",
-    description: "Prepare slides and conduct a client meeting.",
-    startTime: "2025-04-06T13:00:00",
-    deadline: "2025-04-07T15:00:00",
-    status: "Pending",
-    priority: "High",
-  },
-];
 
 export default function CreateEventTaskClub() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
   const clubId = location.state?.clubId;
   const task = location.state?.task as InterTask;
-  const eventId = location.state?.eventId as string;
   const [recommendedStudents, setRecommendedStudents] = useState<
     AvailableMemberEventTask[]
   >([]);
@@ -119,6 +69,7 @@ export default function CreateEventTaskClub() {
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
     []
   );
+  const [allTasks, setAllTasks] = useState<TaskDependencyResponseDTO[]>([]);
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -139,7 +90,7 @@ export default function CreateEventTaskClub() {
     st.fullName.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
   );
 
-  const filteredTasks = fakeTasks.filter((st) =>
+  const filteredTasks = allTasks.filter((st) =>
     st.detailName.toLowerCase().includes(debouncedSearch2.trim().toLowerCase())
   );
 
@@ -152,11 +103,12 @@ export default function CreateEventTaskClub() {
       startTimeDate: new Date(),
       deadlineDate: new Date(),
       assignedMembers: [],
+      taskDependencyIds: [],
     },
   });
   const { handleSubmit, setValue, getValues, watch } = form;
   const selectedMembers = watch("assignedMembers");
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const selectedTasks = watch("taskDependencyIds");
 
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
@@ -165,30 +117,51 @@ export default function CreateEventTaskClub() {
   const priority = watch("priority");
 
   useEffect(() => {
-    async function fetchMembers() {
+    async function fetchData() {
       if (!clubId || !startTimeDate || !deadlineTimeDate || !priority) return;
 
       try {
-        const response = await GetAvailableMember(
-          clubId,
-          format(startTimeDate.toISOString(), "yyyy-MM-dd"),
-          format(deadlineTimeDate.toISOString(), "yyyy-MM-dd"),
-          priority
+        const formattedStart = format(
+          startTimeDate.toISOString(),
+          "yyyy-MM-dd"
         );
-        if (response.data) {
-          setAllStudents(response.data);
+        const formattedDeadline = format(
+          deadlineTimeDate.toISOString(),
+          "yyyy-MM-dd"
+        );
+
+        const [membersRes, tasksRes] = await Promise.all([
+          GetAvailableMember(
+            clubId,
+            formattedStart,
+            formattedDeadline,
+            priority
+          ),
+          GetAvailableTask(
+            task.eventTaskId,
+            formattedStart,
+            formattedDeadline,
+            priority
+          ),
+        ]);
+
+        if (membersRes.data) {
+          setAllStudents(membersRes.data);
+        }
+
+        if (tasksRes.data) {
+          setAllTasks(tasksRes.data);
         }
       } catch (error: any) {
-        console.error("Failed to fetch club members", error);
+        console.error("Failed to fetch data", error);
       }
     }
 
-    fetchMembers();
-  }, [clubId, startTimeDate, deadlineTimeDate, priority]);
+    fetchData();
+  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId]);
 
   const isReadyToFetch = startTimeDate && deadlineTimeDate && priority;
 
-  // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
     const [hour, minute] = timeStr.split(":").map(Number);
     const newDate = new Date(dateObj);
@@ -212,30 +185,23 @@ export default function CreateEventTaskClub() {
 
       const assignedMembers = selectedMembers.map((id: string) => {
         const stu = allStudents.find((s) => s.studentId === id);
-        return { clubMemberId: stu ? stu.clubMemberId : id };
+        return stu ? stu.clubMemberId : id;
       });
 
-      const data: EventSubTaskDTO = {
-        clubId,
+      const taskDependencyIds = selectedTasks.map((id: string) => {
+        const eventTask = allTasks.find((s) => s.eventTaskDetailId === id);
+        return eventTask ? eventTask.eventTaskDetailId : id;
+      });
+
+      const data: EventSubTaskDetail = {
         eventTaskId: task.eventTaskId,
-        eventId: eventId,
-        taskName: task.taskName,
-        description: task.description,
-        startTime: task.startTime,
-        deadline: task.deadline,
-        status: task.status,
-        eventTaskDetails: [
-          {
-            eventTaskId: task.eventTaskId,
-            detailName: values.detailName,
-            description: values.description,
-            startTime: fixTime(finalStartTime).toISOString(),
-            deadline: fixTime(finalDeadline).toISOString(),
-            status: "ON_GOING",
-            priority: values.priority || "LOW",
-            assignedMembers,
-          },
-        ],
+        detailName: values.detailName,
+        description: values.description,
+        startTime: fixTime(finalStartTime).toISOString(),
+        deadline: fixTime(finalDeadline).toISOString(),
+        priority: values.priority || "LOW",
+        assignedMemberIds: assignedMembers,
+        taskDependencyIds,
       };
 
       await CreateSubTaskAPI(task.eventTaskId, data);
@@ -262,17 +228,19 @@ export default function CreateEventTaskClub() {
   };
 
   const handleToggleTask = (taskId: string, checked: boolean) => {
-    setSelectedTasks((prev) => {
-      if (checked) {
-        return [...prev, taskId];
-      } else {
-        return prev.filter((id) => id !== taskId);
-      }
-    });
+    const current = getValues("assignedMembers");
+    if (checked) {
+      setValue("taskDependencyIds", [...current, taskId]);
+    } else {
+      setValue(
+        "taskDependencyIds",
+        current.filter((id: string) => id !== taskId)
+      );
+    }
   };
 
   const handleAIRecommend = async () => {
-    setIsLoading(true);
+    setIsLoading2(true);
     try {
       const body = {
         clubId: clubId as string,
@@ -304,7 +272,7 @@ export default function CreateEventTaskClub() {
     } catch (error) {
       console.error("Recommendation failed", error);
     } finally {
-      setIsLoading(false);
+      setIsLoading2(false);
     }
   };
 
@@ -591,7 +559,7 @@ export default function CreateEventTaskClub() {
                           onClick={handleAIRecommend}
                           type="button"
                           disabled={
-                            isLoading ||
+                            isLoading2 ||
                             !taskName ||
                             !taskDescription ||
                             allStudents.length <= 0
@@ -607,7 +575,7 @@ export default function CreateEventTaskClub() {
                           />
                           <span className="relative z-10 flex items-center gap-2">
                             <Sparkles className="h-4 w-4" />
-                            {isLoading ? "Is loading..." : "AI Recommendation"}
+                            {isLoading2 ? "Is loading..." : "AI Recommendation"}
                           </span>
                         </Button>
                       </div>

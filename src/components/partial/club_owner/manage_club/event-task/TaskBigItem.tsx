@@ -57,7 +57,6 @@ export const TaskBigItem = ({
         startTime: data.startTime || "",
         deadline: data.deadline || "",
         status: data.status || task.status,
-        eventTaskDetails: data.eventTaskDetails ?? [],
       });
     } catch (error) {
       console.error(error);

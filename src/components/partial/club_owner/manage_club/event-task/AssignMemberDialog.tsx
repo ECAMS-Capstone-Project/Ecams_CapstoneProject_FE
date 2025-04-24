@@ -12,8 +12,8 @@ import { Search, Users, Eye, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   EventTaskDetail,
-  UpdateInterTaskRequest,
   InterTask,
+  UpdateInterTaskRequest3,
 } from "@/models/InterTask";
 // import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
 import { toast } from "react-hot-toast";
@@ -26,15 +26,11 @@ import { MemberInfoDialog } from "./AssignMemberInfoDialog";
 interface AssignMembersDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAssign: (
-    taskId: string,
-    data: Partial<UpdateInterTaskRequest>
-  ) => Promise<void>;
+  onAssign: (data: UpdateInterTaskRequest3) => Promise<void>;
   members: AvailableMemberEventTask[] | ClubMemberDTO[];
   subTask: EventTaskDetail;
   clubId: string;
   task: InterTask;
-  eventId: string;
   memberSelected: {
     clubMemberId: string;
   }[]
@@ -48,7 +44,6 @@ export const AssignMembersDialog = ({
   subTask,
   task,
   clubId,
-  eventId,
   memberSelected
 }: AssignMembersDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -82,8 +77,11 @@ export const AssignMembersDialog = ({
     );
   });
 
-  console.log(members);
-
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
+    }
+  }, [isOpen, memberSelected]);
 
   const handleSelectMember = (memberId: string, checked: boolean) => {
     console.log(
@@ -118,36 +116,21 @@ export const AssignMembersDialog = ({
   const handleAssign = () => {
     console.log("selectedMembers", selectedMembers);
 
-    // Update existing subtasks with the selected members only for the relevant subtask
-    const updatedSubtasks = task.eventTaskDetails.map((detail) => {
-      // For the subtask being updated, assign the selected members
-      if (detail.eventTaskDetailId === subTask.eventTaskDetailId) {
-        return {
-          ...detail,
-          assignedMembers: [
-            ...detail.assignedMembers,
-            ...selectedMembers.map((memberId: string) => ({
-              clubMemberId: memberId, // Wrap the memberId inside the expected structure
-            })),
-          ],
-        };
-      }
-      return detail;
-    });
-
-    const updateData: UpdateInterTaskRequest = {
+    const updateData: UpdateInterTaskRequest3 = {
       eventTaskId: task.eventTaskId,
-      clubId: clubId,
-      eventId: eventId,
-      taskName: task.taskName,
+      eventTaskDetailId: "",
+      priority: "",
+      detailName: task.taskName,
       description: task.description,
       startTime: fixTime(new Date(task.startTime)),
       deadline: fixTime(new Date(task.deadline)),
-      status: task.status || "ON_GOING", // Default value to avoid undefined
-      eventTaskDetails: updatedSubtasks, // Only update the eventTaskDetails array with the modified subtask
+      status: task.status || "ON_GOING",
+      assignedMemberIds: [...selectedMembers],
+      taskDependencyIds: [],
+      isDependencyExtended: false
     };
 
-    onAssign(task.eventTaskId, updateData); // Call the onAssign function to update the task with the new data
+    onAssign(updateData);
     onClose();
   };
 
@@ -255,18 +238,7 @@ export const AssignMembersDialog = ({
                   >
                     <Checkbox
                       id={member.clubMemberId}
-                      checked={
-                        isMemberAssignedToSubtask(
-                          (member as AvailableMemberEventTask).currentTasks?.find(
-                            (task) => task.eventTaskDetailId === subTask.eventTaskDetailId
-                          )?.eventTaskDetailId || "",
-                          subTask.eventTaskDetailId
-                        ) ||
-                        selectedMembers.includes(member.clubMemberId) ||
-                        memberSelected.some(
-                          (m) => m.clubMemberId === member.clubMemberId
-                        )
-                      }
+                      checked={selectedMembers.includes(member.clubMemberId)}
                       onCheckedChange={(checked) =>
                         handleSelectMember(
                           member.clubMemberId,

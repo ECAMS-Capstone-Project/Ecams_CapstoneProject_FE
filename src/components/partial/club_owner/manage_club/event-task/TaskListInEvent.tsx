@@ -39,6 +39,7 @@ export default function TaskListInEvent() {
   const navigate = useNavigate();
   const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [subTaskList, setSubTaskList] = useState<EventTaskDetail[]>()
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -118,6 +119,7 @@ export default function TaskListInEvent() {
 
   const handleEditSubmit = async (updatedTask: EventTaskDetail2) => {
     try {
+      console.log(updatedTask);
       const updateData: UpdateInterTaskRequest2 = {
         eventTaskId: task.eventTaskId,
         clubId: task.clubId,
@@ -127,20 +129,6 @@ export default function TaskListInEvent() {
         startTime: fixTime(task.startTime).toISOString(),
         deadline: fixTime(task.deadline).toISOString(),
         status: task.status,
-        eventTaskDetails: task.eventTaskDetails.map((detail) => {
-          if (detail.eventTaskDetailId === updatedTask.eventTaskDetailId) {
-            return {
-              ...updatedTask,
-              startTime: updatedTask.startTime,
-              deadline: updatedTask.deadline,
-            };
-          }
-          return {
-            ...detail,
-            startTime: fixTime(detail.startTime).toISOString(),
-            deadline: fixTime(detail.deadline).toISOString(),
-          };
-        }),
       };
       await updateInterEventTask2(updateData);
       setFlag(pre => !pre)
@@ -343,6 +331,9 @@ export default function TaskListInEvent() {
                                 Edit
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuItem onClick={() => handleNavigate(task)}>
+                              Delete
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -410,6 +401,11 @@ export default function TaskListInEvent() {
         bigTask={task}
         onSubmit={handleEditSubmit}
         isUpdating={isUpdating2}
+      />
+      <DeleteSubtaskDialog
+        subtask={editingTask}
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
       />
     </div>
   );

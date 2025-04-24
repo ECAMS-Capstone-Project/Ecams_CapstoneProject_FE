@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InterClubEventDTO } from "@/models/Event";
 import { useInterTask } from "@/hooks/club/useInterTask";
-import { CreateInterTaskRequest } from "@/models/InterTask";
+import { CreateInterTaskRequest2 } from "@/models/InterTask";
 import { TaskSearchBar } from "../../inter-club/task/TaskSearchBar";
 import { TaskPagination } from "../../inter-club/task/TaskPagination";
 import { TaskBigItem } from "./TaskBigItem";
@@ -23,16 +23,16 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
   const [pageSize] = useState(5);
   const { user } = useAuth();
 
-  const { tasks, totalPages, createInterEventTask } = isClubOwner ? useInterTask(
+  const { tasks, totalPages, createInterEventTask2 } = isClubOwner ? useInterTask(
     selectedEvent?.eventId,
     pageSize,
     pageNo
   ) : useMemberEventTask(selectedEvent?.clubEventId, pageSize, pageNo, user?.userId);
 
-  const handleCreateTask = async (newTask: CreateInterTaskRequest) => {
+  const handleCreateTask = async (newTask: CreateInterTaskRequest2) => {
     if (!newTask.taskName || !selectedEvent || !clubId) return;
     newTask.clubId = clubId
-    await createInterEventTask(newTask);
+    await createInterEventTask2(newTask);
   };
 
   const filteredTasks =

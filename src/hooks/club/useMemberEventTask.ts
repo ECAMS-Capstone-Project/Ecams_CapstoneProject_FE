@@ -2,6 +2,7 @@
 
 import {
   CreateInterTask,
+  CreateInterTask2,
   GetMemberEventTask,
   UpdateInterTask,
 } from "@/api/club-owner/InterEventTask";
@@ -49,6 +50,17 @@ export const useMemberEventTask = (
       },
     });
 
+  const { mutateAsync: createInterEventTaskMutation2, isPending: isPending2 } = useMutation({
+    mutationFn: CreateInterTask2,
+    onSuccess: () => {
+      toast.success("Inter Event Task created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+    },
+    onError: (error: any) => {
+      console.error("Error:", error.response.data.errors);
+      toast.error(error.response.data.message || "An error occurred");
+    },
+  });
   // const GetInterClubEvent = (clubId: string, pageNumber: number, pageSize: number) => {
   //   return useQuery({
   //     queryKey: ["interEvents",clubId,  pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
@@ -103,5 +115,7 @@ export const useMemberEventTask = (
     isPending,
     updateInterEventTask: updateInterEventTaskMutation,
     isUpdating,
+    createInterEventTask2: createInterEventTaskMutation2,
+    isPending2
   };
 };
