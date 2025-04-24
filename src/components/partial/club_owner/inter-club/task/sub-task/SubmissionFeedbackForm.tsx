@@ -18,8 +18,9 @@ export const SubmissionFeedbackForm = ({
   subtask,
 }: SubmissionFeedbackFormProps) => {
   const isDisabled =
-    subtask?.status !== "ON_GOING" ||
-    new Date() > new Date(subtask?.deadline || "");
+    subtask?.status == "COMPLETED" &&
+    new Date() < new Date(subtask?.deadline || "");
+  console.log("co ko", isDisabled);
 
   return (
     <div className="space-y-4">

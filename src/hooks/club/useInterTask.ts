@@ -3,16 +3,21 @@
 
 import {
   CreateInterTask,
+  CreateSubtask,
+  DeleteSubtask,
   CreateInterTask2,
   GetAvailableMember,
   GetInterTask,
   GetInterTaskDetail,
   GetInterTaskSubmission,
+  GetSubtaskDependency,
   ReviewInterTaskSubmission,
   UpdateInterTask,
   UpdateInterTask2,
+  UpdateSubtask,
   UpdateInterTask3,
 } from "@/api/club-owner/InterEventTask";
+import { SubtaskCreateRequest, UpdateSubtaskRequest } from "@/models/InterTask";
 import { UpdateInterTaskRequest3 } from "@/models/InterTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -90,18 +95,37 @@ export const useInterTask = (
       },
     });
 
-  const { mutateAsync: createInterEventTaskMutation2, isPending: isPending2 } = useMutation({
-    mutationFn: CreateInterTask2,
-    onSuccess: () => {
-      toast.success("Inter Event Task created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["interTasks"], exact: false }); // Tự động refetch danh sách ✅
-    },
-    onError: (error: any) => {
-      console.error("Error:", error.response.data.errors);
-      toast.error(error.response.data.message || "An error occurred");
-    },
-  });
-
+  const { mutateAsync: createInterEventTaskMutation2, isPending: isPending2 } =
+    useMutation({
+      mutationFn: CreateInterTask2,
+      onSuccess: () => {
+        toast.success("Inter Event Task created successfully!");
+        queryClient.invalidateQueries({
+          queryKey: ["interTasks"],
+          exact: false,
+        }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
+  const { mutateAsync: createSubtaskMutation, isPending: isCreatingSubtask } =
+    useMutation({
+      mutationFn: (params: {
+        subtask: SubtaskCreateRequest;
+        eventTaskId: string;
+      }) => CreateSubtask(params.subtask, params.eventTaskId),
+      onSuccess: () => {
+        toast.success("Subtask created successfully!");
+        queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
   // const GetInterClubEvent = (clubId: string, pageNumber: number, pageSize: number) => {
   //   return useQuery({
   //     queryKey: ["interEvents",clubId,  pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
@@ -167,6 +191,25 @@ export const useInterTask = (
     });
   };
 
+  const getSubtaskDependencyQuery = (
+    eventTaskId: string,
+    startTime?: string,
+    deadline?: string,
+    priority?: string
+  ) => {
+    return useQuery({
+      queryKey: [
+        "subtaskDependency",
+        eventTaskId,
+        startTime,
+        deadline,
+        priority,
+      ], // Query key động dựa trên eventId
+      queryFn: () =>
+        GetSubtaskDependency(eventTaskId, startTime, deadline, priority), // Gọi API lấy chi tiết sự kiện
+      enabled: !!eventTaskId && !!startTime && !!deadline && !!priority,
+    });
+  };
   const {
     mutateAsync: reviewInterTaskSubmissionMutation,
     isPending: isReviewing,
@@ -183,16 +226,38 @@ export const useInterTask = (
     },
   });
 
-  //   const {mutateAsync: rejectInterEventMutation, isPending: isRejecting} = useMutation({
-  //     mutationFn: rejectInterEvent,
-  //     onSuccess: () => {
-  //       // refetch();
-  //       queryClient.invalidateQueries( {queryKey:["interEventDetail"]}); // Tự động refetch danh sách ✅
-  //     },
-  //     onError: (error: any) => {
-  //       toast.error(error.response.data.message || "Error approving event");
-  //     },
-  //   });
+  const { mutateAsync: updateSubtaskMutation, isPending: isUpdatingSubtask } =
+    useMutation({
+      mutationFn: (params: {
+        subtask: UpdateSubtaskRequest;
+        eventTaskDetailId: string;
+        eventTaskId: string;
+      }) =>
+        UpdateSubtask(
+          params.subtask,
+          params.eventTaskDetailId,
+          params.eventTaskId
+        ),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] });
+        toast.success("Subtask updated successfully!");
+      },
+    });
+  const { mutateAsync: deleteSubtaskMutation, isPending: isDeleting } =
+    useMutation({
+      mutationFn: (params: {
+        eventTaskDetailId: string;
+        eventTaskId: string;
+      }) => DeleteSubtask(params.eventTaskDetailId, params.eventTaskId),
+      onSuccess: () => {
+        // refetch();
+        queryClient.invalidateQueries({ queryKey: ["interTasks"] });
+        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        toast.error(error.response.data.message || "Error approving event");
+      },
+    });
 
   return {
     tasks: data?.data?.data || [],
@@ -214,5 +279,12 @@ export const useInterTask = (
     isPending2,
     isReviewing,
     isUpdating2,
+    createSubtask: createSubtaskMutation,
+    isCreatingSubtask,
+    getSubtaskDependencyQuery,
+    updateSubtask: updateSubtaskMutation,
+    isUpdatingSubtask,
+    deleteSubtask: deleteSubtaskMutation,
+    isDeleting,
   };
 };

@@ -16,21 +16,34 @@ import { motion } from "framer-motion";
 import useAuth from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { EventTaskDetail, EventTaskDetail2, InterTask, UpdateInterTaskRequest2 } from "@/models/InterTask";
-import { cn, fixTime } from "@/lib/utils";
+import {
+  EventTaskDetail,
+  InterTask,
+  UpdateSubtaskRequest,
+} from "@/models/InterTask";
+import { cn } from "@/lib/utils";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import EditSubTaskDialog from "./EditSubTaskDialog";
-import { GetSubTaskEventAPI, GetSubTaskEventByUserAPI } from "@/api/club-owner/TaskAPI";
+import {
+  GetSubTaskEventAPI,
+  GetSubTaskEventByUserAPI,
+} from "@/api/club-owner/TaskAPI";
 import LoadingAnimation from "@/components/ui/loading";
 import toast from "react-hot-toast";
 import { useInterTask } from "@/hooks/club/useInterTask";
+import DeleteSubtaskDialog from "../../inter-club/task/sub-task/DeleteSubtaskDialog";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
   const location = useLocation();
   const isClubOwner = location.state?.isClubOwner as boolean;
-  const clubId = location.state?.clubId as string
+  const clubId = location.state?.clubId as string;
   const task = location.state?.task as InterTask;
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 5;
@@ -40,12 +53,12 @@ export default function TaskListInEvent() {
   const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [subTaskList, setSubTaskList] = useState<EventTaskDetail[]>()
+  const [subTaskList, setSubTaskList] = useState<EventTaskDetail[]>();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalPages, setTotalPages] = useState<number | undefined>();
   const [flag, setFlag] = useState<boolean>(false);
-  const { updateInterEventTask2, isUpdating2 } = useInterTask();
+  const { updateSubtask, isUpdating2 } = useInterTask();
 
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100)
@@ -72,15 +85,21 @@ export default function TaskListInEvent() {
 
   useEffect(() => {
     const loadTasks = async () => {
-      if (!user || !user.userId || !task.eventTaskId) return <LoadingAnimation />;
+      if (!user || !user.userId || !task.eventTaskId)
+        return <LoadingAnimation />;
       setIsLoading(true);
       try {
         const response = isClubOwner
           ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch)
-          : await GetSubTaskEventByUserAPI(task.eventTaskId, pageNo, debouncedSearch, user.userId);
+          : await GetSubTaskEventByUserAPI(
+              task.eventTaskId,
+              pageNo,
+              debouncedSearch,
+              user.userId
+            );
 
-        setSubTaskList(response.data?.data || [])
-        setTotalPages(response.data?.totalPages)
+        setSubTaskList(response.data?.data || []);
+        setTotalPages(response.data?.totalPages);
       } catch (error) {
         console.error("Error loading tasks:", error);
       } finally {
@@ -89,10 +108,27 @@ export default function TaskListInEvent() {
     };
 
     loadTasks();
-  }, [eventId, pageNo, pageSize, isClubOwner, user, task.eventTaskId, debouncedSearch, flag]);
+  }, [
+    eventId,
+    pageNo,
+    pageSize,
+    isClubOwner,
+    user,
+    task.eventTaskId,
+    debouncedSearch,
+    flag,
+  ]);
 
   const handleNavigate = (task: EventTaskDetail) => {
-    navigate(`/club/task-detail/${task.eventTaskDetailId}`, { state: { isClubOwner, taskDetail: task, clubId: clubId, eventId: eventId, bigTask: task } });
+    navigate(`/club/task-detail/${task.eventTaskDetailId}`, {
+      state: {
+        isClubOwner,
+        taskDetail: task,
+        clubId: clubId,
+        eventId: eventId,
+        bigTask: task,
+      },
+    });
   };
 
   // 🔎 Filter task theo search term đã debounce
@@ -110,28 +146,24 @@ export default function TaskListInEvent() {
 
     // B2: Sort theo priority: HIGH -> MEDIUM -> LOW
     const sortedTasks = searchedTasks?.sort((a, b) => {
-      return priorityOrder[a.priority as "HIGH" | "MEDIUM" | "LOW"] - priorityOrder[b.priority as "HIGH" | "MEDIUM" | "LOW"];
+      return (
+        priorityOrder[a.priority as "HIGH" | "MEDIUM" | "LOW"] -
+        priorityOrder[b.priority as "HIGH" | "MEDIUM" | "LOW"]
+      );
     });
 
     // B3: Paginate sau khi sort
     return sortedTasks;
   }, [subTaskList, debouncedSearch]);
 
-  const handleEditSubmit = async (updatedTask: EventTaskDetail2) => {
+  const handleEditSubmit = async (updatedTask: UpdateSubtaskRequest) => {
     try {
-      console.log(updatedTask);
-      const updateData: UpdateInterTaskRequest2 = {
+      await updateSubtask({
         eventTaskId: task.eventTaskId,
-        clubId: task.clubId,
-        eventId: eventId,
-        taskName: task.taskName,
-        description: task.description,
-        startTime: fixTime(task.startTime).toISOString(),
-        deadline: fixTime(task.deadline).toISOString(),
-        status: task.status,
-      };
-      await updateInterEventTask2(updateData);
-      setFlag(pre => !pre)
+        eventTaskDetailId: updatedTask.eventTaskDetailId,
+        subtask: updatedTask,
+      });
+      setFlag((pre) => !pre);
     } catch (error) {
       console.error("Failed to update task", error);
     }
@@ -175,10 +207,7 @@ export default function TaskListInEvent() {
                   </p>
                   <p>
                     {task?.startTime
-                      ? format(
-                        new Date(task.startTime),
-                        "dd/MM/yyyy - HH:mm a"
-                      )
+                      ? format(new Date(task.startTime), "dd/MM/yyyy - HH:mm a")
                       : "N/A"}
                   </p>
                 </div>
@@ -189,10 +218,7 @@ export default function TaskListInEvent() {
                   <p className="text-sm font-medium text-gray-700">Deadline</p>
                   <p>
                     {task?.deadline
-                      ? format(
-                        new Date(task.deadline),
-                        "dd/MM/yyyy - HH:mm a"
-                      )
+                      ? format(new Date(task.deadline), "dd/MM/yyyy - HH:mm a")
                       : "N/A"}
                   </p>
                 </div>
@@ -215,10 +241,10 @@ export default function TaskListInEvent() {
               <div className="flex items-center gap-2">
                 <CircleDot className="w-5 h-5 text-blue-500" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Quantity of sub task</p>
-                  <p>
-                    {subTaskList?.length}
+                  <p className="text-sm font-medium text-gray-700">
+                    Quantity of sub task
                   </p>
+                  <p>{subTaskList?.length}</p>
                 </div>
               </div>
             </div>
@@ -266,19 +292,21 @@ export default function TaskListInEvent() {
                 💤 No tasks found.
               </div>
             ) : (
-              filteredTasks && filteredTasks.map((task) => (
+              filteredTasks &&
+              filteredTasks.map((task) => (
                 <motion.div
                   key={task.eventTaskDetailId}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border border-[#136CB9]/20 ${task.priority.toUpperCase() === "HIGH"
-                      ? "bg-red-400"
-                      : task.priority.toUpperCase() === "MEDIUM"
+                    className={`rounded-lg border border-[#136CB9]/20 ${
+                      task.priority.toUpperCase() === "HIGH"
+                        ? "bg-red-400"
+                        : task.priority.toUpperCase() === "MEDIUM"
                         ? "bg-yellow-200"
                         : "bg-blue-200"
-                      }`}
+                    }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
@@ -313,25 +341,33 @@ export default function TaskListInEvent() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => handleNavigate(task)}>
+                            <DropdownMenuItem
+                              onClick={() => handleNavigate(task)}
+                            >
                               View
                             </DropdownMenuItem>
                             {isClubOwner && (
-                              <DropdownMenuItem onClick={() => {
-                                const taskStart = new Date(task.startTime);
-                                const now = new Date();
-                                if (taskStart <= now) {
-                                  toast.error("This task has already started");
-                                  return;
-                                } else {
-                                  setEditingTask(task);
-                                  setIsEditDialogOpen(true);
-                                }
-                              }}>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  const taskStart = new Date(task.startTime);
+                                  const now = new Date();
+                                  if (taskStart <= now) {
+                                    toast.error(
+                                      "This task has already started"
+                                    );
+                                    return;
+                                  } else {
+                                    setEditingTask(task);
+                                    setIsEditDialogOpen(true);
+                                  }
+                                }}
+                              >
                                 Edit
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => handleNavigate(task)}>
+                            <DropdownMenuItem
+                              onClick={() => handleNavigate(task)}
+                            >
                               Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>

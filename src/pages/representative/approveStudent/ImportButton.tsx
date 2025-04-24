@@ -33,6 +33,7 @@ interface DuplicatedRow {
   rowNumber: number;
   email: string;
   studentDetailId: string;
+  message: string;
 }
 
 export default function ImportButton({
@@ -229,17 +230,18 @@ export default function ImportButton({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Row Number</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Student ID</TableHead>
+                  <TableHead>Reason</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {duplicatedRows.map((row) => (
                   <TableRow key={row.rowNumber}>
-                    <TableCell>{row.rowNumber}</TableCell>
                     <TableCell>{row.email}</TableCell>
+
                     <TableCell>{row.studentDetailId}</TableCell>
+                    <TableCell>{row.message}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

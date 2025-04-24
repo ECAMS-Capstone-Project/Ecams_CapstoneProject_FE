@@ -158,25 +158,26 @@ export const SubmissionDetailDialog = ({
           />
         </div>
 
-        <DialogFooter className="mt-6">
+        <DialogFooter className="">
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-
-          <Button
-            onClick={onSaveFeedback}
-            disabled={isSubmitting}
-            className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Feedback"
-            )}
-          </Button>
+          {subtask.status !== "COMPLETED" && (
+            <Button
+              onClick={onSaveFeedback}
+              disabled={isSubmitting}
+              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] text-white hover:opacity-90"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Feedback"
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

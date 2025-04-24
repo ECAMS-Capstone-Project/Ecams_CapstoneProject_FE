@@ -25,6 +25,50 @@ export interface EventTaskDetail {
   assignedMembers: {
     clubMemberId: string;
   }[];
+  memberEventTasks: MemberEventTask[];
+  taskDependencies: {
+    eventTaskDetailId: string;
+    detailName: string;
+    description: string;
+    startTime: string;
+    deadline: string;
+    status: string;
+    priority: string;
+  }[];
+}
+
+export interface MemberEventTask {
+  eventTaskDetailId: string;
+  description: string;
+  startTime: Date;
+  deadline: Date;
+  studentSubmission: string | null;
+  taskScore: number;
+  submissionScore: number;
+  submissionDate: string;
+  comment: string | null;
+  creator: {
+    userId: string;
+    studentId: string;
+    clubMemberId: string;
+    clubRoleName: string;
+    joinedAt: string;
+    requestedDate: string;
+    reason: string;
+    leaveReason: string | null;
+    clubActivityPoint: number;
+    leftDate: string | null;
+    avatar: string;
+    fullname: string;
+    email: string;
+    status: string;
+  };
+  reviewer: null;
+  eventTaskId: null;
+  clubMemberId: string;
+  detailName: string;
+  priority: string;
+  status: string;
 }
 
 export interface CreateInterTaskRequest {
@@ -151,6 +195,30 @@ export interface UpdateInterTaskRequest2 {
   deadline: string;
   status: string;
 }
+export interface UpdateSubtaskRequest {
+  eventTaskDetailId: string;
+  eventTaskId: string;
+  detailName: string;
+  description: string;
+  priority: string;
+  startTime: string;
+  deadline: string;
+  isDependencyExtended: boolean;
+  status: string;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+}
+export interface SubtaskCreateRequest {
+  eventTaskId: string;
+  detailName: string;
+  description: string;
+  priority: string;
+  startTime: string;
+  deadline: string;
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+}
+
 export interface UpdateInterTaskDetailRequest2 {
   eventTaskDetailId: string;
   detailName: string;
@@ -167,7 +235,18 @@ export interface EventTaskDetail2 {
   startTime: string;
   deadline: string;
   status: string;
-  priority: string
+  priority: string;
+  isDependencyExtended: boolean;
+}
+
+export interface TaskDependencyResponseDTO {
+  eventTaskDetailId: string;
+  detailName: string;
+  description: string;
+  startTime: string; // ISO 8601 date string
+  deadline?: string | null; // optional or null
+  status: string;
+  priority: string;
 }
 
 export interface CreateInterTaskRequest2 {
@@ -186,9 +265,9 @@ export interface UpdateInterTaskRequest3 {
   description: string;
   startTime: Date;
   deadline: Date;
-  priority: string,
+  priority: string;
   status: string;
-  taskDependencyIds: string[],
-  assignedMemberIds: string[],
-  isDependencyExtended: boolean
+  taskDependencyIds: string[];
+  assignedMemberIds: string[];
+  isDependencyExtended: boolean;
 }

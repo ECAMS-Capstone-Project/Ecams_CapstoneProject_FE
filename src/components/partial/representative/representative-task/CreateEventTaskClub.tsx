@@ -46,8 +46,8 @@ import {
   GetAvailableTask,
   TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
-import { InterTask } from "@/models/InterTask";
-import SpecificTaskList, { TaskDependencyResponseDTO } from "./SpecificTasktList";
+import { InterTask, TaskDependencyResponseDTO } from "@/models/InterTask";
+import SpecificTaskList from "./SpecificTasktList";
 import SpecificStudentList from "./SpecificStudentList";
 
 export default function CreateEventTaskClub() {
@@ -58,9 +58,15 @@ export default function CreateEventTaskClub() {
   const location = useLocation();
   const clubId = location.state?.clubId;
   const task = location.state?.task as InterTask;
-  const [recommendedStudents, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [recommendedReasons, setRecommendedReasons] = useState<Record<string, string>>({});
-  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
+  const [recommendedStudents, setRecommendedStudents] = useState<
+    AvailableMemberEventTask[]
+  >([]);
+  const [recommendedReasons, setRecommendedReasons] = useState<
+    Record<string, string>
+  >({});
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
+    []
+  );
   const [allTasks, setAllTasks] = useState<TaskDependencyResponseDTO[]>([]);
 
   // Search & debounce
@@ -95,7 +101,7 @@ export default function CreateEventTaskClub() {
       startTimeDate: new Date(),
       deadlineDate: new Date(),
       assignedMembers: [],
-      taskDependencyIds: []
+      taskDependencyIds: [],
     },
   });
   const { handleSubmit, setValue, getValues, watch } = form;
@@ -113,12 +119,28 @@ export default function CreateEventTaskClub() {
       if (!clubId || !startTimeDate || !deadlineTimeDate || !priority) return;
 
       try {
-        const formattedStart = format(startTimeDate.toISOString(), "yyyy-MM-dd");
-        const formattedDeadline = format(deadlineTimeDate.toISOString(), "yyyy-MM-dd");
+        const formattedStart = format(
+          startTimeDate.toISOString(),
+          "yyyy-MM-dd"
+        );
+        const formattedDeadline = format(
+          deadlineTimeDate.toISOString(),
+          "yyyy-MM-dd"
+        );
 
         const [membersRes, tasksRes] = await Promise.all([
-          GetAvailableMember(clubId, formattedStart, formattedDeadline, priority),
-          GetAvailableTask(task.eventTaskId, formattedStart, formattedDeadline, priority)
+          GetAvailableMember(
+            clubId,
+            formattedStart,
+            formattedDeadline,
+            priority
+          ),
+          GetAvailableTask(
+            task.eventTaskId,
+            formattedStart,
+            formattedDeadline,
+            priority
+          ),
         ]);
 
         if (membersRes.data) {
@@ -177,7 +199,7 @@ export default function CreateEventTaskClub() {
         deadline: fixTime(finalDeadline).toISOString(),
         priority: values.priority || "LOW",
         assignedMemberIds: assignedMembers,
-        taskDependencyIds
+        taskDependencyIds,
       };
 
       await CreateSubTaskAPI(task.eventTaskId, data);
@@ -216,7 +238,6 @@ export default function CreateEventTaskClub() {
   };
 
   const handleAIRecommend = async () => {
-
     setIsLoading2(true);
     try {
       const body = {
@@ -225,8 +246,8 @@ export default function CreateEventTaskClub() {
         taskDescription: taskDescription.trim().toString(),
         startTime: startTimeDate.toISOString(),
         endTime: deadlineTimeDate.toISOString(),
-        priority: priority
-      }
+        priority: priority,
+      };
 
       const response = await TaskRecommendedByAI(body.clubId, body);
       const data = response.data;
@@ -260,7 +281,6 @@ export default function CreateEventTaskClub() {
     }
   }, [form.formState.errors]);
 
-
   return (
     <div className="min-h-[300px]">
       {/* Nút Back */}
@@ -279,10 +299,12 @@ export default function CreateEventTaskClub() {
       <div className="p-4 mx-7">
         <Form {...form}>
           <div className="flex justify-center">
-            <form onSubmit={handleSubmit((data) => {
-              onSubmit(data);
-            })}
-              className="space-y-6 w-3/4">
+            <form
+              onSubmit={handleSubmit((data) => {
+                onSubmit(data);
+              })}
+              className="space-y-6 w-3/4"
+            >
               {/* Task Name */}
               <Grid2 container spacing={2}>
                 <Grid2 size={6}>
@@ -309,7 +331,7 @@ export default function CreateEventTaskClub() {
                         <FormLabel>Priority</FormLabel>
                         <Select
                           onValueChange={(value) => {
-                            field.onChange(value)
+                            field.onChange(value);
                             // setPriority(value as any)
                           }}
                           defaultValue={field.value}
@@ -374,7 +396,10 @@ export default function CreateEventTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -400,10 +425,13 @@ export default function CreateEventTaskClub() {
                         <FormItem>
                           <FormLabel>Time</FormLabel>
                           <FormControl className="w-full">
-                            <input className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
+                            <input
+                              className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
              placeholder:text-muted-foreground focus-visible:outline-none 
              focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              {...field} type="time" />
+                              {...field}
+                              type="time"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -436,7 +464,10 @@ export default function CreateEventTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -462,10 +493,13 @@ export default function CreateEventTaskClub() {
                         <FormItem>
                           <FormLabel>Time</FormLabel>
                           <FormControl className="w-full">
-                            <input className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
+                            <input
+                              className="w-full h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background 
              placeholder:text-muted-foreground focus-visible:outline-none 
              focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                              {...field} type="time" />
+                              {...field}
+                              type="time"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -476,7 +510,9 @@ export default function CreateEventTaskClub() {
               </div>
 
               <>
-                <label className="block text-sm font-medium mb-2">Task list</label>
+                <label className="block text-sm font-medium mb-2">
+                  Task list
+                </label>
                 <div className="flex gap-3">
                   <div className="mb-1 w-1/4">
                     <Input
@@ -491,6 +527,9 @@ export default function CreateEventTaskClub() {
                     handleToggleTask={handleToggleTask}
                     tasks={filteredTasks}
                     selected={selectedTasks}
+                    taskDependencies={task.eventTaskDetails.flatMap(
+                      (task) => task.taskDependencies
+                    )}
                   />
                 </Suspense>
                 {/* {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>} */}
@@ -517,7 +556,12 @@ export default function CreateEventTaskClub() {
                         <Button
                           onClick={handleAIRecommend}
                           type="button"
-                          disabled={isLoading2 || !taskName || !taskDescription || allStudents.length <= 0}
+                          disabled={
+                            isLoading2 ||
+                            !taskName ||
+                            !taskDescription ||
+                            allStudents.length <= 0
+                          }
                           className="relative overflow-hidden btn-style501 text-[#133a95] 
                     px-6 py-2 rounded-lg font-semibold transition-all duration-300 
                     hover:scale-105 hover:shadow-lg group"
@@ -529,15 +573,14 @@ export default function CreateEventTaskClub() {
                           />
                           <span className="relative z-10 flex items-center gap-2">
                             <Sparkles className="h-4 w-4" />
-                            {isLoading2
-                              ? "Is loading..."
-                              : "AI Recommendation"}
+                            {isLoading2 ? "Is loading..." : "AI Recommendation"}
                           </span>
                         </Button>
                       </div>
                       {!isReadyToFetch ? (
                         <div className="text-sm text-red-500 italic">
-                          After selecting the Start Date, Deadline, and Privacy, a list of available students will be displayed.
+                          After selecting the Start Date, Deadline, and Privacy,
+                          a list of available students will be displayed.
                         </div>
                       ) : (
                         <Suspense fallback={<div>Loading students...</div>}>
@@ -558,12 +601,11 @@ export default function CreateEventTaskClub() {
                           Selected Students:
                         </p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {selectedMembers &&
-                            selectedMembers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">
-                                No students selected.
-                              </span>
-                            )}
+                          {selectedMembers && selectedMembers.length === 0 && (
+                            <span className="text-sm text-muted-foreground">
+                              No students selected.
+                            </span>
+                          )}
                           {selectedMembers &&
                             selectedMembers.map((id) => {
                               const st = allStudents.find(

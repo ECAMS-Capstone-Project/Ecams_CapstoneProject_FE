@@ -105,8 +105,6 @@ export default function EditSubTaskDialog2({
     form.priority
   );
 
-  console.log("subtaskDependency:", subtaskDependency);
-
   const filteredSubtaskDependency =
     subtaskDependency?.data && Array.isArray(subtaskDependency.data)
       ? subtaskDependency.data.filter((subtask: any) => {
@@ -349,7 +347,8 @@ export default function EditSubTaskDialog2({
                     selected={form.startDate}
                     onSelect={(date) => setForm({ ...form, startDate: date })}
                     disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0))
+                      date <
+                      (task?.startTime ? new Date(task?.startTime) : date)
                     }
                   />
                 </PopoverContent>

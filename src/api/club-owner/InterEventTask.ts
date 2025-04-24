@@ -7,11 +7,13 @@ import {
   InterTask,
   InterTaskSubmission,
   ReviewInterTaskSubmissionRequest,
+  SubtaskCreateRequest,
   UpdateInterTaskRequest,
   UpdateInterTaskRequest2,
   UpdateInterTaskRequest3,
+  UpdateSubtaskRequest,
 } from "@/models/InterTask";
-import { get, post, put } from "../agent";
+import { get, post, put, del } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { AIRecommendResponse } from "@/models/Task";
 
@@ -121,8 +123,8 @@ export const GetAvailableMember = async (
   try {
     const response = await get<ResponseDTO<AvailableMember>>(
       `Tasks/Club/${clubId}/available-members?` +
-      (taskId ? `TaskId=${taskId}&` : "") +
-      `StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
+        (taskId ? `TaskId=${taskId}&` : "") +
+        `StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
     );
     return response;
   } catch (error: any) {
@@ -142,8 +144,10 @@ export const GetInterTaskSubmission = async (
 ): Promise<ResponseDTO<ResponseData<InterTaskSubmission>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<InterTaskSubmission>>>(
-      `EventTask/EventTaskDetail/${eventTaskDetailId}/submissions?${memberName ? `MemberName=${memberName}&` : ""
-      }${status ? `Status=${status}&` : ""
+      `EventTask/EventTaskDetail/${eventTaskDetailId}/submissions?${
+        memberName ? `MemberName=${memberName}&` : ""
+      }${
+        status ? `Status=${status}&` : ""
       }PageNumber=${pageNo}&PageSize=${pageSize}`
     );
     return response;
@@ -174,7 +178,6 @@ export const ReviewInterTaskSubmission = async (
   }
 };
 
-
 export const UpdateInterTask2 = async (
   task: UpdateInterTaskRequest2
 ): Promise<ResponseDTO<UpdateInterTaskRequest>> => {
@@ -194,7 +197,8 @@ export const UpdateInterTask2 = async (
 };
 
 export const UpdateInterTask3 = async (
-  task: UpdateInterTaskRequest3, eventTaskDetailId: string
+  task: UpdateInterTaskRequest3,
+  eventTaskDetailId: string
 ): Promise<ResponseDTO<UpdateInterTaskRequest3>> => {
   try {
     const response = await put<ResponseDTO<UpdateInterTaskRequest3>>(
@@ -224,6 +228,74 @@ export const GetMemberEventTask = async (
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
     console.error("Error in UniversityList API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const CreateSubtask = async (
+  subtask: SubtaskCreateRequest,
+  eventTaskId: string
+): Promise<ResponseDTO<SubtaskCreateRequest>> => {
+  try {
+    const response = await post<ResponseDTO<SubtaskCreateRequest>>(
+      `/EventTask/${eventTaskId}/eventTaskDetail`,
+      subtask
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Error in CreateSubtask API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const GetSubtaskDependency = async (
+  eventTaskId: string,
+  startTime?: string,
+  deadline?: string,
+  priority?: string
+): Promise<ResponseDTO<AvailableMember>> => {
+  try {
+    const response = await get<ResponseDTO<AvailableMember>>(
+      `EventTask/${eventTaskId}/dependencies?StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
+    );
+    return response;
+  } catch (error: any) {
+    console.error(
+      "Error in GetAvailableMember API call:",
+      error.response || error
+    );
+    throw error;
+  }
+};
+
+export const UpdateSubtask = async (
+  subtask: UpdateSubtaskRequest,
+  eventTaskDetailId: string,
+  eventTaskId: string
+): Promise<ResponseDTO<UpdateSubtaskRequest>> => {
+  try {
+    const response = await put<ResponseDTO<UpdateSubtaskRequest>>(
+      `/EventTask/${eventTaskId}/eventTaskDetail/${eventTaskDetailId}`,
+      subtask
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Error in UpdateSubtask API call:", error.response || error);
+    throw error;
+  }
+};
+
+export const DeleteSubtask = async (
+  eventTaskDetailId: string,
+  eventTaskId: string
+): Promise<ResponseDTO<void>> => {
+  try {
+    const response = await del<ResponseDTO<void>>(
+      `/EventTask/${eventTaskId}/eventTaskDetail/${eventTaskDetailId}`
+    );
+    return response;
+  } catch (error: any) {
+    console.error("Error in DeleteSubtask API call:", error.response || error);
     throw error;
   }
 };

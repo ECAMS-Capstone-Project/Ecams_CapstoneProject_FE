@@ -21,7 +21,6 @@ import { SubtaskInfo } from "@/components/partial/club_owner/inter-club/task/sub
 import { SubmissionList } from "@/components/partial/club_owner/inter-club/task/sub-task/SubmissionList";
 import { SubmissionDetailDialog } from "@/components/partial/club_owner/inter-club/task/sub-task/SubmissionDetailDialog";
 import { useQueryClient } from "@tanstack/react-query";
-
 export const SubtaskDetailPage = () => {
   const { state } = useLocation();
   const queryClient = useQueryClient();

@@ -11,16 +11,18 @@ interface SubtaskHeaderProps {
 
 export const getStatusColor = (status: string) => {
   switch (status) {
+    case "NOT_STARTED":
+      return "bg-gray-100 text-gray-700 hover:bg-gray-200";
     case "ON_GOING":
-      return "bg-blue-500";
+      return "bg-blue-100 text-blue-800 hover:bg-blue-200";
     case "COMPLETED":
-      return "bg-green-500";
+      return "bg-green-200 text-green-800 hover:bg-green-300";
     case "REVIEWING":
-      return "bg-yellow-500";
+      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200";
     case "OVERDUE":
-      return "bg-red-500";
+      return "bg-red-100 text-red-800 hover:bg-red-200";
     default:
-      return "bg-gray-500";
+      return "bg-gray-100 text-gray-700";
   }
 };
 
@@ -41,9 +43,11 @@ export const SubtaskHeader = ({ subtask, onBack }: SubtaskHeaderProps) => {
             </h1>
           </div>
         </div>
-        <Badge className={getStatusColor(subtask?.status || "")}>
-          {subtask?.status}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge className={getStatusColor(subtask?.status || "")}>
+            {subtask?.status}
+          </Badge>
+        </div>
       </CardTitle>
     </CardHeader>
   );

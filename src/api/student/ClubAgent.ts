@@ -4,7 +4,7 @@ import { get, post } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventClubDTO } from "../representative/EventAgent";
 import toast from "react-hot-toast";
-import { TaskDependencyResponseDTO } from "@/components/partial/representative/representative-task/SpecificTasktList";
+import { TaskDependencyResponseDTO } from "@/models/InterTask";
 
 export interface EventTaskDetailAIResponseDTO {
   eventTaskDetailId: string;
@@ -97,7 +97,10 @@ export const checkIsInClub = async (
 };
 
 export const GetAvailableMember = async (
-  clubId: string, startTime: string, deadline: string, priority: string
+  clubId: string,
+  startTime: string,
+  deadline: string,
+  priority: string
 ): Promise<ResponseDTO<AvailableMemberEventTask[]>> => {
   try {
     const response = await get<ResponseDTO<AvailableMemberEventTask[]>>(
@@ -106,8 +109,8 @@ export const GetAvailableMember = async (
         param: {
           StartTime: startTime,
           Deadline: deadline,
-          Priority: priority
-        }
+          Priority: priority,
+        },
       }
     );
 
@@ -118,10 +121,15 @@ export const GetAvailableMember = async (
   }
 };
 
-export const TaskRecommendedByAI = async (clubId: string, data: TaskRecommendedAI): Promise<ResponseDTO<AvailableMemberEventTask[]>> => {
+export const TaskRecommendedByAI = async (
+  clubId: string,
+  data: TaskRecommendedAI
+): Promise<ResponseDTO<AvailableMemberEventTask[]>> => {
   try {
     const response = await post<ResponseDTO<AvailableMemberEventTask[]>>(
-      `/Tasks/Club/${clubId}/recommend-members`, data);
+      `/Tasks/Club/${clubId}/recommend-members`,
+      data
+    );
 
     return response;
   } catch (error: any) {
@@ -149,10 +157,15 @@ export const TaskRecommendedByAI = async (clubId: string, data: TaskRecommendedA
   }
 };
 
-export const CreateSubTaskAPI = async (eventTaskId: string, data: EventSubTaskDetail): Promise<ResponseDTO<string>> => {
+export const CreateSubTaskAPI = async (
+  eventTaskId: string,
+  data: EventSubTaskDetail
+): Promise<ResponseDTO<string>> => {
   try {
     const response = await post<ResponseDTO<string>>(
-      `/EventTask/${eventTaskId}/eventTaskDetail`, data);
+      `/EventTask/${eventTaskId}/eventTaskDetail`,
+      data
+    );
 
     return response;
   } catch (error: any) {
@@ -178,7 +191,10 @@ export const CreateSubTaskAPI = async (eventTaskId: string, data: EventSubTaskDe
 };
 
 export const GetAvailableTask = async (
-  eventTaskId: string, startTime: string, deadline: string, priority: string
+  eventTaskId: string,
+  startTime: string,
+  deadline: string,
+  priority: string
 ): Promise<ResponseDTO<TaskDependencyResponseDTO[]>> => {
   try {
     const response = await get<ResponseDTO<TaskDependencyResponseDTO[]>>(
@@ -187,8 +203,8 @@ export const GetAvailableTask = async (
         param: {
           StartTime: startTime,
           Deadline: deadline,
-          Priority: priority
-        }
+          Priority: priority,
+        },
       }
     );
 
