@@ -7,21 +7,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useInterTask } from "@/hooks/club/useInterTask";
+import { EventTaskDetail } from "@/models/InterTask";
 
 interface DeleteSubtaskDialogProps {
   open: boolean;
   onClose: () => void;
+  subtask: EventTaskDetail | null;
 }
 
 export default function DeleteSubtaskDialog({
   open,
   onClose,
+  subtask,
 }: DeleteSubtaskDialogProps) {
-  //   const { deleteInterTaskDetail } = useInterTask();
+  const { deleteSubtask } = useInterTask();
 
-  //   const handleDeleteSubtask = async () => {
-  //     await deleteInterTaskDetail(subtask.eventTaskDetailId);
-  //   };
+  const handleDeleteSubtask = async () => {
+    await deleteSubtask({
+      eventTaskDetailId: subtask ? subtask.eventTaskDetailId : "",
+      eventTaskId: subtask ? subtask.eventTaskId : "",
+    });
+    onClose();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -38,7 +46,9 @@ export default function DeleteSubtaskDialog({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button variant="destructive">Delete</Button>
+          <Button variant="destructive" onClick={handleDeleteSubtask}>
+            Delete
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
