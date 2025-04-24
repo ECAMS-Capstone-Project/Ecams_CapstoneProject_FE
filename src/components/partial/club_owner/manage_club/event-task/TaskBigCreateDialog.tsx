@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CreateInterTaskRequest } from "@/models/InterTask";
 import useAuth from "@/hooks/useAuth";
 import {
   Popover,
@@ -36,8 +35,9 @@ import { InterClubEventDTO } from "@/models/Event";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { EventTaskSchema } from "@/schema/EventTaskSchema";
 import toast from "react-hot-toast";
+import { CreateInterTaskRequest2 } from "@/models/InterTask";
 interface TaskCreateDialogProps {
-  onCreateTask: (task: CreateInterTaskRequest) => void;
+  onCreateTask: (task: CreateInterTaskRequest2) => void;
   eventId: string;
   selectedEvent: InterClubEventDTO | null;
 }
@@ -65,7 +65,6 @@ export const TaskBigCreateDialog = ({
       description: "",
       startTime: new Date(),
       deadline: new Date(),
-      listEventTaskDetails: [],
       clubId: "",
     },
   });
@@ -89,19 +88,14 @@ export const TaskBigCreateDialog = ({
         values.startTime,
         values.startTimeTime
       );
-      const taskData: CreateInterTaskRequest = {
-        ...values,
+      const taskData: CreateInterTaskRequest2 = {
+        description: values.description,
+        taskName: values.taskName,
         eventId,
         createdBy: user?.userId || "",
         clubId: values.clubId || "",
         startTime: fixTime(finalStartTime || new Date()),
         deadline: fixTime(finalDeadline || new Date()),
-        listEventTaskDetails: values.listEventTaskDetails.map((detail) => ({
-          ...detail,
-          startTime: fixTime(detail.startTime || new Date()),
-          deadline: fixTime(detail.deadline || new Date()),
-          priority: detail.priority || "",
-        })),
       };
       // if (
       //   finalDeadline &&

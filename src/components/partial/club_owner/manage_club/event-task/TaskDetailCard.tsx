@@ -10,10 +10,11 @@ import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
-import { EventTaskDetail, InterTask, UpdateInterTaskRequest } from "@/models/InterTask";
+import { EventTaskDetail, InterTask, UpdateInterTaskRequest3 } from "@/models/InterTask";
 import toast from "react-hot-toast";
 import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
 import { AssignMembersDialog } from "./AssignMemberDialog";
+import { useInterTask } from "@/hooks/club/useInterTask";
 
 const TaskDetailCard = () => {
   const { taskId = "" } = useParams();
@@ -21,7 +22,6 @@ const TaskDetailCard = () => {
   const isClubOwner = location.state?.isClubOwner as boolean;
   const taskDetail = location.state?.taskDetail as EventTaskDetail
   const clubId = location.state?.clubId as string
-  const eventId = location.state?.eventId as string
   const bigTask = location.state?.bigTask as InterTask
   const [submissionList, setSubmissionList] = useState<EventSubmissionTaskDetail[]>();
   const [currentPageSubmission, setCurrentPageSubmission] = useState(1);
@@ -31,6 +31,7 @@ const TaskDetailCard = () => {
   );
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { updateInterEventTask3 } = useInterTask();
 
   useEffect(() => {
     if (!taskId) return;
@@ -105,30 +106,11 @@ const TaskDetailCard = () => {
   };
 
 
-  const handleAssignMembers = async (
-    taskId: string,
-    updateData: Partial<UpdateInterTaskRequest>
-  ) => {
-    console.log("updateData", updateData, taskId);
-    // await updateInterEventTask({
-    //   eventTaskId: taskId,
-    //   clubId: currentClub.clubId,
-    //   eventId: selectedEvent.eventId,
-    //   taskName: task.taskName,
-    //   description: task.description,
-    //   startTime: task.startTime,
-    //   deadline: task.deadline,
-    //   status: task.status,
-    //   ...updateData,
-    //   eventTaskDetails: [
-    //     {
-    //       ...subtask,
-    //       assignedMembers: updateData.eventTaskDetails?.flatMap(
-    //         (detail) => detail.assignedMembers || []
-    //       ),
-    //     },
-    //   ],
-    // });
+  const handleAssignMembers = async (updateData: UpdateInterTaskRequest3) => {
+    updateData.eventTaskDetailId = taskDetail.eventTaskDetailId
+    updateData.priority = taskDetail.priority
+    updateData.detailName = taskDetail.detailName
+    await updateInterEventTask3({ subtask: updateData, eventTaskDetailId: taskDetail.eventTaskDetailId });
     setIsAssignDialogOpen(false);
   };
 
@@ -329,7 +311,6 @@ const TaskDetailCard = () => {
           subTask={taskDetail}
           clubId={clubId}
           task={bigTask}
-          eventId={eventId}
           memberSelected={membersSelected}
         />
       )}
