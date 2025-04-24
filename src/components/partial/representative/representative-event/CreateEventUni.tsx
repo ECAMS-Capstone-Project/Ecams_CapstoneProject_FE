@@ -282,7 +282,6 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
       }
       onSuccess?.()
     } catch (error: any) {
-      toast.error(error.message || "An error occurred")
       console.error("Error:", error)
     } finally {
       setIsLoading(false)
