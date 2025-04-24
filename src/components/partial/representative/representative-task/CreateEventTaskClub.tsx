@@ -134,11 +134,11 @@ export default function CreateEventTaskClub() {
   }, [searchTerm2]);
 
   const filteredStudents = allStudents.filter((st) =>
-    st.fullName.toLowerCase().includes(debouncedSearch.toLowerCase())
+    st.fullName.toLowerCase().includes(debouncedSearch.trim().toLowerCase())
   );
 
   const filteredTasks = fakeTasks.filter((st) =>
-    st.detailName.toLowerCase().includes(debouncedSearch2.toLowerCase())
+    st.detailName.toLowerCase().includes(debouncedSearch2.trim().toLowerCase())
   );
 
   const form = useForm<TaskEventFormValues>({
@@ -209,14 +209,10 @@ export default function CreateEventTaskClub() {
       );
 
       const assignedMembers =
-        allStudents.length > 0
-          ? allStudents.map((student) => ({
-            clubMemberId: student.clubMemberId,
-          }))
-          : selectedMembers.map((id: string) => {
-            const stu = allStudents.find((s) => s.studentId === id);
-            return { clubMemberId: stu ? stu.clubMemberId : id };
-          });
+        selectedMembers.map((id: string) => {
+          const stu = allStudents.find((s) => s.studentId === id);
+          return { clubMemberId: stu ? stu.clubMemberId : id };
+        });
 
       const data: EventSubTaskDTO = {
         clubId,
@@ -311,6 +307,7 @@ export default function CreateEventTaskClub() {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     const hasErrors = !!Object.keys(form.formState.errors).length;
     if (hasErrors) {
@@ -576,7 +573,7 @@ export default function CreateEventTaskClub() {
                           onClick={handleAIRecommend}
                           type="button"
                           disabled={isLoading || !taskName || !taskDescription || allStudents.length <= 0}
-                          className="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 text-white 
+                          className="relative overflow-hidden btn-style501 text-[#133a95] 
                     px-6 py-2 rounded-lg font-semibold transition-all duration-300 
                     hover:scale-105 hover:shadow-lg group"
                         >

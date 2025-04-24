@@ -384,6 +384,7 @@ export const TaskBigEditDialog = ({
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={true}
                         >
                           <FormControl>
                             <SelectTrigger className={cn(

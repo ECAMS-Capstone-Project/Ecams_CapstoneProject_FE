@@ -207,7 +207,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
                                                         className="w-16 h-16 object-cover rounded border"
                                                     />
                                                 )}
-                                                <span className="text-sm text-gray-700">{file.name}</span>
+                                                <span className="text-sm text-gray-700">Attach files {index}</span>
                                             </li>
                                         ))}
                                     </ul>

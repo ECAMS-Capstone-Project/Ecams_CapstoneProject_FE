@@ -11,7 +11,6 @@ import { AvailableMemberEventTask } from "@/api/student/ClubAgent";
 interface SpecificStudentListProps {
     students: AvailableMemberEventTask[];
     selected: string[];
-    isAssignAll: boolean;
     handleToggleStudent: (studentId: string, checked: boolean) => void;
     recommendedStudents?: AvailableMemberEventTask[];
     recommendedReasons?: Record<string, string>;
@@ -20,7 +19,6 @@ interface SpecificStudentListProps {
 const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
     students,
     selected,
-    isAssignAll,
     handleToggleStudent,
     recommendedStudents,
     recommendedReasons
@@ -105,7 +103,6 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                             onCheckedChange={(checked) =>
                                 handleToggleStudent(st.studentId, !!checked)
                             }
-                            disabled={isAssignAll}
                         />
                         <div className="flex flex-col">
                             <span className="text-base font-semibold text-foreground">
@@ -133,7 +130,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
 
             <Dialog fullWidth maxWidth={maxWidth} open={open} onClose={() => setOpen(false)}>
                 <DialogTitle className="flex justify-between items-center">
-                    Chi tiết học sinh
+                    Student Detail
                     <IconButton onClick={() => setOpen(false)} size="small">
                         <ShieldCloseIcon fontSize="small" />
                     </IconButton>
@@ -151,15 +148,15 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                 />
                                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 p-4 rounded-xl border bg-white shadow">
                                     <div className="space-y-2">
-                                        <p className="text-base text-muted-foreground"><b>Full Name:</b> <span className="font-semibold text-foreground">{selectedStudent?.fullName}</span></p>
+                                        <p className="text-base text-muted-foreground"><b>Full Name:</b> <span className="text-foreground">{selectedStudent?.fullName}</span></p>
                                         <p className="text-base text-muted-foreground flex items-center gap-2">
-                                            <b>Email:</b> <span className="font-semibold text-foreground">{selectedStudent?.email}</span>
+                                            <b>Email:</b> <span className="text-foreground">{selectedStudent?.email}</span>
                                         </p>
                                     </div>
 
                                     <div className="space-y-2">
                                         <p className="text-base text-muted-foreground">
-                                            <b>Student ID:</b> <span className="font-semibold text-foreground">{selectedStudent?.studentId}</span>
+                                            <b>Student ID:</b> <span className="text-foreground">{selectedStudent?.studentId}</span>
                                         </p>
                                         <p className="text-base text-muted-foreground">
                                             <b>Club Activity Point:{" "}</b>
@@ -194,7 +191,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                     {selectedStudent?.currentTasks && selectedStudent?.currentTasks?.length > 0 ? (
                         <Card className="shadow-lg border mt-6 rounded-2xl">
                             <CardHeader>
-                                <h2 className="text-xl font-semibold text-gray-800">Danh sách nhiệm vụ hiện tại</h2>
+                                <h2 className="text-xl font-semibold text-gray-800">Current task</h2>
                             </CardHeader>
                             <CardContent>
                                 <div className="w-full overflow-x-auto">
@@ -205,9 +202,6 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                                 <TableCell className="font-semibold">Description</TableCell>
                                                 <TableCell className="font-semibold text-center">Start Date</TableCell>
                                                 <TableCell className="font-semibold text-center">Deadline</TableCell>
-                                                <TableCell className="font-semibold text-center">Submission</TableCell>
-                                                <TableCell className="font-semibold text-center">Score</TableCell>
-                                                <TableCell className="font-semibold text-center">Status</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -223,19 +217,6 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                                     <TableCell className="whitespace-normal break-words max-w-[250px]">{task.description}</TableCell>
                                                     <TableCell className="text-center">{new Date(task.startTime).toLocaleDateString()}</TableCell>
                                                     <TableCell className="text-center">{task.deadline ? new Date(task.deadline).toLocaleDateString() : "--"}</TableCell>
-                                                    <TableCell className="text-center">{task.submissionDate ? new Date(task.submissionDate).toLocaleDateString() : "--"}</TableCell>
-                                                    <TableCell className="text-center">{task.submissionScore}</TableCell>
-                                                    <TableCell className="text-center">
-                                                        <span
-                                                            className={`px-3 py-1 rounded-full text-xs font-semibold 
-                                                                    ${task.status === "COMPLETED"
-                                                                    ? "bg-green-100 text-green-700"
-                                                                    : "bg-yellow-100 text-yellow-700"
-                                                                }`}
-                                                        >
-                                                            {task.status === "COMPLETED" ? "Completed" : "On Going"}
-                                                        </span>
-                                                    </TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -248,10 +229,10 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                     </Card>}
 
                     {/* 3. Related Tasks */}
-                    {selectedStudent?.relatedTasks && selectedStudent?.relatedTasks?.length > 0 ? (
+                    {selectedStudent?.relatedTasks && selectedStudent?.relatedTasks?.length > 0 && (
                         <Card className="shadow-lg border mt-6 rounded-2xl">
                             <CardHeader>
-                                <h2 className="text-xl font-semibold text-gray-800">Nhiệm vụ liên quan</h2>
+                                <h2 className="text-xl font-semibold text-gray-800">Related task</h2>
                             </CardHeader>
                             <CardContent>
                                 <div className="w-full overflow-x-auto">
@@ -260,11 +241,9 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                             <TableRow className="bg-gray-200 text-gray-800 text-sm">
                                                 <TableCell className="font-semibold">Task Name</TableCell>
                                                 <TableCell className="font-semibold">Description</TableCell>
-                                                <TableCell className="font-semibold text-center">Start Date</TableCell>
                                                 <TableCell className="font-semibold text-center">Deadline</TableCell>
-                                                <TableCell className="font-semibold text-center">Submission</TableCell>
+                                                <TableCell className="font-semibold text-center">Submission Date</TableCell>
                                                 <TableCell className="font-semibold text-center">Score</TableCell>
-                                                <TableCell className="font-semibold text-center">Status</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -278,21 +257,10 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                                 >
                                                     <TableCell className="whitespace-normal break-words max-w-[150px]">{task.detailName}</TableCell>
                                                     <TableCell className="whitespace-normal break-words max-w-[250px]">{task.description}</TableCell>
-                                                    <TableCell className="text-center">{new Date(task.startTime).toLocaleDateString()}</TableCell>
                                                     <TableCell className="text-center">{task.deadline ? new Date(task.deadline).toLocaleDateString() : "--"}</TableCell>
                                                     <TableCell className="text-center">{task.submissionDate ? new Date(task.submissionDate).toLocaleDateString() : "--"}</TableCell>
                                                     <TableCell className="text-center">{task.submissionScore}</TableCell>
-                                                    <TableCell className="text-center">
-                                                        <span
-                                                            className={`px-3 py-1 rounded-full text-xs font-semibold 
-                                                                    ${task.status === "COMPLETED"
-                                                                    ? "bg-green-100 text-green-700"
-                                                                    : "bg-yellow-100 text-yellow-700"
-                                                                }`}
-                                                        >
-                                                            {task.status === "COMPLETED" ? "Completed" : "On Going"}
-                                                        </span>
-                                                    </TableCell>
+
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -300,11 +268,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                 </div>
                             </CardContent>
                         </Card>
-                    ) : <Card className="py-4">
-                        <p className="text-sm text-center text-gray-500 italic">
-                            No related tasks found.
-                        </p>
-                    </Card>}
+                    )}
 
                 </DialogContent>
             </Dialog>
