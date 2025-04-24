@@ -57,6 +57,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
             window.history.back();
         } catch (err) {
             console.error(err);
+            setIsSubmitting(false);
         }
     };
 
@@ -102,7 +103,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
                         <p className="flex items-center gap-2">
                             <UserRound size={16} className="text-muted-foreground" />
                             <span>
-                                <strong>Review by:</strong> {submission.reviewer ? `${submission.reviewer.fullname}` : "N/A"}
+                                <strong>Review by:</strong> {submission.reviewer ? `${submission.reviewer.fullname}` : "Not yet"}
                             </span>
                         </p>
                         <p className="flex items-center gap-2">
@@ -207,7 +208,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
                                                         className="w-16 h-16 object-cover rounded border"
                                                     />
                                                 )}
-                                                <span className="text-sm text-gray-700">Attach files {index}</span>
+                                                <span className="text-sm text-gray-700">{file.name}</span>
                                             </li>
                                         ))}
                                     </ul>
