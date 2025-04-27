@@ -250,10 +250,11 @@ export const GetTaskDetailByMember = async (
     }
 };
 
-export const SendStudentSubmission = async (data: StudentSubmissionRequest): Promise<ResponseDTO<string>> => {
+export const SendStudentSubmission = async (taskId:string, data: FormData): Promise<ResponseDTO<string>> => {
     try {
-        const response = await put<ResponseDTO<string>>(`/Tasks/${data.taskId}/submit`, data);
-        return response; // Trả về toàn bộ phản hồi
+        const response = await axiosMultipartForm.put(`/Tasks/${taskId}/submit`, data);
+        const apiResponse = response.data as ResponseDTO<string>;
+        return apiResponse;
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);

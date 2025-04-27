@@ -361,11 +361,12 @@ export const GetClubsDetailAPI = async (
 export const GetMemberInClubsAPI = async (
   clubId: string,
   pageSize: number,
-  pageNo: number
+  pageNo: number,
+  status: string
 ): Promise<ResponseDTO<ResponseData<ClubMemberDTO>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<ClubMemberDTO>>>(
-      `/Clubs/${clubId}/members?PageNumber=${pageNo}&PageSize=${pageSize}`
+      `/Clubs/${clubId}/members?Status=${status}&PageNumber=${pageNo}&PageSize=${pageSize}`
     );
     return response; // Trả về toàn bộ phản hồi
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
