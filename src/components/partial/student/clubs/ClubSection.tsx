@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 export const ClubsSection = () => {
   const [pageNo, setPageNo] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageSize] = useState(5);
+  const [pageSize] = useState(8);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { clubs, totalPages } = useClubs(user?.universityId, pageNo, pageSize);
