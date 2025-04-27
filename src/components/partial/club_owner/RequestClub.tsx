@@ -27,7 +27,6 @@ import { ring2 } from "ldrs";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// Zod Schema for validation
 const clubSchema = z.object({
     clubName: z.string().trim().min(3, "Club name must be at least 3 characters"),
     description: z.string().trim().min(5, "Description must be at least 5 characters"),
@@ -88,9 +87,7 @@ const ClubRequestForm: React.FC = () => {
         fetchFields();
     }, []);
 
-    // -------------------
-    // Upload Logo
-    // -------------------
+
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -99,9 +96,7 @@ const ClubRequestForm: React.FC = () => {
         }
     };
 
-    // -------------------
-    // Thêm Member
-    // -------------------
+
     const handleAddMember = () => {
         if (emailInput.trim() && !members.some((m) => m.email === emailInput)) {
             const newMember = { email: emailInput };
@@ -112,45 +107,39 @@ const ClubRequestForm: React.FC = () => {
         }
     };
 
-    // -------------------
-    // Tạo Field mới
-    // -------------------
+
     const handleCreateField = async (newFieldName: string) => {
         if (newFieldName.trim() == "" || newFieldName.trim() == null) {
             toast.error("Please input field name")
             return;
         }
-        // Kiểm tra field đã tồn tại chưa
+        
         const isFieldExist = fieldOptions.some(f => f.fieldName === newFieldName);
-        if (isFieldExist) return; // Nếu đã có thì không tạo lại
+        if (isFieldExist) return;
         console.log(errors);
 
         try {
             const response = await CreateFieldsAPI(newFieldName);
             if (response.statusCode === StatusCodeEnum.CREATED) {
                 toast.success("Field created successfully");
-                const newField = response.data; // Lấy thông tin field mới
+                const newField = response.data; 
                 const newField2: FieldDTO = {
                     fieldId: newField || "",
                     fieldName: newFieldName
                 }
-                setFieldOptions((prev) => [...prev, newField2]); // Thêm vào danh sách field options
-                setOpenDialog(false); // Đóng dialog sau khi tạo
+                setFieldOptions((prev) => [...prev, newField2]);
+                setOpenDialog(false); 
             }
         } catch (error) {
             console.error("Failed to create field", error);
         }
     };
 
-    // -------------------
-    // Submit Handler
-    // -------------------
     const onSubmit: SubmitHandler<ClubFormData> = async (data) => {
         if (user) {
-            console.log(data.members);
 
             if (data.members.length < 3) {
-                toast.error("You must add at least 3 members.");
+                toast.error("You must add at least 2 members");
                 return;
             }
             const formData = new FormData();
@@ -168,7 +157,7 @@ const ClubRequestForm: React.FC = () => {
 
             data.fieldIds.forEach((id) => formData.append("FieldIds", id));
 
-            // Lưu member
+            
             data.members.forEach((member, index) => {
                 formData.append(`Members[${index}].Email`, member.email);
             });
