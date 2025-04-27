@@ -15,7 +15,6 @@ import {
   InterTask,
   UpdateInterTaskRequest3,
 } from "@/models/InterTask";
-// import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
