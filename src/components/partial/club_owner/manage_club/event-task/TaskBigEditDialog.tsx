@@ -31,13 +31,6 @@ import { cn, fixTime } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { InterClubEventDTO } from "@/models/Event";
 import {
   Command,
@@ -111,7 +104,7 @@ export const TaskBigEditDialog = ({
         description: values.description,
         startTime: fixTime(finalStartTime).toISOString(),
         deadline: fixTime(finalDeadline).toISOString(),
-        status: values.status || "ON_GOING",
+        status: task.status,
       };
 
       await onUpdate(task.eventTaskId, updateData);
@@ -352,41 +345,6 @@ export const TaskBigEditDialog = ({
                             </Command>
                           </PopoverContent>
                         </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={true}
-                        >
-                          <FormControl>
-                            <SelectTrigger className={cn(
-                              "font-bold border",
-                              field.value === "NOT_STARTED" && "bg-gray-100 text-gray-700",
-                              field.value === "ON_GOING" && "bg-blue-100 text-blue-800",
-                              field.value === "COMPLETED" && "bg-green-200 text-green-800",
-                              field.value === "REVIEWING" && "bg-yellow-100 text-yellow-800",
-                              field.value === "OVERDUE" && "bg-red-100 text-red-800",
-                            )}>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="ON_GOING">On Going</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                            <SelectItem value="REVIEWING">Reviewing</SelectItem>
-                            <SelectItem value="OVERDUE">Overdue</SelectItem>
-                          </SelectContent>
-                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

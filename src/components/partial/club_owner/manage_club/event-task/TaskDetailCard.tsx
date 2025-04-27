@@ -112,22 +112,40 @@ const TaskDetailCard = () => {
 
     if (isUserSubmission && isClubOwner && !isSubmitted) {
       // Club owner chính là người nộp và chưa nộp => bắt đi nộp trước
-      navigate("/club/task-submission-student", {
-        state: { taskDetail, submission: data },
-      });
+      if (
+        taskDetail.taskDependencies.length > 0 &&
+        !taskDetail.taskDependencies.every((p) => p.status == "COMPLETED")
+      ) {
+        toast.error("Task dependency has not finished");
+      } else {
+        if (data.status == "NOT_STARTED") {
+          toast.error("This task has not started");
+        } else {
+          navigate("/club/task-submission-student", {
+            state: { taskDetail, submission: data },
+          });
+        }
+      }
     } else if (isClubOwner) {
       // Club owner (đã nộp hoặc không phải người nộp) => vào trang quản lý
       navigate("/club/task-submission", {
         state: { taskDetail, submission: data },
       });
     } else if (isUserSubmission) {
-      if (new Date(taskDetail.startTime) > new Date()) {
-        toast.error("Task has not started yet");
+      if (
+        taskDetail.taskDependencies.length > 0 &&
+        !taskDetail.taskDependencies.every((p) => p.status == "COMPLETED")
+      ) {
+        toast.error("Task dependency has not finished");
       } else {
-        // Thành viên thường được phép nộp
-        navigate("/club/task-submission-student", {
-          state: { taskDetail, submission: data },
-        });
+        if (data.status == "NOT_STARTED") {
+          toast.error("Task has not started yet");
+        } else {
+          // Thành viên thường được phép nộp
+          navigate("/club/task-submission-student", {
+            state: { taskDetail, submission: data },
+          });
+        }
       }
     }
   };
@@ -204,24 +222,33 @@ const TaskDetailCard = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {taskDetail?.status ? (
-                <>
-                  <span className="w-5 h-5 rounded-full bg-green-500 inline-block" />
+              {taskDetail.status == "NOT_STARTED" ? (
+                <div className="flex items-center gap-2">
                   <div>
                     <p className="text-sm font-bold text-gray-700">Status</p>
-                    <p className="text-green-600 font-semibold">Active</p>
+                    <p className="bg-gray-100 text-gray-800 text-sm font-semibold px-2 py-1 rounded-md">{taskDetail.status}</p> 
                   </div>
-                </>
+                </div>
               ) : (
-                <>
-                  <span className="w-5 h-5 rounded-full bg-[#D6E4FF] inline-block" />
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Status</p>
-                    <p className="text-sm font-medium text-[#007BFF]">
-                      InActive
+                    <p className="text-sm font-bold text-gray-700">Status</p>
+                    <p
+                      className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                        taskDetail.status === "ON_GOING"
+                          ? "text-blue-600 bg-blue-100"
+                          : taskDetail.status === "REVIEWING"
+                          ? "text-yellow-600 bg-yellow-100"
+                          : taskDetail.status === "COMPLETED"
+                          ? "text-green-900 bg-green-300"
+                          : "text-gray-600 bg-gray-400"
+                      }`}
+                    >
+                      {taskDetail.status}
                     </p>
                   </div>
-                </>
+                </div>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -243,12 +270,14 @@ const TaskDetailCard = () => {
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               📥 Submissions
             </h3>
-            <Button
-              variant={"custom"}
-              onClick={() => setIsAssignDialogOpen(true)}
-            >
-              Assign Member
-            </Button>
+            {isClubOwner && (
+              <Button
+                variant={"custom"}
+                onClick={() => setIsAssignDialogOpen(true)}
+              >
+                Assign Member
+              </Button>
+            )}
           </div>
           {sortedSubmissions.length > 0 ? (
             <>
@@ -303,19 +332,27 @@ const TaskDetailCard = () => {
                             </p>
                           </div>
                         </div>
-                        <span
-                          className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                            data.status === "ON_GOING"
-                              ? "text-blue-600 bg-blue-100"
-                              : data.status === "REVIEWING"
-                              ? "text-yellow-600 bg-yellow-100"
-                              : data.status === "COMPLETED"
-                              ? "text-green-900 bg-green-300"
-                              : "text-gray-600 bg-gray-300"
-                          }`}
-                        >
-                          {data.status}
-                        </span>
+                        {taskDetail.status == "NOT_STARTED" ? (
+                          <span
+                            className={`text-sm font-medium px-2 py-0.5 border rounded-full text-gray-600 bg-gray-300"`}
+                          >
+                            NOT_STARTED
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-sm font-medium px-2 py-0.5 rounded-full ${
+                              data.status === "ON_GOING"
+                                ? "text-blue-600 bg-blue-100"
+                                : data.status === "REVIEWING"
+                                ? "text-yellow-600 bg-yellow-100"
+                                : data.status === "COMPLETED"
+                                ? "text-green-900 bg-green-300"
+                                : "text-gray-600 bg-gray-300"
+                            }`}
+                          >
+                            {data.status}
+                          </span>
+                        )}
                       </div>
 
                       <p className="text-sm text-gray-700">

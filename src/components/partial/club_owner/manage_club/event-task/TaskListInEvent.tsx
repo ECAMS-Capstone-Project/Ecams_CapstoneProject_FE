@@ -19,9 +19,10 @@ import { Input } from "@/components/ui/input";
 import {
   EventTaskDetail,
   InterTask,
+  UpdateInterTaskRequest2,
   UpdateSubtaskRequest,
 } from "@/models/InterTask";
-import { cn } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import {
   DropdownMenu,
@@ -38,6 +39,8 @@ import LoadingAnimation from "@/components/ui/loading";
 import toast from "react-hot-toast";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import DeleteSubtaskDialog from "../../inter-club/task/sub-task/DeleteSubtaskDialog";
+import { UpdateInterTask2 } from "@/api/club-owner/InterEventTask";
+import ConfirmEndEventDialog from "./ConfirmEndEventDialog";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -59,6 +62,23 @@ export default function TaskListInEvent() {
   const [totalPages, setTotalPages] = useState<number | undefined>();
   const [flag, setFlag] = useState<boolean>(false);
   const { updateSubtask, isUpdating2 } = useInterTask();
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleSubmit = async () => {
+    const data: UpdateInterTaskRequest2 = {
+      eventTaskId: task.eventTaskId,
+      clubId: clubId,
+      eventId: eventId,
+      taskName: task.taskName,
+      description: task.description,
+      startTime: fixTime(task.startTime).toISOString(),
+      deadline: fixTime(task.deadline).toISOString(),
+      status: "COMPLETED"
+    }
+    await UpdateInterTask2(data)
+    toast.success("Task completed")
+    window.history.back();
+  };
 
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" || percentage === 100)
@@ -72,6 +92,7 @@ export default function TaskListInEvent() {
     if (status === "COMPLETED" || percentage === 100) return "Completed";
     if (percentage > 0 || status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
+    if (status === "NOT_STARTED") return "Not started";
     return "Overdue";
   };
 
@@ -182,17 +203,32 @@ export default function TaskListInEvent() {
         <Card className="p-6 rounded-lg bg-blue-50">
           <div className="space-y-4">
             <div>
-              <div className="flex items-center gap-4 mb-4">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
-                </button>
+              <div className="flex items-center mb-4 justify-between">
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-blue-600">
+                      {task?.taskName}
+                    </h1>
+                  </div>
+                </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-blue-600">
-                    {task?.taskName}
-                  </h1>
+                  {task.status != "COMPLETED" && isClubOwner && (
+                    <div>
+                      <Button
+                        onClick={() => setOpen(true)}
+                        variant={"custom"}
+                        className="font-bold"
+                      >
+                        Complete
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="text-muted-foreground mt-2">{task.description}</p>
@@ -365,11 +401,16 @@ export default function TaskListInEvent() {
                                 Edit
                               </DropdownMenuItem>
                             )}
+                            {isClubOwner && (
                             <DropdownMenuItem
-                              onClick={() => handleNavigate(task)}
+                              onClick={() => {
+                                setIsDeleteDialogOpen(true)
+                                setEditingTask(task);
+                              }}
                             >
                               Delete
                             </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -442,7 +483,9 @@ export default function TaskListInEvent() {
         subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
+        setFlag={setFlag}
       />
+      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} title="Do you want to complete this task?" />
     </div>
   );
 }

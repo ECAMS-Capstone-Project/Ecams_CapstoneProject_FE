@@ -13,7 +13,6 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
-import toast from "react-hot-toast";
 
 interface TaskItemProps {
   task: InterTask;
@@ -40,6 +39,7 @@ export const TaskBigItem = ({
     if (status === "COMPLETED") return "Completed";
     if (percentage > 0 || status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
+    if (status == "NOT_STARTED") return "Not started"
     return "Overdue";
   };
   const { updateInterEventTask2, isUpdating2 } = useInterTask();
@@ -63,14 +63,7 @@ export const TaskBigItem = ({
     }
   };
   const handleClick = () => {
-    const taskStart = new Date(task.startTime);
-    const now = new Date();
-
-    if (taskStart <= now) {
-      toast.error("This task has already started");
-    } else {
       setIsEditOpen(true);
-    }
   };
 
   return (
