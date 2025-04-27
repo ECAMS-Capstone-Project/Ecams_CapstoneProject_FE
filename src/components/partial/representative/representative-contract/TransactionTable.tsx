@@ -13,6 +13,7 @@ export const TransactionTable = (contract: ContractData) => {
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3">Transaction Number</th>
+              <th className="p-3">Transaction Information</th>
               <th className="p-3">Type</th>
               <th className="p-3">Date</th>
               <th className="p-3">Method</th>
@@ -21,24 +22,29 @@ export const TransactionTable = (contract: ContractData) => {
             </tr>
           </thead>
           <tbody>
-            {contract.data.transactions?.filter((a) => a.status == 'PAID')?.map((txn) => (
-              <tr key={txn.transactionId} className="border-b">
-                <td className="p-3">{txn.transactionNumber}</td>
-                <td className="p-3">{txn.type}</td>
-                <td className="p-3">{format(new Date(txn.paymentDate), 'dd-MM-yyyy - hh:mm a')} </td>
-                <td className="p-3">{txn.methodName}</td>
-                <td className="p-3">{txn.amount.toLocaleString()} VND</td>
-                <td className="p-3 font-semibold">
-                  {txn.status === "PAID" ? (
-                    <span className="text-green-500">✅ PAID</span>
-                  ) : txn.status === "PENDING" ? (
-                    <span className="text-yellow-500">⏳ PENDING</span>
-                  ) : (
-                    <span className="text-red-500">❌ FAILED</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {contract.data.transactions
+              ?.filter((a) => a.status == "PAID")
+              ?.map((txn) => (
+                <tr key={txn.transactionId} className="border-b">
+                  <td className="p-3">{txn.transactionNumber}</td>
+                  <td className="p-3">{txn.transactionInfo}</td>
+                  <td className="p-3">{txn.type}</td>
+                  <td className="p-3">
+                    {format(new Date(txn.paymentDate), "dd-MM-yyyy - hh:mm a")}{" "}
+                  </td>
+                  <td className="p-3">{txn.methodName}</td>
+                  <td className="p-3">{txn.amount.toLocaleString()} VND</td>
+                  <td className="p-3 font-semibold">
+                    {txn.status === "PAID" ? (
+                      <span className="text-green-500">✅ PAID</span>
+                    ) : txn.status === "PENDING" ? (
+                      <span className="text-yellow-500">⏳ PENDING</span>
+                    ) : (
+                      <span className="text-red-500">❌ FAILED</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

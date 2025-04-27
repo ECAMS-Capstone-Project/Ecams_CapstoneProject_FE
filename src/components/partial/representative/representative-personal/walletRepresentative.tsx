@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { GetContractCurrentAPI } from "@/api/representative/ContractAPI";
 import { Contract } from "@/models/Contract";
 import ConfirmDialog from "./confirmDialog";
-import ConfirmCancelDialog from "./confirmCancel";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
 import { format } from "date-fns";
@@ -24,20 +23,17 @@ const WalletRepresentative = () => {
 
   // State cho package và contract
   const [curPackage, setCurPackage] = useState<Package | null>(null);
-  const [contractCurrent, setContractCurrent] = useState<Contract | null>(null);
+  const [, setContractCurrent] = useState<Contract | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
-  // State điều khiển loading, error, refetch
   const [loading, setLoading] = useState<boolean>(true);
   const [, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
-  // State điều khiển Dialog
   const [open, setOpen] = useState<boolean>(false);
-  const [openCancel, setOpenCancel] = useState<boolean>(false);
+  // const [openCancel, setOpenCancel] = useState<boolean>(false);
 
-  // 🔥 Gọi API song song bằng Promise.all
   const loadData = async () => {
     if (!user) return;
     setLoading(true);
@@ -56,7 +52,6 @@ const WalletRepresentative = () => {
     }
   };
 
-  // Gọi lại khi user hoặc flag thay đổi
   useEffect(() => {
     loadData();
   }, [user]);
@@ -71,7 +66,6 @@ const WalletRepresentative = () => {
 
   return (
     <Container maxWidth="xl" className="p-6 rounded-lg shadow-lg">
-      {/* Header */}
       <Typography
         variant="h5"
         className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent font-bold text-center mb-6"
@@ -79,10 +73,8 @@ const WalletRepresentative = () => {
         Contract Information
       </Typography>
 
-      {/* Thông tin user và gói hiện tại */}
       <Card className="p-4 md:flex-row items-center shadow-lg mt-4">
         <Grid2 container spacing={3} sx={{ width: "100%" }}>
-          {/* Thông tin User */}
           <Grid2 size={{ xs: 12, md: 6 }} boxShadow={1} p={2}>
             <Typography variant="h6" fontWeight="bold" color="primary" mb={2}>
               🔸 <b>Full Name:</b> {user?.fullname}
@@ -106,7 +98,6 @@ const WalletRepresentative = () => {
               </Grid2>
             </Grid2>
           </Grid2>
-          {/* Gói hiện tại */}
           <Grid2 size={{ xs: 12, md: 6 }} boxShadow={1} p={2}>
             {curPackage ? (
               <>
@@ -198,14 +189,14 @@ const WalletRepresentative = () => {
               </DialogContent>
             </Dialog>
 
-            <Button
+            {/* <Button
               className="block mt-4 hover:scale-105"
               variant="contained"
               sx={{ background: "#f24141", textTransform: "none" }}
               onClick={() => setOpenCancel(true)}
             >
               Cancel package
-            </Button>
+            </Button> */}
             <Button
               className="block mt-4 hover:scale-105"
               sx={{
@@ -226,7 +217,7 @@ const WalletRepresentative = () => {
               variant="contained"
               onClick={() => navigate('/view-package-update', { state: { curPackage: curPackage } })}
             >
-              Update package
+              Upgrade package
             </Button>
           </div>
         )}
@@ -252,11 +243,11 @@ const WalletRepresentative = () => {
       <ConfirmDialog open={open} setOpen={setOpen} />
 
       {/* Dialog Cancel */}
-      <ConfirmCancelDialog
+      {/* <ConfirmCancelDialog
         open={openCancel}
         setOpen={setOpenCancel}
         contract={contractCurrent}
-      />
+      /> */}
     </Container>
   );
 };

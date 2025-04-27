@@ -13,8 +13,8 @@ import { HandleResponse } from "@/models/Payment";
 function WaitingCheckout() {
   const { user } = useAuth();
   const [paymentStatus, setPaymentStatus] = useState("pending");
-  const hasProcessedPayment = useRef(false); // Flag để ngăn gọi lại processPayment
-  const [loading, setLoading] = useState(true); // Trạng thái để hiển thị CircularProgress
+  const hasProcessedPayment = useRef(false); 
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const queryParams = window.location.search;
@@ -65,7 +65,7 @@ function WaitingCheckout() {
             setPaymentStatus(status);
             if (isSuccess) {
               setTimeout(() => {
-                window.location.href = "/representative";
+                window.location.href = "/representative/wallet-representative";
               }, 2000);
             } else {
               console.log("Error");
@@ -79,7 +79,7 @@ function WaitingCheckout() {
       }
 
       setPaymentStatus(status);
-      setLoading(false); // Đổi trạng thái loading khi hoàn tất
+      setLoading(false);
     };
 
     if (user?.representativeId && !hasProcessedPayment.current) {
