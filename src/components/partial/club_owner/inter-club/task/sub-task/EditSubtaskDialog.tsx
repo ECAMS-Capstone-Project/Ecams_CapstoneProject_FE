@@ -12,7 +12,7 @@ import {
   InterTask,
   UpdateSubtaskRequest,
 } from "@/models/InterTask";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,9 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import LoadingAnimation from "@/components/ui/loading";
-import { cn, combineDateTime, fixTime } from "@/lib/utils";
-import SpecificTaskList from "@/components/partial/representative/representative-task/SpecificTasktList";
-import { useInterTask } from "@/hooks/club/useInterTask";
+import { fixTime } from "@/lib/utils";
 
 interface EditSubTaskDialogProps {
   open: boolean;
@@ -81,9 +79,6 @@ export default function EditSubTaskDialog2({
     taskDependencyIds: [],
     assignedMemberIds: [],
   });
-  const [searchTerm2, setSearchTerm2] = useState("");
-  const [debouncedSearch2, setDebouncedSearch2] = useState(searchTerm2);
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [showDependencyCheckbox, setShowDependencyCheckbox] = useState(false);
   const [originalTimes, setOriginalTimes] = useState({
     startDate: undefined as Date | undefined,
@@ -91,38 +86,6 @@ export default function EditSubTaskDialog2({
     deadlineDate: undefined as Date | undefined,
     deadlineTime: "",
   });
-  const { getSubtaskDependencyQuery } = useInterTask();
-  const { data: subtaskDependency } = getSubtaskDependencyQuery(
-    task?.eventTaskId || "",
-    form.startDate && form.startTime
-      ? fixTime(combineDateTime(form.startDate, form.startTime)).toISOString()
-      : "",
-    form.deadlineDate && form.deadlineTime
-      ? fixTime(
-          combineDateTime(form.deadlineDate, form.deadlineTime)
-        ).toISOString()
-      : "",
-    form.priority
-  );
-
-  const filteredSubtaskDependency =
-    subtaskDependency?.data && Array.isArray(subtaskDependency.data)
-      ? subtaskDependency.data.filter((subtask: any) => {
-          const searchStr = debouncedSearch2.toLowerCase();
-          const name = subtask.detailName.toLowerCase();
-          return name.includes(searchStr);
-        })
-      : [];
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch2(searchTerm2), 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm2]);
-
-  // const filteredTasks = subtaskDependency?.data && Array.isArray(subtaskDependency.data)
-  //   ? subtaskDependency.data.filter((st: any) =>
-  //       st.detailName.toLowerCase().includes(debouncedSearch2.toLowerCase())
-  //     )
-  //   : [];
 
   const [errors, setErrors] = useState<ErrorState>({});
 
@@ -156,8 +119,6 @@ export default function EditSubTaskDialog2({
         assignedMemberIds:
           task?.memberEventTasks?.map((member) => member.clubMemberId) || [],
       });
-
-      setSelectedTasks((task as any).taskDependencyIds || []);
 
       setOriginalTimes({
         startDate: new Date(
@@ -193,21 +154,6 @@ export default function EditSubTaskDialog2({
     form.deadlineTime,
     originalTimes,
   ]);
-
-  const handleToggleTask = (taskId: string, checked: boolean) => {
-    setSelectedTasks((prev) => {
-      const newSelectedTasks = checked
-        ? [...prev, taskId]
-        : prev.filter((id) => id !== taskId);
-
-      setForm((prevForm) => ({
-        ...prevForm,
-        taskDependencyIds: newSelectedTasks,
-      }));
-
-      return newSelectedTasks;
-    });
-  };
 
   const validate = () => {
     const newErrors: ErrorState = {};
@@ -425,68 +371,6 @@ export default function EditSubTaskDialog2({
               >
                 Extend the dates of the task dependencies of this subtask.
               </label>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label>Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(val) => setForm({ ...form, status: val })}
-                disabled={task?.status === "COMPLETED"}
-              >
-                <SelectTrigger
-                  className={cn(
-                    "font-bold border",
-                    form.status === "NOT_STARTED" &&
-                      "bg-gray-100 text-gray-700",
-                    form.status === "ON_GOING" && "bg-blue-100 text-blue-800",
-                    form.status === "COMPLETED" &&
-                      "bg-green-200 text-green-800",
-                    form.status === "REVIEWING" &&
-                      "bg-yellow-100 text-yellow-800",
-                    form.status === "OVERDUE" && "bg-red-100 text-red-800",
-                    task?.status === "COMPLETED" && "cursor-not-allowed"
-                  )}
-                >
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NOT_STARTED">Not Started</SelectItem>
-                  <SelectItem value="ON_GOING">On Going</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="REVIEWING">Reviewing</SelectItem>
-                  <SelectItem value="OVERDUE">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {task?.taskDependencies && task?.taskDependencies.length > 0 && (
-            <div className="pl-1">
-              <label className="block text-sm font-medium mb-2">
-                Choose task
-              </label>
-              <div className="flex gap-3">
-                {/* Search bar */}
-                <div className="mb-2 w-1/4">
-                  <Input
-                    placeholder="Search task"
-                    value={searchTerm2}
-                    onChange={(e) => setSearchTerm2(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Suspense fallback={<div>Loading task...</div>}>
-                <SpecificTaskList
-                  handleToggleTask={handleToggleTask}
-                  tasks={filteredSubtaskDependency}
-                  selected={selectedTasks}
-                  taskDependencies={task?.taskDependencies || []}
-                />
-              </Suspense>
-              {/* {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>} */}
             </div>
           )}
         </div>
