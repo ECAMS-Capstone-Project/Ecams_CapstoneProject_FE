@@ -2,6 +2,7 @@ import useAuth from "@/hooks/useAuth";
 import {
   AreaChart,
   BellRingIcon,
+  ClipboardList,
   DollarSignIcon,
   FileText,
   History,
@@ -215,6 +216,12 @@ const SidebarLinks = () => {
         href: "/club/inter-club-event",
         icon: <Event />,
         id: 21,
+      },
+      {
+        title: "Task in event",
+        href: "/club/event-task-list",
+        icon: <ClipboardList />,
+        id: 44,
       }
     );
   }
