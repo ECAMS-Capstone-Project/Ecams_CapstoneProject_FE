@@ -4,6 +4,7 @@ import { get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventTaskDetail } from "@/models/InterTask";
 import axiosMultipartForm from "../axiosMultipartForm";
+import { EventSingleClubTask } from "@/models/Event";
 
 export interface TaskDetailDTO {
     taskId: string;
@@ -250,7 +251,7 @@ export const GetTaskDetailByMember = async (
     }
 };
 
-export const SendStudentSubmission = async (taskId:string, data: FormData): Promise<ResponseDTO<string>> => {
+export const SendStudentSubmission = async (taskId: string, data: FormData): Promise<ResponseDTO<string>> => {
     try {
         const response = await axiosMultipartForm.put(`/Tasks/${taskId}/submit`, data);
         const apiResponse = response.data as ResponseDTO<string>;
@@ -427,5 +428,18 @@ export const EndOneEventAPI = async (clubId: string, eventId: string): Promise<R
             console.error("Network Error:", error.message);
             throw new Error("Network error. Please try again later.");
         }
+    }
+};
+
+export const GetEventSingleTask = async (userId: string, pageNumber: number, pageSize: number, search: string, status: string): Promise<ResponseDTO<ResponseData<EventSingleClubTask>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventSingleClubTask>>>(
+            `/Event/user/${userId}/event-tasks?EventName=${search}&EventStatus=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
+        );
+        return response;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
     }
 };
