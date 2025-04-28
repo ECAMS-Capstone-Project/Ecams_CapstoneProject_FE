@@ -81,16 +81,16 @@ export default function TaskListInEvent() {
   };
 
   const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100)
+    if (status === "COMPLETED" && percentage === 100)
       return "bg-green-100 text-green-800";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     return "bg-blue-100 text-blue-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100) return "Completed";
-    if (percentage > 0 || status === "ON_GOING")
+    if (status === "COMPLETED" && percentage === 100) return "Completed";
+    if (percentage > 0 && status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     if (status === "NOT_STARTED") return "Not started";
     return "Overdue";
@@ -113,11 +113,11 @@ export default function TaskListInEvent() {
         const response = isClubOwner
           ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch)
           : await GetSubTaskEventByUserAPI(
-              task.eventTaskId,
-              pageNo,
-              debouncedSearch,
-              user.userId
-            );
+            task.eventTaskId,
+            pageNo,
+            debouncedSearch,
+            user.userId
+          );
 
         setSubTaskList(response.data?.data || []);
         setTotalPages(response.data?.totalPages);
@@ -259,20 +259,21 @@ export default function TaskListInEvent() {
                   </p>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <h4 className="font-medium mb-1 flex items-center gap-2 text-[#136CB9]">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Status
-                </h4>
-                <span
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-sm font-medium",
-                    getStatusColor(task.status, task.completionPercentage)
-                  )}
-                >
-                  {getStatusText(task.status, task.completionPercentage)}
-                </span>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium ml-1.5 text-gray-700">
+                    Status
+                  </p>
+                  <span
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium",
+                      getStatusColor(task.status, task.completionPercentage)
+                    )}
+                  >
+                    {getStatusText(task.status, task.completionPercentage)}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <CircleDot className="w-5 h-5 text-blue-500" />
@@ -336,13 +337,12 @@ export default function TaskListInEvent() {
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border border-[#136CB9]/20 ${
-                      task.priority.toUpperCase() === "HIGH"
-                        ? "bg-red-400"
-                        : task.priority.toUpperCase() === "MEDIUM"
+                    className={`rounded-lg border border-[#136CB9]/20 ${task.priority.toUpperCase() === "HIGH"
+                      ? "bg-red-400"
+                      : task.priority.toUpperCase() === "MEDIUM"
                         ? "bg-yellow-200"
                         : "bg-blue-200"
-                    }`}
+                      }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
@@ -402,14 +402,14 @@ export default function TaskListInEvent() {
                               </DropdownMenuItem>
                             )}
                             {isClubOwner && (
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setIsDeleteDialogOpen(true)
-                                setEditingTask(task);
-                              }}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setIsDeleteDialogOpen(true)
+                                  setEditingTask(task);
+                                }}
+                              >
+                                Delete
+                              </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>

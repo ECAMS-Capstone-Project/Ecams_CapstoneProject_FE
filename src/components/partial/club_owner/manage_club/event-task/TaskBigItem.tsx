@@ -30,14 +30,14 @@ export const TaskBigItem = ({
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED")
       return "bg-green-100 text-green-800";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     return "bg-blue-100 text-blue-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED") return "Completed";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     if (status == "NOT_STARTED") return "Not started"
     return "Overdue";
@@ -63,7 +63,7 @@ export const TaskBigItem = ({
     }
   };
   const handleClick = () => {
-      setIsEditOpen(true);
+    setIsEditOpen(true);
   };
 
   return (
@@ -91,7 +91,7 @@ export const TaskBigItem = ({
           </div>
           <div className="flex items-center gap-2 h-full">
             <span
-              className={`px-2 py-1 rounded-full text-sm ${getStatusColor(
+              className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
                 task.status,
                 task.completionPercentage
               )}`}
