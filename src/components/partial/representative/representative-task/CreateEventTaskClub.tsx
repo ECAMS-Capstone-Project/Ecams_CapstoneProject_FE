@@ -159,7 +159,7 @@ export default function CreateEventTaskClub() {
     }
 
     fetchData();
-  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId]);
+  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId, endTime, startTime]);
 
   const isReadyToFetch = startTimeDate && deadlineTimeDate && priority;
 
@@ -229,7 +229,7 @@ export default function CreateEventTaskClub() {
   };
 
   const handleToggleTask = (taskId: string, checked: boolean) => {
-    const current = getValues("assignedMembers");
+    const current = getValues("taskDependencyIds");
     if (checked) {
       setValue("taskDependencyIds", [...current, taskId]);
     } else {

@@ -74,17 +74,22 @@ export const EventDetailTask = () => {
       )}
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb]">
-        <Tabs defaultValue="participant" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-[#f8f9fa] p-1">
-            <TabsTrigger
-              value="participant"
-              className={cn(
-                "data-[state=active]:bg-white data-[state=active]:text-[#136cb9]",
-                "data-[state=active]:shadow-sm transition-all duration-200"
-              )}
-            >
-              Participants Event
-            </TabsTrigger>
+        <Tabs defaultValue={isClubOwner ? "participant" : "tasks"} className="w-full">
+          <TabsList className={cn(
+            "grid w-full bg-[#f8f9fa] p-1",
+            isClubOwner ? "grid-cols-2" : "grid-cols-1"
+          )}>
+            {isClubOwner && (
+              <TabsTrigger
+                value="participant"
+                className={cn(
+                  "data-[state=active]:bg-white data-[state=active]:text-[#136cb9]",
+                  "data-[state=active]:shadow-sm transition-all duration-200"
+                )}
+              >
+                Participants Event
+              </TabsTrigger>
+            )}
             <TabsTrigger
               value="tasks"
               className={cn(
@@ -96,9 +101,11 @@ export const EventDetailTask = () => {
             </TabsTrigger>
           </TabsList>
           <div className="p-6">
-            <TabsContent value="participant" className="mt-0">
-              <EventParticipants eventId={event1.eventId} />
-            </TabsContent>
+            {isClubOwner && (
+              <TabsContent value="participant" className="mt-0">
+                <EventParticipants eventId={event1.eventId} />
+              </TabsContent>
+            )}
             <TabsContent value="tasks" className="mt-0">
               <EventTaskBig selectedEvent={event.data ?? null} isClubOwner={isClubOwner} clubId={clubId} />
             </TabsContent>
