@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { EventTaskDetail } from "@/models/InterTask";
+import { EventTaskDetail, InterTaskSubmission } from "@/models/InterTask";
 
 interface SubmissionFeedbackFormProps {
   score: number;
@@ -8,6 +8,7 @@ interface SubmissionFeedbackFormProps {
   onScoreChange: (score: number) => void;
   onFeedbackChange: (feedback: string) => void;
   subtask: EventTaskDetail;
+  submission: InterTaskSubmission | null;
 }
 
 export const SubmissionFeedbackForm = ({
@@ -15,16 +16,15 @@ export const SubmissionFeedbackForm = ({
   feedback,
   onScoreChange,
   onFeedbackChange,
-  subtask,
+  submission,
 }: SubmissionFeedbackFormProps) => {
   const isDisabled =
-    subtask?.status == "COMPLETED" &&
-    new Date() < new Date(subtask?.deadline || "");
+    (submission?.status != "REVIEWING")
   console.log("co ko", isDisabled);
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="p-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Grade
         </label>
@@ -35,10 +35,10 @@ export const SubmissionFeedbackForm = ({
           min={0}
           max={10}
           className="w-32"
-          disabled={!isDisabled}
+          disabled={isDisabled}
         />
       </div>
-      <div>
+      <div className="p-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Feedback
         </label>
@@ -47,7 +47,7 @@ export const SubmissionFeedbackForm = ({
           onChange={(e) => onFeedbackChange(e.target.value)}
           placeholder="Enter your feedback..."
           className="min-h-[100px]"
-          disabled={!isDisabled}
+          disabled={isDisabled}
         />
       </div>
     </div>

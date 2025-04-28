@@ -51,7 +51,7 @@ export const SubmissionDetailDialog = ({
         <DialogHeader>
           <DialogTitle className="text-[#136CB9] text-xl flex items-center gap-2">
             {submission.submissionFile &&
-            submission.submissionFile.length > 0 ? (
+              submission.submissionFile.length > 0 ? (
               <FileText className="h-5 w-5" />
             ) : (
               <MessageSquare className="h-5 w-5" />
@@ -106,9 +106,12 @@ export const SubmissionDetailDialog = ({
               Submission Content
             </h3>
             <div className="bg-gradient-to-br from-[#136CB9]/5 to-[#49BBBD]/5 p-4 rounded-lg">
-              <p className="text-sm whitespace-pre-wrap">
-                {submission.studentSubmission || "No content provided yet"}
-              </p>
+              <p
+                className="text-sm whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: submission.studentSubmission || "No content provided yet",
+                }}
+              ></p>
             </div>
           </div>
 
@@ -155,6 +158,7 @@ export const SubmissionDetailDialog = ({
             onScoreChange={onScoreChange}
             onFeedbackChange={onFeedbackChange}
             subtask={subtask}
+            submission={submission}
           />
         </div>
 
@@ -162,7 +166,7 @@ export const SubmissionDetailDialog = ({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          {subtask.status !== "COMPLETED" && (
+          {submission.status == "REVIEWING" && (
             <Button
               onClick={onSaveFeedback}
               disabled={isSubmitting}
