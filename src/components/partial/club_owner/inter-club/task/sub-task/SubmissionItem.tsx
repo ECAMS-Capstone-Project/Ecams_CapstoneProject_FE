@@ -1,7 +1,8 @@
-import { FileText, Mail, Clock } from "lucide-react";
+import { Mail, Clock } from "lucide-react";
 import { InterTaskSubmission } from "@/models/InterTask";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 
 interface SubmissionItemProps {
   submission: InterTaskSubmission;
@@ -44,23 +45,30 @@ export const SubmissionItem = ({
                 {submission.submissionDate === "0001-01-01T00:00:00"
                   ? "Not submitted"
                   : format(
-                      new Date(submission.submissionDate),
-                      "dd-MM-yyyy HH:mm:ss"
-                    )}
+                    new Date(submission.submissionDate),
+                    "dd-MM-yyyy HH:mm:ss"
+                  )}
               </p>
             </div>
           </div>
-          <span
-            className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-              submission.submissionDate === "0001-01-01T00:00:00"
-                ? "text-yellow-600 bg-yellow-100"
-                : "text-green-600 bg-green-100"
-            }`}
-          >
-            {submission.submissionDate === "0001-01-01T00:00:00"
-              ? "In Progress"
-              : "Submitted"}
-          </span>
+          {submission.status == "NOT_STARTED" ? (
+            <span className="text-sm font-medium px-3 py-1 rounded-full bg-white text-gray-900 border border-gray-200 shadow-sm">
+              {submission.status}
+            </span>
+          ) : (
+            <span
+              className={`text-sm font-medium px-2 py-0.5 rounded-full ${submission.status === "ON_GOING"
+                ? "text-blue-600 bg-blue-100"
+                : submission.status === "REVIEWING"
+                  ? "text-yellow-600 bg-yellow-100"
+                  : submission.status === "COMPLETED"
+                    ? "text-green-900 bg-green-300"
+                    : "text-red-700 bg-red-200"
+                }`}
+            >
+              {submission.status}
+            </span>
+          )}
         </div>
 
         <p className="text-sm text-gray-700 flex items-center gap-2">
@@ -75,11 +83,11 @@ export const SubmissionItem = ({
             ? "Have not submitted yet"
             : format(new Date(submission.submissionDate), "dd/MM/yyyy - hh:mm")}
         </p>
-
-        <p className="text-sm text-gray-700 flex items-center gap-2">
-          <FileText className="w-4 h-4" />
-          <span className="font-medium">Content:</span>{" "}
-          {submission.studentSubmission || "No content yet"}
+        <p className="text-sm text-gray-700">
+          <span className="font-medium">📝 Content:</span>{" "}
+          <DescriptionWithToggle
+            text={submission?.studentSubmission || "Not submitted"}
+          ></DescriptionWithToggle>
         </p>
       </div>
     </motion.div>

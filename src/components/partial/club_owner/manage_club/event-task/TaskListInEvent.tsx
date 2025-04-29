@@ -19,9 +19,10 @@ import { Input } from "@/components/ui/input";
 import {
   EventTaskDetail,
   InterTask,
+  UpdateInterTaskRequest2,
   UpdateSubtaskRequest,
 } from "@/models/InterTask";
-import { cn } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import {
   DropdownMenu,
@@ -38,6 +39,15 @@ import LoadingAnimation from "@/components/ui/loading";
 import toast from "react-hot-toast";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import DeleteSubtaskDialog from "../../inter-club/task/sub-task/DeleteSubtaskDialog";
+import { UpdateInterTask2 } from "@/api/club-owner/InterEventTask";
+import ConfirmEndEventDialog from "./ConfirmEndEventDialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -46,7 +56,7 @@ export default function TaskListInEvent() {
   const clubId = location.state?.clubId as string;
   const task = location.state?.task as InterTask;
   const [pageNo, setPageNo] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -59,19 +69,37 @@ export default function TaskListInEvent() {
   const [totalPages, setTotalPages] = useState<number | undefined>();
   const [flag, setFlag] = useState<boolean>(false);
   const { updateSubtask, isUpdating2 } = useInterTask();
+  const [open, setOpen] = useState<boolean>(false);
+
+  const handleSubmit = async () => {
+    const data: UpdateInterTaskRequest2 = {
+      eventTaskId: task.eventTaskId,
+      clubId: clubId,
+      eventId: eventId,
+      taskName: task.taskName,
+      description: task.description,
+      startTime: fixTime(task.startTime).toISOString(),
+      deadline: fixTime(task.deadline).toISOString(),
+      status: "COMPLETED"
+    }
+    await UpdateInterTask2(data)
+    toast.success("Task completed")
+    window.history.back();
+  };
 
   const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100)
+    if (status === "COMPLETED" && percentage === 100)
       return "bg-green-100 text-green-800";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
-    return "bg-blue-100 text-blue-800";
+    return "bg-red-100 text-red-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" || percentage === 100) return "Completed";
-    if (percentage > 0 || status === "ON_GOING")
+    if (status === "COMPLETED" && percentage === 100) return "Completed";
+    if (percentage > 0 && status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
+    if (status === "NOT_STARTED") return "Not started";
     return "Overdue";
   };
 
@@ -90,13 +118,14 @@ export default function TaskListInEvent() {
       setIsLoading(true);
       try {
         const response = isClubOwner
-          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch)
+          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch, pageSize)
           : await GetSubTaskEventByUserAPI(
-              task.eventTaskId,
-              pageNo,
-              debouncedSearch,
-              user.userId
-            );
+            task.eventTaskId,
+            pageNo,
+            debouncedSearch,
+            user.userId,
+            pageSize
+          );
 
         setSubTaskList(response.data?.data || []);
         setTotalPages(response.data?.totalPages);
@@ -131,7 +160,6 @@ export default function TaskListInEvent() {
     });
   };
 
-  // 🔎 Filter task theo search term đã debounce
   const filteredTasks = useMemo(() => {
     const priorityOrder: Record<"HIGH" | "MEDIUM" | "LOW", number> = {
       HIGH: 1,
@@ -182,17 +210,32 @@ export default function TaskListInEvent() {
         <Card className="p-6 rounded-lg bg-blue-50">
           <div className="space-y-4">
             <div>
-              <div className="flex items-center gap-4 mb-4">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
-                </button>
+              <div className="flex items-center mb-4 justify-between">
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
+                  >
+                    <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-bold text-blue-600">
+                      {task?.taskName}
+                    </h1>
+                  </div>
+                </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-blue-600">
-                    {task?.taskName}
-                  </h1>
+                  {task.status != "COMPLETED" && isClubOwner && (
+                    <div>
+                      <Button
+                        onClick={() => setOpen(true)}
+                        variant={"custom"}
+                        className="font-bold"
+                      >
+                        Complete
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="text-muted-foreground mt-2">{task.description}</p>
@@ -223,20 +266,21 @@ export default function TaskListInEvent() {
                   </p>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <h4 className="font-medium mb-1 flex items-center gap-2 text-[#136CB9]">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Status
-                </h4>
-                <span
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-sm font-medium",
-                    getStatusColor(task.status, task.completionPercentage)
-                  )}
-                >
-                  {getStatusText(task.status, task.completionPercentage)}
-                </span>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="text-sm font-medium ml-1.5 text-gray-700">
+                    Status
+                  </p>
+                  <span
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium",
+                      getStatusColor(task.status, task.completionPercentage)
+                    )}
+                  >
+                    {getStatusText(task.status, task.completionPercentage)}
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <CircleDot className="w-5 h-5 text-blue-500" />
@@ -262,7 +306,7 @@ export default function TaskListInEvent() {
             <div className="flex justify-between">
               <div className="w-1/4 md:w-1/4 xs:1/2">
                 <Input
-                  placeholder="Search task..."
+                  placeholder="Search sub task"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full"
@@ -300,12 +344,12 @@ export default function TaskListInEvent() {
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border border-[#136CB9]/20 ${
+                    className={`rounded-lg border ${
                       task.priority.toUpperCase() === "HIGH"
-                        ? "bg-red-400"
+                        ? "bg-red-50 border-red-200 text-red-900"
                         : task.priority.toUpperCase() === "MEDIUM"
-                        ? "bg-yellow-200"
-                        : "bg-blue-200"
+                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                        : "bg-blue-50 border-blue-200 text-blue-900"
                     }`}
                   >
                     <CardContent className="p-5 space-y-4">
@@ -365,11 +409,17 @@ export default function TaskListInEvent() {
                                 Edit
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem
-                              onClick={() => handleNavigate(task)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                            {isClubOwner && (
+                              <DropdownMenuItem
+                                disabled={task.status == "COMPLETED"}
+                                onClick={() => {
+                                  setIsDeleteDialogOpen(true)
+                                  setEditingTask(task);
+                                }}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -407,7 +457,7 @@ export default function TaskListInEvent() {
             )}
           </div>
 
-          {!isLoading && totalPages !== undefined && totalPages > 1 && (
+          {!isLoading && totalPages !== undefined && (
             <div className="flex justify-center items-center gap-4 mt-4">
               <Button
                 variant="outline"
@@ -426,6 +476,27 @@ export default function TaskListInEvent() {
               >
                 Next
               </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">Show</span>
+                <Select
+                  value={pageSize.toString()}
+                  onValueChange={(value) => {
+                    setPageSize(Number(value));
+                    setPageNo(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[70px]">
+                    <SelectValue placeholder="5" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span className="text-sm">items</span>
+              </div>
             </div>
           )}
         </CardContent>
@@ -442,7 +513,9 @@ export default function TaskListInEvent() {
         subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
+        setFlag={setFlag}
       />
+      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} title="Do you want to complete this task?" />
     </div>
   );
 }

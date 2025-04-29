@@ -82,6 +82,7 @@ import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-t
 import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
 import CreateEventTaskClub from "@/components/partial/representative/representative-task/CreateEventTaskClub";
 import { SubtaskDetailPage } from "@/pages/club-owner/inter-club-event/task/SubtaskDetailPage";
+import { EventTaskOverViewList } from "@/pages/club-owner/task-event/EventTaskOverViewList";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -524,6 +525,10 @@ export const router = createBrowserRouter([
       {
         path: "/club/event-subtask/:eventId",
         element: <TaskListInEvent />
+      },
+      {
+        path: "/club/event-task-list",
+        element: <EventTaskOverViewList />
       }
     ],
     errorElement: <ErrorException />,

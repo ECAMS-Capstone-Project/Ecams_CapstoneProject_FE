@@ -109,7 +109,9 @@ export default function CreateEventTaskClub() {
   const selectedTasks = watch("taskDependencyIds");
 
   const startTimeDate = watch("startTimeDate");
+  const startTime = watch("startTimeTime")
   const deadlineTimeDate = watch("deadlineDate");
+  const endTime = watch("deadlineTime")
   const taskName = watch("detailName");
   const taskDescription = watch("description");
   const priority = watch("priority");
@@ -117,16 +119,17 @@ export default function CreateEventTaskClub() {
   useEffect(() => {
     async function fetchData() {
       if (!clubId || !startTimeDate || !deadlineTimeDate || !priority) return;
-
+      const finalDeadline = combineDateTime(
+        deadlineTimeDate,
+        endTime
+      );
+      const finalStartTime = combineDateTime(
+        startTimeDate,
+        startTime
+      );
       try {
-        const formattedStart = format(
-          startTimeDate.toISOString(),
-          "yyyy-MM-dd"
-        );
-        const formattedDeadline = format(
-          deadlineTimeDate.toISOString(),
-          "yyyy-MM-dd"
-        );
+        const formattedStart = fixTime(finalStartTime).toISOString();
+        const formattedDeadline = fixTime(finalDeadline).toISOString();
 
         const [membersRes, tasksRes] = await Promise.all([
           GetAvailableMember(
@@ -156,7 +159,7 @@ export default function CreateEventTaskClub() {
     }
 
     fetchData();
-  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId]);
+  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId, endTime, startTime]);
 
   const isReadyToFetch = startTimeDate && deadlineTimeDate && priority;
 
@@ -226,7 +229,7 @@ export default function CreateEventTaskClub() {
   };
 
   const handleToggleTask = (taskId: string, checked: boolean) => {
-    const current = getValues("assignedMembers");
+    const current = getValues("taskDependencyIds");
     if (checked) {
       setValue("taskDependencyIds", [...current, taskId]);
     } else {

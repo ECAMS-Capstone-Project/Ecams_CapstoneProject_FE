@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { GetTaskDetailByMember, SendStudentSubmission, TaskDetailForStudent } from "@/api/club-owner/TaskAPI";
 import toast from "react-hot-toast";
+import LoadingAnimation from "@/components/ui/loading";
 
 interface TaskDetailDialogProps {
   initialData: { taskId: string; clubMemberId: string };
@@ -16,6 +17,7 @@ interface TaskDetailDialogProps {
 const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFlag }) => {
   const [taskDetail, setTaskDetail] = useState<TaskDetailForStudent | null>(null);
   const [editorContent, setEditorContent] = useState("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Lấy chi tiết task từ API dựa trên taskId và clubMemberId
   useEffect(() => {
@@ -43,12 +45,10 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
   };
 
   // Task được coi là đã nộp nếu submissionStatus là "COMPLETED"
-  const isSubmitted = taskDetail?.submissionStatus === "COMPLETED";
+  const isSubmitted = taskDetail?.submissionStatus === "COMPLETED" || taskDetail?.submissionStatus === "REVIEWING";
   const isDeadlineOver = taskDetail?.deadline
     ? new Date(taskDetail.deadline).getTime() < Date.now()
     : false;
-
-
 
   // Xử lý submit: validate editorContent trước khi gọi API
   const handleSubmit = async () => {
@@ -56,18 +56,20 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
       toast.error("Submission content cannot be empty");
       return;
     }
-    const fileNames: string[] = files.map(file => file.name);
-    const data = {
-      taskId: initialData.taskId,
-      clubMemberId: initialData.clubMemberId,
-      studentSubmission: editorContent,
-      listSubmissions: fileNames
-    };
-    await SendStudentSubmission(data);
+    setLoading(true)
+    const form = new FormData()
+    form.append("ClubMemberId", initialData.clubMemberId)
+    form.append("TaskId", initialData.taskId)
+    form.append("StudentSubmission", editorContent)
+    files.forEach((file) => {
+        form.append("ListSubmissions", file)
+    })
+    await SendStudentSubmission(initialData.taskId, form);
     if (setFlag) {
       setFlag(pre => !pre);
     }
     toast.success("Submission sent successfully!");
+    setLoading(true);
   };
 
   return (
@@ -224,7 +226,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                               className="w-16 h-16 object-cover rounded border"
                             />
                           )}
-                          <span className="text-sm text-gray-700">Attach files {index}</span>
+                          <span className="text-sm text-gray-700">{file.name}</span>
                         </li>
                       ))}
                     </ul>
@@ -243,7 +245,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                 </Button>
               </DialogClose>
             ) : (
-              <Button onClick={handleSubmit}>Submit</Button>
+              <Button onClick={handleSubmit} disabled={loading}>{loading ? <LoadingAnimation /> : "Submit"}</Button>
             )}
           </div>
         </>

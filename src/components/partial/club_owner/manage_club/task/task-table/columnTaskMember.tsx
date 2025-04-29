@@ -2,7 +2,7 @@
 import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-column-header";
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
-import { CheckCircle2Icon, Eye, Clock, Search } from "lucide-react";
+import { CheckCircle2Icon, Eye, Clock, Search, AlertCircle, PauseCircle } from "lucide-react";
 import { DataTableRowActions } from "./row-actions";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Task } from "@/models/Task";
@@ -76,7 +76,16 @@ export const taskMemberColumn = (
           bgColor = "bg-yellow-100";
           textColor = "text-yellow-700";
           Icon = <Search size={20} className={textColor} />;
+        } else if (status === "OVERDUE") {
+          bgColor = "bg-red-100";
+          textColor = "text-red-600";
+          Icon = <AlertCircle size={20} className={textColor} />;
+        } else if (status === "NOT_STARTED") {
+          bgColor = "bg-gray-100";
+          textColor = "text-gray-500";
+          Icon = <PauseCircle size={20} className={textColor} />;
         }
+        
         return (
           <div
             className={`flex items-center justify-center gap-2 p-2 rounded-md w-3/4 ${bgColor} ${textColor}`}

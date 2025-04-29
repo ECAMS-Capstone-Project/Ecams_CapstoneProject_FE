@@ -9,17 +9,20 @@ import {
 } from "@/components/ui/dialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { EventTaskDetail } from "@/models/InterTask";
+import toast from "react-hot-toast";
 
 interface DeleteSubtaskDialogProps {
   open: boolean;
   onClose: () => void;
   subtask: EventTaskDetail | null;
+  setFlag: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function DeleteSubtaskDialog({
   open,
   onClose,
   subtask,
+  setFlag
 }: DeleteSubtaskDialogProps) {
   const { deleteSubtask } = useInterTask();
 
@@ -28,6 +31,8 @@ export default function DeleteSubtaskDialog({
       eventTaskDetailId: subtask ? subtask.eventTaskDetailId : "",
       eventTaskId: subtask ? subtask.eventTaskId : "",
     });
+    setFlag(pre => !pre)
+    toast.success("Delete subtask successfully")
     onClose();
   };
 

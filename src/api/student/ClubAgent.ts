@@ -66,11 +66,12 @@ export interface EventSubTaskDetail {
 export const getClub = async (
   uniId: string,
   pageNumber: number,
-  pageSize: number
+  pageSize: number,
+  status: string
 ): Promise<ResponseDTO<ResponseData<EventClubDTO>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<EventClubDTO>>>(
-      `/Clubs/university/${uniId}?PageNumber=${pageNumber}&PageSize=${pageSize}`
+      `/Clubs/university/${uniId}?Status=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
     );
 
     return response;

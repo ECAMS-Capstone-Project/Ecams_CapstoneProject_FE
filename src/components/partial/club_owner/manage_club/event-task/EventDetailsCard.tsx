@@ -21,9 +21,10 @@ import toast from "react-hot-toast";
 interface EventDetailsCardProps {
   selectedEvent: Event;
   clubId: string
+  isClubOwner: boolean
 }
 
-export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCardProps) => {
+export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: EventDetailsCardProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const handleSubmit = async () => {
@@ -59,11 +60,13 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCard
               <p className="text-gray-200 mt-1">{selectedEvent.description}</p>
             </div>
           </div>
+          {(selectedEvent.status == "ENDED" && isClubOwner) && (
           <div>
             <Button onClick={() => setOpen(true)} variant={"custom"} className="font-bold">
               End event
             </Button>
           </div>
+          )}
         </div>
 
         {/* Badge */}
@@ -89,12 +92,10 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCard
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
-              <Money className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Price: </span>
-              <span className="font-bold text-[#49BBBD]">
-                {selectedEvent.price === 0
-                  ? "Free"
-                  : `${formatPrice(selectedEvent.price)}`}
+              <Clock className="w-5 h-5 text-[#136cb9]" />
+              <span className="text-[#136cb9]">Time: </span>
+              <span className="text-gray-800">
+                {format(selectedEvent.registeredStartDate, "HH:mm a")} -  {format(selectedEvent.registeredEndDate, "HH:mm a")}
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
@@ -116,12 +117,22 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCard
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
+              <Money className="w-5 h-5 text-[#136cb9]" />
+              <span className="text-[#136cb9]">Price: </span>
+              <span className="font-bold text-[#49BBBD]">
+                {selectedEvent.price === 0
+                  ? "Free"
+                  : `${formatPrice(selectedEvent.price)}`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
               <Building2 className="w-5 h-5 text-[#136cb9]" />
               <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
               <span className="text-gray-800">
                 {selectedEvent.clubs?.length || 0} clubs
               </span>
             </div>
+
           </div>
         </div>
 
@@ -146,7 +157,7 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId }: EventDetailsCard
           </div>
         </div>
       </div>
-      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} />
+      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} title="Do you want to complete this event?" />
     </div>
   );
 };

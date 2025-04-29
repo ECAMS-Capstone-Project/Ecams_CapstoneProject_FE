@@ -89,7 +89,7 @@ const ClubRequirements = ({ clubId, conditionEvidences, setConditionEvidences, s
                     {getFileNameByCondition(condition.conditionId) && (
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-black truncate max-w-[200px]">
-                          {getFileNameByCondition(condition.conditionId)}
+                          Attachment file
                         </span>
                         <button
                           className="text-red-500 hover:text-red-700"

@@ -13,7 +13,6 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { TaskBigEditDialog } from "./TaskBigEditDialog";
-import toast from "react-hot-toast";
 
 interface TaskItemProps {
   task: InterTask;
@@ -31,15 +30,16 @@ export const TaskBigItem = ({
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED")
       return "bg-green-100 text-green-800";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
-    return "bg-blue-100 text-blue-800";
+    return "bg-red-100 text-red-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED") return "Completed";
-    if (percentage > 0 || status === "ON_GOING")
+    if (percentage > 0 && status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
+    if (status == "NOT_STARTED") return "Not started"
     return "Overdue";
   };
   const { updateInterEventTask2, isUpdating2 } = useInterTask();
@@ -63,14 +63,7 @@ export const TaskBigItem = ({
     }
   };
   const handleClick = () => {
-    const taskStart = new Date(task.startTime);
-    const now = new Date();
-
-    if (taskStart <= now) {
-      toast.error("This task has already started");
-    } else {
-      setIsEditOpen(true);
-    }
+    setIsEditOpen(true);
   };
 
   return (
@@ -98,7 +91,7 @@ export const TaskBigItem = ({
           </div>
           <div className="flex items-center gap-2 h-full">
             <span
-              className={`px-2 py-1 rounded-full text-sm ${getStatusColor(
+              className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
                 task.status,
                 task.completionPercentage
               )}`}
@@ -121,7 +114,7 @@ export const TaskBigItem = ({
                 {isClubOwner && (
                   <DropdownMenuItem
                     onClick={() => handleClick()}
-                    disabled={task.completionPercentage === 100}
+                    disabled={task.completionPercentage === 100 || task.status == "COMPLETED"}
                   >
                     Edit
                   </DropdownMenuItem>
