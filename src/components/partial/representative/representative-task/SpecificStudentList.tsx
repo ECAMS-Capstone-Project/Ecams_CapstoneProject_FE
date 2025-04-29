@@ -28,10 +28,14 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     const [selectedStudent, setSelectedStudent] = useState<AvailableMemberEventTask | null>(null);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    // Lọc bỏ các student có roleName là "CLUB_OWNER"
-    const filteredStudents = students.filter(
-        (st) => st.clubActivityPoint >= 0
-    );
+    const sortedStudents = [...students].sort((a, b) => {
+        const aRecommended = recommendedStudents?.some(rs => rs.studentId === a.studentId);
+        const bRecommended = recommendedStudents?.some(rs => rs.studentId === b.studentId);
+      
+        if (aRecommended && !bRecommended) return -1;
+        if (!aRecommended && bRecommended) return 1;
+        return 0;
+      });
 
     // Mỗi lần load 5 sinh viên
     const CHUNK_SIZE = 5;
@@ -46,7 +50,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     }, [students]);
 
     // Dữ liệu hiển thị dựa trên pagination
-    const displayed = filteredStudents.slice(0, page * CHUNK_SIZE);
+    const displayed = sortedStudents.slice(0, page * CHUNK_SIZE);
 
     // Lắng nghe sự kiện scroll
     const handleScroll = () => {
@@ -55,7 +59,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
         const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
 
         if (scrollTop + clientHeight >= scrollHeight - 10) {
-            if (page * CHUNK_SIZE < filteredStudents.length) {
+            if (page * CHUNK_SIZE < sortedStudents.length) {
                 setIsLoadingMore(true);
 
                 setTimeout(() => {
@@ -73,7 +77,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
         return () => {
             div.removeEventListener("scroll", handleScroll);
         };
-    }, [page, filteredStudents.length]);
+    }, [page, sortedStudents.length]);
 
     const handleClick = (studentId: string) => {
         // Tìm student trong recommendedStudents nếu có
@@ -290,7 +294,7 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
             </Dialog>
 
 
-            {filteredStudents.length === 0 && (
+            {sortedStudents.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                     No students found.
                 </p>

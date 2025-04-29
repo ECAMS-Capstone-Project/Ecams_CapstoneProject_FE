@@ -75,7 +75,7 @@ export const TaskDetailPage = () => {
     getAllSubTask,
   } = useInterTask();
   const queryClient = useQueryClient();
-
+  const [, setFlag] = useState<boolean>(false);
   const { data: subTask } = getAllSubTask(
     eventTaskId ?? "",
     pageNo,
@@ -425,6 +425,7 @@ export const TaskDetailPage = () => {
         subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
+        setFlag={setFlag}
       />
     </div>
   );

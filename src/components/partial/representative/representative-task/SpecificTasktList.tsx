@@ -18,7 +18,6 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
   tasks,
   selected,
   handleToggleTask,
-  taskDependencies,
 }) => {
   const [open1, setOpen1] = useState(false);
   const [selectedTask, setSelectedTask] =
@@ -72,12 +71,7 @@ const SpecificTaskList: React.FC<SpecificTaskListProps> = ({
     >
       {displayed.map((task) => {
         const isChecked =
-          selected.includes(task.eventTaskDetailId) ||
-          (taskDependencies &&
-            taskDependencies.some(
-              (dependency) =>
-                task.eventTaskDetailId === dependency.eventTaskDetailId
-            ));
+          selected.includes(task.eventTaskDetailId)
 
         console.log(isChecked);
         return (

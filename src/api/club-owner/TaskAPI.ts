@@ -4,6 +4,7 @@ import { get, patch, post, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventTaskDetail } from "@/models/InterTask";
 import axiosMultipartForm from "../axiosMultipartForm";
+import { EventSingleClubTask } from "@/models/Event";
 
 export interface TaskDetailDTO {
     taskId: string;
@@ -250,10 +251,11 @@ export const GetTaskDetailByMember = async (
     }
 };
 
-export const SendStudentSubmission = async (data: StudentSubmissionRequest): Promise<ResponseDTO<string>> => {
+export const SendStudentSubmission = async (taskId: string, data: FormData): Promise<ResponseDTO<string>> => {
     try {
-        const response = await put<ResponseDTO<string>>(`/Tasks/${data.taskId}/submit`, data);
-        return response; // Trả về toàn bộ phản hồi
+        const response = await axiosMultipartForm.put(`/Tasks/${taskId}/submit`, data);
+        const apiResponse = response.data as ResponseDTO<string>;
+        return apiResponse;
     } catch (error: any) {
         if (error.response.status == 400) {
             toast.error(error.response.data.message);
@@ -319,9 +321,9 @@ export const GetMemberSubmissionTaskEvent = async (eventDetailId: string, pageNu
     }
 };
 
-export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: number, search: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: number, search: string, pageSize: number): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/EventTask/${eventDetailId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/EventTask/${eventDetailId}?Search=${search}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -330,9 +332,9 @@ export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: numb
     }
 };
 
-export const GetSubTaskEventByUserAPI = async (eventDetailId: string, pageNumber: number, search: string, userId: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+export const GetSubTaskEventByUserAPI = async (eventDetailId: string, pageNumber: number, search: string, userId: string, pageSize: number): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/${eventDetailId}/User/${userId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/${eventDetailId}/User/${userId}?Search=${search}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -426,5 +428,18 @@ export const EndOneEventAPI = async (clubId: string, eventId: string): Promise<R
             console.error("Network Error:", error.message);
             throw new Error("Network error. Please try again later.");
         }
+    }
+};
+
+export const GetEventSingleTask = async (userId: string, pageNumber: number, pageSize: number, search: string, status: string): Promise<ResponseDTO<ResponseData<EventSingleClubTask>>> => {
+    try {
+        const response = await get<ResponseDTO<ResponseData<EventSingleClubTask>>>(
+            `/Event/user/${userId}/event-tasks?EventName=${search}&EventStatus=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
+        );
+        return response;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error in UniversityList API call:", error.response || error);
+        throw error;
     }
 };

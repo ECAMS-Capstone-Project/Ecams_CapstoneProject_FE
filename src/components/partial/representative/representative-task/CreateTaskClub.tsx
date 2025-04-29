@@ -247,7 +247,7 @@ export default function CreateTaskClub() {
                   />
                 </Grid2>
                 <Grid2 size={4}>
-                  <div className="space-y-2">
+                  <div className="space-y-2 mt-1">
                     <label className="block text-sm font-medium">Priority</label>
                     <Select
                       onValueChange={(value) => setPriority(value)}

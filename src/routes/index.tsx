@@ -86,6 +86,7 @@ import EventRefunds from "@/pages/staff/event/EventRefund";
 import ClubEvents from "@/pages/staff/event/ClubEvent";
 import PendingEvents from "@/pages/staff/event/PendingEvent";
 import StaffEventDetailPage from "@/pages/staff/event/EventDetailPage";
+import { EventTaskOverViewList } from "@/pages/club-owner/task-event/EventTaskOverViewList";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -553,6 +554,10 @@ export const router = createBrowserRouter([
       {
         path: "/club/event-subtask/:eventId",
         element: <TaskListInEvent />,
+      },
+      {
+        path: "/club/event-task-list",
+        element: <EventTaskOverViewList />,
       },
     ],
     errorElement: <ErrorException />,

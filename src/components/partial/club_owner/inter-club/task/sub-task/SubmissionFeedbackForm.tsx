@@ -54,7 +54,7 @@ export const SubmissionFeedbackForm = ({
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="p-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Grade
         </label>
@@ -70,7 +70,7 @@ export const SubmissionFeedbackForm = ({
         />
         {/* Thêm thông báo lỗi nếu giá trị không hợp lệ */}
       </div>
-      <div>
+      <div className="p-2">
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Feedback
         </label>
@@ -79,6 +79,7 @@ export const SubmissionFeedbackForm = ({
           onChange={(e) => onFeedbackChange(e.target.value)}
           placeholder="Enter your feedback..."
           className="min-h-[100px]"
+          disabled={isDisabled}
           disabled={isDisabled}
         />
       </div>

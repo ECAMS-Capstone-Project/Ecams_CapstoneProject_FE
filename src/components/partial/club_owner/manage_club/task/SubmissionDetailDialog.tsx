@@ -38,6 +38,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
     const { user } = useAuth();
     const [tempFeedback, setTempFeedback] = useState(submission.comment ?? "");
     const [tempScore, setTempScore] = useState<number>(submission.submissionScore ?? 0);
+    const [loading, setLoading] = useState<boolean>(false)
 
     const hasFeedback = submission.comment !== null && submission.comment !== "";
     const isOwnerSelfTask = submission?.memberEmail === user?.email && submission.submissionDate == "0001-01-01T00:00:00";
@@ -84,18 +85,21 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                 toast.error("Submission content cannot be empty");
                 return;
             }
-            const fileNames: string[] = files.map(file => file.name);
-            const data = {
-                taskId: submission.taskId,
-                clubMemberId: submission.clubMemberId,
-                studentSubmission: ownerSubmissionContent,
-                listSubmissions: fileNames
-            };
-            await SendStudentSubmission(data);
+            setLoading(true)
+            const form = new FormData()
+            form.append("ClubMemberId", submission.clubMemberId)
+            form.append("TaskId", submission.taskId)
+            form.append("StudentSubmission", ownerSubmissionContent)
+            files.forEach((file) => {
+                form.append("ListSubmissions", file)
+            })
+
+            await SendStudentSubmission(submission.taskId, form);
             if (setFlag) {
                 setFlag(pre => !pre);
             }
             toast.success("Submission sent successfully!");
+            setLoading(true)
             onClose();
         }
         if (user) {
@@ -230,7 +234,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                         {submission.comment}
                                     </div>
                                 </div>
-                            ) : !(hasFeedback || !(isSubmitted || isDeadlinePassed) ? (
+                            ) : (hasFeedback == false && (isSubmitted == true && isDeadlinePassed == false) ? (
                                 <>
                                     <p className="text-sm font-medium text-gray-600 mb-1 mt-2">
                                         Score the task (up to {taskScore} points)
@@ -239,7 +243,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                         type="number"
                                         placeholder={`Enter score (max ${taskScore} points)`}
                                         value={tempScore}
-                                        disabled={hasFeedback || !(isSubmitted || isDeadlinePassed)}
+                                        disabled={hasFeedback || !(isSubmitted || isDeadlinePassed == false)}
                                         onChange={(e) => {
                                             const value = Number(e.target.value);
                                             if (value >= 0) {
@@ -273,7 +277,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                 </div>
                 {/* Footer */}
                 <DialogFooter className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-2">
-                    {((hasFeedback || isSubmitted || isDeadlinePassed || !isSubmitted) && (!isOwnerSelfTask)) ? (
+                    {((hasFeedback || isDeadlinePassed) && (!isOwnerSelfTask)) ? (
                         <Button variant="secondary" onClick={onClose}>
                             Close
                         </Button>
@@ -283,7 +287,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                                 Cancel
                             </Button>
                             <Button onClick={handleSave}>
-                                {isSubmitting ? (
+                                {isSubmitting || loading ? (
                                     <span className="flex items-center gap-2">
                                         <Loader2 className="animate-spin" size={16} />
                                         Saving...

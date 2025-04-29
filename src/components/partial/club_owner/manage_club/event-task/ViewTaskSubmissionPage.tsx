@@ -337,7 +337,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                             toast.error("Please input correct conditions ");
                           }
                         }}
-                        className="w-1/4 text-sm"
+                        className="w-32 text-sm"
                       />
                     </div>
                     <textarea

@@ -10,13 +10,13 @@ import { CreateClubJoinedRequest, GetAllClubCondition, GetClubsDetailAPI } from 
 import { ClubJoinedRequest } from "@/models/Club";
 import toast from "react-hot-toast";
 
-export const useClubs = (uniId?: string, pageNumber?: number, pageSize?: number) => {
+export const useClubs = (uniId?: string, pageNumber?: number, pageSize?: number, status?: string) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["clubs", uniId, pageNumber, pageSize], // Query key động dựa trên uniId, pageNumber và pageSize
-    queryFn: () => getClub(uniId || "", pageNumber || 1, pageSize || 5),
+    queryFn: () => getClub(uniId || "", pageNumber || 1, pageSize || 5, status || "ACTIVE"),
     refetchOnMount: true, // Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // Không tự động refetch khi chuyển tab
     enabled: !!uniId, // Chỉ chạy query khi uniId có giá trị
