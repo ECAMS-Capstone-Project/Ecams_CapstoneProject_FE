@@ -60,7 +60,7 @@ export const TaskDetailPage = () => {
     // isCreatingSubtask,
   } = useInterTask();
   const queryClient = useQueryClient();
-
+  const [, setFlag] = useState<boolean>(false);
   const availableMembers = clubMembers.filter(
     (member) => member.clubRoleName !== "CLUB_OWNER"
   );
@@ -178,13 +178,12 @@ export const TaskDetailPage = () => {
           {task.eventTaskDetails.map((subTask) => (
             <div
               key={subTask.eventTaskDetailId}
-              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer z-10 ${
-                subTask.priority.toUpperCase() === "HIGH"
-                  ? "bg-pink-400"
-                  : subTask.priority.toUpperCase() === "MEDIUM"
+              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer z-10 ${subTask.priority.toUpperCase() === "HIGH"
+                ? "bg-pink-400"
+                : subTask.priority.toUpperCase() === "MEDIUM"
                   ? "bg-yellow-200"
                   : "bg-blue-300"
-              }`}
+                }`}
               onClick={() => {
                 navigate(
                   `/club/inter-club-event/subtask/${subTask.eventTaskDetailId}`,
@@ -203,37 +202,34 @@ export const TaskDetailPage = () => {
                 {getSubTaskStatusIcon(subTask.status)}
                 <div>
                   <p
-                    className={`font-medium ${
-                      subTask.priority.toUpperCase() === "HIGH"
-                        ? "text-white"
-                        : subTask.priority.toUpperCase() === "MEDIUM"
+                    className={`font-medium ${subTask.priority.toUpperCase() === "HIGH"
+                      ? "text-white"
+                      : subTask.priority.toUpperCase() === "MEDIUM"
                         ? "text-yellow-800"
                         : "text-[#136CB9]"
-                    }`}
+                      }`}
                   >
                     {subTask.detailName}
                   </p>
                   <p
-                    className={`text-sm  ${
-                      subTask.priority.toUpperCase() === "HIGH"
-                        ? "text-white"
-                        : subTask.priority.toUpperCase() === "MEDIUM"
+                    className={`text-sm  ${subTask.priority.toUpperCase() === "HIGH"
+                      ? "text-white"
+                      : subTask.priority.toUpperCase() === "MEDIUM"
                         ? "text-yellow-800"
                         : "text-[#136CB9]"
-                    }`}
+                      }`}
                   >
                     {subTask.description}
                   </p>
                 </div>
               </div>
               <div
-                className={`text-sm flex items-center gap-2  ${
-                  subTask.priority.toUpperCase() === "HIGH"
-                    ? "text-white"
-                    : subTask.priority.toUpperCase() === "MEDIUM"
+                className={`text-sm flex items-center gap-2  ${subTask.priority.toUpperCase() === "HIGH"
+                  ? "text-white"
+                  : subTask.priority.toUpperCase() === "MEDIUM"
                     ? "text-yellow-800"
                     : "text-[#136CB9]"
-                }`}
+                  }`}
               >
                 <Calendar className="h-4 w-4" />
                 {format(new Date(subTask.deadline), "dd/MM/yyyy")}
@@ -348,6 +344,7 @@ export const TaskDetailPage = () => {
         subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
+        setFlag={setFlag}
       />
     </div>
   );
