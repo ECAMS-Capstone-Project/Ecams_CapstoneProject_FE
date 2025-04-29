@@ -3,14 +3,14 @@ import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import ParticipantsList from "@/components/partial/club_owner/event-participants/ParticipantsTable";
 import { useLocation } from "react-router-dom";
-import ParticipantsHeader from "@/components/partial/club_owner/event-participants/ParticipantsHeader";
 import ParticipantsSearchBar from "@/components/partial/club_owner/event-participants/ParticipantsSearchBar";
 import { ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import ParticipantsHeader from "@/components/partial/staff/staff-events/event-participants/ParticipantsHeader";
 
 interface props {
-  eventId: string
+  eventId: string;
 }
 const EventParticipants = ({ eventId }: props) => {
   const [isLoading] = useState(false);
