@@ -13,7 +13,11 @@ import {
   Calendar,
   UserRoundCheck,
 } from "lucide-react";
-import { EventTaskDetail, InterTaskSubmission } from "@/models/InterTask";
+import {
+  EventTaskDetail,
+  InterTask,
+  InterTaskSubmission,
+} from "@/models/InterTask";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
 import { SubmissionFeedbackForm } from "./SubmissionFeedbackForm";
@@ -29,6 +33,7 @@ interface SubmissionDetailDialogProps {
   isSubmitting: boolean;
   onDownloadAll: () => void;
   subtask: EventTaskDetail;
+  task: InterTask;
 }
 
 export const SubmissionDetailDialog = ({
@@ -42,6 +47,7 @@ export const SubmissionDetailDialog = ({
   isSubmitting,
   onDownloadAll,
   subtask,
+  task,
 }: SubmissionDetailDialogProps) => {
   if (!submission) return null;
 
@@ -155,6 +161,8 @@ export const SubmissionDetailDialog = ({
             onScoreChange={onScoreChange}
             onFeedbackChange={onFeedbackChange}
             subtask={subtask}
+            task={task}
+            submission={submission}
           />
         </div>
 
