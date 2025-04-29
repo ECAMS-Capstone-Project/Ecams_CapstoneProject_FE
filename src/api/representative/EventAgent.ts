@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Event } from "@/models/Event";
+import { Event, EventRefundDTO, RefundResponseDTO } from "@/models/Event";
 import { get, put } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import axiosMultipartForm from "../axiosMultipartForm";
@@ -173,6 +173,7 @@ export const createEvent = async (
 export const approveEvent = async (body: {
   eventId: string;
   walletId?: string;
+  trainingPoint?: number;
 }): Promise<ResponseDTO<Event>> => {
   try {
     const response = await put<ResponseDTO<Event>>(
@@ -231,5 +232,104 @@ export const createEventClub = async (
       toast.error("Network error. Please try again later.");
       throw new Error("Network error. Please try again later.");
     }
+  }
+};
+
+export const updateEvent = async (
+  formData: FormData
+): Promise<ResponseDTO<Event | string>> => {
+  try {
+    const response = await axiosMultipartForm.put("/Event/update", formData);
+    const apiResponse = response.data as ResponseDTO<Event | string>;
+    if (response.status === 200) {
+      console.log("Update successfully, but no content returned.");
+      return {
+        statusCode: 204,
+        message: "Update successfully",
+        data: "Update successfully",
+      } as ResponseDTO<Event | string>;
+    }
+    if (apiResponse.data && typeof apiResponse.data === "string") {
+      // Nếu API trả về một chuỗi (thông báo hoặc URL)
+      console.log("Response String:", apiResponse.data);
+      return apiResponse;
+    } else if (apiResponse.data && typeof apiResponse.data === "object") {
+      // Nếu API trả về chi tiết khu vực đã thêm
+      console.log("Area Details:", apiResponse.data);
+      return apiResponse;
+    } else {
+      console.error("Unexpected response data format");
+      throw new Error("Unexpected response data format");
+    }
+  } catch (error: any) {
+    if (error.response) {
+      console.error("API Error:", error);
+      toast.error(error.response.data.message || "API Error");
+      throw new Error(error.response.data.message || "API Error");
+    } else {
+      throw new Error("Network error. Please try again later.");
+    }
+  }
+};
+
+export const updateRefund = async (
+  formData: FormData
+): Promise<ResponseDTO<RefundResponseDTO | string>> => {
+  try {
+    const response = await axiosMultipartForm.put("/Refund/refund", formData);
+    const apiResponse = response.data as ResponseDTO<
+      RefundResponseDTO | string
+    >;
+    if (response.status === 204) {
+      console.log("Update successfully, but no content returned.");
+      return {
+        statusCode: 204,
+        message: "Update successfully",
+        data: "Update successfully",
+      } as ResponseDTO<RefundResponseDTO | string>;
+    }
+    if (apiResponse.data && typeof apiResponse.data === "string") {
+      // Nếu API trả về một chuỗi (thông báo hoặc URL)
+      console.log("Response String:", apiResponse.data);
+      return apiResponse;
+    } else if (apiResponse.data && typeof apiResponse.data === "object") {
+      // Nếu API trả về chi tiết khu vực đã thêm
+      console.log("Area Details:", apiResponse.data);
+      return apiResponse;
+    } else {
+      console.error("Unexpected response data format");
+      throw new Error("Unexpected response data format");
+    }
+  } catch (error: any) {
+    if (error.response) {
+      console.error("API Error:", error);
+      toast.error(error.response.data.message || "API Error");
+      throw new Error(error.response.data.message || "API Error");
+    } else {
+      throw new Error("Network error. Please try again later.");
+    }
+  }
+};
+
+export const getAllRefund = async (
+  pageNumber: number,
+  pageSize: number,
+  eventId: string,
+  RefundStatus?: string
+): Promise<ResponseDTO<ResponseData<EventRefundDTO>>> => {
+  try {
+    let url = `/Refund?EventId=${eventId}`;
+
+    if (RefundStatus) {
+      url += `&RefundStatus=${RefundStatus}&PageNumber=${pageNumber}&PageSize=${pageSize}`;
+    } else {
+      url += `&PageNumber=${pageNumber}&PageSize=${pageSize}`;
+    }
+
+    const response = await get<ResponseDTO<ResponseData<EventRefundDTO>>>(url);
+    return response;
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    throw error;
   }
 };

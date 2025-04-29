@@ -7,11 +7,14 @@ import {
   createEventClub,
   EventFilterParams,
   getAllEventList,
+  getAllRefund,
   getEventClub,
   getEventClubDetail,
   getEventDetail,
   getEventList,
   rejectEvent,
+  updateEvent,
+  updateRefund,
 } from "@/api/representative/EventAgent";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -97,6 +100,19 @@ export const useEvents = (
       enabled: !!uniId, // Chỉ thực hiện khi có uniId
     });
   };
+  // Tạo mới event
+  const { mutateAsync: updateEventMutation, isPending: isUpdating } =
+    useMutation({
+      mutationFn: updateEvent,
+      onSuccess: () => {
+        toast.success("Event updated successfully!");
+        queryClient.invalidateQueries({ queryKey: ["events"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error.response.data.errors);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
   // // Xóa area
   // const {mutateAsync: deleteWalletMutation, isPending: isDeleting} = useMutation({
   //   mutationFn: deactiveWallet,
@@ -122,7 +138,7 @@ export const useEvents = (
     useMutation<
       ResponseDTO<Event>,
       unknown,
-      { eventId: string; walletId?: string }
+      { eventId: string; walletId?: string; trainingPoint?: number }
     >({
       mutationFn: (body) => approveEvent(body), // Truyền body vào API
       onSuccess: () => {
@@ -147,6 +163,32 @@ export const useEvents = (
       },
     });
 
+  const { mutateAsync: refundEventMutation, isPending: isRefunding } =
+    useMutation({
+      mutationFn: updateRefund,
+      onSuccess: () => {
+        // refetch();
+        toast.success("Event refunded successfully!");
+        queryClient.invalidateQueries({ queryKey: ["refundDetails"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        toast.error(error.response.data.message || "Error approving event");
+      },
+    });
+  const getAllRefundList = (
+    eventId: string,
+    pageNumber: number,
+    pageSize: number,
+    refundInforStatus?: string
+  ) => {
+    return useQuery({
+      queryKey: ["refunds", eventId, refundInforStatus, pageNumber, pageSize],
+      queryFn: () =>
+        getAllRefund(pageNumber, pageSize, eventId, refundInforStatus),
+      enabled: !!eventId,
+    });
+  };
+
   return {
     events: data?.data?.data || [],
     totalPages: data?.data?.totalPages || 1,
@@ -164,5 +206,10 @@ export const useEvents = (
     createEventClub: createEventClubMutation,
     getEventClubQuery,
     getAllEventListQuery,
+    refundEvent: refundEventMutation,
+    isRefunding,
+    getAllRefundList,
+    updateEvent: updateEventMutation,
+    isUpdating,
   };
 };

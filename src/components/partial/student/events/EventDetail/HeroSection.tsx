@@ -8,14 +8,14 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ event }) => {
   return (
-    <section className="relative h-[550px] bg-gray-200 overflow-hidden rounded-[10px]">
+    <section className=" relative h-[550px] bg-gray-200 overflow-hidden rounded-[10px]">
       <img
         src={event?.imageUrl}
         alt="Hero"
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-black/40" />
-      <div className="grid grid-cols-1 md:grid-cols-2 space-x-10 items-center absolute inset-0 px-4 ml-7">
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 space-x-10 items-center absolute inset-0 px-4 ml-7">
         <div className="col-span-1 relative z-10 flex h-full flex-col items-start justify-center p-6 text-white md:p-15  w-fit">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

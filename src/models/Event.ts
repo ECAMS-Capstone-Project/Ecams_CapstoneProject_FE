@@ -23,6 +23,20 @@ export interface Event {
   eventType: string;
   trainingPoint: number;
   eventFields: FieldDTO[];
+  eventRegistrations?: EventRefundDTO[];
+  totalRevenue: number;
+}
+export interface EventRefundDTO {
+  refundId: string;
+  userId: string;
+  email: string;
+  fullname: string;
+  address: string;
+  phonenumber: string;
+  gender: string;
+  avatar: string;
+  refundInforStatus: string;
+  refundStatus: string;
 }
 
 export interface CheckInInfo {
@@ -73,4 +87,32 @@ export interface InterClubEventDTO {
   status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING" | "ENDED";
   startDate: Date;
   endDate: Date;
+}
+
+export interface RefundRequest {
+  userId: string;
+  eventId: string;
+  bankNumber: string;
+  bankQR: string;
+  bankName: string;
+  description: string;
+  evidenceRegistration: string;
+}
+
+export interface RefundResponseDTO {
+  refundId: string;
+  eventRegistrationId: string;
+  bankNumber: string;
+  bankQR: string;
+  bankName: string;
+  description: string;
+  evidenceRegistration: string;
+  evidenceRefund: string;
+  status: string;
+  refundInforStatus: string;
+  userId: string;
+  email: string;
+  fullname: string;
+  phonenumber: string;
+  gender: string;
 }

@@ -3,7 +3,8 @@ import { PaymentDetails } from "@/models/Payment";
 import { get, post, put } from "../agent";
 import { ResponseDTO } from "../BaseResponse";
 import toast from "react-hot-toast";
-import { CheckInInfo } from "@/models/Event";
+import { CheckInInfo, RefundRequest, RefundResponseDTO } from "@/models/Event";
+import axiosMultipartForm from "../axiosMultipartForm";
 export const paymentEvent = async (data: {
   studentId: string;
   eventId: string;
@@ -130,6 +131,56 @@ export const checkUserCanCheckIn = async (
     return response;
   } catch (error: any) {
     console.error("Error in checkUserCanCheckIn:", error.response || error);
+    throw error;
+  }
+};
+
+export const refundEvent = async (
+  formData: FormData
+): Promise<ResponseDTO<RefundRequest | string>> => {
+  try {
+    const response = await axiosMultipartForm.post(
+      "/Refund/insert-refund",
+      formData
+    );
+    const apiResponse = response.data as ResponseDTO<RefundRequest | string>;
+
+    if (apiResponse.data && typeof apiResponse.data === "string") {
+      // Nếu API trả về một chuỗi (thông báo hoặc URL)
+      console.log("Response String:", apiResponse.data);
+      return apiResponse;
+    } else if (apiResponse.data && typeof apiResponse.data === "object") {
+      // Nếu API trả về chi tiết khu vực đã thêm
+      console.log("Area Details:", apiResponse.data);
+      return apiResponse;
+    } else {
+      console.error("Unexpected response data format");
+      throw new Error("Unexpected response data format");
+    }
+  } catch (error: any) {
+    if (error.response) {
+      console.error("API Error:", error);
+      toast.error(error.response.data.message || "API Error");
+      throw new Error(error.response.data.message || "API Error");
+    } else {
+      console.error("Network Error:", error.message);
+      toast.error("Network error. Please try again later.");
+      throw new Error("Network error. Please try again later.");
+    }
+  }
+};
+
+export const getRefundById = async (
+  refundId: string
+): Promise<ResponseDTO<RefundResponseDTO>> => {
+  try {
+    const response = await get<ResponseDTO<RefundResponseDTO>>(
+      `/Refund/${refundId}`
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error fetching university list:", error);
     throw error;
   }
 };
