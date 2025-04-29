@@ -240,12 +240,7 @@ const SidebarLinks = () => {
         icon: <HowToRegIcon />,
         id: 21,
       },
-      {
-        title: "Inter-club Event",
-        href: "/club/inter-club-event",
-        icon: <Event />,
-        id: 21,
-      },
+
       {
         title: "Task in event",
         href: "/club/event-task-list",
@@ -253,6 +248,15 @@ const SidebarLinks = () => {
         id: 44,
       }
     );
+  }
+
+  if (user?.userType === "club_owner") {
+    sidelinks.push({
+      title: "Inter-club Event",
+      href: "/club/inter-club-event",
+      icon: <Event />,
+      id: 21,
+    });
   }
 
   sidelinks.push({

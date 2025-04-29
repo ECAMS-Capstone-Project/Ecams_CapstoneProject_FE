@@ -51,6 +51,16 @@ export const StudentHeader = () => {
                 >
                   Clubs
                 </Link>
+                <Link
+                  to="/student/student-events"
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
+                    checkActiveNav("/student/student-events")
+                      ? "font-extrabold text-[#2982cc]"
+                      : ""
+                  }`}
+                >
+                  My events
+                </Link>
               </nav>
             )}
         </div>

@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import NotificationDropdown from "../global/Notification";
 import { CalendarCheck, CircleUser, House, LogOut } from "lucide-react";
-import { Event } from "@mui/icons-material";
 export function UserNav() {
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const navigate = useNavigate();
@@ -90,14 +89,14 @@ export function UserNav() {
                         <Groups2Icon />
                       </DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                       onClick={() => navigate("/student/student-events")}
                     >
                       My Event
                       <DropdownMenuShortcut>
                         <Event />
                       </DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem
                       onClick={() => navigate("/student/schedule")}
                     >
