@@ -45,7 +45,6 @@ import InvitationClubPage from "@/pages/club-owner/manage-club/InvitationClubPag
 import Area from "@/pages/staff/area/Area";
 import Wallet from "@/pages/staff/wallet/Wallet";
 import Events from "@/pages/staff/event/Event";
-import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDialog";
 import { RequestEventDetail } from "@/components/partial/staff/staff-events/RequestEventForm";
 import { CreateEvent } from "@/components/partial/staff/staff-events/CreateEventFormDialog";
 import CheckingClubPage from "@/pages/representative/manage-club/CheckingClubPage";
@@ -82,6 +81,11 @@ import TaskListInEvent from "@/components/partial/club_owner/manage_club/event-t
 import ViewTaskSubmissionPage from "@/components/partial/club_owner/manage_club/event-task/ViewTaskSubmissionPage";
 import CreateEventTaskClub from "@/components/partial/representative/representative-task/CreateEventTaskClub";
 import { SubtaskDetailPage } from "@/pages/club-owner/inter-club-event/task/SubtaskDetailPage";
+import { EditEventForm } from "@/components/partial/staff/staff-events/EditEventForm";
+import EventRefunds from "@/pages/staff/event/EventRefund";
+import ClubEvents from "@/pages/staff/event/ClubEvent";
+import PendingEvents from "@/pages/staff/event/PendingEvent";
+import StaffEventDetailPage from "@/pages/staff/event/EventDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -255,13 +259,13 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/representative/event",
+        path: "/representative/university-event",
         element: <Events />,
         errorElement: <ErrorException />,
       },
       {
         path: "/representative/event/:eventId",
-        element: <EventDetail />,
+        element: <StaffEventDetailPage />,
         errorElement: <ErrorException />,
       },
       {
@@ -307,6 +311,31 @@ export const router = createBrowserRouter([
       {
         path: "/representative/history-representative",
         element: <UniversityRepresentativeHistory />,
+        errorElement: <ErrorException />,
+      },
+      // {
+      //   path: "/representative/event/refund/:eventId",
+      //   element: <EventRefund />,
+      //   errorElement: <ErrorException />,
+      // },
+      {
+        path: "/representative/event/update/:eventId",
+        element: <EditEventForm />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/event-refund",
+        element: <EventRefunds />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/club-event",
+        element: <ClubEvents />,
+        errorElement: <ErrorException />,
+      },
+      {
+        path: "/representative/pending-event",
+        element: <PendingEvents />,
         errorElement: <ErrorException />,
       },
     ],
@@ -478,7 +507,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/club/create-event-task",
-        element: <CreateEventTaskClub />
+        element: <CreateEventTaskClub />,
       },
       {
         path: "/club/inter-club-event",
@@ -519,12 +548,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/club/task-submission-student",
-        element: <StudentTaskSubmissionPage />
+        element: <StudentTaskSubmissionPage />,
       },
       {
         path: "/club/event-subtask/:eventId",
-        element: <TaskListInEvent />
-      }
+        element: <TaskListInEvent />,
+      },
     ],
     errorElement: <ErrorException />,
   },
