@@ -1,9 +1,14 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import React, { useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "lucide-react";
+import { RefundFormPopup, RefundFormData } from "./RefundFormPopup";
+import { useEventSchedule } from "@/hooks/student/useEventRegister";
+import useAuth from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DateTimeCardProps {
   event: Event;
@@ -11,6 +16,27 @@ interface DateTimeCardProps {
 
 export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
   const navigate = useNavigate();
+  const [isRefundPopupOpen, setIsRefundPopupOpen] = useState(false);
+  const { user } = useAuth();
+  const { refundEvent, isRefunding } = useEventSchedule(user?.userId ?? "");
+  const queryClient = useQueryClient();
+  const handleRefundSubmit = async (data: RefundFormData) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    await refundEvent(formData);
+    queryClient.invalidateQueries({
+      queryKey: ["eventDetail", event.eventId, user?.userId],
+    });
+    !isRefunding && setIsRefundPopupOpen(false);
+    // Tự động refetch danh sách ✅
+  };
+
+  const isRequestRefund =
+    event.eventRegistrations?.find((student) => student.userId == user?.userId)
+      ?.refundInforStatus === "UPDATED";
+
   return (
     <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/4">
       <div className="space-y-4">
@@ -29,10 +55,6 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
             className="w-full p-6 mt-5 font-light text-md"
             onClick={() => {
               if (event.price === 0) {
-                // Chuyển event thành plain object
-                // const plainEvent = structuredClone
-                //   ? structuredClone(event)
-                //   : JSON.parse(JSON.stringify(event));
                 navigate("/student/events/free-confirmation", {
                   state: {
                     event: event,
@@ -58,7 +80,23 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
             You have joined this event!
           </Button>
         )}
+        {event.status.toLowerCase() == "canceled" && (
+          <Button
+            className="w-full p-6 mt-5 font-light text-md bg-red-500 text-white hover:bg-red-600"
+            onClick={() => setIsRefundPopupOpen(true)}
+          >
+            {isRequestRefund ? "Your refund is pending!" : "Request Refund"}
+          </Button>
+        )}
       </div>
+
+      <RefundFormPopup
+        isOpen={isRefundPopupOpen}
+        onClose={() => setIsRefundPopupOpen(false)}
+        onSubmit={handleRefundSubmit}
+        event={event}
+        isRefunding={isRefunding}
+      />
     </div>
   );
 };

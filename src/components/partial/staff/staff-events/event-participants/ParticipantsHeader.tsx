@@ -1,13 +1,12 @@
 import { Users } from "lucide-react";
 import ExportToExcel from "./ExportParticipants";
 import { Participant } from "@/models/Participants";
-import { MoneyTwoTone } from "@mui/icons-material";
 
 interface ParticipantsHeaderProps {
   eventName?: string;
   totalParticipants: number;
   checkedInCount: number;
-  totalRevenue: number;
+  waitingCount: number;
   participants: Participant[];
 }
 
@@ -15,7 +14,7 @@ const ParticipantsHeader = ({
   eventName,
   totalParticipants,
   checkedInCount,
-  totalRevenue,
+  waitingCount,
   participants,
 }: ParticipantsHeaderProps) => {
   return (
@@ -62,12 +61,12 @@ const ParticipantsHeader = ({
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-full">
-              <MoneyTwoTone className="h-5 w-5 text-yellow-600" />
+              <Users className="h-5 w-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total revenue</p>
+              <p className="text-sm text-gray-500">Waiting</p>
               <p className="text-xl font-semibold text-yellow-600">
-                {totalRevenue.toLocaleString()} VND
+                {waitingCount}
               </p>
             </div>
           </div>

@@ -91,6 +91,9 @@ export const StudentEventSection = () => {
                 <TabsTrigger value="event-completed">
                   Completed Event
                 </TabsTrigger>
+                <TabsTrigger value="event-cancelled">
+                  Cancelled Event
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="event-upcoming">
                 <div className="grid md:grid-cols-3 gap-7 w-full">
@@ -233,6 +236,83 @@ export const StudentEventSection = () => {
                               >
                                 {event.status === "ACTIVE"
                                   ? "Upcoming"
+                                  : "Completed"}
+                              </span>
+                            </div>
+                          </div>
+                        </MagicCard>
+                      </>
+                    ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="event-cancelled">
+                <div className="grid md:grid-cols-3 gap-7 w-full">
+                  {(search ? filteredEvents : events)
+                    .filter(
+                      (event: EventSchedule) => event.status === "CANCELED"
+                    )
+                    .map((event: EventSchedule, index: number) => (
+                      <>
+                        <MagicCard
+                          key={index}
+                          className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+                          gradientColor="#E8F4FF"
+                          onClick={() =>
+                            navigate(`/student/events/${event.eventId}`, {
+                              state: {
+                                previousPage: location.pathname,
+                                breadcrumb: "My Event",
+                              },
+                            })
+                          }
+                        >
+                          <div className="p-6 space-y-4">
+                            <div className="flex items-start justify-between">
+                              <h3
+                                onClick={() =>
+                                  navigate(`/student/events/${event.eventId}`, {
+                                    state: {
+                                      previousPage: location.pathname,
+                                      breadcrumb: "My Event",
+                                    },
+                                  })
+                                }
+                                className="text-xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent line-clamp-2"
+                              >
+                                {event.eventName}
+                              </h3>
+                            </div>
+
+                            {event.startDate && event.endDate && (
+                              <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-2 rounded-lg">
+                                <CalendarDays
+                                  size={16}
+                                  className="text-[#49BBBD]"
+                                />
+                                <span>
+                                  {format(
+                                    new Date(event.startDate),
+                                    "dd/MM/yyyy"
+                                  )}{" "}
+                                  -{" "}
+                                  {format(
+                                    new Date(event.endDate),
+                                    "dd/MM/yyyy"
+                                  )}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="pt-2">
+                              <span
+                                className={`px-3 py-1 text-xs rounded-full ${
+                                  event.status === "CANCELED"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {event.status === "CANCELED"
+                                  ? "Cancelled"
                                   : "Completed"}
                               </span>
                             </div>

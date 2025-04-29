@@ -164,12 +164,14 @@ export const NewSubtaskDialog = ({
           startTimeTime: "00:00",
           deadline: new Date(),
           deadlineTime: "00:00",
-          status: "",
+          status: "NOT_STARTED",
           priority: "MEDIUM",
           assignedMemberIds: [],
           taskDependencyIds: [],
         },
   });
+
+  console.log("form.formState.errors", form.formState.errors);
 
   const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
     // Combine date and time
@@ -189,10 +191,12 @@ export const NewSubtaskDialog = ({
       taskDependencyIds: values.taskDependencyIds || [],
     };
 
-    onSubmit(newSubtask);
-    form.reset();
-
-    onClose();
+    try {
+      onSubmit(newSubtask);
+    } catch (error) {
+      // Giữ dialog mở khi có lỗi
+      console.error("Error submitting subtask:", error);
+    }
   };
   const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
 
@@ -242,21 +246,36 @@ export const NewSubtaskDialog = ({
             (rec) => rec.clubMemberId === member.clubMemberId
           );
           return {
-            ...member,
             isRecommended: !!recommendation,
             recommendationDetails: recommendation,
+            ...member,
           };
         })
       : members
-  ).filter((member: AvailableMember | ClubMemberDTO) => {
-    const searchStr = searchQuery.toLowerCase();
-    const name = (
-      (member as AvailableMember).fullName ||
-      (member as ClubMemberDTO).fullname ||
-      ""
-    ).toLowerCase();
-    return name.includes(searchStr);
-  });
+  )
+    .filter((member: AvailableMember | ClubMemberDTO) => {
+      const searchStr = searchQuery.toLowerCase();
+      const name = (
+        (member as AvailableMember).fullName ||
+        (member as ClubMemberDTO).fullname ||
+        ""
+      ).toLowerCase();
+      return name.includes(searchStr);
+    })
+    // Sort: đưa những thành viên có recommendation lên đầu
+    .sort((a, b) => {
+      // Ép kiểu a và b thành có thuộc tính isRecommended
+      const aMember = a as { isRecommended: boolean };
+      const bMember = b as { isRecommended: boolean };
+
+      if (aMember.isRecommended && !bMember.isRecommended) {
+        return -1; // A lên trên B
+      }
+      if (!aMember.isRecommended && bMember.isRecommended) {
+        return 1; // B lên trên A
+      }
+      return 0; // Giữ nguyên thứ tự nếu cả hai đều có hoặc đều không có recommendation
+    });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

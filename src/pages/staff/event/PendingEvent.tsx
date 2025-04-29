@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
-const Events = () => {
+const PendingEvents = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -75,10 +75,7 @@ const Events = () => {
           <Separator />
 
           <EventTable
-            data={events.filter(
-              (events) =>
-                events.representativeId != null && events.status != "PENDING"
-            )}
+            data={events.filter((events) => events.status == "PENDING")}
           />
           <DataTablePagination
             currentPage={pageNo}
@@ -93,4 +90,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default PendingEvents;

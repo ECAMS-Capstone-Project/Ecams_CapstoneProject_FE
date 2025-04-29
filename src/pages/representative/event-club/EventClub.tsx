@@ -21,7 +21,7 @@ const EventClub = () => {
   const { data: eventClub } = getEventClubQuery(
     user?.universityId || "",
     1,
-    10
+    999
   );
   console.log(
     "event club",

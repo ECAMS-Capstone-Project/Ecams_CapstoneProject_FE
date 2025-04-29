@@ -17,6 +17,7 @@ import {
   UpdateSubtask,
   UpdateInterTask3,
 } from "@/api/club-owner/InterEventTask";
+import { GetSubTaskEventAPI } from "@/api/club-owner/TaskAPI";
 import { SubtaskCreateRequest, UpdateSubtaskRequest } from "@/models/InterTask";
 import { UpdateInterTaskRequest3 } from "@/models/InterTask";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -162,6 +163,17 @@ export const useInterTask = (
       enabled: !!clubId && !!startTime && !!deadline && !!priority, // Chỉ thực hiện khi có eventId
     });
   };
+  const getAllSubTask = (
+    eventDetailId: string,
+    pageNumber: number,
+    search: string
+  ) => {
+    return useQuery({
+      queryKey: ["subtasks", eventDetailId, pageNumber, search], // Query key động dựa trên eventId
+      queryFn: () => GetSubTaskEventAPI(eventDetailId, pageNumber, search), // Gọi API lấy chi tiết sự kiện
+      enabled: true, // Chỉ thực hiện khi có eventId
+    });
+  };
 
   const getInterTaskSubmissionQuery = (
     eventTaskDetailId: string,
@@ -286,5 +298,6 @@ export const useInterTask = (
     isUpdatingSubtask,
     deleteSubtask: deleteSubtaskMutation,
     isDeleting,
+    getAllSubTask,
   };
 };

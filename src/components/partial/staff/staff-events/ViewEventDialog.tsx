@@ -2,17 +2,12 @@ import LoadingAnimation from "@/components/ui/loading";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
-import {
-  CheckCircle2Icon,
-  CornerDownLeftIcon,
-  XCircleIcon,
-} from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 export const EventDetail: React.FC = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const {
     data: eventDetail,
@@ -42,20 +37,7 @@ export const EventDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4">
-        {/* Heading */}
-        <div className="flex justify-start items-center gap-2">
-          <CornerDownLeftIcon
-            size={24}
-            onClick={() => navigate(-1)}
-            className="cursor-pointer stroke-[#136CB5] hover:stroke-[#36b6b9] transition duration-300"
-          />
-
-          <h2 className="font-bold text-3xl  bg-gradient-to-r from-[#136CB5] to-[#49BBBD] bg-clip-text text-transparent">
-            Event Detailed Information
-          </h2>
-        </div>
-
+      <div className="container mx-auto px-2 md:px-2 sm:px-2">
         <div className="bg-white rounded-xl shadow-xl overflow-hidden mt-8">
           {/* Banner */}
           <div className="relative">
@@ -65,7 +47,7 @@ export const EventDetail: React.FC = () => {
               className="w-full h-72 object-cover"
             />
             <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
-              <h1 className="text-4xl font-bold text-white drop-shadow-md">
+              <h1 className="text-2xl font-bold text-white drop-shadow-md px-1 md:text-4xl sm:text-3xl sm:px-2 text-center">
                 {event?.eventName}
               </h1>
               <p className="mt-2 text-lg text-gray-200 drop-shadow-md">
@@ -211,10 +193,32 @@ export const EventDetail: React.FC = () => {
                   className={`font-semibold text-lg gap-1 py-1 px-2 rounded-md flex items-center justify-center ${
                     event?.status === "ACTIVE"
                       ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                      : "bg-[#FFF5BA] text-[#5A3825]"
+                      : event?.status === "INACTIVE"
+                      ? "bg-[#FFF5BA] text-[#5A3825]"
+                      : event?.status === "PENDING"
+                      ? "bg-[#FFE6CC] text-[#CC6600]"
+                      : event?.status === "ENDED"
+                      ? "bg-[#D1E7F3] text-[#1E4A7D]"
+                      : event?.status === "WAITING"
+                      ? "bg-[#F9E3D1] text-[#9E5C3F]"
+                      : event?.status === "CANCELED"
+                      ? "bg-[#eca6a6] text-[#b62e2e]"
+                      : ""
                   }`}
                 >
-                  {event?.status ? "Active" : "Inactive"}
+                  {event?.status === "ACTIVE"
+                    ? "Active"
+                    : event?.status === "INACTIVE"
+                    ? "Inactive"
+                    : event?.status === "PENDING"
+                    ? "Pending"
+                    : event?.status === "ENDED"
+                    ? "Ended"
+                    : event?.status === "WAITING"
+                    ? "Waiting"
+                    : event?.status === "CANCELED"
+                    ? "Canceled"
+                    : ""}
 
                   {event?.status === "ACTIVE" ? (
                     <CheckCircle2Icon size={19} className="text-[#2F4F4F]" />
@@ -223,6 +227,7 @@ export const EventDetail: React.FC = () => {
                   )}
                 </span>
               </div>
+
               {/* <div>
             <h3 className="text-2xl font-semibold text-gray-800 ">Wallet:</h3>
               <span

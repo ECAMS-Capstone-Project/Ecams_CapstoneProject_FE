@@ -5,7 +5,9 @@ import {
   checkInStudent,
   checkUserCanCheckIn,
   getCheckInInfo,
+  getRefundById,
   paymentEvent,
+  refundEvent,
 } from "@/api/student/EventRegistrationAgent";
 import { getSchedule } from "@/api/student/StudentScheduleAgent";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -37,13 +39,13 @@ export const usePaymentEvent = () => {
   });
 };
 
-export const useEventSchedule = (userId: string) => {
+export const useEventSchedule = (userId?: string) => {
   // const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
     queryKey: ["studentEvents"], // Query key động
-    queryFn: () => getSchedule(userId),
+    queryFn: () => getSchedule(userId ?? ""),
     refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
     enabled: !!userId,
@@ -70,7 +72,18 @@ export const useEventSchedule = (userId: string) => {
         toast.error(error.response?.data?.message || "Error approving event");
       },
     });
-
+  const { mutateAsync: refundEventMutation, isPending: isRefunding } =
+    useMutation({
+      mutationFn: refundEvent,
+      onSuccess: () => {
+        toast.success("Refund requested successfully!");
+        //  queryClient.invalidateQueries({ queryKey: ["eventClub"] }); // Tự động refetch danh sách ✅
+      },
+      onError: (error: any) => {
+        console.error("Error:", error);
+        toast.error(error.response.data.message || "An error occurred");
+      },
+    });
   const {
     mutateAsync: getUserCanCheckIn,
     isPending: isCheckingUserCanCheckIn,
@@ -81,6 +94,13 @@ export const useEventSchedule = (userId: string) => {
   >({
     mutationFn: ({ eventId, userId }) => checkUserCanCheckIn(eventId, userId),
   });
+  const getRefundDetail = (refundId: string) => {
+    return useQuery({
+      queryKey: ["refundDetails", refundId], // Query key động dựa trên uniId, pageNumber và pageSize
+      queryFn: () => getRefundById(refundId), // Gọi API lấy thông tin Event Club
+      enabled: !!refundId, // Chỉ thực hiện khi có uniId
+    });
+  };
 
   return {
     studentEvents: data?.data || [],
@@ -92,5 +112,8 @@ export const useEventSchedule = (userId: string) => {
     getCheckInInfoQuery,
     getUserCanCheckIn,
     isCheckingUserCanCheckIn,
+    refundEvent: refundEventMutation,
+    isRefunding,
+    getRefundDetail,
   };
 };

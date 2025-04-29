@@ -81,7 +81,7 @@ export const subtaskSchema = z.object({
   assignedMembers: z.array(z.object({ clubMemberId: z.string() })).optional(),
 });
 export const newSubtaskSchema = z.object({
-  status: z.string().min(1, "Status is required"),
+  status: z.string(),
   detailName: z.string().min(1, "Detail name is required"),
   description: z.string().min(1, "Description is required"),
   startTime: z.date().min(new Date(), "Start time is required"),

@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
-const Events = () => {
+const EventRefunds = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -49,8 +49,8 @@ const Events = () => {
         <>
           <div className="flex items-center justify-between pt-4">
             <Heading
-              title={`Manage Events`}
-              description={`Oversee and manage events at ${userInfo?.universityName}`}
+              title={`Manage Events' Refund Request`}
+              description={`Oversee and manage events refund at ${userInfo?.universityName}`}
             />
 
             {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -76,8 +76,7 @@ const Events = () => {
 
           <EventTable
             data={events.filter(
-              (events) =>
-                events.representativeId != null && events.status != "PENDING"
+              (events) => events.clubs.length > 0 && events.status == "CANCELED"
             )}
           />
           <DataTablePagination
@@ -93,4 +92,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default EventRefunds;

@@ -25,12 +25,15 @@ import LoadingAnimation from "@/components/ui/loading";
 import EventWalletPicker from "./WalletPicker";
 import { Label } from "@/components/ui/label";
 import useAuth from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import { toast } from "react-hot-toast";
 
 export const RequestEventDetail: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
   const { approveEvent, isApproving, getEventDetailQuery } = useEvents();
+  const [trainingPoint, setTrainingPoint] = useState<number>(0);
   const { user } = useAuth();
   const { eventId = "" } = useParams();
   const navigate = useNavigate();
@@ -38,14 +41,18 @@ export const RequestEventDetail: React.FC = () => {
     try {
       console.log("Approving Event...");
       // Call API để cập nhật status thành "Active"
-
+      if (trainingPoint < 0 || trainingPoint > 20) {
+        toast.error("Training point must be between 0 and 20");
+        return;
+      }
       const body =
         event?.price && event?.price > 0
-          ? { eventId, walletId: selectedWalletId ?? "" } // Gửi cả eventId và walletId nếu có giá
-          : { eventId }; // Chỉ gửi eventId nếu sự kiện miễn phí
+          ? { eventId, walletId: selectedWalletId ?? "", trainingPoint } // Gửi cả eventId và walletId nếu có giá
+          : { eventId, trainingPoint }; // Chỉ gửi eventId nếu sự kiện miễn phí
 
       // Gọi API approveEvent với tham số tương ứng
       await approveEvent(body);
+      setIsOpen(false);
 
       navigate("/representative/event");
     } catch (error: any) {
@@ -308,6 +315,16 @@ export const RequestEventDetail: React.FC = () => {
                   />
                 </div>
               )}
+              <div className="p-5">
+                <Label className="mb-3">Training Point</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={20}
+                  value={trainingPoint}
+                  onChange={(e) => setTrainingPoint(Number(e.target.value))}
+                />
+              </div>
               <div className="flex justify-end gap-2">
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsOpen(false)}>
@@ -317,7 +334,6 @@ export const RequestEventDetail: React.FC = () => {
                     variant={"custom"}
                     onClick={() => {
                       handleApprove();
-                      setIsOpen(false);
                     }}
                     disabled={(event?.price ?? 0) > 0 && !selectedWalletId}
                   >

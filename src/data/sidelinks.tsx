@@ -24,6 +24,8 @@ import {
   Pending,
   Stars,
 } from "@mui/icons-material";
+import { HiReceiptRefund } from "react-icons/hi";
+
 export interface NavLink {
   title: string;
   href: string;
@@ -37,7 +39,7 @@ export interface SideLink extends NavLink {
 }
 
 const SidebarLinks = () => {
-  const { user } = useAuth(); // Lấy user từ context
+  const { user } = useAuth();
 
   const sidelinks: SideLink[] = [];
 
@@ -137,6 +139,32 @@ const SidebarLinks = () => {
         href: "/representative/event",
         icon: <Event />,
         id: 26,
+        sub: [
+          {
+            title: "Event Refund",
+            href: "/representative/event-refund",
+            icon: <HiReceiptRefund />,
+            id: 27,
+          },
+          {
+            title: "Pending Event",
+            href: "/representative/pending-event",
+            icon: <Pending />,
+            id: 28,
+          },
+          {
+            title: "University Event",
+            href: "/representative/university-event",
+            icon: <EventAvailableTwoTone />,
+            id: 29,
+          },
+          {
+            title: "Club Event",
+            href: "/representative/club-event",
+            icon: <Event />,
+            id: 30,
+          },
+        ],
       },
       {
         title: "Manage Club",
@@ -190,6 +218,7 @@ const SidebarLinks = () => {
       }
     );
   }
+
   if (
     user?.roles.some(
       (role) =>
@@ -218,12 +247,14 @@ const SidebarLinks = () => {
       }
     );
   }
+
   sidelinks.push({
     title: "Setting",
     href: "/common/profile",
     icon: <Settings size={18} />,
     id: 10,
   });
+
   return sidelinks;
 };
 

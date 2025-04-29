@@ -39,7 +39,7 @@ const ApproveStudentPage = () => {
 
   // State cho tab
   const [activeTab, setActiveTab] = useState<"request" | "registered">(
-    "request"
+    "registered"
   );
 
   useEffect(() => {
@@ -90,7 +90,8 @@ const ApproveStudentPage = () => {
             />
             <div className="flex justify-end px-6 gap-4">
               <div>
-              <ExportButton universityId={user?.universityId} />              </div>
+                <ExportButton universityId={user?.universityId} />{" "}
+              </div>
               <div className="flex justify-end">
                 <Button variant="custom" onClick={handleOpenImport}>
                   <PlusCircle /> Import student
@@ -114,8 +115,9 @@ const ApproveStudentPage = () => {
             className="w-full mt-3 p-2"
           >
             <TabsList>
-              <TabsTrigger value="request">Pending Request</TabsTrigger>
               <TabsTrigger value="registered">Active Student</TabsTrigger>
+
+              <TabsTrigger value="request">Pending Request</TabsTrigger>
             </TabsList>
 
             {/* Tab 1: Pending (CHECKING) */}

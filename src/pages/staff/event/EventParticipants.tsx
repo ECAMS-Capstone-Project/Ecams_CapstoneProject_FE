@@ -1,0 +1,90 @@
+import { useState } from "react";
+import React from "react";
+import LoadingAnimation from "@/components/ui/loading";
+import ParticipantsList from "@/components/partial/club_owner/event-participants/ParticipantsTable";
+import { useLocation } from "react-router-dom";
+import ParticipantsHeader from "@/components/partial/club_owner/event-participants/ParticipantsHeader";
+import ParticipantsSearchBar from "@/components/partial/club_owner/event-participants/ParticipantsSearchBar";
+import { ParticipantStatus } from "@/models/Participants";
+import { useEventDetail } from "@/hooks/club/useEventDetail";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+
+interface props {
+  eventId: string;
+  totalRevenue: number;
+}
+const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
+  const [isLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ParticipantStatus | "all">(
+    "all"
+  );
+  const { state } = useLocation();
+  const eventName = state?.eventName;
+  const { participants } = useEventDetail(eventId, 10, 1);
+
+  // Filter participants list
+  const filteredParticipants = participants.filter((participant) => {
+    const matchesSearch =
+      participant.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      participant.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      participant.studentDetailId
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "all" || participant.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  // Calculate statistics
+  const totalParticipants = participants.length;
+  const checkedInCount = participants.filter(
+    (p) => p.status === "CHECKED_IN"
+  ).length;
+
+  return (
+    <React.Suspense fallback={<LoadingAnimation />}>
+      {isLoading ? (
+        <LoadingAnimation />
+      ) : (
+        <div className="space-y-6">
+          <ParticipantsHeader
+            eventName={eventName}
+            totalParticipants={totalParticipants}
+            participants={participants}
+            checkedInCount={checkedInCount}
+            totalRevenue={totalRevenue}
+          />
+
+          {participants.length > 0 ? (
+            <>
+              <ParticipantsSearchBar
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+              />
+              <ParticipantsList participants={filteredParticipants} />
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-full mt-10">
+              <AnimatedGradientText>
+                <span
+                  className={
+                    "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+                  }
+                >
+                  There is no participant in this event!
+                </span>
+              </AnimatedGradientText>
+            </div>
+          )}
+        </div>
+      )}
+    </React.Suspense>
+  );
+};
+
+export default RepresentativeEventParticipants;

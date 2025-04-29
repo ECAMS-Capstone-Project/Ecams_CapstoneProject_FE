@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useInterTask } from "@/hooks/club/useInterTask";
@@ -11,10 +12,11 @@ import {
   ListTodo,
   MoreHorizontal,
   PlusCircle,
+  XCircle,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useClub } from "@/hooks/club/useClub";
 import { NewSubtaskDialog } from "@/components/partial/club_owner/inter-club/task/sub-task/NewSubtaskDialog";
 import { newSubtaskSchema } from "@/schema/InterTaskSchema";
@@ -25,7 +27,7 @@ import {
   SubtaskCreateRequest,
   UpdateSubtaskRequest,
 } from "@/models/InterTask";
-import { fixTime } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 import EditSubTaskDialog2 from "@/components/partial/club_owner/inter-club/task/sub-task/EditSubtaskDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -36,12 +38,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import toast from "react-hot-toast";
 import DeleteSubtaskDialog from "@/components/partial/club_owner/inter-club/task/sub-task/DeleteSubtaskDialog";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 export const TaskDetailPage = () => {
   const { eventTaskId } = useParams();
   const { getInterTaskDetailQuery } = useInterTask();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-
   const { data: response, isLoading } = getInterTaskDetailQuery(
     eventTaskId || ""
   );
@@ -53,14 +56,33 @@ export const TaskDetailPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { members: clubMembers } = useClub(currentClub.clubId);
+  const [pageNo, setPageNo] = useState(1);
+  // const pageSize = 5;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
   const {
     isUpdating,
     createSubtask,
     updateSubtask,
     // isCreatingSubtask,
+    getAllSubTask,
   } = useInterTask();
   const queryClient = useQueryClient();
 
+  const { data: subTask } = getAllSubTask(
+    eventTaskId ?? "",
+    pageNo,
+    debouncedSearch
+  );
+  const subTaskList = subTask?.data?.data;
+  const totalPages = subTask?.data?.totalPages;
   const availableMembers = clubMembers.filter(
     (member) => member.clubRoleName !== "CLUB_OWNER"
   );
@@ -92,16 +114,19 @@ export const TaskDetailPage = () => {
             (subTask) => subTask.priority.toUpperCase() === "HIGH"
           )
         ) {
-          return <Circle className="h-4 w-4 text-white" />;
+          return <Circle className="h-4 w-4 text-red-900" />;
         } else if (
           task.eventTaskDetails.some(
             (subTask) => subTask.priority.toUpperCase() === "MEDIUM"
           )
         ) {
-          return <Circle className="h-4 w-4 text-yellow-600" />;
+          return <Circle className="h-4 w-4 text-yellow-900" />;
         } else {
-          return <Circle className="h-4 w-4 text-blue-600" />;
+          return <Circle className="h-4 w-4 text-blue-900" />;
         }
+
+      case "OVERDUE":
+        return <XCircle className="h-4 w-4 text-red-800" />;
       default:
         return <Circle className="h-4 w-4 text-gray-400" />;
     }
@@ -124,8 +149,14 @@ export const TaskDetailPage = () => {
         subtask: createData,
         eventTaskId: task.eventTaskId,
       });
+      if (response.statusCode === 200) {
+        setIsCreateDialogOpen(false);
+      } else {
+        setIsCreateDialogOpen(true);
+      }
     } catch (error) {
-      console.error("Failed to update task:", error);
+      console.error("Failed to create subtask:", error);
+      throw error; // Ném lỗi để NewSubtaskDialog biết và không đóng dialog
     }
   };
   const handleEditSubtask = async (updatedTask: UpdateSubtaskRequest) => {
@@ -141,6 +172,8 @@ export const TaskDetailPage = () => {
       queryKey: ["interTaskDetail", task.eventTaskId],
     }); // Tự động refetch danh sách ✅
   };
+  // B1: Filter theo search term
+
   return (
     <div className="container mx-auto space-y-6">
       {/* Task Info Section */}
@@ -168,16 +201,23 @@ export const TaskDetailPage = () => {
               </Button>
             )}
         </div>
+
+        <Input
+          placeholder="Search task..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-2/5"
+        />
         <div className="space-y-3">
-          {task.eventTaskDetails.map((subTask) => (
+          {subTaskList?.map((subTask) => (
             <div
               key={subTask.eventTaskDetailId}
-              className={`p-3 rounded-lg border border-[#136CB9]/20 flex items-center justify-between cursor-pointer z-10 ${
+              className={`p-3 rounded-lg border  flex items-center justify-between cursor-pointer z-10 ${
                 subTask.priority.toUpperCase() === "HIGH"
-                  ? "bg-pink-400"
+                  ? "bg-red-50 border-red-200 text-red-900"
                   : subTask.priority.toUpperCase() === "MEDIUM"
-                  ? "bg-yellow-200"
-                  : "bg-blue-300"
+                  ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                  : "bg-blue-50 border-blue-200 text-blue-900"
               }`}
               onClick={() => {
                 navigate(
@@ -195,14 +235,14 @@ export const TaskDetailPage = () => {
             >
               <div className="flex items-center gap-3">
                 {getSubTaskStatusIcon(subTask.status)}
-                <div>
+                <div className="space-y-1">
                   <p
                     className={`font-medium ${
                       subTask.priority.toUpperCase() === "HIGH"
-                        ? "text-white"
+                        ? "bg-red-50 border-red-200 text-red-900"
                         : subTask.priority.toUpperCase() === "MEDIUM"
-                        ? "text-yellow-800"
-                        : "text-[#136CB9]"
+                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                        : "bg-blue-50 border-blue-200 text-blue-900"
                     }`}
                   >
                     {subTask.detailName}
@@ -210,81 +250,124 @@ export const TaskDetailPage = () => {
                   <p
                     className={`text-sm  ${
                       subTask.priority.toUpperCase() === "HIGH"
-                        ? "text-white"
+                        ? "bg-red-50 border-red-200 text-red-900"
                         : subTask.priority.toUpperCase() === "MEDIUM"
-                        ? "text-yellow-800"
-                        : "text-[#136CB9]"
+                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                        : "bg-blue-50 border-blue-200 text-blue-900"
                     }`}
                   >
                     {subTask.description}
                   </p>
+                  <div className="flex items-center gap-1 text-sm font-medium">
+                    <Calendar className="h-4 w-4" />
+                    {format(new Date(subTask.deadline), "dd/MM/yyyy")}
+                  </div>
                 </div>
               </div>
               <div
-                className={`text-sm flex items-center gap-2  ${
+                className={`text-sm flex items-center gap-2 w-fit ${
                   subTask.priority.toUpperCase() === "HIGH"
-                    ? "text-white"
+                    ? "bg-red-50 border-red-200 text-red-900"
                     : subTask.priority.toUpperCase() === "MEDIUM"
-                    ? "text-yellow-800"
-                    : "text-[#136CB9]"
+                    ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                    : "bg-blue-50 border-blue-200 text-blue-900"
                 }`}
               >
-                <Calendar className="h-4 w-4" />
-                {format(new Date(subTask.deadline), "dd/MM/yyyy")}
-                {task.clubId === currentClub.clubId && (
-                  // <Button
-                  //   variant="ghost"
-                  //   className="w-10 h-10 z-50 relative hover:bg-transparent "
-                  //   type="button"
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-sm font-semibold px-2 py-1 rounded-md",
+                      {
+                        ON_GOING: "bg-blue-100 text-blue-800",
+                        COMPLETED: "bg-green-100 text-green-800",
+                        REVIEWING: "bg-yellow-100 text-yellow-800",
+                        OVERDUE: "bg-red-100 text-red-800",
+                      }[subTask.status] || "bg-gray-100 text-gray-800"
+                    )}
+                  >
+                    {subTask.status}
+                  </Badge>
+                </div>
+                {task.clubId === currentClub.clubId &&
+                  task.status !== "COMPLETED" && (
+                    // <Button
+                    //   variant="ghost"
+                    //   className="w-10 h-10 z-50 relative hover:bg-transparent "
+                    //   type="button"
 
-                  // >
-                  <>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="z-50 relative  rounded-full"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        {task.clubId === currentClub.clubId && (
+                    // >
+                    <>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="z-50 relative  rounded-full"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          {task.clubId === currentClub.clubId && (
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const taskStart = new Date(subTask.startTime);
+                                const now = new Date();
+                                if (taskStart <= now) {
+                                  toast.error("This task has already started");
+                                  return;
+                                } else {
+                                  setEditingTask(subTask);
+                                  setIsEditDialogOpen(true);
+                                }
+                              }}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
-                              const taskStart = new Date(subTask.startTime);
-                              const now = new Date();
-                              if (taskStart <= now) {
-                                toast.error("This task has already started");
-                                return;
-                              } else {
-                                setEditingTask(subTask);
-                                setIsEditDialogOpen(true);
-                              }
+                              setIsDeleteDialogOpen(true);
+                              setEditingTask(subTask);
                             }}
+                            disabled={
+                              subTask.status.toLowerCase() == "completed"
+                            }
                           >
-                            Edit
+                            Delete
                           </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsDeleteDialogOpen(true);
-                            setEditingTask(subTask);
-                          }}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </>
-                  // </Button>
-                )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </>
+                    // </Button>
+                  )}
               </div>
             </div>
           ))}
+          {!isLoading && totalPages !== undefined && totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-4">
+              <Button
+                variant="outline"
+                disabled={pageNo === 1}
+                onClick={() => setPageNo((prev) => prev - 1)}
+              >
+                Back
+              </Button>
+              <span className="text-sm">
+                Page <strong>{pageNo}</strong> / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={pageNo === totalPages}
+                onClick={() => setPageNo((prev) => prev + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
           {task.eventTaskDetails.length === 0 && (
             <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
               <img
@@ -306,20 +389,24 @@ export const TaskDetailPage = () => {
       <NewSubtaskDialog
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
-        onSubmit={(data) => {
-          // Chỉ gửi thông tin của subtask mới
-          handleAddSubtask({
-            detailName: data.detailName,
-            description: data.description,
-            startTime: fixTime(data.startTime),
-            startTimeTime: data.startTimeTime,
-            deadline: fixTime(data.deadline),
-            deadlineTime: data.deadlineTime,
-            status: data.status,
-            priority: data.priority,
-            assignedMemberIds: data.assignedMemberIds || [],
-            taskDependencyIds: data.taskDependencyIds || [],
-          });
+        onSubmit={async (data) => {
+          try {
+            await handleAddSubtask({
+              detailName: data.detailName,
+              description: data.description,
+              startTime: fixTime(data.startTime),
+              startTimeTime: data.startTimeTime,
+              deadline: fixTime(data.deadline),
+              deadlineTime: data.deadlineTime,
+              status: data.status,
+              priority: data.priority,
+              assignedMemberIds: data.assignedMemberIds || [],
+              taskDependencyIds: data.taskDependencyIds || [],
+            });
+          } catch (error) {
+            // Giữ dialog mở khi có lỗi
+            console.error("Error in onSubmit:", error);
+          }
         }}
         members={availableMembers}
         currentClub={currentClub}
