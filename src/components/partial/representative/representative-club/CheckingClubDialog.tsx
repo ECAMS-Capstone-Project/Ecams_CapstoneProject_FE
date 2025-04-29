@@ -24,7 +24,10 @@ import {
 import { CheckCircle2, XCircle, Eye } from "lucide-react";
 import DialogLoading from "@/components/ui/dialog-loading";
 import WaitingModal from "@/components/global/WaitingModal";
-import { ApproveClubCheckingAPI, ClubResponseDTO } from "@/api/club-owner/ClubByUser";
+import {
+  ApproveClubCheckingAPI,
+  ClubResponseDTO,
+} from "@/api/club-owner/ClubByUser";
 import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
 import { MemberDetailDialog } from "./MemberDetailDialog";
@@ -67,7 +70,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
       setFlag?.((prev) => !prev);
       setOpenDialog(false);
     } catch (error: any) {
-      console.log(error.response?.data?.message)
+      console.log(error.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +87,8 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
     setOpenMemberDialog(true);
   };
   const formattedDate = initialData?.foundingDate
-    ? format(new Date(initialData.foundingDate), 'dd-MM-yyyy')
-    : '';
+    ? format(new Date(initialData.foundingDate), "dd-MM-yyyy")
+    : "";
   return (
     <Dialog open={true} onOpenChange={setOpenDialog}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -105,7 +108,10 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
               {/* Khối trên: Thông tin cơ bản */}
               <Grid2 container spacing={2}>
                 {/* Logo + Tên + Trạng thái */}
-                <Grid2 size={{ xs: 12, sm: 4 }} className="flex flex-col items-center">
+                <Grid2
+                  size={{ xs: 12, sm: 4 }}
+                  className="flex flex-col items-center"
+                >
                   <Avatar
                     src={initialData?.logoUrl}
                     alt="Club Logo"
@@ -117,14 +123,20 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                 </Grid2>
 
                 {/* Description + Purpose */}
-                <Grid2 container size={{ xs: 12, sm: 8 }} >
+                <Grid2 container size={{ xs: 12, sm: 8 }}>
                   <Grid2 size={6}>
                     <div className="mb-3">
                       <Typography variant="subtitle1" fontWeight="bold">
                         Description
                       </Typography>
-                      <Typography variant="body2" style={{ textAlign: "justify" }} className="text-gray-700 text-ba">
-                        <DescriptionWithToggle text={initialData?.description || ""} />
+                      <Typography
+                        variant="body2"
+                        style={{ textAlign: "justify" }}
+                        className="text-gray-700 text-ba"
+                      >
+                        <DescriptionWithToggle
+                          text={initialData?.description || ""}
+                        />
                       </Typography>
                     </div>
                     <div className="mb-3">
@@ -150,13 +162,21 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                         Status
                       </Typography>
                       <Chip
-                        label={initialData?.status.toString().toLocaleLowerCase() == "processing" ? "PROCESSING" : "Active"}
-                        color={initialData?.status.toString().toLocaleLowerCase() == "processing" ? "info" : "success"}
+                        label={
+                          initialData?.status.toString().toLocaleLowerCase() ==
+                          "processing"
+                            ? "PROCESSING"
+                            : "Active"
+                        }
+                        color={
+                          initialData?.status.toString().toLocaleLowerCase() ==
+                          "processing"
+                            ? "info"
+                            : "success"
+                        }
                       />
                     </div>
-
                   </Grid2>
-
                 </Grid2>
               </Grid2>
 
@@ -193,30 +213,35 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {initialData?.clubMembers?.filter(a => a.status == "ACTIVE").map((member, index) => (
-                        <TableRow key={index + 1}>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-2 justify-center">
-                              <img
-                                src={member.avatar || "https://github.com/shadcn.png"}
-                                alt={"Product Image"}
-                                className="w-12 h-12 object-cover"
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell>{member.studentId}</TableCell>
-                          <TableCell>{member.fullname}</TableCell>
-                          <TableCell>{member.clubRoleName}</TableCell>
-                          <TableCell align="center">
-                            <Button
-                              variant="link"
-                              onClick={() => handleViewMember(member.userId)}
-                            >
-                              <Eye size={16} />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {initialData?.clubMembers
+                        ?.filter((a) => a.status == "ACTIVE")
+                        .map((member, index) => (
+                          <TableRow key={index + 1}>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-2 justify-center">
+                                <img
+                                  src={
+                                    member.avatar ||
+                                    "https://github.com/shadcn.png"
+                                  }
+                                  alt={"Product Image"}
+                                  className="w-12 h-12 object-cover rounded-full"
+                                />
+                              </div>
+                            </TableCell>
+                            <TableCell>{member.studentId}</TableCell>
+                            <TableCell>{member.fullname}</TableCell>
+                            <TableCell>{member.clubRoleName}</TableCell>
+                            <TableCell align="center">
+                              <Button
+                                variant="link"
+                                onClick={() => handleViewMember(member.userId)}
+                              >
+                                <Eye size={16} />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
@@ -249,9 +274,8 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
               </div>
             </div>
           </>
-        )
-        }
-      </DialogContent >
+        )}
+      </DialogContent>
 
       <WaitingModal open={isLoading} />
 
@@ -265,10 +289,11 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
         userId={initialData?.clubId || ""}
         open={diablogOpen}
         onClose={() => {
-          setIsDialogOpen(false)
-          setOpenDialog(false)
+          setIsDialogOpen(false);
+          setOpenDialog(false);
         }}
-        setFlag={setFlag} />
-    </Dialog >
-  )
-}
+        setFlag={setFlag}
+      />
+    </Dialog>
+  );
+};
