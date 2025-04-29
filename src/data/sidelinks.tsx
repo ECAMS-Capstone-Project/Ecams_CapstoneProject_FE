@@ -250,7 +250,7 @@ const SidebarLinks = () => {
     );
   }
 
-  if (user?.userType === "club_owner") {
+  if (user?.roles.includes("CLUB_OWNER")) {
     sidelinks.push({
       title: "Inter-club Event",
       href: "/club/inter-club-event",

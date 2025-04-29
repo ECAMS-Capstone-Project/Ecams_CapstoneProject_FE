@@ -54,7 +54,7 @@ export const RequestEventDetail: React.FC = () => {
       await approveEvent(body);
       setIsOpen(false);
 
-      navigate("/representative/event");
+      navigate("/representative/club-event");
     } catch (error: any) {
       const errorMessage = error.response.data.message || "An error occurred";
       console.log(errorMessage);
