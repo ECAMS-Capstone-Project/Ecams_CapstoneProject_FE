@@ -62,14 +62,20 @@ export const SubtaskDetailPage = () => {
   );
   const submissions = submissionsData?.data?.data;
 
-  const membersSelected = submissions && submissions.map(item => ({
-    clubMemberId: item.clubMemberId,
-  })) || [];
+  const membersSelected =
+    (submissions &&
+      submissions.map((item) => ({
+        clubMemberId: item.clubMemberId,
+      }))) ||
+    [];
 
   const handleAssignMembers = async (updateData: UpdateInterTaskRequest3) => {
-    updateData.priority = subtask.priority
-    updateData.eventTaskDetailId = subtask.eventTaskDetailId
-    await updateInterEventTask3({ subtask: updateData, eventTaskDetailId: subtask.eventTaskDetailId });
+    updateData.priority = subtask.priority;
+    updateData.eventTaskDetailId = subtask.eventTaskDetailId;
+    await updateInterEventTask3({
+      subtask: updateData,
+      eventTaskDetailId: subtask.eventTaskDetailId,
+    });
     setIsAssignDialogOpen(false);
     queryClient.invalidateQueries({
       queryKey: [
@@ -154,6 +160,8 @@ export const SubtaskDetailPage = () => {
         submissions={submissions}
         onAssignMembers={() => setIsAssignDialogOpen(true)}
         onViewSubmission={handleViewSubmission}
+        subTask={subtask}
+        task={task}
       />
 
       <AssignMembersDialog
@@ -182,6 +190,7 @@ export const SubtaskDetailPage = () => {
         isSubmitting={isSubmitting}
         onDownloadAll={handleDownloadAll}
         subtask={subtask}
+        task={task}
       />
     </div>
   );
