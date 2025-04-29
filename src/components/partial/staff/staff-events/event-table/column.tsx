@@ -13,6 +13,7 @@ import {
   XCircleIcon,
   CircleEllipsis,
   CircleCheck,
+  CircleX,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -141,6 +142,8 @@ export const EventColums: ColumnDef<Event>[] = [
                     ? "bg-[#D1E7F3] text-[#1E4A7D]"
                     : currentStatus === "WAITING"
                     ? "bg-[#F9E3D1] text-[#9E5C3F]"
+                    : currentStatus === "CANCELED"
+                    ? "bg-[#eca6a6] text-[#b62e2e]"
                     : ""
                 } w-auto`}
               >
@@ -158,6 +161,9 @@ export const EventColums: ColumnDef<Event>[] = [
                 )}
                 {currentStatus === "WAITING" && (
                   <CircleEllipsis size={12} className=" text-[#2F4F4F]" />
+                )}
+                {currentStatus === "CANCELED" && (
+                  <CircleX size={12} className=" text-[#2F4F4F]" />
                 )}
                 <span>{currentStatus}</span>
                 {/* <ChevronDown size={16} /> */}

@@ -51,7 +51,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { AreaPicker, DatePicker } from "./AreaPicker";
 import { Heading } from "@/components/ui/heading";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoadingAnimation from "@/components/ui/loading";
 import EventWalletPicker from "./WalletPicker";
 import FieldPicker from "./FieldPicker";
@@ -84,7 +84,6 @@ interface EventDialogProps {
 }
 
 export const CreateEvent: React.FC<EventDialogProps> = ({
-  initialData,
   onSuccess,
   setOpen,
 }) => {
@@ -93,9 +92,12 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClub, setSelectedClub] = useState<AvailableClubResponse>();
   const [openDialog, setOpenDialog] = useState(false);
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
   const [isClubEvent, setIsClubEvent] = useState(false);
+  const location = useLocation();
+  const initialData = location.state?.initialData;
+  console.log("initialData", initialData);
   // Chỉ fetch thông tin user khi cần thiết
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -170,9 +172,11 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     "",
     userInfo?.universityId,
     startDate
-      ? format(startDate, "yyyy-MM-dd")
+      ? format(new Date(startDate), "yyyy-MM-dd")
       : format(new Date(), "yyyy-MM-dd"),
-    endDate ? format(endDate, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")
+    endDate
+      ? format(new Date(endDate), "yyyy-MM-dd")
+      : format(new Date(), "yyyy-MM-dd")
   );
 
   // Now that we have start and end dates, we can call the useClub hook
@@ -389,7 +393,11 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                             <FormItem>
                               <FormLabel>Event's Name</FormLabel>
                               <FormControl>
-                                <Input type="text" {...field} />
+                                <Input
+                                  type="text"
+                                  {...field}
+                                  value={initialData?.eventName}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { Row } from "@tanstack/react-table";
-import { EyeIcon } from "lucide-react";
+import { Edit, EyeIcon } from "lucide-react";
 
 import { AlertModal } from "@/components/ui/alert-modal";
 import toast from "react-hot-toast";
@@ -56,6 +56,14 @@ export function DataTableRowActions<TData>({
         }}
       >
         <EyeIcon className="mr-2 h-4 w-4 cursor-pointer text-black" />
+      </button>
+      <button
+        className="bg-transparent border-none"
+        onClick={() => {
+          navigate(`/representative/event/update/${row.getValue("eventId")}`);
+        }}
+      >
+        <Edit className="mr-2 h-4 w-4 cursor-pointer text-black" />
       </button>
 
       {/* Chỉ mở dialog khi eventDetail có dữ liệu */}
