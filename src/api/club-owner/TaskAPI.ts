@@ -321,9 +321,9 @@ export const GetMemberSubmissionTaskEvent = async (eventDetailId: string, pageNu
     }
 };
 
-export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: number, search: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: number, search: string, pageSize: number): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/EventTask/${eventDetailId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/EventTask/${eventDetailId}?Search=${search}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -332,9 +332,9 @@ export const GetSubTaskEventAPI = async (eventDetailId: string, pageNumber: numb
     }
 };
 
-export const GetSubTaskEventByUserAPI = async (eventDetailId: string, pageNumber: number, search: string, userId: string): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
+export const GetSubTaskEventByUserAPI = async (eventDetailId: string, pageNumber: number, search: string, userId: string, pageSize: number): Promise<ResponseDTO<ResponseData<EventTaskDetail>>> => {
     try {
-        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/${eventDetailId}/User/${userId}?Search=${search}&PageNumber=${pageNumber}&PageSize=5`);
+        const response = await get<ResponseDTO<ResponseData<EventTaskDetail>>>(`/EventTask/${eventDetailId}/User/${userId}?Search=${search}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
         return response; // Trả về toàn bộ phản hồi
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

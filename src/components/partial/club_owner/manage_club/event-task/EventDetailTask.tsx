@@ -35,20 +35,6 @@ export const EventDetailTask = () => {
 
   const event1 = eventDetail?.data;
 
-  // const getStatusColor = (status: InterClubEventDTO["status"]) => {
-  //   switch (status) {
-  //     case "WAITING":
-  //       return "bg-[#136CB9]/10 text-[#136CB9] border border-[#136CB9]/20";
-  //     case "ACTIVE":
-  //       return "bg-[#49BBBD]/10 text-[#49BBBD] border border-[#49BBBD]/20";
-  //     case "INACTIVE":
-  //       return "bg-gray-100 text-gray-800 border border-gray-200";
-  //     default:
-  //       return "bg-gray-100 text-gray-800 border border-gray-200";
-  //   }
-  // };
-
-
   if (!event1 || !event) {
     return (
       <div className="flex items-center justify-center h-64">

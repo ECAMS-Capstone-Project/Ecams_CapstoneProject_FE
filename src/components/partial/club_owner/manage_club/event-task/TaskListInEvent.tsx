@@ -41,6 +41,13 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import DeleteSubtaskDialog from "../../inter-club/task/sub-task/DeleteSubtaskDialog";
 import { UpdateInterTask2 } from "@/api/club-owner/InterEventTask";
 import ConfirmEndEventDialog from "./ConfirmEndEventDialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -49,7 +56,7 @@ export default function TaskListInEvent() {
   const clubId = location.state?.clubId as string;
   const task = location.state?.task as InterTask;
   const [pageNo, setPageNo] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -85,7 +92,7 @@ export default function TaskListInEvent() {
       return "bg-green-100 text-green-800";
     if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
-    return "bg-blue-100 text-blue-800";
+    return "bg-red-100 text-red-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
@@ -111,12 +118,13 @@ export default function TaskListInEvent() {
       setIsLoading(true);
       try {
         const response = isClubOwner
-          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch)
+          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch, pageSize)
           : await GetSubTaskEventByUserAPI(
             task.eventTaskId,
             pageNo,
             debouncedSearch,
-            user.userId
+            user.userId,
+            pageSize
           );
 
         setSubTaskList(response.data?.data || []);
@@ -152,7 +160,6 @@ export default function TaskListInEvent() {
     });
   };
 
-  // 🔎 Filter task theo search term đã debounce
   const filteredTasks = useMemo(() => {
     const priorityOrder: Record<"HIGH" | "MEDIUM" | "LOW", number> = {
       HIGH: 1,
@@ -299,7 +306,7 @@ export default function TaskListInEvent() {
             <div className="flex justify-between">
               <div className="w-1/4 md:w-1/4 xs:1/2">
                 <Input
-                  placeholder="Search task..."
+                  placeholder="Search sub task"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full"
@@ -337,12 +344,13 @@ export default function TaskListInEvent() {
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border border-[#136CB9]/20 ${task.priority.toUpperCase() === "HIGH"
-                      ? "bg-red-400"
-                      : task.priority.toUpperCase() === "MEDIUM"
-                        ? "bg-yellow-200"
-                        : "bg-blue-200"
-                      }`}
+                    className={`rounded-lg border ${
+                      task.priority.toUpperCase() === "HIGH"
+                        ? "bg-red-50 border-red-200 text-red-900"
+                        : task.priority.toUpperCase() === "MEDIUM"
+                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                        : "bg-blue-50 border-blue-200 text-blue-900"
+                    }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
@@ -449,7 +457,7 @@ export default function TaskListInEvent() {
             )}
           </div>
 
-          {!isLoading && totalPages !== undefined && totalPages > 1 && (
+          {!isLoading && totalPages !== undefined && (
             <div className="flex justify-center items-center gap-4 mt-4">
               <Button
                 variant="outline"
@@ -468,6 +476,27 @@ export default function TaskListInEvent() {
               >
                 Next
               </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">Show</span>
+                <Select
+                  value={pageSize.toString()}
+                  onValueChange={(value) => {
+                    setPageSize(Number(value));
+                    setPageNo(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[70px]">
+                    <SelectValue placeholder="5" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span className="text-sm">items</span>
+              </div>
             </div>
           )}
         </CardContent>
