@@ -114,7 +114,7 @@ export const TaskBigItem = ({
                 {isClubOwner && (
                   <DropdownMenuItem
                     onClick={() => handleClick()}
-                    disabled={task.completionPercentage === 100}
+                    disabled={task.completionPercentage === 100 || task.status == "COMPLETED"}
                   >
                     Edit
                   </DropdownMenuItem>

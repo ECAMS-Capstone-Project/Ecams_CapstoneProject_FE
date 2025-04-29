@@ -403,6 +403,7 @@ export default function TaskListInEvent() {
                             )}
                             {isClubOwner && (
                               <DropdownMenuItem
+                                disabled={task.status == "COMPLETED"}
                                 onClick={() => {
                                   setIsDeleteDialogOpen(true)
                                   setEditingTask(task);
