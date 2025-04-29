@@ -80,7 +80,6 @@ export const SubmissionFeedbackForm = ({
           placeholder="Enter your feedback..."
           className="min-h-[100px]"
           disabled={isDisabled}
-          disabled={isDisabled}
         />
       </div>
     </div>

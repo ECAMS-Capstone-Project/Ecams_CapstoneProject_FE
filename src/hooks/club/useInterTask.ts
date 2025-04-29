@@ -166,11 +166,13 @@ export const useInterTask = (
   const getAllSubTask = (
     eventDetailId: string,
     pageNumber: number,
-    search: string
+    search: string,
+    pageSize: number
   ) => {
     return useQuery({
-      queryKey: ["subtasks", eventDetailId, pageNumber, search], // Query key động dựa trên eventId
-      queryFn: () => GetSubTaskEventAPI(eventDetailId, pageNumber, search), // Gọi API lấy chi tiết sự kiện
+      queryKey: ["subtasks", eventDetailId, pageNumber, search, pageSize], // Query key động dựa trên eventId
+      queryFn: () =>
+        GetSubTaskEventAPI(eventDetailId, pageNumber, search, pageSize), // Gọi API lấy chi tiết sự kiện
       enabled: true, // Chỉ thực hiện khi có eventId
     });
   };
