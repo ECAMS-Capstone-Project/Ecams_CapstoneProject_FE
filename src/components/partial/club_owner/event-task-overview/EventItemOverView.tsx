@@ -73,6 +73,23 @@ export function EventItemOverView({
         return clubs2.some(club => club.clubId === userClub.clubId);
     };
 
+    const getUserClubId = () => {
+        if (!user || !clubs) return clubs2[0].clubId;
+
+        // Find the first club where user is a member
+        const userClub = clubs.find(club =>
+            club.clubMembers?.some(
+                member => member.userId === user.userId && member.status === "ACTIVE"
+            )
+        );
+
+        if (!userClub) return clubs2[0].clubId;
+
+        // Check if this club is in clubs2 array
+        const clubInEvent = clubs2.find(club => club.clubId === userClub.clubId);
+        return clubInEvent ? clubInEvent.clubId : clubs2[0].clubId;
+    };
+
     const canManage = isClubOwner();
 
     return (
@@ -88,14 +105,24 @@ export function EventItemOverView({
                         },
                     });
                 } else {
-                    navigate(`/club/inter-club-event/${clubEventId}`);
+                    if (canManage) {
+                        navigate(`/club/inter-club-event/${clubEventId}`);
+                    } else {
+                        navigate(`/club/event-task/${eventId}`, {
+                            state: {
+                                isClubOwner: false,
+                                clubId: getUserClubId(),
+                                clubEventId: clubEventId,
+                            },
+                        });
+                    }
                 }
             }}
         >
             <div className="absolute inset-0 bg-gradient-to-r from-[#136CB5]/5 to-[#49BBBD]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="flex items-center justify-between p-6">
+            <div className="flex items-center justify-between p-6 gap-4">
                 <div className="flex items-center gap-6">
-                    <div className="relative">
+                    <div className="relative flex-shrink-0 self-center">
                         <img
                             src={imageUrl}
                             alt={eventName}
@@ -104,7 +131,7 @@ export function EventItemOverView({
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl" />
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1">
                         <div className="flex items-center gap-3">
                             <h3 className="text-xl font-semibold bg-gradient-to-r from-[#136CB5] to-[#49BBBD] bg-clip-text text-transparent">
                                 {eventName}
@@ -151,7 +178,7 @@ export function EventItemOverView({
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                     <Badge variant="outline" className="text-sm px-4 py-2 rounded-xl bg-white/50 backdrop-blur-sm flex items-center gap-2">
                         <ClipboardList className="h-4 w-4 text-[#136cb9]" />
                         {numberOfTasks} tasks remaining

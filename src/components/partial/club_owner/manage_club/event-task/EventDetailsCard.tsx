@@ -140,9 +140,9 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-3 text-white">Participating Clubs</h3>
           <div className="flex flex-wrap gap-2">
-            {selectedEvent.clubs?.map((club) => (
+            {selectedEvent.clubs?.map((club, index) => (
               <Badge
-                key={club.clubId}
+                key={index}
                 variant={club.status === "ACTIVE" ? "default" : "secondary"}
                 className={cn(
                   "text-xs",
