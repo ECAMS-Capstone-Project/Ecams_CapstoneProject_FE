@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { InterClubEventDTO } from "@/models/Event";
 import { EventClubDTO } from "@/api/representative/EventAgent";
+import { ClubResponse } from "@/models/Club";
 
 interface EndEventDialogProps {
   open: boolean;
@@ -18,7 +19,7 @@ interface EndEventDialogProps {
   onConfirm: () => void;
   event: InterClubEventDTO;
   isEnding: boolean;
-  currentClub: EventClubDTO;
+  currentClub: EventClubDTO | ClubResponse;
 }
 
 export const EndEventDialog: React.FC<EndEventDialogProps> = ({

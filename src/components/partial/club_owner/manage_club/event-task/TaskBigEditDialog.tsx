@@ -70,8 +70,8 @@ export const TaskBigEditDialog = ({
     defaultValues: {
       taskName: task.taskName,
       description: task.description,
-      startTime: (new Date(task.startTime)),
-      deadline: (new Date(task.deadline)),
+      startTime: new Date(task.startTime),
+      deadline: new Date(task.deadline),
       deadlineTime: format(new Date(task.deadline), "HH:mm"),
       startTimeTime: format(new Date(task.startTime), "HH:mm"),
       status: task.status,
@@ -125,13 +125,13 @@ export const TaskBigEditDialog = ({
             <DialogDescription>Edit the task details below</DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(
-              onSubmit,
-              (errors) => {
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (errors) => {
                 console.error("Zod validation errors:", errors);
                 toast.error("Check your detail time in sub task");
-              }
-            )} className="space-y-6">
+              })}
+              className="space-y-6"
+            >
               <div className="space-y-4 h-[300px)] p-2 overflow-y-auto">
                 <FormField
                   control={form.control}
@@ -143,6 +143,7 @@ export const TaskBigEditDialog = ({
                         <Input
                           placeholder="Enter task name"
                           {...field}
+                          disabled={task.status === "ON_GOING"}
                         />
                       </FormControl>
                       <FormMessage />
@@ -162,6 +163,7 @@ export const TaskBigEditDialog = ({
                           className="resize-none"
                           rows={5}
                           {...field}
+                          disabled={task.status === "ON_GOING"}
                         />
                       </FormControl>
                       <FormMessage />
@@ -186,6 +188,7 @@ export const TaskBigEditDialog = ({
                                     "text-left font-normal",
                                     !field.value && "text-muted-foreground"
                                   )}
+                                  disabled={task.status === "ON_GOING"}
                                 >
                                   {field.value ? (
                                     format(field.value, "PPP")
@@ -196,7 +199,10 @@ export const TaskBigEditDialog = ({
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0 mb-0 pb-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -218,7 +224,11 @@ export const TaskBigEditDialog = ({
                         <FormItem className="flex flex-col">
                           <FormLabel>Time</FormLabel>
                           <FormControl>
-                            <Input type="time" {...field} />
+                            <Input
+                              type="time"
+                              {...field}
+                              disabled={task.status === "ON_GOING"}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -252,7 +262,10 @@ export const TaskBigEditDialog = ({
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 mb-0 pb-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0 mb-0 pb-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -290,12 +303,11 @@ export const TaskBigEditDialog = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Club Assign</FormLabel>
-                        <Popover
-                          open={openClubSelect}
-                        >
+                        <Popover open={openClubSelect}>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
+                                disabled={task.status === "ON_GOING"}
                                 variant="outline"
                                 role="combobox"
                                 className={cn(
@@ -305,8 +317,8 @@ export const TaskBigEditDialog = ({
                               >
                                 {field.value
                                   ? selectedEvent.clubs.find(
-                                    (club) => club.clubId === field.value
-                                  )?.clubName
+                                      (club) => club.clubId === field.value
+                                    )?.clubName
                                   : "Select club"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>

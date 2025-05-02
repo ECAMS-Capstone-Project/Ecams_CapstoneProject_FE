@@ -109,24 +109,18 @@ export default function CreateEventTaskClub() {
   const selectedTasks = watch("taskDependencyIds");
 
   const startTimeDate = watch("startTimeDate");
-  const startTime = watch("startTimeTime")
+  const startTime = watch("startTimeTime");
   const deadlineTimeDate = watch("deadlineDate");
-  const endTime = watch("deadlineTime")
+  const endTime = watch("deadlineTime");
   const taskName = watch("detailName");
   const taskDescription = watch("description");
   const priority = watch("priority");
-
+  const [error, setError] = useState("");
   useEffect(() => {
     async function fetchData() {
       if (!clubId || !startTimeDate || !deadlineTimeDate || !priority) return;
-      const finalDeadline = combineDateTime(
-        deadlineTimeDate,
-        endTime
-      );
-      const finalStartTime = combineDateTime(
-        startTimeDate,
-        startTime
-      );
+      const finalDeadline = combineDateTime(deadlineTimeDate, endTime);
+      const finalStartTime = combineDateTime(startTimeDate, startTime);
       try {
         const formattedStart = fixTime(finalStartTime).toISOString();
         const formattedDeadline = fixTime(finalDeadline).toISOString();
@@ -159,7 +153,15 @@ export default function CreateEventTaskClub() {
     }
 
     fetchData();
-  }, [clubId, startTimeDate, deadlineTimeDate, priority, task.eventTaskId, endTime, startTime]);
+  }, [
+    clubId,
+    startTimeDate,
+    deadlineTimeDate,
+    priority,
+    task.eventTaskId,
+    endTime,
+    startTime,
+  ]);
 
   const isReadyToFetch = startTimeDate && deadlineTimeDate && priority;
 
@@ -254,10 +256,11 @@ export default function CreateEventTaskClub() {
 
       const response = await TaskRecommendedByAI(body.clubId, body);
       const data = response.data;
-
       // Update danh sách recommend
       if (data) {
         setRecommendedStudents(data);
+      } else {
+        setError(response.message);
       }
 
       // Lưu lại lý do recommend theo studentId
@@ -276,7 +279,6 @@ export default function CreateEventTaskClub() {
       setIsLoading2(false);
     }
   };
-
   useEffect(() => {
     const hasErrors = !!Object.keys(form.formState.errors).length;
     if (hasErrors) {
@@ -580,10 +582,18 @@ export default function CreateEventTaskClub() {
                           </span>
                         </Button>
                       </div>
+                      {error && (
+                        <div className="text-indigo-900 text-center">
+                          <p className="font-medium bg-gradient-to-br from-indigo-50 to-purple-50 w-fit mx-auto py-1 px-3 rounded-xl">
+                            😢 {error}
+                          </p>
+                        </div>
+                      )}
                       {!isReadyToFetch ? (
                         <div className="text-sm text-red-500 italic">
-                          After selecting the Start Date, Deadline, and Privacy,
-                          a list of available students will be displayed.
+                          After selecting the Start Date, Deadline, and
+                          Priority, a list of available students will be
+                          displayed.
                         </div>
                       ) : (
                         <Suspense fallback={<div>Loading students...</div>}>

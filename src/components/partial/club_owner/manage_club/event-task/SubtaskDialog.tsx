@@ -64,7 +64,11 @@ const subtaskSchema = z
 interface SubtaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: z.infer<typeof subtaskSchema>, startTimeTime: string, deadlineTime: string) => void;
+  onSubmit: (
+    data: z.infer<typeof subtaskSchema>,
+    startTimeTime: string,
+    deadlineTime: string
+  ) => void;
   initialValues?: {
     detailName: string;
     description: string;
@@ -73,7 +77,7 @@ interface SubtaskDialogProps {
     status?: string;
     startTimeTime: string;
     deadlineTime: string;
-    priority: string
+    priority: string;
   };
   mainTaskStartTime: Date;
   mainTaskDeadline: Date;
@@ -107,13 +111,13 @@ export const SubtaskDialog = ({
     defaultValues: initialValues
       ? initialValues
       : {
-        detailName: "",
-        description: "",
-        startTime: new Date(),
-        deadline: new Date(),
-        status: "ON_GOING",
-        priority: "LOW"
-      },
+          detailName: "",
+          description: "",
+          startTime: new Date(),
+          deadline: new Date(),
+          status: "ON_GOING",
+          priority: "LOW",
+        },
   });
   const combineDateTime = (dateObj: Date, timeStr: string) => {
     const [hour, minute] = timeStr.split(":").map(Number);
@@ -122,10 +126,7 @@ export const SubtaskDialog = ({
     return newDate;
   };
   const handleSubmit = (values: z.infer<typeof subtaskSchema>) => {
-    const finalDeadline = combineDateTime(
-      values.deadline,
-      values.deadlineTime
-    );
+    const finalDeadline = combineDateTime(values.deadline, values.deadlineTime);
     const finalStartTime = combineDateTime(
       values.startTime,
       values.startTimeTime
@@ -315,7 +316,7 @@ export const SubtaskDialog = ({
                     <FormLabel>Priority</FormLabel>
                     <Select
                       onValueChange={(value) => {
-                        field.onChange(value)
+                        field.onChange(value);
                         // setPriority(value as any)
                       }}
                       defaultValue={field.value}
@@ -336,7 +337,7 @@ export const SubtaskDialog = ({
                 )}
               />
             </div>
-            {initialValues?.status != "COMPLETED" && (
+            {/* {initialValues?.status != "COMPLETED" && (
               <FormField
                 control={form.control}
                 name="status"
@@ -363,7 +364,7 @@ export const SubtaskDialog = ({
                   </FormItem>
                 )}
               />
-            )}
+            )} */}
 
             <div className="flex justify-end gap-4">
               <Button type="button" variant="outline" onClick={onClose}>

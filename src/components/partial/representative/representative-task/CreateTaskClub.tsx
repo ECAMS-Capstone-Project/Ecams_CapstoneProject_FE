@@ -34,9 +34,19 @@ import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
-import { AvailableMemberEventTask, GetAvailableMember, TaskRecommendedByAI } from "@/api/student/ClubAgent";
+import {
+  AvailableMemberEventTask,
+  GetAvailableMember,
+  TaskRecommendedByAI,
+} from "@/api/student/ClubAgent";
 import SpecificStudentClubList from "./SpecificStudentClubList";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -45,10 +55,16 @@ export default function CreateTaskClub() {
   const location = useLocation();
   const clubId = location.state?.clubId;
   const [priority, setPriority] = useState<string>("LOW");
-
-  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [recommendedStudents, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [recommendedReasons, setRecommendedReasons] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
+    []
+  );
+  const [recommendedStudents, setRecommendedStudents] = useState<
+    AvailableMemberEventTask[]
+  >([]);
+  const [recommendedReasons, setRecommendedReasons] = useState<
+    Record<string, string>
+  >({});
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -131,11 +147,10 @@ export default function CreateTaskClub() {
 
       // Nếu assignAll là true, lấy tất cả member (sử dụng clubMemberId)
       // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
-      const assignedMembers =
-        selectedMembers.map((id: string) => {
-          const stu = allStudents.find((s) => s.studentId === id);
-          return { clubMemberId: stu ? stu.clubMemberId : id };
-        });
+      const assignedMembers = selectedMembers.map((id: string) => {
+        const stu = allStudents.find((s) => s.studentId === id);
+        return { clubMemberId: stu ? stu.clubMemberId : id };
+      });
 
       const data = {
         clubId,
@@ -176,7 +191,6 @@ export default function CreateTaskClub() {
   };
 
   const handleAIRecommend = async () => {
-
     setIsLoading(true);
     try {
       const body = {
@@ -185,8 +199,8 @@ export default function CreateTaskClub() {
         taskDescription: taskDescription.trim().toString(),
         startTime: startTimeDate.toISOString(),
         endTime: deadlineTimeDate.toISOString(),
-        priority: priority
-      }
+        priority: priority,
+      };
 
       const response = await TaskRecommendedByAI(body.clubId, body);
       const data = response.data;
@@ -194,6 +208,8 @@ export default function CreateTaskClub() {
       // Update danh sách recommend
       if (data) {
         setRecommendedStudents(data);
+      } else {
+        setError(response.message);
       }
 
       // Lưu lại lý do recommend theo studentId
@@ -202,7 +218,6 @@ export default function CreateTaskClub() {
         reasonMap[student.studentId] = student.reason || "";
       });
       setRecommendedReasons(reasonMap);
-
     } catch (error) {
       console.error("Recommendation failed", error);
     } finally {
@@ -248,7 +263,9 @@ export default function CreateTaskClub() {
                 </Grid2>
                 <Grid2 size={4}>
                   <div className="space-y-2 mt-1">
-                    <label className="block text-sm font-medium">Priority</label>
+                    <label className="block text-sm font-medium">
+                      Priority
+                    </label>
                     <Select
                       onValueChange={(value) => setPriority(value)}
                       value={priority}
@@ -328,7 +345,10 @@ export default function CreateTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -382,7 +402,10 @@ export default function CreateTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -448,9 +471,7 @@ export default function CreateTaskClub() {
                           />
                           <span className="relative z-10 flex items-center gap-2">
                             <Sparkles className="h-4 w-4" />
-                            {isLoading
-                              ? "Is loading..."
-                              : "AI Recommendation"}
+                            {isLoading ? "Is loading..." : "AI Recommendation"}
                           </span>
                         </Button>
                       </div>
@@ -461,6 +482,13 @@ export default function CreateTaskClub() {
                           </div>
                         }
                       >
+                        {error && (
+                          <div className="text-indigo-900 text-center">
+                            <p className="font-medium bg-gradient-to-br from-indigo-50 to-purple-50 w-fit mx-auto py-1 px-3 rounded-xl">
+                              😢 {error}
+                            </p>
+                          </div>
+                        )}
                         <SpecificStudentClubList
                           students={filteredStudents}
                           selected={selectedMembers}
@@ -477,12 +505,11 @@ export default function CreateTaskClub() {
                           Selected Students:
                         </p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {selectedMembers &&
-                            selectedMembers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">
-                                No students selected.
-                              </span>
-                            )}
+                          {selectedMembers && selectedMembers.length === 0 && (
+                            <span className="text-sm text-muted-foreground">
+                              No students selected.
+                            </span>
+                          )}
                           {selectedMembers &&
                             selectedMembers.map((id) => {
                               const st = allStudents.find(

@@ -80,10 +80,10 @@ export default function TaskListInEvent() {
       description: task.description,
       startTime: fixTime(task.startTime).toISOString(),
       deadline: fixTime(task.deadline).toISOString(),
-      status: "COMPLETED"
-    }
-    await UpdateInterTask2(data)
-    toast.success("Task completed")
+      status: "COMPLETED",
+    };
+    await UpdateInterTask2(data);
+    toast.success("Task completed");
     window.history.back();
   };
 
@@ -92,6 +92,7 @@ export default function TaskListInEvent() {
       return "bg-green-100 text-green-800";
     if (percentage > 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
+    if (status === "NOT_STARTED") return "bg-gray-200 text-gray-800";
     return "bg-red-100 text-red-800";
   };
 
@@ -118,14 +119,19 @@ export default function TaskListInEvent() {
       setIsLoading(true);
       try {
         const response = isClubOwner
-          ? await GetSubTaskEventAPI(task.eventTaskId, pageNo, debouncedSearch, pageSize)
+          ? await GetSubTaskEventAPI(
+              task.eventTaskId,
+              pageNo,
+              debouncedSearch,
+              pageSize
+            )
           : await GetSubTaskEventByUserAPI(
-            task.eventTaskId,
-            pageNo,
-            debouncedSearch,
-            user.userId,
-            pageSize
-          );
+              task.eventTaskId,
+              pageNo,
+              debouncedSearch,
+              user.userId,
+              pageSize
+            );
 
         setSubTaskList(response.data?.data || []);
         setTotalPages(response.data?.totalPages);
@@ -318,7 +324,8 @@ export default function TaskListInEvent() {
                     state: { clubId: clubId, task: task, eventId: eventId },
                   })
                 }
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                className="flex items-center gap-2 text-white"
+                variant={"custom"}
               >
                 <PlusCircle className="w-4 h-4" />
                 Create Sub Task
@@ -413,7 +420,7 @@ export default function TaskListInEvent() {
                               <DropdownMenuItem
                                 disabled={task.status == "COMPLETED"}
                                 onClick={() => {
-                                  setIsDeleteDialogOpen(true)
+                                  setIsDeleteDialogOpen(true);
                                   setEditingTask(task);
                                 }}
                               >
@@ -515,7 +522,12 @@ export default function TaskListInEvent() {
         onClose={() => setIsDeleteDialogOpen(false)}
         setFlag={setFlag}
       />
-      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} title="Do you want to complete this task?" />
+      <ConfirmEndEventDialog
+        open={open}
+        setOpen={setOpen}
+        handleSubmit={handleSubmit}
+        title="Do you want to complete this task?"
+      />
     </div>
   );
 }

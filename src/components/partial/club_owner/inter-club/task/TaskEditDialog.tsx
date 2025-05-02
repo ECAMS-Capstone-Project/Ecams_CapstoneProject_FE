@@ -42,7 +42,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { EventClubDTO } from "@/api/representative/EventAgent";
-
+import { ClubResponse } from "@/models/Club";
 interface TaskEditDialogProps {
   task: InterTask;
   isOpen: boolean;
@@ -54,7 +54,7 @@ interface TaskEditDialogProps {
   isHost?: boolean;
   isLoading?: boolean;
   selectedEvent: InterClubEventDTO;
-  currentClub: EventClubDTO;
+  currentClub: EventClubDTO | ClubResponse;
 }
 
 // Thêm 7 giờ vào mọi timestamp
@@ -241,7 +241,7 @@ export const TaskEditDialog = ({
                         <Input
                           placeholder="Enter task name"
                           {...field}
-                          disabled={!isHost}
+                          disabled={!isHost || task.status === "ON_GOING"}
                         />
                       </FormControl>
                       <FormMessage />
@@ -260,7 +260,7 @@ export const TaskEditDialog = ({
                           placeholder="Enter task description"
                           className="resize-none"
                           {...field}
-                          disabled={!isHost}
+                          disabled={!isHost || task.status === "ON_GOING"}
                         />
                       </FormControl>
                       <FormMessage />
@@ -279,6 +279,7 @@ export const TaskEditDialog = ({
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
+                                disabled={task.status === "ON_GOING"}
                                 variant={"outline"}
                                 className={cn(
                                   " text-left font-normal",
@@ -318,7 +319,11 @@ export const TaskEditDialog = ({
                       <FormItem className="flex flex-col">
                         <FormLabel>Time</FormLabel>
                         <FormControl>
-                          <Input {...field} type="time" />
+                          <Input
+                            {...field}
+                            type="time"
+                            disabled={task.status === "ON_GOING"}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -402,7 +407,7 @@ export const TaskEditDialog = ({
                                   "w-full justify-between",
                                   !field.value && "text-muted-foreground"
                                 )}
-                                disabled={!isHost}
+                                disabled={!isHost || task.status === "ON_GOING"}
                               >
                                 {field.value
                                   ? selectedEvent.clubs.find(

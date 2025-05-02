@@ -30,7 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import LoadingAnimation from "@/components/ui/loading";
-import { cn, fixTime } from "@/lib/utils";
+import { fixTime } from "@/lib/utils";
 interface EditSubTaskDialogProps {
   open: boolean;
   onClose: () => void;
@@ -229,7 +229,7 @@ export default function EditSubTaskDialog2({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogTitle>Edit Sub Task</DialogTitle>
         <DialogDescription>
           Edit the subtask details and save to update the task.
@@ -372,7 +372,7 @@ export default function EditSubTaskDialog2({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          {/* <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Status</Label>
               <Select
@@ -405,7 +405,7 @@ export default function EditSubTaskDialog2({
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </div> */}
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
