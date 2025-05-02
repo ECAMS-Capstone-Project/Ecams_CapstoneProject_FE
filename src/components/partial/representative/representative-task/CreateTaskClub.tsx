@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarIcon } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 
 // shadcn/ui & Components
@@ -57,12 +57,8 @@ export default function CreateTaskClub() {
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
     []
   );
-  const [recommendedStudents, setRecommendedStudents] = useState<
-    AvailableMemberEventTask[]
-  >([]);
-  const [recommendedReasons, setRecommendedReasons] = useState<
-    Record<string, string>
-  >({});
+  const [, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
+  const [, setRecommendedReasons] = useState<Record<string, string>>({});
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -96,6 +92,8 @@ export default function CreateTaskClub() {
   const selectedMembers = watch("selectedMembers");
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
+  const taskName = watch("taskName");
+  const taskDescription = watch("description");
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
