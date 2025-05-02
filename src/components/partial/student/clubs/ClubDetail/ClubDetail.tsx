@@ -7,10 +7,11 @@ import { useClubs } from "@/hooks/student/useClub";
 import { ClubDetailLeft } from "./ClubDetailLeft";
 import { ClubDetailRight } from "./ClubDetailRight";
 import useAuth from "@/hooks/useAuth";
-
+import { TopEvents } from "./TopEvents";
 export const StudentClubDetail: React.FC = () => {
   // const [pageNo] = useState(1);
   // const [pageSize] = useState(7);
+
   const { clubId = "" } = useParams();
   const { getClubDetailQuery, checkIsInClubQuery } = useClubs();
   const location = useLocation();
@@ -65,12 +66,11 @@ export const StudentClubDetail: React.FC = () => {
               {club && <ClubDetailLeft club={club} />}
               {club && <ClubDetailRight club={club} />}
             </div>
+            <div className="mt-8">{club && <TopEvents club={club} />}</div>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 py-12">
-          {/* Phần này có thể thêm các sự kiện liên quan hoặc câu lạc bộ tương tự */}
-        </div>
+        <div className="container mx-auto px-4 py-12"></div>
       </main>
     </div>
   );

@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { useClubs } from "@/hooks/student/useClub";
 import useAuth from "@/hooks/useAuth";
+import { LocalActivityRounded } from "@mui/icons-material";
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { isArray } from "lodash";
+import { CalendarDays, UsersIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -11,8 +15,8 @@ export const ClubsSection = () => {
   const [pageSize] = useState(5);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
-
+  const { getTrendingClubs } = useClubs(user?.universityId, pageNo, pageSize);
+  const { data: clubs } = getTrendingClubs(user?.universityId ?? "");
   return (
     <section className="py-12 pt-6">
       <div className="flex justify-between items-center">
@@ -33,66 +37,90 @@ export const ClubsSection = () => {
       </div>
 
       <div className="grid md:grid-cols-3 gap-7 mt-6 w-full px-8">
-        {clubs.slice(0, 3).map((club, index) => (
-          <MagicCard
-            key={index}
-            className="cursor-pointer flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 "
-            gradientColor="#D1EAF0"
-          >
-            <div className="w-full h-auto">
-              <img
-                src={club.logoUrl}
-                alt={club.clubName}
-                className="w-full h-1/4 aspect-video object-cover rounded-lg"
-              />
-              <div className="p-4 h-3/4 text-left flex flex-col gap-4">
-                <h3
-                  className="text-2xl font-bold text-[#32aaac]"
-                  onClick={() =>
-                    navigate(`/student/club/${club.clubId}`, {
-                      state: {
-                        previousPage: location.pathname,
-                        breadcrumb: "Home",
-                      },
-                    })
-                  }
-                >
-                  {club.clubName}
-                </h3>
+        {isArray(clubs?.data) &&
+          clubs?.data?.map((club, index) => (
+            <MagicCard
+              key={index}
+              className="cursor-pointer flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 "
+              gradientColor="#D1EAF0"
+              onClick={() => {
+                window.scrollTo(0, 0);
+                navigate(`/student/club/${club.clubId}`, {
+                  state: {
+                    previousPage: location.pathname,
+                    breadcrumb: "Home",
+                  },
+                });
+              }}
+            >
+              {/* Số Top đè góc */}
+              <div className="absolute top-2 left-2 z-20 p-4 h-6 bg-orange-500 text-white text-sm font-bold flex items-center justify-center rounded-full shadow-md">
+                Top {index + 1}
+              </div>
+              <div className="w-full h-auto">
+                <img
+                  src={club.logoUrl}
+                  alt={club.clubName}
+                  className="w-full h-1/4 aspect-video object-cover rounded-lg"
+                />
 
-                <p className="text-[#348687] font-semibold italic">
-                  {club.contactEmail || "No Contact Email"}
-                </p>
+                <div className="p-4 h-3/4 text-left flex flex-col gap-4">
+                  <div className="flex justify-between items-center ">
+                    <h3
+                      className="text-2xl font-bold text-[#32aaac]"
+                      onClick={() => {
+                        window.scrollTo(0, 0);
+                        navigate(`/student/club/${club.clubId}`, {
+                          state: {
+                            previousPage: location.pathname,
+                            breadcrumb: "Home",
+                          },
+                        });
+                      }}
+                    >
+                      {club.clubName}
+                    </h3>
+                    <div className="flex gap-3 items-center">
+                      <span className="flex justify-center items-center gap-1 text-indigo-800">
+                        {club.numOfMems} <UsersIcon size={18} />
+                      </span>
+                      <span className="flex justify-center items-center gap-1 text-[#39b0b3]">
+                        {club.numOfEvents} <LocalActivityRounded />
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[#348687] font-semibold italic">
+                    {club.contactEmail || "No Contact Email"}
+                  </p>
 
-                {/* Mục đích */}
-                <p className="text-md text-gray-700 line-clamp-2 truncate max-w-md block">
-                  {club.purpose}
-                </p>
-
-                {/* <span className="bg-yellow-500 text-white px-2 py-1 rounded-2xl text-sm w-fit">
+                  {/* <span className="bg-yellow-500 text-white px-2 py-1 rounded-2xl text-sm w-fit">
                   {club.} ⭐
                 </span> */}
-                <div className="flex flex-wrap gap-2">
-                  {club.clubFields?.map((field, i) => (
-                    <span
-                      key={i}
-                      className="bg-[#78e1e33c] text-[#348687] text-sm font-semibold px-2 py-1 rounded-full"
-                    >
-                      {field.fieldName}
-                    </span>
-                  ))}
-                </div>
-                {/* Ngày thành lập */}
-                <div className="flex items-center gap-2 text-md text-gray-500">
-                  <CalendarDays size={18} />
-                  <span>Since {format(club.foundingDate, "dd/MM/yyyy")}</span>
+                  <div className="flex flex-wrap gap-2">
+                    {club.clubFields?.map((field: FieldDTO, i: any) => (
+                      <span
+                        key={i}
+                        className="bg-[#78e1e33c] text-[#348687] text-sm font-semibold px-2 py-1 rounded-full"
+                      >
+                        {field.fieldName}
+                      </span>
+                    ))}
+                  </div>
+                  {/* Ngày thành lập */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-md text-gray-500">
+                      <CalendarDays size={18} />
+                      <span>
+                        Since {format(club.foundingDate, "dd/MM/yyyy")}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </MagicCard>
-        ))}
+            </MagicCard>
+          ))}
       </div>
-      {clubs && clubs.length === 0 && (
+      {clubs && isArray(clubs) && clubs.length === 0 && (
         <div className="flex flex-col items-center justify-center text-center py-20 text-gray-600">
           <img
             src="https://img.freepik.com/free-vector/flat-prom-background_23-2149365647.jpg"

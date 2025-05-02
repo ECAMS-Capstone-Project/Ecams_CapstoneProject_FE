@@ -45,19 +45,10 @@ export const ClubDetailRight: React.FC<ClubDetailRightProps> = ({ club }) => {
 
               <div>
                 <h4 className="text-sm text-gray-500 uppercase">Contact</h4>
-                <p className="text-gray-900 font-medium">{club.contactEmail}</p>
+                <p className="text-gray-900 font-medium">
+                  {club.contactEmail ? club.contactEmail : "N/A"}
+                </p>
               </div>
-            </div>
-          </div>
-
-          <div className="p-6 bg-gray-50 border-t">
-            <h4 className="font-semibold mb-4">Club Logo</h4>
-            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-              <img
-                src={club.logoUrl}
-                alt={club.clubName}
-                className="w-full h-full object-cover"
-              />
             </div>
           </div>
         </div>

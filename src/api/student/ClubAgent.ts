@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { isInClubResponse } from "@/models/Club";
+import { ClubResponse, isInClubResponse } from "@/models/Club";
 import { get, post } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventClubDTO } from "../representative/EventAgent";
@@ -68,9 +68,9 @@ export const getClub = async (
   pageNumber: number,
   pageSize: number,
   status: string
-): Promise<ResponseDTO<ResponseData<EventClubDTO>>> => {
+): Promise<ResponseDTO<ResponseData<ClubResponse>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<EventClubDTO>>>(
+    const response = await get<ResponseDTO<ResponseData<ClubResponse>>>(
       `/Clubs/university/${uniId}?Status=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
     );
 
@@ -212,6 +212,21 @@ export const GetAvailableTask = async (
     return response;
   } catch (error) {
     console.error("Error fetching university list:", error);
+    throw error;
+  }
+};
+
+export const getTrendClub = async (
+  uniId: string
+): Promise<ResponseDTO<EventClubDTO>> => {
+  try {
+    const response = await get<ResponseDTO<EventClubDTO>>(
+      `/Clubs/university/${uniId}/trending`
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error fetching trending clubs list:", error);
     throw error;
   }
 };

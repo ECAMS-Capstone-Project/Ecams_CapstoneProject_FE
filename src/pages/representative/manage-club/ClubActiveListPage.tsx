@@ -28,6 +28,12 @@ const ClubActiveListPage: React.FC = () => {
     [page: number]: ClubResponseDTO[];
   }>({});
 
+  // Reset cache và về trang 1 khi pageSize thay đổi
+  useEffect(() => {
+    setClubsCache({});
+    setPage(1);
+  }, [pageSize]);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [, setError] = useState<string | null>(null);
 
@@ -64,7 +70,7 @@ const ClubActiveListPage: React.FC = () => {
     };
 
     loadClubs();
-  }, [user, page, status, clubsCache, flag]);
+  }, [user, page, status, clubsCache, flag, pageSize]);
 
   // Lấy danh sách CLB từ cache
   const clubs = clubsCache[page] || [];

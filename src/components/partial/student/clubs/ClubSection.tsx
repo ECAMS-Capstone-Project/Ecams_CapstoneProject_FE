@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MagicCard } from "@/components/magicui/magic-card";
 import {
   Pagination,
@@ -15,6 +16,7 @@ import { CalendarDays, SearchXIcon } from "lucide-react";
 import { format } from "date-fns";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { useNavigate } from "react-router-dom";
+import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 
 export const ClubsSection = () => {
   const [pageNo, setPageNo] = useState(1);
@@ -22,7 +24,11 @@ export const ClubsSection = () => {
   const [pageSize] = useState(8);
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { clubs, totalPages } = useClubs(user?.universityId, pageNo, pageSize);
+  const { clubs, totalPages } = useClubs(
+    user?.universityId,
+    pageNo,
+    searchTerm ? 999 : pageSize
+  );
   const handlePageChange = (newPage: number) => {
     setPageNo(newPage);
   };
@@ -84,6 +90,15 @@ export const ClubsSection = () => {
             key={index}
             className="cursor-pointer flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105 "
             gradientColor="#D1EAF0"
+            onClick={() => {
+              window.scrollTo(0, 0);
+              navigate(`/student/club/${club.clubId}`, {
+                state: {
+                  previousPage: location.pathname,
+                  breadcrumb: "Home",
+                },
+              });
+            }}
           >
             <div className="w-full h-auto">
               <img
@@ -91,35 +106,41 @@ export const ClubsSection = () => {
                 alt={club.clubName}
                 className="w-full h-1/4 aspect-video object-cover rounded-lg"
               />
-              <div className="p-4 h-3/4 text-left flex flex-col gap-4">
-                <h3
-                  className="text-2xl font-bold text-[#32aaac]"
-                  onClick={() =>
-                    navigate(`/student/club/${club.clubId}`, {
-                      state: {
-                        previousPage: location.pathname,
-                        breadcrumb: "Club",
-                      },
-                    })
-                  }
-                >
-                  {club.clubName}
-                </h3>
 
+              <div className="p-4 h-3/4 text-left flex flex-col gap-4">
+                <div className="flex justify-between items-center ">
+                  <h3
+                    className="text-2xl font-bold text-[#32aaac]"
+                    onClick={() => {
+                      window.scrollTo(0, 0);
+                      navigate(`/student/club/${club.clubId}`, {
+                        state: {
+                          previousPage: location.pathname,
+                          breadcrumb: "Home",
+                        },
+                      });
+                    }}
+                  >
+                    {club.clubName}
+                  </h3>
+                  {/* <div className="flex gap-3 items-center">
+                    <span className="flex justify-center items-center gap-1 text-indigo-800">
+                      {club.numOfMems} <UsersIcon size={18} />
+                    </span>
+                    <span className="flex justify-center items-center gap-1 text-[#39b0b3]">
+                      {club.numOfEvents} <LocalActivityRounded />
+                    </span>
+                  </div> */}
+                </div>
                 <p className="text-[#348687] font-semibold italic">
                   {club.contactEmail || "No Contact Email"}
                 </p>
 
-                {/* Mục đích */}
-                <p className="text-md text-gray-700 line-clamp-2 truncate max-w-md block">
-                  {club.purpose}
-                </p>
-
                 {/* <span className="bg-yellow-500 text-white px-2 py-1 rounded-2xl text-sm w-fit">
-                   {club.} ⭐
-                 </span> */}
+              {club.} ⭐
+            </span> */}
                 <div className="flex flex-wrap gap-2">
-                  {club.clubFields?.map((field, i) => (
+                  {club.clubFields?.map((field: FieldDTO, i: any) => (
                     <span
                       key={i}
                       className="bg-[#78e1e33c] text-[#348687] text-sm font-semibold px-2 py-1 rounded-full"
@@ -129,9 +150,11 @@ export const ClubsSection = () => {
                   ))}
                 </div>
                 {/* Ngày thành lập */}
-                <div className="flex items-center gap-2 text-md text-gray-500">
-                  <CalendarDays size={18} />
-                  <span>Since {format(club.foundingDate, "dd/MM/yyyy")}</span>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2 text-md text-gray-500">
+                    <CalendarDays size={18} />
+                    <span>Since {format(club.foundingDate, "dd/MM/yyyy")}</span>
+                  </div>
                 </div>
               </div>
             </div>
