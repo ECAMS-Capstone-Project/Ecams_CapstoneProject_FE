@@ -15,16 +15,12 @@ import {
   InterTask,
   UpdateInterTaskRequest3,
 } from "@/models/InterTask";
-// import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import { fixTime } from "@/lib/utils";
-import {
-  AvailableMemberEventTask,
-  TaskRecommendedByAI,
-} from "@/api/student/ClubAgent";
-import { MemberInfoDialog } from "./AssignMemberInfoDialog";
+import { AvailableMemberEventTask, TaskRecommendedByAI } from "@/api/student/ClubAgent";
+import { MemberInfoDialog } from "../../manage_club/event-task/AssignMemberInfoDialog";
 
 interface AssignMembersDialogProps {
   isOpen: boolean;
@@ -36,7 +32,7 @@ interface AssignMembersDialogProps {
   task: InterTask;
   memberSelected: {
     clubMemberId: string;
-  }[];
+  }[]
 }
 
 export const AssignMembersDialog = ({
@@ -47,7 +43,7 @@ export const AssignMembersDialog = ({
   subTask,
   task,
   clubId,
-  memberSelected,
+  memberSelected
 }: AssignMembersDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -59,20 +55,13 @@ export const AssignMembersDialog = ({
   const [selectedMember, setSelectedMember] = useState<
     AvailableMemberEventTask | ClubMemberDTO | null
   >(null);
+
   useEffect(() => {
     if (isOpen) {
-      // Khởi tạo selectedMembers với cả memberSelected và các thành viên đã được assign
-      const assignedMembers = subTask.memberEventTasks.map(
-        (m) => m.clubMemberId
-      );
-      setSelectedMembers([
-        ...new Set([
-          ...memberSelected.map((m) => m.clubMemberId),
-          ...assignedMembers,
-        ]),
-      ]);
+      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
     }
-  }, [isOpen, memberSelected, subTask.memberEventTasks, selectedMembers]);
+  }, [isOpen, memberSelected]);
+
   const filteredMembers = members.filter((member) => {
     if (!member) return false;
     const availableMember = member as AvailableMemberEventTask;
@@ -87,9 +76,11 @@ export const AssignMembersDialog = ({
     );
   });
 
+  console.log(members);
+
   useEffect(() => {
     if (isOpen) {
-      setSelectedMembers(memberSelected.map((m) => m.clubMemberId));
+      setSelectedMembers(memberSelected.map(m => m.clubMemberId));
     }
   }, [isOpen, memberSelected]);
 
@@ -114,6 +105,7 @@ export const AssignMembersDialog = ({
       return prevSelectedMembers;
     });
   };
+  console.log("selectedMembers", selectedMembers);
   const isMemberAssignedToSubtask = (
     currentId: string,
     eventTaskDetailId: string
@@ -136,7 +128,7 @@ export const AssignMembersDialog = ({
       status: task.status || "ON_GOING",
       assignedMemberIds: [...selectedMembers],
       taskDependencyIds: [],
-      isDependencyExtended: false,
+      isDependencyExtended: false
     };
 
     onAssign(updateData);
@@ -146,14 +138,17 @@ export const AssignMembersDialog = ({
   const handleAIRecommend = async () => {
     try {
       setIsLoading(true);
-      const response = await TaskRecommendedByAI(clubId, {
-        taskName: subTask.detailName,
-        taskDescription: subTask.description,
-        startTime: new Date(subTask.startTime).toISOString(),
-        endTime: new Date(subTask.deadline).toISOString(),
-        priority: subTask.priority,
-        clubId: clubId,
-      });
+      const response = await TaskRecommendedByAI(
+        clubId,
+        {
+          taskName: subTask.detailName,
+          taskDescription: subTask.description,
+          startTime: new Date(subTask.startTime).toISOString(),
+          endTime: new Date(subTask.deadline).toISOString(),
+          priority: subTask.priority,
+          clubId: clubId,
+        }
+      );
       if (response.data) {
         setAIRecommendations(response.data);
         setSelectedMembers([]);
@@ -278,22 +273,20 @@ export const AssignMembersDialog = ({
                             </Badge>
                           )}
                           {isMemberAssignedToSubtask(
-                            (
-                              member as AvailableMemberEventTask
-                            ).currentTasks?.find(
+                            (member as AvailableMemberEventTask).currentTasks?.find(
                               (task) =>
                                 task.eventTaskDetailId ===
                                 subTask.eventTaskDetailId
                             )?.eventTaskDetailId || "",
                             subTask.eventTaskDetailId
                           ) && (
-                            <Badge
-                              variant="outline"
-                              className="bg-green-50 text-green-700 border-green-200"
-                            >
-                              Assigned
-                            </Badge>
-                          )}
+                              <Badge
+                                variant="outline"
+                                className="bg-green-50 text-green-700 border-green-200"
+                              >
+                                Assigned
+                              </Badge>
+                            )}
                         </div>
                       </div>
                       <Button

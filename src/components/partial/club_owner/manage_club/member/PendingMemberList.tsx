@@ -19,8 +19,8 @@ export default function PendingMemberList({ clubId }: props) {
     try {
       const clubData = await GetMemberRequestInClubsAPI(clubId, pageSize, pageNo);
       if (clubData) {
-        setMemberList(clubData.data?.data || []); // Đảm bảo `data.data` tồn tại
-        setTotalPages(clubData.data?.totalPages || 1); // Đặt số trang
+        setMemberList(clubData.data?.data || []);
+        setTotalPages(clubData.data?.totalPages || 1);
       } else {
         console.warn("Member list returned no data");
       }

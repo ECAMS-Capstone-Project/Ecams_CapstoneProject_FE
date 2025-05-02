@@ -11,13 +11,13 @@ interface props {
 export default function ActiveMemberList({ clubId, isClubOwner }: props) {
     const [pageNo, setPageNo] = useState(1);
     const [pageSize, setPageSize] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [memberList, setMemberList] = useState<ClubMemberDTO[]>([]);
     const [, setIsLoading] = useState(true);
     const loadUniversity = async () => {
         setTotalPages(1);
         try {
-            const clubData = await GetMemberInClubsAPI(clubId, pageSize, pageNo);
+            const clubData = await GetMemberInClubsAPI(clubId, pageSize, pageNo, "ACTIVE");
             if (clubData) {
                 setMemberList(clubData.data?.data || []);
                 setTotalPages(clubData.data?.totalPages || 1);

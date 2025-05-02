@@ -15,7 +15,6 @@ import {
   InterTask,
   UpdateInterTaskRequest3,
 } from "@/models/InterTask";
-// import { GetAIRecommendation } from "@/api/club-owner/InterEventTask";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { ClubMemberDTO } from "@/api/club-owner/ClubByUser";
@@ -122,11 +121,11 @@ export const AssignMembersDialog = ({
       eventTaskId: task.eventTaskId,
       eventTaskDetailId: "",
       priority: "",
-      detailName: task.taskName,
-      description: task.description,
-      startTime: fixTime(new Date(task.startTime)),
-      deadline: fixTime(new Date(task.deadline)),
-      status: task.status || "ON_GOING",
+      detailName: "",
+      description: subTask.description,
+      startTime: fixTime(new Date(subTask.startTime)),
+      deadline: fixTime(new Date(subTask.deadline)),
+      status: subTask.status || "ON_GOING",
       assignedMemberIds: [...selectedMembers],
       taskDependencyIds: [],
       isDependencyExtended: false

@@ -5,7 +5,7 @@ import StudentRequest from "@/models/StudentRequest";
 import LoadingAnimation from "@/components/ui/loading";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CircleX, XCircle } from "lucide-react";
+import { CheckCircle2, CircleX, XCircle, FileText, Eye } from "lucide-react";
 import { DenyMemberJoinClub } from "./DenialDialog";
 import { ApproveOrDenyRequestJoinClub, ClubMemberDTO } from "@/api/club-owner/ClubByUser";
 import useAuth from "@/hooks/useAuth";
@@ -60,6 +60,20 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
     } finally {
       setLoading(false);
     }
+  };
+
+  const isImageFile = (url: string) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    return imageExtensions.some(ext => url.toLowerCase().endsWith(ext));
+  };
+
+  const isPdfFile = (url: string) => {
+    return url.toLowerCase().endsWith('.pdf');
+  };
+
+  const isDocFile = (url: string) => {
+    const docExtensions = ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+    return docExtensions.some(ext => url.toLowerCase().endsWith(ext));
   };
 
   return (
@@ -120,14 +134,40 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
                   key={index}
                   className="border p-4 rounded-lg shadow-sm flex items-start gap-5 bg-gray-50"
                 >
-                  <img
-                    src={item.evidenceLink}
-                    alt={item.conditionName}
-                    onClick={() => {
-                      setPreviewImage(item.evidenceLink);
-                    }}
-                    className="w-28 h-28 object-cover rounded-lg border cursor-pointer"
-                  />
+                  {isImageFile(item.evidenceLink) ? (
+                    <img
+                      src={item.evidenceLink}
+                      alt={item.conditionName}
+                      onClick={() => {
+                        setPreviewImage(item.evidenceLink);
+                      }}
+                      className="w-28 h-28 object-cover rounded-lg border cursor-pointer"
+                    />
+                  ) : (
+                    <div 
+                      className="w-28 h-28 flex flex-col items-center justify-center gap-2 bg-gray-100 rounded-lg border cursor-pointer hover:bg-gray-200 transition-colors"
+                      onClick={() => {
+                        if (isPdfFile(item.evidenceLink) || isDocFile(item.evidenceLink)) {
+                          window.open(item.evidenceLink, '_blank');
+                        }
+                      }}
+                    >
+                      <FileText className="w-8 h-8 text-gray-600" />
+                      <span className="text-xs text-gray-600 text-center px-2">
+                        {isPdfFile(item.evidenceLink) ? 'PDF File' : 'Document File'}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(item.evidenceLink, '_blank');
+                        }}
+                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
+                      >
+                        <Eye className="w-3 h-3" />
+                        View
+                      </button>
+                    </div>
+                  )}
                   <div className="flex flex-col">
                     <p className="font-semibold text-base">{item.conditionName}</p>
                     <p className="text-sm">{item.conditionContent}</p>
@@ -166,7 +206,7 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
               />
             )}
           </Dialog>
-          {previewImage && (
+          {previewImage && isImageFile(previewImage) && (
             <div
               className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
               onClick={() => setPreviewImage(null)}

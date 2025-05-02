@@ -31,12 +31,14 @@ export const EventTaskSchema = z
     const taskStart = combineDateTime(data.startTime, data.startTimeTime);
     const taskDeadline = combineDateTime(data.deadline, data.deadlineTime);
 
-    if (taskStart && taskDeadline && taskDeadline < taskStart) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Deadline must be after Start Time",
-        path: ["deadlineTime"],
-      });
+    if (taskStart && taskDeadline) {
+      if (taskDeadline < taskStart) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Deadline time must be after Start Time",
+          path: ["deadlineTime"],
+        });
+      }
     }
   });
 

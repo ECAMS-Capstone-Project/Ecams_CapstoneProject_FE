@@ -112,9 +112,13 @@ export const SubmissionDetailDialog = ({
               Submission Content
             </h3>
             <div className="bg-gradient-to-br from-[#136CB9]/5 to-[#49BBBD]/5 p-4 rounded-lg">
-              <p className="text-sm whitespace-pre-wrap">
-                {submission.studentSubmission || "No content provided yet"}
-              </p>
+              <p
+                className="text-sm whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    submission.studentSubmission || "No content provided yet",
+                }}
+              ></p>
             </div>
           </div>
 
@@ -170,7 +174,7 @@ export const SubmissionDetailDialog = ({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          {subtask.status !== "COMPLETED" && (
+          {submission.status == "REVIEWING" && (
             <Button
               onClick={onSaveFeedback}
               disabled={isSubmitting}

@@ -84,7 +84,7 @@ export interface InterClubEventDTO {
   trainingPoint: number;
   clubs: InterClub[]; // Danh sách câu lạc bộ liên quan đến sự kiện
   eventAreas?: EventAreas[]; // Các khu vực sự kiện
-  status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING" | "ENDED";
+  status: "ACTIVE" | "INACTIVE" | "PENDING" | "WAITING" | "ENDED" | "CANCELED";
   startDate: Date;
   endDate: Date;
 }
@@ -115,4 +115,29 @@ export interface RefundResponseDTO {
   fullname: string;
   phonenumber: string;
   gender: string;
+}
+export interface EventSingleClubTask {
+  eventId: string;
+  representativeId: string;
+  representativeName: string | null;
+  clubs: InterClub[];
+  eventName: string;
+  startDate: Date;
+  endDate: Date;
+  registeredStartDate: Date;
+  registeredEndDate: Date;
+  price: number;
+  maxParticipants: number;
+  status: string;
+  registrationStatus: string;
+  eventAreas?: EventAreas[];
+  feedbacks?: [];
+  imageUrl: string;
+  description: string;
+  walletId?: string;
+  eventType: string;
+  trainingPoint: number;
+  eventFields: FieldDTO[];
+  numOfTasks: number;
+  clubEventId: string;
 }

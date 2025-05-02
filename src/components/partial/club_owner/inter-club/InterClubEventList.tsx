@@ -53,10 +53,14 @@ export const InterClubEventList = () => {
         return "bg-blue-100 text-blue-800";
       case "ACTIVE":
         return "bg-green-100 text-green-800";
+      case "ENDED":
+        return "bg-gray-100 text-gray-800";
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800";
       case "INACTIVE":
-        return "bg-gray-100 text-gray-800";
+        return "bg-black-100 text-black-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-red-100 text-red-800";
     }
   };
 
@@ -68,16 +72,10 @@ export const InterClubEventList = () => {
 
     // Filter theo status của clubs
     const matchesStatus =
-      selectedStatus === "ALL" ||
-      event.clubs.some(
-        (eventClub) =>
-          eventClub.status === selectedStatus &&
-          eventClub.clubId === club?.[0]?.clubId
-      );
+      selectedStatus === "ALL" || event.status === selectedStatus;
 
     return matchesSearch && matchesStatus;
   });
-  console.log("evenet", events);
 
   return (
     <div className="space-y-4">
@@ -92,7 +90,16 @@ export const InterClubEventList = () => {
           />
         </div>
         <div className="flex gap-2">
-          {(["ALL", "PENDING", "ACTIVE"] as const).map((status) => (
+          {(
+            [
+              "ALL",
+              "PENDING",
+              "ACTIVE",
+              "WAITING",
+              "ENDED",
+              "CANCELED",
+            ] as const
+          ).map((status) => (
             <Button
               key={status}
               variant={selectedStatus === status ? "custom" : "outline"}

@@ -72,6 +72,7 @@ export const SubtaskDetailPage = () => {
   const handleAssignMembers = async (updateData: UpdateInterTaskRequest3) => {
     updateData.priority = subtask.priority;
     updateData.eventTaskDetailId = subtask.eventTaskDetailId;
+    updateData.detailName = subtask.detailName;
     await updateInterEventTask3({
       subtask: updateData,
       eventTaskDetailId: subtask.eventTaskDetailId,
@@ -90,9 +91,28 @@ export const SubtaskDetailPage = () => {
   };
 
   const handleViewSubmission = (submission: InterTaskSubmission) => {
-    setSelectedSubmission(submission);
-    setScore(submission.submissionScore || 0);
-    setFeedback(submission.comment || "");
+    const isSubmitted = submission.submissionDate !== "0001-01-01T00:00:00";
+    const isUserSubmission = submission.memberEmail === user?.email;
+    if (isUserSubmission && !isSubmitted) {
+      if (
+        subtask.taskDependencies.length > 0 &&
+        !subtask.taskDependencies.every((p) => p.status == "COMPLETED")
+      ) {
+        toast.error("Task dependency has not finished");
+      } else {
+        if (submission.status == "NOT_STARTED") {
+          toast.error("This task has not started");
+        } else {
+          navigate("/club/task-submission-student", {
+            state: { taskDetail: subtask, submission: submission },
+          });
+        }
+      }
+    } else {
+      setSelectedSubmission(submission);
+      setScore(submission.submissionScore || 0);
+      setFeedback(submission.comment || "");
+    }
   };
 
   const handleSaveFeedback = async () => {

@@ -37,7 +37,7 @@ export const EventDetailPage = () => {
   } = useEventDetail(clubEventId || "");
   const { data: event } = getInterEventDetailQuery(clubEventId || "");
   const { user } = useAuth();
-  const { clubs } = useClubs(user?.universityId, 1, 20);
+  const { clubs } = useClubs(user?.universityId, 1, 50);
 
   // Lấy club của user đang login
   const currentClub = clubs?.find((club) =>

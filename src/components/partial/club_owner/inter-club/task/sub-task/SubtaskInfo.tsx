@@ -14,7 +14,7 @@ export const SubtaskInfo = ({ subtask }: SubtaskInfoProps) => {
           <h4 className="font-medium text-[#136CB9]">Description</h4>
           <p>{subtask?.description}</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
           <div>
             <h4 className="font-medium text-[#136CB9]">Start Time</h4>
             <p>

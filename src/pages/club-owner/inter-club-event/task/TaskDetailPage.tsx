@@ -57,7 +57,7 @@ export const TaskDetailPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { members: clubMembers } = useClub(currentClub.clubId);
   const [pageNo, setPageNo] = useState(1);
-  // const pageSize = 5;
+  const pageSize = 5;
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   useEffect(() => {
@@ -75,11 +75,12 @@ export const TaskDetailPage = () => {
     getAllSubTask,
   } = useInterTask();
   const queryClient = useQueryClient();
-
+  const [, setFlag] = useState<boolean>(false);
   const { data: subTask } = getAllSubTask(
     eventTaskId ?? "",
     pageNo,
-    debouncedSearch
+    debouncedSearch,
+    pageSize
   );
   const subTaskList = subTask?.data?.data;
   const totalPages = subTask?.data?.totalPages;
@@ -425,6 +426,7 @@ export const TaskDetailPage = () => {
         subtask={editingTask}
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
+        setFlag={setFlag}
       />
     </div>
   );

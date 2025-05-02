@@ -66,7 +66,6 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
         }
       } catch (error) {
         console.error("Failed to fetch task detail", error);
-        toast.error("Failed to load task details");
       }
     }
     fetchTaskDetail();
@@ -85,7 +84,6 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
         }
       } catch (error) {
         console.error("Failed to fetch available members", error);
-        toast.error("Failed to load available members");
       }
     }
     fetchAvailableMembers();
@@ -139,7 +137,7 @@ const EditTaskDialog: React.FC<EditTaskProps> = ({ taskId, clubId, onClose, setF
       // Đóng form
       onClose();
     } catch (error) {
-      toast.error("Failed to update task" + error);
+      console.log(error);
     }
   };
 

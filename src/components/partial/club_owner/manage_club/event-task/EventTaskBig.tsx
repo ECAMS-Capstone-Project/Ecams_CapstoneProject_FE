@@ -49,7 +49,7 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
   }
 
   return (
-    <div className="h-[calc(100vh-200px)]">
+    <div className="h-[calc(100vh-160px)]">
       <div className="flex justify-between items-center mb-4">
         <TaskSearchBar
           searchQuery={searchQuery}
@@ -64,7 +64,7 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
         )}
       </div>
 
-      <ScrollArea className="h-[calc(100vh-300px)]">
+      <ScrollArea className="h-[calc(100vh-260px)] pr-4">
         <div className="space-y-4">
           {filteredTasks.map((task) => (
             <TaskBigItem
@@ -77,11 +77,13 @@ export const EventTaskBig = ({ selectedEvent, isClubOwner, clubId }: InterClubTa
         </div>
       </ScrollArea>
 
-      <TaskPagination
-        totalPages={totalPages}
-        pageNo={pageNo}
-        setPageNo={setPageNo}
-      />
+      <div className="mt-4">
+        <TaskPagination
+          totalPages={totalPages}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+        />
+      </div>
     </div>
   );
 };
