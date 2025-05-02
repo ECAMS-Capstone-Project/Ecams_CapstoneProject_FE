@@ -20,6 +20,20 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
+  const startTime = dateRange.startDate
+    ? format(dateRange.startDate, "yyyy-MM-dd")
+    : undefined;
+
+  const endTime = dateRange.endDate
+    ? format(dateRange.endDate, "yyyy-MM-dd")
+    : undefined;
 
   const fetchEvents = async () => {
     if (!userId) return;
@@ -29,7 +43,9 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
         userId,
         pageNo,
         pageSize,
-        scopeFilter.join(",")
+        scopeFilter.join(","),
+        startTime,
+        endTime
       );
       setEvents(response.data?.data || []);
       setTotalPages(response.data?.totalPages || 1);
@@ -44,17 +60,28 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
   useEffect(() => {
     fetchEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageNo, scopeFilter, flag]);
+  }, [pageNo, scopeFilter, flag, startTime, endTime]);
 
   return (
     <section className="py-12">
       <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-gray-800 ">
+          <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
+            Events{" "}
+          </span>
+          around you
+        </h2>
         {events.length > 0 && (
           <div className="flex justify-center items-center gap-2">
             <EventCategoryFilter
               value={scopeFilter}
               onChange={(newVal) => {
                 setScopeFilter(newVal);
+                setPageNo(1);
+              }}
+              dateRange={dateRange}
+              onChangeDateRange={(newRange) => {
+                setDateRange(newRange);
                 setPageNo(1);
               }}
             />
@@ -89,24 +116,25 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
         {events.slice(0, 6).map((event, index) => (
           <MagicCard
             key={index}
-            className="cursor-pointer w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
+            className="h-[500px] cursor-pointer w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
             gradientColor="#D1EAF0"
-            onClick={() =>
+            onClick={() => {
+              window.scrollTo(0, 0);
               navigate(`/student/events/${event.eventId}`, {
                 state: {
                   previousPage: location.pathname,
                   breadcrumb: "Home",
                 },
-              })
-            }
+              });
+            }}
           >
-            <div className="w-full p-5 h-auto">
+            <div className="w-full h-full p-5">
               <img
                 src={event.imageUrl}
                 alt={event.eventName}
-                className="w-full h-auto aspect-auto object-cover rounded-lg mb-4"
+                className="w-full h-[180px] aspect-auto object-cover rounded-lg "
               />
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 <p className="inline-block italic text-sm font-semibold text-[#2786c6] uppercase">
                   {event.eventAreas && event.eventAreas.length > 0
                     ? event.eventAreas?.map((area) => area.name).join(" & ")
@@ -125,9 +153,20 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                       : "Free"}
                   </span>
                 </div>
+                <p className="font-semibold text-base">
+                  {event.eventFields &&
+                    event.eventFields.map((field) => (
+                      <span
+                        key={field.fieldId}
+                        className="px-2 py-1 rounded-md bg-[#49bbbd]/20 text-[#49bbbd] mr-2"
+                      >
+                        {field.fieldName}
+                      </span>
+                    ))}
+                </p>
                 {event.startDate && event.endDate ? (
                   <div className="flex items-center gap-2 text-md text-slate-600">
-                    <ClipboardPenLine size={16} />
+                    <ClipboardPenLine size={16} /> Registration:
                     <span>
                       {format(
                         new Date(event.registeredStartDate),
@@ -142,7 +181,7 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
                 )}
                 {event.startDate && event.endDate ? (
                   <div className="flex items-center gap-2 text-md text-slate-600">
-                    <CalendarDays size={16} />
+                    <CalendarDays size={16} /> Event Date:
                     <span>
                       {format(new Date(event.startDate), "dd/MM/yyyy")}
                     </span>

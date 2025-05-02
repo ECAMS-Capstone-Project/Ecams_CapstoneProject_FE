@@ -98,7 +98,7 @@ export const EventsSection = () => {
               })
             }
           >
-            <div className="w-full p-5 h-auto">
+            <div className="w-full p-5 h-2/3">
               {/* Hình ảnh */}
               <img
                 src={event.imageUrl}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,16 +27,31 @@ export const EventSection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [scopeFilter, setScopeFilter] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
+  const startTime = dateRange.startDate
+    ? format(dateRange.startDate, "yyyy-MM-dd")
+    : undefined;
 
+  const endTime = dateRange.endDate
+    ? format(dateRange.endDate, "yyyy-MM-dd")
+    : undefined;
   // Get data from API
   const { getAllEventListQuery } = useEvents();
   const { data: eventData, isLoading } = getAllEventListQuery(
     pageNo,
-    pageSize,
+    search ? 999 : pageSize,
     {
       // Chẳng hạn ta có param "scope" để API filter
       // => Convert scopeFilter thành chuỗi, hoặc pass mảng (tuỳ server).
       type: scopeFilter.join(","),
+      startDate: startTime,
+      endDate: endTime,
     }
   );
   const events = eventData?.data?.data || [];
@@ -57,23 +73,27 @@ export const EventSection = () => {
           </span>
           around you
         </h2>
-        <div className="flex justify-center items-center gap-2">
-          <Input
-            placeholder="Search for event"
-            className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      </div>
+      <div className="flex justify-between items-center gap-2 mt-4 px-8">
+        <Input
+          placeholder="Search for event"
+          className="rounded-xl px-4 h-10 w-[300px] border-slate-400"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
-          <EventCategoryFilter
-            value={scopeFilter}
-            onChange={(newVal) => {
-              setScopeFilter(newVal);
-              // Mỗi khi filter thay đổi, reset pageNo về 1 (nếu muốn)
-              setPageNo(1);
-            }}
-          />
-        </div>
+        <EventCategoryFilter
+          value={scopeFilter}
+          onChange={(newVal) => {
+            setScopeFilter(newVal);
+            setPageNo(1);
+          }}
+          dateRange={dateRange}
+          onChangeDateRange={(newRange) => {
+            setDateRange(newRange);
+            setPageNo(1);
+          }}
+        />
       </div>
       {isLoading ? (
         <div className="flex justify-center items-center h-screen text-xl">
@@ -99,7 +119,7 @@ export const EventSection = () => {
             ? filteredEvents.map((event, index) => (
                 <MagicCard
                   key={index}
-                  className="cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
+                  className="h-[500px] cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
                   gradientColor="#D1EAF0"
                   onClick={() =>
                     navigate(`/student/events/${event.eventId}`, {
@@ -110,12 +130,12 @@ export const EventSection = () => {
                     })
                   }
                 >
-                  <div className="w-full p-5 h-auto">
+                  <div className="w-full p-5 h-full">
                     {/* Hình ảnh */}
                     <img
                       src={event.imageUrl}
                       alt={event.eventName}
-                      className="w-full h-auto aspect-auto object-cover rounded-lg mb-4"
+                      className="w-full h-[180px] aspect-auto object-cover rounded-lg mb-4"
                     />
 
                     {/* Nội dung */}
@@ -155,7 +175,16 @@ export const EventSection = () => {
                             : "Free"}
                         </span>
                       </div>
-
+                      <p className="font-semibold text-base">
+                        {event?.eventFields?.map((field) => (
+                          <span
+                            key={field.fieldId}
+                            className="px-2 py-1 rounded-md bg-[#136CB5]/20 text-[#136CB5] mr-2"
+                          >
+                            {field.fieldName}
+                          </span>
+                        ))}
+                      </p>
                       {/* Ngày bắt đầu - kết thúc */}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
@@ -196,23 +225,25 @@ export const EventSection = () => {
             : events.map((event, index) => (
                 <MagicCard
                   key={index}
-                  className="cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
+                  className="h-[500px] cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
                   gradientColor="#D1EAF0"
-                  onClick={() =>
+                  onClick={() => {
+                    window.scrollTo(0, 0);
+
                     navigate(`/student/events/${event.eventId}`, {
                       state: {
                         previousPage: location.pathname,
                         breadcrumb: "Event",
                       },
-                    })
-                  }
+                    });
+                  }}
                 >
-                  <div className="w-full p-5 h-auto">
+                  <div className="w-full p-5 h-full">
                     {/* Hình ảnh */}
                     <img
                       src={event.imageUrl}
                       alt={event.eventName}
-                      className="w-full h-auto aspect-auto object-cover rounded-lg mb-4"
+                      className="w-full h-[180px] aspect-auto object-cover rounded-lg mb-4"
                     />
 
                     {/* Nội dung */}
@@ -226,14 +257,16 @@ export const EventSection = () => {
                       </p>
                       {/* Tên sự kiện */}
                       <h3
-                        onClick={() =>
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+
                           navigate(`/student/events/${event.eventId}`, {
                             state: {
                               previousPage: location.pathname,
                               breadcrumb: "Event",
                             },
-                          })
-                        }
+                          });
+                        }}
                         className="text-2xl cursor-pointer font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
                       >
                         {event.eventName}
@@ -252,11 +285,20 @@ export const EventSection = () => {
                             : "Free"}
                         </span>
                       </div>
-
+                      <p className="font-semibold text-base">
+                        {event?.eventFields?.map((field) => (
+                          <span
+                            key={field.fieldId}
+                            className="px-2 py-1 rounded-md bg-[#49bbbd]/20 text-[#49bbbd] mr-2"
+                          >
+                            {field.fieldName}
+                          </span>
+                        ))}
+                      </p>
                       {/* Ngày bắt đầu - kết thúc */}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
-                          <ClipboardPenLine size={16} />
+                          <ClipboardPenLine size={16} /> Registration:
                           <span>
                             {format(
                               new Date(event.registeredStartDate),
@@ -276,7 +318,7 @@ export const EventSection = () => {
                       )}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
-                          <CalendarDays size={16} />
+                          <CalendarDays size={16} /> Event Date:
                           <span>
                             {format(new Date(event.startDate), "dd/MM/yyyy")}
                           </span>

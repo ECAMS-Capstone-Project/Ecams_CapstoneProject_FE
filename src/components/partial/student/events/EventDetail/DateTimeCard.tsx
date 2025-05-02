@@ -38,7 +38,7 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
       ?.refundInforStatus === "UPDATED";
 
   return (
-    <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/4">
+    <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/5">
       <div className="space-y-4">
         <h3 className="mb-2 text-left text-2xl font-semibold">Date & time</h3>
         <p className="text-gray-700 flex items-center gap-2">
@@ -49,37 +49,38 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
         </p>
       </div>
       <div>
-        {event.registrationStatus === null ? (
-          <Button
-            variant="custom"
-            className="w-full p-6 mt-5 font-light text-md"
-            onClick={() => {
-              if (event.price === 0) {
-                navigate("/student/events/free-confirmation", {
-                  state: {
-                    event: event,
-                    previousPage: location.pathname,
-                    breadcrumb: event.eventName,
-                  },
-                });
-              } else {
-                navigate("/student/events/fee-confirmation", {
-                  state: {
-                    event: event,
-                    previousPage: location.pathname,
-                    breadcrumb: event.eventName,
-                  },
-                });
-              }
-            }}
-          >
-            Register now
-          </Button>
-        ) : (
-          <Button className="w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white">
-            You have joined this event!
-          </Button>
-        )}
+        {event.status !== "ENDED" &&
+          (event.registrationStatus === null ? (
+            <Button
+              variant="custom"
+              className="w-full p-6 mt-5 font-light text-md"
+              onClick={() => {
+                if (event.price === 0) {
+                  navigate("/student/events/free-confirmation", {
+                    state: {
+                      event: event,
+                      previousPage: location.pathname,
+                      breadcrumb: event.eventName,
+                    },
+                  });
+                } else {
+                  navigate("/student/events/fee-confirmation", {
+                    state: {
+                      event: event,
+                      previousPage: location.pathname,
+                      breadcrumb: event.eventName,
+                    },
+                  });
+                }
+              }}
+            >
+              Register now
+            </Button>
+          ) : (
+            <Button className="w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white">
+              You have joined this event!
+            </Button>
+          ))}
         {event.status.toLowerCase() == "canceled" && (
           <Button
             className="w-full p-6 mt-5 font-light text-md bg-red-500 text-white hover:bg-red-600"

@@ -59,8 +59,21 @@ export const EventDetailLeft: React.FC<EventDetailLeftProps> = ({ event }) => {
             </span>
           </h3>
         </div>
+        <div>
+          <h3 className="mb-2 text-3xl font-semibold">Event Fields:</h3>
+          <p className="font-semibold text-lg">
+            {event?.eventFields?.map((field) => (
+              <span
+                key={field.fieldId}
+                className="px-2 py-1 rounded-md bg-[#136CB5]/20 text-[#136CB5] mr-2"
+              >
+                {field.fieldName}
+              </span>
+            ))}
+          </p>
+        </div>
         <div className="social-share">
-          <h3 className="text-2xl font-bold mb-4">Share with Friends</h3>
+          <h3 className="text-3xl font-bold mb-4">Share with Friends</h3>
           <div className="flex items-center space-x-4">
             <InviteFriendPage />
           </div>
