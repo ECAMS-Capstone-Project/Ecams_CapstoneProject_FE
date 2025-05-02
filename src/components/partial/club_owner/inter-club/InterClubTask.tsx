@@ -8,8 +8,8 @@ import { TaskSearchBar } from "./task/TaskSearchBar";
 import { TaskCreateDialog } from "./task/TaskCreateDialog";
 import { TaskItem } from "./task/TaskItem";
 import { CreateInterTaskRequest } from "@/models/InterTask";
-import useAuth from "@/hooks/useAuth";
 import { useClubs } from "@/hooks/student/useClub";
+import useAuth from "@/hooks/useAuth";
 
 interface Club {
   id: string;

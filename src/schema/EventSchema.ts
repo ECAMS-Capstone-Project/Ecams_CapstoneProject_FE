@@ -50,6 +50,8 @@ export const EventSchema = z
       .optional(), // Có thể là string hoặc null
     clubName: z.string().optional(), // Có thể là string hoặc null
     eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
+    startTimeTime: z.string().min(1, "Please select a time"),
+    deadlineTime: z.string().min(1, "Please select a time"),
     // startDate: z.date(), // Kiểm tra là đối tượng Date hợp lệ
     // endDate: z.coerce.date().superRefine((date, ctx) => {
     //     const parsedDate = Date.parse(date.toString());
@@ -70,77 +72,21 @@ export const EventSchema = z
 
     // Kiểm tra ngày kết thúc đăng ký phải lớn hơn ngày bắt đầu đăng ký
     fieldIds: z.array(z.string()),
-    price: z.coerce
-      .number()
-      .min(0, { message: "Price must be a positive number" }), // Kiểm tra giá trị price là số nguyên và dương
+    price: z.coerce.number().min(0, { message: "Price is required" }),
     maxParticipants: z.coerce
       .number()
       .int()
       .positive({ message: "Max participants must be a positive integer" }), // Kiểm tra maxParticipants là số nguyên và dương
     status: z.string().optional(), // Kiểm tra status không rỗng
     walletId: z.string().optional(),
-    eventAreas: z
-      .array(
-        z.object({
-          AreaId: z.string(),
-          Date: z.coerce.date(),
-          StartTime: z.string(),
-          EndTime: z.string(),
-        })
-      )
-      .superRefine((data, ctx) => {
-        // Kiểm tra thời gian kết thúc phải sau thời gian bắt đầu
-        if (
-          !data.every(
-            (item) => parseInt(item.EndTime) > parseInt(item.StartTime)
-          )
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "End time must be after start time",
-            path: ["_error"],
-          });
-        }
-
-        // Kiểm tra ngày phải trong tương lai
-        const now = new Date().getTime();
-        if (!data.every((item) => new Date(item.Date).getTime() > now)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Date must be in the future",
-            path: ["_error"],
-          });
-        }
-
-        // Kiểm tra ngày phải sau registered end date
-        const parentData = (ctx as any).parent;
-        if (parentData?.registeredEndDate) {
-          const registeredEndTimestamp = new Date(
-            parentData.registeredEndDate
-          ).getTime();
-          const hasInvalidDate = data.some(
-            (item) => new Date(item.Date).getTime() <= registeredEndTimestamp
-          );
-          if (hasInvalidDate) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Area date must be after registered end date",
-              path: ["_error"],
-            });
-          }
-        }
+    eventAreas: z.array(
+      z.object({
+        AreaId: z.string(),
+        Date: z.coerce.date(),
+        StartTime: z.string(),
+        EndTime: z.string(),
       })
-      .refine(
-        (areas) => {
-          const ids = areas.map((a) => a.AreaId);
-          const uniqueSize = new Set(ids).size;
-          return uniqueSize === ids.length;
-        },
-        {
-          message: "Area is not allowed to be duplicated",
-          path: ["_error"],
-        }
-      ),
+    ),
 
     // eventAreas là mảng tùy chọn, nếu có
     feedbacks: z.array(z.unknown()).optional(), // feedbacks là mảng tùy chọn, nếu có
@@ -160,9 +106,115 @@ export const EventSchema = z
       .min(0, { message: "Training point must be a positive number" })
       .max(30, { message: "Training point must be less than 30" }),
   })
-  .refine((data) => data.registeredEndDate > data.registeredStartDate, {
-    message: "Registered end date must be after registered start date",
-    path: ["registeredEndDate"],
+  .superRefine((data, ctx) => {
+    const now = new Date();
+
+    // Check if there is at least one event area
+    if (!data.eventAreas || data.eventAreas.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one event area is required",
+        path: ["eventAreas", "_error"],
+      });
+      return;
+    }
+
+    const startDateTime = new Date(data.registeredStartDate);
+    const [startHour, startMinute] = data.startTimeTime.split(":").map(Number);
+    startDateTime.setHours(startHour, startMinute, 0, 0);
+
+    const deadlineDateTime = new Date(data.registeredEndDate);
+    const [endHour, endMinute] = data.deadlineTime.split(":").map(Number);
+    deadlineDateTime.setHours(endHour, endMinute, 0, 0);
+
+    if (startDateTime < now) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Start time must be after now.",
+        path: ["startTimeTime"],
+      });
+    }
+    const isSameDate =
+      data.registeredStartDate.toDateString() ===
+      data.registeredEndDate.toDateString();
+    if (isSameDate) {
+      const [startHour, startMinute] = data.startTimeTime
+        .split(":")
+        .map(Number);
+      const [endHour, endMinute] = data.deadlineTime.split(":").map(Number);
+
+      const start = startHour * 60 + startMinute;
+      const end = endHour * 60 + endMinute;
+
+      if (end <= start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "When end time must be after start time.",
+          path: ["deadlineTime"],
+        });
+      }
+    }
+
+    // Group areas by date
+    const areaGroups = data.eventAreas.reduce((acc, area) => {
+      const dateKey = area.Date.toISOString().split("T")[0];
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(area);
+      return acc;
+    }, {} as Record<string, typeof data.eventAreas>);
+
+    // Check time overlap for all areas on the same date
+    Object.entries(areaGroups).forEach(([, areas]) => {
+      // Check all pairs of areas for time overlap
+      for (let i = 0; i < areas.length; i++) {
+        for (let j = i + 1; j < areas.length; j++) {
+          const area1 = areas[i];
+          const area2 = areas[j];
+
+          // Convert time strings to minutes
+          const start1 = parseInt(area1.StartTime) * 60;
+          const end1 = parseInt(area1.EndTime) * 60;
+          const start2 = parseInt(area2.StartTime) * 60;
+          const end2 = parseInt(area2.EndTime) * 60;
+
+          // Check for time overlap
+          if (
+            (start1 < end2 && end1 > start2) ||
+            (start2 < end1 && end2 > start1)
+          ) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: `Time slots overlap between 2 Area`,
+              path: ["eventAreas", "_error"],
+            });
+            return;
+          }
+        }
+      }
+    });
+
+    data.eventAreas.forEach((area, index) => {
+      const start = parseInt(area.StartTime) * 60;
+      const end = parseInt(area.EndTime) * 60;
+
+      if (end <= start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End time must be after start time.",
+          path: ["eventAreas", index, "EndTime"],
+        });
+      }
+
+      if (area.Date <= data.registeredEndDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Event date must be after registered end date.",
+          path: ["eventAreas", index, "Date"],
+        });
+      }
+    });
   });
 
 export const InterClubEventSchema = z.object({

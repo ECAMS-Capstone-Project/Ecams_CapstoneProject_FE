@@ -4,12 +4,8 @@ import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
-import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
@@ -18,7 +14,6 @@ const EventRefunds = () => {
   const [pageNo, setPageNo] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   // const [, setIsDialogOpen] = useState(false);
-  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -52,25 +47,6 @@ const EventRefunds = () => {
               title={`Manage Events' Refund Request`}
               description={`Oversee and manage events refund at ${userInfo?.universityName}`}
             />
-
-            {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger> */}
-            <Button
-              onClick={() => navigate("/representative/event/new")}
-              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add New
-            </Button>
-            {/* </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <CreateEventDialog
-                  initialData={null}
-                  onSuccess={() => {}}
-                  setOpen={handleCloseDialog}
-                />
-              </DialogContent>
-            </Dialog> */}
           </div>
           <Separator />
 

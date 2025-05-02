@@ -19,9 +19,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 import { exportStudentAPI } from "@/api/student/StudentScheduleAgent";
+import StudentRequest from "@/models/StudentRequest";
 
 interface ExportButtonProps {
   universityId: string | undefined;
+  data: StudentRequest[];
 }
 
 export interface StudentTrainingPoint {
@@ -38,7 +40,7 @@ const Transition = (
   return <Slide direction="up" {...props} />;
 };
 
-const ExportButton = ({ universityId }: ExportButtonProps) => {
+const ExportButton = ({ universityId, data }: ExportButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -58,15 +60,13 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
       // ✅ Kiểm tra đầy đủ các tầng
       const rawData: StudentTrainingPoint[] = response?.data || [];
 
-      console.log("Export Data:", rawData);
-
       if (rawData.length <= 0) {
         toast.error("No data found!");
         return;
       }
 
       exportToExcel(rawData);
-      toast.success("Export thành công!");
+      toast.success("Export successfully!");
       handleCloseDialog();
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -191,10 +191,11 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
     <>
       <Button
         variant="custom"
+        disabled={data.length <= 0}
         onClick={handleOpenDialog}
-        className="rounded-xl bg-[#4F81BD] hover:bg-[#3b6a9e] text-white px-4 py-2 flex items-center gap-2 transition"
+        className=" hover:bg-[#3b6a9e] text-white px-4 py-2 flex items-center gap-2 transition"
       >
-        <GetAppIcon /> Export
+        <GetAppIcon /> Export training point
       </Button>
 
       <Dialog
@@ -207,6 +208,7 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
             padding: "12px 20px",
             boxShadow: "0 12px 30px rgba(0,0,0,0.2)",
             minWidth: 400,
+            background: "linear-gradient(to bottom, #ffffff, #f8f9fa)",
           },
         }}
       >
@@ -215,53 +217,101 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
           justifyContent="space-between"
           alignItems="center"
           px={1}
+          sx={{
+            borderBottom: "1px solid #e0e0e0",
+            pb: 1,
+          }}
         >
           <DialogTitle
             className="flex align-middle gap-2"
-            sx={{ fontWeight: "bold" }}
+            sx={{
+              fontWeight: "bold",
+              color: "#2c3e50",
+              fontSize: "1.25rem",
+              p: 0,
+            }}
           >
-            <Calendar style={{ marginTop: "3px" }} />
+            <Calendar style={{ marginTop: "3px", color: "#4F81BD" }} />
             Export training point
           </DialogTitle>
-          <IconButton onClick={handleCloseDialog}>
+          <IconButton
+            onClick={handleCloseDialog}
+            sx={{
+              color: "#6c757d",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <DialogContent>
-          <div className="flex gap-4">
-            <TextField
-              label="Start date"
-              type="date"
-              margin="dense"
-              InputLabelProps={{ shrink: true }}
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              sx={{ my: 1 }}
-            />
-            <TextField
-              label="End date"
-              type="date"
-              margin="dense"
-              InputLabelProps={{ shrink: true }}
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              sx={{ my: 1 }}
-            />
+        <DialogContent sx={{ py: 3 }}>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <TextField
+                label="Start date"
+                type="date"
+                margin="dense"
+                InputLabelProps={{
+                  shrink: true,
+                  sx: { color: "#4F81BD" },
+                }}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                sx={{
+                  my: 1,
+                  "& .MuiOutlinedInput-root": {
+                    "&:hover fieldset": {
+                      borderColor: "#4F81BD",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#4F81BD",
+                    },
+                  },
+                }}
+              />
+              <TextField
+                label="End date"
+                type="date"
+                margin="dense"
+                InputLabelProps={{
+                  shrink: true,
+                  sx: { color: "#4F81BD" },
+                }}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                sx={{
+                  my: 1,
+                  "& .MuiOutlinedInput-root": {
+                    "&:hover fieldset": {
+                      borderColor: "#4F81BD",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#4F81BD",
+                    },
+                  },
+                }}
+              />
+            </div>
+            <div className="text-sm text-gray-500 mt-2">
+              Select the date range to export student training points
+            </div>
           </div>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
+        <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
           <Button
             onClick={handleCloseDialog}
-            className="bg-gray-200 hover:bg-gray-300 text-black rounded-md px-3"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg px-4 py-2 transition-colors duration-200"
           >
             Cancel
           </Button>
           <Button
             onClick={handleExport}
             disabled={!startDate || !endDate}
-            className="bg-[#4F81BD] hover:bg-[#3b6a9e] text-white rounded-md px-4"
+            className="bg-[#4F81BD] hover:bg-[#3b6a9e] text-white rounded-lg px-4 py-2 transition-colors duration-200 shadow-sm"
           >
             Export
           </Button>

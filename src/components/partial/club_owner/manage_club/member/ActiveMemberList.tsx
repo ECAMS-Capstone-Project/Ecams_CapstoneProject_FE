@@ -14,6 +14,7 @@ export default function ActiveMemberList({ clubId, isClubOwner }: props) {
     const [totalPages, setTotalPages] = useState(1);
     const [memberList, setMemberList] = useState<ClubMemberDTO[]>([]);
     const [, setIsLoading] = useState(true);
+    const [flag, setFlag] = useState(false);
     const loadUniversity = async () => {
         setTotalPages(1);
         try {
@@ -32,11 +33,11 @@ export default function ActiveMemberList({ clubId, isClubOwner }: props) {
     };
     useEffect(() => {
         loadUniversity();
-    }, [clubId, pageNo, pageSize]);
+    }, [clubId, pageNo, pageSize, flag]);
 
     return (
         <div className="space-y-2">
-            <ActiveMemberListTable data={isClubOwner ? memberList.filter(a => a.clubRoleName != "CLUB_OWNER" && a.status == "ACTIVE") : memberList.filter(a => a.status == "ACTIVE")} isClubOwner={isClubOwner} />
+            <ActiveMemberListTable data={isClubOwner ? memberList.filter(a => a.clubRoleName != "CLUB_OWNER" && a.status == "ACTIVE") : memberList.filter(a => a.status == "ACTIVE")} isClubOwner={isClubOwner} setFlag={setFlag} />
             <DataTablePagination
                 currentPage={pageNo}
                 totalPages={totalPages}

@@ -106,30 +106,6 @@ const NotificationDropdown = () => {
             setUnreadCount((prev) => prev + 1);
           }
 
-          // if (!shownNotiIdsRef.current.has(notificationId)) {
-          //   shownNotiIdsRef.current.add(notificationId);
-
-          //   toast.custom(
-          //     () => (
-          //       <div className="bg-white border-l-4 border-blue-500 shadow-md rounded-md p-4 w-96 text-sm text-gray-800">
-          //         <div className="flex items-start space-x-2">
-          //           <div className="text-xl">
-          //             {notificationType === "SYSTEM" ? "🚨" : "ℹ️"}
-          //           </div>
-          //           <div className="flex-1">
-          //             <p className="font-semibold">Thông báo</p>
-          //             <p className="mt-1">{message}</p>
-          //           </div>
-          //         </div>
-          //       </div>
-          //     ),
-          //     {
-          //       position: "top-right",
-          //       duration: 4000,
-          //     }
-          //   );
-          // }
-
           if (
             message.includes("New club owner has been add! You are kicked!") ||
             message.includes("New representative has been add! You are kicked!")
@@ -138,17 +114,17 @@ const NotificationDropdown = () => {
               // Hiển thị popup đẹp với 1 nút OK
               const result = await Swal.fire({
                 title: "Alert",
-                text: message,
-                icon: "error", // Có thể là 'warning', 'success', 'error'
+                text: "Your request to change club owner is accepted, please log in again!",
+                icon: "error",
                 confirmButtonText: "OK",
-                allowOutsideClick: false, // Không cho click ra ngoài để tắt
-                allowEscapeKey: false, // Không cho bấm ESC để tắt
+                allowOutsideClick: false, 
+                allowEscapeKey: false, 
               });
 
               // Sau khi bấm OK thì logout
               if (result.isConfirmed) {
                 await logout();
-                window.location.href = "/login"; // Chuyển hướng sau khi logout thành công
+                window.location.href = "/login";
               }
             } catch (error) {
               console.error("Error during logout", error);

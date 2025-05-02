@@ -38,7 +38,7 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
           <DataTableColumnHeader column={column} title="Contact Email" />
         </div>
       ),
-      cell: ({ row }) => <div >{row.getValue("contactEmail")}</div>,
+      cell: ({ row }) => <div >{row.getValue("contactEmail") || "N/A"}</div>,
     },
     {
       accessorKey: "status",
@@ -85,7 +85,7 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
                 <Eye size={18} />
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-5xl">
               <DataTableClubRowActions row={row} />
             </DialogContent>
           </Dialog>

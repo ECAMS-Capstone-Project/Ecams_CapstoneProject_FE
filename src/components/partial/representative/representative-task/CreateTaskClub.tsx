@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
+import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
 // shadcn/ui & Components
@@ -28,15 +28,12 @@ import { cn, fixTime } from "@/lib/utils";
 
 import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 
-// Lazy import danh sách student
-
 // Import API lấy danh sách member trong club và API tạo task
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
-import { AvailableMemberEventTask, GetAvailableMember, TaskRecommendedByAI } from "@/api/student/ClubAgent";
+import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
 import SpecificStudentClubList from "./SpecificStudentClubList";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -44,11 +41,9 @@ export default function CreateTaskClub() {
   const { user } = useAuth();
   const location = useLocation();
   const clubId = location.state?.clubId;
-  const [priority, setPriority] = useState<string>("LOW");
+  const [priority] = useState<string>("MEDIUM");
 
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [recommendedStudents, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [recommendedReasons, setRecommendedReasons] = useState<Record<string, string>>({});
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -82,8 +77,6 @@ export default function CreateTaskClub() {
   const selectedMembers = watch("selectedMembers");
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
-  const taskName = watch("taskName");
-  const taskDescription = watch("description");
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
@@ -175,41 +168,6 @@ export default function CreateTaskClub() {
     }
   };
 
-  const handleAIRecommend = async () => {
-
-    setIsLoading(true);
-    try {
-      const body = {
-        clubId: clubId as string,
-        taskName: taskName.trim().toString(),
-        taskDescription: taskDescription.trim().toString(),
-        startTime: startTimeDate.toISOString(),
-        endTime: deadlineTimeDate.toISOString(),
-        priority: priority
-      }
-
-      const response = await TaskRecommendedByAI(body.clubId, body);
-      const data = response.data;
-
-      // Update danh sách recommend
-      if (data) {
-        setRecommendedStudents(data);
-      }
-
-      // Lưu lại lý do recommend theo studentId
-      const reasonMap: Record<string, string> = {};
-      data?.forEach((student) => {
-        reasonMap[student.studentId] = student.reason || "";
-      });
-      setRecommendedReasons(reasonMap);
-
-    } catch (error) {
-      console.error("Recommendation failed", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-[300px]">
       {/* Nút Back */}
@@ -231,7 +189,7 @@ export default function CreateTaskClub() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-3/4">
               {/* Task Name */}
               <Grid2 container spacing={2}>
-                <Grid2 size={4}>
+                <Grid2 size={6}>
                   <FormField
                     control={form.control}
                     name="taskName"
@@ -246,25 +204,7 @@ export default function CreateTaskClub() {
                     )}
                   />
                 </Grid2>
-                <Grid2 size={4}>
-                  <div className="space-y-2 mt-1">
-                    <label className="block text-sm font-medium">Priority</label>
-                    <Select
-                      onValueChange={(value) => setPriority(value)}
-                      value={priority}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="LOW">Low</SelectItem>
-                        <SelectItem value="MEDIUM">Medium</SelectItem>
-                        <SelectItem value="HIGH">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </Grid2>
-                <Grid2 size={4}>
+                <Grid2 size={6}>
                   {/* Score */}
                   <FormField
                     control={form.control}
@@ -432,27 +372,6 @@ export default function CreateTaskClub() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                           />
                         </div>
-
-                        <Button
-                          onClick={handleAIRecommend}
-                          type="button"
-                          disabled={isLoading || !taskName || !taskDescription}
-                          className="relative overflow-hidden btn-style501 text-[#133a95] 
-                            px-6 py-2 rounded-lg font-semibold transition-all duration-300 
-                            hover:scale-105 hover:shadow-lg group"
-                        >
-                          <span
-                            className="absolute inset-0 before:content-[''] before:absolute before:top-0 before:left-[-75%] 
-                      before:w-[50%] before:h-full before:bg-white before:opacity-20 before:rotate-12
-                      before:animate-none group-hover:before:animate-shine pointer-events-none"
-                          />
-                          <span className="relative z-10 flex items-center gap-2">
-                            <Sparkles className="h-4 w-4" />
-                            {isLoading
-                              ? "Is loading..."
-                              : "AI Recommendation"}
-                          </span>
-                        </Button>
                       </div>
                       <Suspense
                         fallback={
@@ -465,8 +384,6 @@ export default function CreateTaskClub() {
                           students={filteredStudents}
                           selected={selectedMembers}
                           handleToggleStudent={handleToggleStudent}
-                          recommendedReasons={recommendedReasons}
-                          recommendedStudents={recommendedStudents}
                         />
                       </Suspense>
 

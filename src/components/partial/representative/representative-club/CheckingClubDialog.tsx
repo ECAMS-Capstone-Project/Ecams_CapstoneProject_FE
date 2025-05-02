@@ -29,11 +29,11 @@ import {
   ClubResponseDTO,
 } from "@/api/club-owner/ClubByUser";
 import toast from "react-hot-toast";
-import useAuth from "@/hooks/useAuth";
 import { MemberDetailDialog } from "./MemberDetailDialog";
 import { DenyCheckingClubRequest } from "./DenialDialog";
 import { format } from "date-fns";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
+import useAuth from "@/hooks/useAuth";
 
 // Dữ liệu props cho Dialog Club
 type FormMode = "view" | "pending" | "edit";
@@ -69,6 +69,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
       toast.success("Club approved successfully.");
       setFlag?.((prev) => !prev);
       setOpenDialog(false);
+      window.location.href = "/representative/active-club";
     } catch (error: any) {
       console.log(error.response?.data?.message);
     } finally {
@@ -164,13 +165,13 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                       <Chip
                         label={
                           initialData?.status.toString().toLocaleLowerCase() ==
-                          "processing"
+                            "processing"
                             ? "PROCESSING"
                             : "Active"
                         }
                         color={
                           initialData?.status.toString().toLocaleLowerCase() ==
-                          "processing"
+                            "processing"
                             ? "info"
                             : "success"
                         }
@@ -208,7 +209,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                         <TableCell>Avatar</TableCell>
                         <TableCell>Student ID</TableCell>
                         <TableCell>Name</TableCell>
-                        <TableCell>Role</TableCell>
+                        <TableCell>Position</TableCell>
                         <TableCell align="center">Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -222,7 +223,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                                 <img
                                   src={
                                     member.avatar ||
-                                    "https://github.com/shadcn.png"
+                                    "https://inthenhua.net.vn/wp-content/uploads/2017/01/the-sinh-vien-2.jpg"
                                   }
                                   alt={"Product Image"}
                                   className="w-12 h-12 object-cover rounded-full"

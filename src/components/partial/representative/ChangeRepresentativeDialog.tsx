@@ -8,9 +8,9 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
-import useAuth from "@/hooks/useAuth";
 import { CreateRequestChangeRepresentativeAPI } from "@/api/representative/RequestChangeRepresentative";
 import toast from "react-hot-toast";
+import useAuth from "@/hooks/useAuth";
 
 const ChangeRepresentativeDialog: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { user } = useAuth();

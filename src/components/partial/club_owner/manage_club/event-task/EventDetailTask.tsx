@@ -3,7 +3,6 @@ import { useLocation, useParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
-import useAuth from "@/hooks/useAuth";
 import LoadingAnimation from "@/components/ui/loading";
 import { EventDetailsTaskCard } from "./EventDetailsCard";
 import EventParticipants from "@/pages/club-owner/event/EventParticipants";
@@ -11,6 +10,7 @@ import { EventTaskBig } from "./EventTaskBig";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { Loader2 } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 export const EventDetailTask = () => {
   const { eventId = "" } = useParams();
   const { getEventDetailQuery } = useEvents();

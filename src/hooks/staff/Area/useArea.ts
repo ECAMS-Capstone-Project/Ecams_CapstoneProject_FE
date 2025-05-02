@@ -45,9 +45,6 @@ export const useAreas = (
         // refetch();
         refetch();
 
-        toast.success("Area deleted successfully!");
-        refetch();
-
         queryClient.invalidateQueries({
           queryKey: ["areas", pageNo || 1, pageSize || 5],
         }); // Tự động refetch danh sách ✅

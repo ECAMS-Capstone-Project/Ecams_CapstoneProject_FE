@@ -132,7 +132,7 @@ const RepresentativeReviewRequestDialog: React.FC<
                                             : "bg-white border border-green-600 text-green-600 hover:bg-green-50"
                                         }`}
               >
-                ✅ Approve
+                Approve
               </Button>
               <Button
                 onClick={() => setDecision("deny")}
@@ -143,7 +143,7 @@ const RepresentativeReviewRequestDialog: React.FC<
                                                 : "bg-white border border-red-400 text-red-600 hover:bg-red-50"
                                             }`}
               >
-                ❌ Deny
+                Deny
               </Button>
             </div>
           </div>
@@ -165,14 +165,12 @@ const RepresentativeReviewRequestDialog: React.FC<
         </CardContent>
 
         <CardFooter className="flex justify-end gap-2 border-t p-4">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant={'custom'} disabled={isSubmitting || !decision} onClick={handleSubmit}>
+            {isSubmitting ? <LoadingAnimation /> : "Submit Decision"}
+          </Button>
+          <Button variant="outline" disabled={isSubmitting} onClick={onClose}>
             Cancel
           </Button>
-          {decision && (
-            <Button disabled={isSubmitting} onClick={handleSubmit}>
-              {isSubmitting ? <LoadingAnimation /> : "Submit Decision"}
-            </Button>
-          )}
         </CardFooter>
       </Card>
 
@@ -204,37 +202,31 @@ const RepresentativeReviewRequestDialog: React.FC<
               </div>
 
               {/* Right column: Info */}
-              <div className="text-sm space-y-2 text-gray-700 w-full sm:w-2/3">
+              <div className="text-sm space-y-2 text-gray-900 w-full sm:w-2/3">
                 <div>
-                  <span className="font-medium">Email:</span>{" "}
+                  <span className="font-bold">Email:</span>{" "}
                   {viewingUser.user.email}
                 </div>
                 <div>
-                  <span className="font-medium">Student ID:</span>{" "}
+                  <span className="font-bold">Student ID:</span>{" "}
                   {viewingUser.user.studentId}
                 </div>
                 <div>
-                  <span className="font-medium">Activity Point:</span>{" "}
+                  <span className="font-bold">Activity Point:</span>{" "}
                   {viewingUser.user.clubActivityPoint}
                 </div>
                 <div>
-                  <span className="font-medium">Position:</span>{" "}
+                  <span className="font-bold">Position:</span>{" "}
                   {viewingUser.user.clubRoleName}
                 </div>
-                {viewingUser.user.joinedAt && (
-                  <div>
-                    <span className="font-medium">Joined At:</span>{" "}
-                    {format(new Date(viewingUser.user.joinedAt), "dd/MM/yyyy")}
-                  </div>
-                )}
-                {viewingUser.user.leftDate && (
-                  <div>
-                    <span className="font-medium">Left At:</span>{" "}
-                    {format(new Date(viewingUser.user.leftDate), "dd/MM/yyyy")}
-                  </div>
-                )}
                 <div>
-                  <span className="font-medium">Status:</span>{" "}
+                  <span className="font-bold">Joined At:</span>{" "}
+                  {viewingUser.user.joinedAt
+                    ? format(new Date(viewingUser.user.joinedAt), "dd/MM/yyyy")
+                    : "N/A"}
+                </div>
+                <div>
+                  <span className="font-bold">Status:</span>{" "}
                   <span
                     className={
                       viewingUser.user.status === "ACTIVE"
