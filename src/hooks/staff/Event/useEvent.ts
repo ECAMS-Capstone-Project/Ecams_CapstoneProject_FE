@@ -23,14 +23,16 @@ import { Event } from "@/models/Event";
 export const useEvents = (
   uniId?: string,
   pageNumber?: number,
-  pageSize?: number
+  pageSize?: number,
+  status?: string
 ) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["events", uniId, pageNumber, pageSize], // Query key động
-    queryFn: () => getEventList(uniId || "", pageNumber || 1, pageSize || 20),
+    queryKey: ["events", uniId, status, pageNumber, pageSize], // Query key động
+    queryFn: () =>
+      getEventList(uniId || "", pageNumber || 1, pageSize || 20, status || ""),
     refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
     enabled: !!uniId,
@@ -159,7 +161,7 @@ export const useEvents = (
         queryClient.invalidateQueries({ queryKey: ["events"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
-        toast.error(error.response.data.message || "Error approving event");
+        toast.error(error.response.data.message || "Error reject event");
       },
     });
 

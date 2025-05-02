@@ -5,20 +5,16 @@ import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
-import { useNavigate } from "react-router-dom";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 
 const EventRefunds = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(5);
   // const [, setIsDialogOpen] = useState(false);
-  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -37,7 +33,8 @@ const EventRefunds = () => {
   const { events, isLoading, totalPages } = useEvents(
     userInfo?.universityId,
     pageNo,
-    pageSize
+    pageSize,
+    "CANCELED"
   );
 
   return (
@@ -55,13 +52,7 @@ const EventRefunds = () => {
 
             {/* <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger> */}
-            <Button
-              onClick={() => navigate("/representative/event/new")}
-              className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] shadow-lg hover:shadow-xl hover:scale-105 transition duration-300"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add New
-            </Button>
+
             {/* </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <CreateEventDialog
@@ -75,9 +66,9 @@ const EventRefunds = () => {
           <Separator />
 
           <EventTable
-            data={events.filter(
-              (events) => events.clubs.length > 0 && events.status == "CANCELED"
-            )}
+            data={events}
+            setStatusFilter={() => null}
+            enableFilter={false}
           />
           <DataTablePagination
             currentPage={pageNo}

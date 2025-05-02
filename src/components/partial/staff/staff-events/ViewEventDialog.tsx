@@ -3,7 +3,8 @@ import { useEvents } from "@/hooks/staff/Event/useEvent";
 import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { CancelEventDialog } from "./CancelEventDialog";
 
 export const EventDetail: React.FC = () => {
   const { eventId = "" } = useParams();
@@ -16,7 +17,7 @@ export const EventDetail: React.FC = () => {
   } = getEventDetailQuery(eventId, user?.userId || "");
   console.log("event detail", eventDetail?.data);
   console.log("event fields", eventDetail?.data?.eventFields);
-
+  const navigate = useNavigate();
   if (isEventDetailLoading) {
     return (
       <div className="flex justify-center items-center h-screen text-xl">
@@ -56,6 +57,16 @@ export const EventDetail: React.FC = () => {
                   : event?.representativeName}
               </p>
             </div>
+            {eventDetail?.data &&
+              eventDetail?.data?.status.toLowerCase() === "active" && (
+                <div className="absolute top-4 right-4 z-30">
+                  <CancelEventDialog
+                    eventId={eventId}
+                    eventData={eventDetail.data}
+                    onSuccess={() => navigate(-1)}
+                  />
+                </div>
+              )}
           </div>
 
           {/* Content */}
