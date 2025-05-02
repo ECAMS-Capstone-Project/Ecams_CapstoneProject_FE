@@ -17,15 +17,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
 import { RepresentativeRegisterRequest } from "@/models/Auth/RepresentativeRegister";
 import { GenderEnum } from "@/lib/GenderEnum";
 import { ring2 } from "ldrs";
 import PoliciesDialog from "./policiesDiablog";
+import useAuth from "@/hooks/useAuth";
 // Validation schema using Zod
 const schema = z
   .object({
-    fullName: z.string().min(1, "First name is required"),
+    fullName: z.string().min(3, "First name must be at least 3 characters"),
     email: z.string().email("Invalid email address"),
     phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
     password: z.string().min(8, "Password must be at least 8 characters"),

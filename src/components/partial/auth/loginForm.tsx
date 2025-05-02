@@ -4,8 +4,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField, Button, FormControl } from '@mui/material';
-import useAuth from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email(),

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -11,227 +12,365 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
-
-import { useEffect, useState } from "react";
-import Select from "react-select";
-import { Role } from "@/models/User";
-import { roleList } from "@/api/agent/UserAgent";
 import { UserAuthDTOSchema } from "@/schema/UserSchema";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CalendarIcon, Upload } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import useAuth from "@/hooks/useAuth";
 
 type ProfileFormValues = z.infer<typeof UserAuthDTOSchema>;
 
-interface ProfileProps {
-  initialData: ProfileFormValues | null;
-}
+export function ProfileForm() {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-export const ProfileForm: React.FC<ProfileProps> = ({ initialData }) => {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(UserAuthDTOSchema),
-    defaultValues: initialData || {},
+    defaultValues: {
+      email: user?.email || "",
+      fullname: user?.fullname || "",
+      phone: user?.phonenumber || "",
+      address: "",
+      gender: undefined,
+      major: "",
+      year: undefined,
+      startDate: undefined,
+      endDate: undefined,
+    },
   });
-  const [, setIsLoading] = useState(false);
-  const [, setOpen] = useState(false);
-  const [role, setRole] = useState<Role[]>([]);
-  const { control, handleSubmit } = form;
 
-  async function onSubmit(values: ProfileFormValues) {
+  const isRepresentative = user?.roles.includes("REPRESENTATIVE");
+  const isStudent = user?.roles.includes("STUDENT");
+
+  async function onSubmit(data: ProfileFormValues) {
     try {
-      console.log(values);
-
       setIsLoading(true);
-      setOpen(false);
-      window.location.reload();
-    } catch (error: any) {
-      const errorMessage = error.response.data.message || "An error occurred";
-      toast.error(errorMessage);
-      console.error("Error:", error);
+      // TODO: Implement update profile API
+      console.log(data);
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update profile");
     } finally {
       setIsLoading(false);
     }
   }
-  useEffect(() => {
-    const listRole = async () => {
-      try {
-        const roleData = await roleList();
 
-        if (Array.isArray(roleData)) {
-          setRole(roleData); // Đảm bảo `data.data` tồn tại
-        } else {
-          console.warn("PolicyList returned no data");
-        }
-      } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
-        setIsLoading(false); // Hoàn tất tải
-      }
-    };
-    listRole(); // Call the function here
-  }, []); // Add an empty dependency array to run the effect only once
-  // const options = role.map((role) => ({
-  //   value: role.roleId,
-  //   label: role.roleName,
-  // }));
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
-    <div className=" min-h-[200px] sm:min-h-[300px] h-auto">
-      <div>
-        <div className="p-4">
-          <Form {...form}>
-            <form
-              onSubmit={(e) => {
-                console.log("Form submitted!");
-                handleSubmit(onSubmit)(e);
-              }}
-            >
-              <div className="grid grid-cols-1 gap-3 w-2/3">
+    <Card className="w-full max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-center">
+          Profile Settings
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="flex flex-col items-center space-y-4 mb-8">
+              <div className="relative">
+                <Avatar className="w-32 h-32">
+                  <AvatarImage src={avatarPreview || user?.avatar} />
+                  <AvatarFallback className="text-2xl">
+                    {user?.fullname?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full cursor-pointer hover:bg-primary/90 transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                </label>
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Click the icon to change your avatar
+              </p>
+            </div>
+
+            <Separator className="my-8" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} disabled className="bg-muted" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="fullname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Full Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="focus:ring-2 focus:ring-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="tel"
+                        className="focus:ring-2 focus:ring-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base">Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        className="focus:ring-2 focus:ring-primary"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {isRepresentative && (
                 <FormField
                   control={form.control}
-                  name="avatar"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Avatar Image</FormLabel>
-                      <FormControl>
-                        <Avatar className="w-32 h-32">
-                          <AvatarImage src="https://github.com/shadcn.png" />
-                          <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Package Name */}
-                <FormField
-                  control={control}
-                  name="fullname"
+                  name="gender"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fullname</FormLabel>
-                      <FormControl>
-                        <Input type="text" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Price */}
-                <FormField
-                  control={control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          {...field}
-                          readOnly={!!initialData}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Description */}
-
-                {/* Duration */}
-                <FormField
-                  control={form.control}
-                  name="roles"
-                  render={({ field }) => {
-                    // Chuyển đổi roleName từ initialData thành định dạng cho react-select
-                    const defaultRoles = initialData?.roles
-                      .map((roleName) => {
-                        const option = role.find(
-                          (roleItem) => roleItem.roleName === roleName
-                        );
-                        return option
-                          ? { label: option.roleName, value: option.roleId }
-                          : null;
-                      })
-                      .filter(Boolean); // Lọc các giá trị null
-
-                    return (
-                      <FormItem>
-                        <FormLabel>Role</FormLabel>
+                      <FormLabel className="text-base">Gender</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
-                          <Select
-                            value={defaultRoles} // Sử dụng defaultValue
-                            isMulti
-                            name="roles"
-                            options={role.map((roleItem) => ({
-                              label: roleItem.roleName,
-                              value: roleItem.roleId,
-                            }))}
-                            onChange={(selected) => {
-                              field.onChange(
-                                selected.map((item) => item?.value)
-                              );
-                            }}
-                            className="h-9"
-                            classNamePrefix="select"
-                            isDisabled={!!initialData}
+                          <SelectTrigger className="focus:ring-2 focus:ring-primary">
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {isStudent && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="major"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base">Major</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            className="focus:ring-2 focus:ring-primary"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    );
-                  }}
-                />
+                    )}
+                  />
 
-                {/* <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Status</FormLabel>
+                  <FormField
+                    control={form.control}
+                    name="year"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base">
+                          Academic Year
+                        </FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          defaultValue={field.value?.toString()}
+                        >
                           <FormControl>
-                            <Input
-                              type="text"
-                              {...field}
-                              value={
-                                field.value == true ? "Active" : "Inactive"
+                            <SelectTrigger className="focus:ring-2 focus:ring-primary">
+                              <SelectValue placeholder="Select year" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="1">Year 1</SelectItem>
+                            <SelectItem value="2">Year 2</SelectItem>
+                            <SelectItem value="3">Year 3</SelectItem>
+                            <SelectItem value="4">Year 4</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-base">Start Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal focus:ring-2 focus:ring-primary",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
                               }
-                              // onChange={(e) => field.onChange(e.target.value)}
-                              readOnly={!!initialData}
+                              initialFocus
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="w-full mt-3">
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              className="border p-2 rounded w-full h-20"
-                              readOnly={!!initialData}
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="endDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel className="text-base">End Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal focus:ring-2 focus:ring-primary",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
+                              }
+                              initialFocus
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    /> */}
-                <div className="flex w-full justify-end mt-4 ">
-                  <Button type="submit">Save</Button>
-                </div>
-              </div>
-              {/* Submit Button */}
-            </form>
-          </Form>
-        </div>
-      </div>
-    </div>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="min-w-[120px]"
+              >
+                {isLoading ? "Saving..." : "Save changes"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
-};
+}
