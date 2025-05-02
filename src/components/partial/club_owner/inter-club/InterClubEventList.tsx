@@ -11,11 +11,11 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import useAuth from "@/hooks/useAuth";
 import { InterClubEventDTO } from "@/models/Event";
 import { useClubs } from "@/hooks/student/useClub";
 import { useNavigate } from "react-router-dom";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
+import useAuth from "@/hooks/useAuth";
 
 export const InterClubEventList = () => {
   const [pageNo] = useState(1);

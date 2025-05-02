@@ -15,11 +15,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "react-hot-toast";
 import { EventAvailable, PhoneIphone } from "@mui/icons-material";
-import useAuth from "@/hooks/useAuth";
 import { useEventSchedule } from "@/hooks/student/useEventRegister";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import useAuth from "@/hooks/useAuth";
 
 export const StudentEventCheckIn = () => {
   // const location = useLocation();
@@ -124,8 +124,8 @@ export const StudentEventCheckIn = () => {
       </div>
 
       {checkInInfo?.data?.startDate &&
-      checkInInfo?.data?.endDate &&
-      new Date() < new Date(checkInInfo.data.startDate) ? (
+        checkInInfo?.data?.endDate &&
+        new Date() < new Date(checkInInfo.data.startDate) ? (
         <div className="flex justify-center items-center  h-full mt-20">
           <AnimatedGradientText>
             <span className="text-center inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold">
@@ -226,9 +226,9 @@ export const StudentEventCheckIn = () => {
                         </span>
                         <span className="text-xs sm:text-sm">
                           {checkInInfo?.data?.price &&
-                          checkInInfo?.data?.price > 0
+                            checkInInfo?.data?.price > 0
                             ? checkInInfo?.data?.price.toLocaleString("vi-VN") +
-                              " VND"
+                            " VND"
                             : "Free"}
                         </span>
                       </div>

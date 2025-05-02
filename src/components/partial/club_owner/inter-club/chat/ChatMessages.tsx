@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import { useSignalR } from "@/hooks/useSignalR";
-import useAuth from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useMessage } from "@/hooks/club/useMessage";
 import { Message } from "@/models/Message";
 import { Send } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
 interface ChatMessagesProps {
   eventId: string;
@@ -99,11 +99,10 @@ export const ChatMessages = ({ eventId }: ChatMessagesProps) => {
           messages.map((message: Message) => (
             <div
               key={message.messageId}
-              className={`flex items-start gap-2.5 ${
-                message.userId === user?.userId
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
+              className={`flex items-start gap-2.5 ${message.userId === user?.userId
+                ? "justify-end"
+                : "justify-start"
+                }`}
             >
               {message.userId !== user?.userId && (
                 <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
@@ -113,9 +112,8 @@ export const ChatMessages = ({ eventId }: ChatMessagesProps) => {
                 </div>
               )}
               <div
-                className={`flex flex-col gap-1 max-w-[70%] ${
-                  message.userId === user?.userId ? "items-end" : "items-start"
-                }`}
+                className={`flex flex-col gap-1 max-w-[70%] ${message.userId === user?.userId ? "items-end" : "items-start"
+                  }`}
               >
                 {message.userId !== user?.userId && (
                   <span className="text-sm font-medium text-gray-800">
@@ -123,11 +121,10 @@ export const ChatMessages = ({ eventId }: ChatMessagesProps) => {
                   </span>
                 )}
                 <div
-                  className={`rounded-2xl px-4 py-2 ${
-                    message.userId === user?.userId
-                      ? "bg-[#136CB9] text-white rounded-tr-none"
-                      : "bg-white border border-gray-200 rounded-tl-none"
-                  }`}
+                  className={`rounded-2xl px-4 py-2 ${message.userId === user?.userId
+                    ? "bg-[#136CB9] text-white rounded-tr-none"
+                    : "bg-white border border-gray-200 rounded-tl-none"
+                    }`}
                 >
                   <p className="text-sm">{message.content}</p>
                 </div>

@@ -3,10 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, ChevronRight, ClipboardList, User, BadgeDollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { InterClub } from "@/models/Event";
-import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useClubs } from "@/hooks/student/useClub";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
+import useAuth from "@/hooks/useAuth";
 
 interface EventItemProps {
     imageUrl: string;
