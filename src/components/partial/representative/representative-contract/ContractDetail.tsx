@@ -130,7 +130,7 @@ export default function RepresentativeContractDetail() {
                           : "bg-red-100 text-red-600"
                           }`}
                       >
-                        {contract?.status ? "Active ✅" : "Inactive ❌"}
+                        {contract?.status ? "Active" : "Inactive"}
                       </span>
                     </p>
                   </Grid2>

@@ -277,7 +277,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                 </div>
                 {/* Footer */}
                 <DialogFooter className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-2">
-                    {((hasFeedback || isDeadlinePassed) && (!isOwnerSelfTask)) ? (
+                    {((hasFeedback || isDeadlinePassed || submission.submissionDate == "0001-01-01T00:00:00") && (!isOwnerSelfTask)) ? (
                         <Button variant="secondary" onClick={onClose}>
                             Close
                         </Button>
