@@ -16,7 +16,7 @@ interface Props {
   isClubOwner: boolean;
 }
 
-export default function EventList({ clubId, isClubOwner }: Props) {
+export default function RepEventList({ clubId, isClubOwner }: Props) {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pageNo, setPageNo] = useState(1);
   const [pageSize] = useState(5);
@@ -123,7 +123,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                   key={index}
                   onClick={() => {
                     evt.status !== "PENDING" &&
-                      navigate(`/club/event-task/${evt.eventId}`, {
+                      navigate(`/representative/event/${evt.eventId}`, {
                         state: {
                           isClubOwner,
                           clubId,

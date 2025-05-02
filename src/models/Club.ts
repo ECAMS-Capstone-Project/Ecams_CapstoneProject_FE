@@ -1,3 +1,5 @@
+import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
+import { ClubMemberResponseDTO } from "@/api/representative/RequestChangeOwner";
 import { ConditionEvidence } from "@/components/partial/student/club-register/JoinClubDialog";
 
 interface ClubFieldResponseDTO {
@@ -28,13 +30,31 @@ export interface ClubResponse {
   clubFields: ClubFieldResponseDTO[];
   socialMediaLinks: SocialMediaLinkResponseDTO[];
   clubOwnerId: string;
+  topEvents: topEvents[];
+  clubMembers: ClubMemberResponseDTO[];
+  isEventClub: boolean;
+}
+export interface topEvents {
+  eventId: string;
+  eventName: string;
+  imageUrl: string;
+  description: string;
+  registeredStartDate: string;
+  registeredEndDate: string;
+  price: number;
+  maxParticipants: number;
+  status: string;
+  eventType: string;
+  numOfFeedbacks: number;
+  averageRating: number;
+  eventFields: FieldDTO[];
 }
 
 export interface ClubJoinedRequest {
-    ClubId: string;
-    Reason: string;
-    UserId: string;
-    ConditionEvidences: ConditionEvidence[]
+  ClubId: string;
+  Reason: string;
+  UserId: string;
+  ConditionEvidences: ConditionEvidence[];
 }
 
 export interface isInClubResponse {

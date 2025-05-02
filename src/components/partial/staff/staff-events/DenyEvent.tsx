@@ -52,13 +52,15 @@ export const DenyEventRequest: React.FC<DenyProps> = ({
       reason: "",
     },
   });
+  console.log("error", form.formState.errors);
+
   const navigate = useNavigate();
   const { rejectEvent, isRejecting } = useEvents();
   async function handleReject(value: DenyUniversity) {
     try {
       setIsLoading(true); // Bắt đầu loading
       if (dialogAction === "reject") {
-        console.log("Rejecting university...");
+        console.log("Rejecting event university...");
 
         await rejectEvent(value); // Gọi API reject
         navigate("/representative/event");

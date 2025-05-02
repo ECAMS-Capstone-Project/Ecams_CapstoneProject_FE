@@ -1,6 +1,5 @@
 import { EventRefund } from "@/components/partial/staff/staff-events/EventRefund";
 import { EventDetail } from "@/components/partial/staff/staff-events/ViewEventDialog";
-import { CancelEventDialog } from "@/components/partial/staff/staff-events/CancelEventDialog";
 import LoadingAnimation from "@/components/ui/loading";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,16 +68,6 @@ const StaffEventDetailPage = () => {
         </TabsList>
         <TabsContent value="detail">
           <EventDetail />
-          <div className="container mx-auto px-4 mt-8 flex justify-end">
-            {eventDetail?.data &&
-              eventDetail?.data?.status.toLowerCase() == "active" && (
-                <CancelEventDialog
-                  eventId={eventId}
-                  eventData={eventDetail.data}
-                  onSuccess={() => navigate(-1)}
-                />
-              )}
-          </div>
         </TabsContent>
         <TabsContent value="statistic">
           <RepresentativeEventParticipants

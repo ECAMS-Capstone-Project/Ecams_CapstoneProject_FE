@@ -88,73 +88,76 @@ const ParticipantsList = ({ participants }: ParticipantsListProps) => {
                     View Details
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-lg">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-20 w-20 ring-2 ring-[#136CB9] ring-offset-2">
-                        <AvatarImage src={participant.major} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#136CB9] to-[#49BBBD] text-white text-2xl">
-                          {participant.fullname.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">
-                          {participant.fullname}
-                        </h3>
-                        <p className="text-gray-500">
-                          {participant.studentDetailId}
-                        </p>
-                      </div>
+
+                <DialogContent className="max-w-lg rounded-xl px-6 py-6">
+                  {/* Header: Avatar + Name + ID */}
+                  <div className="flex items-center gap-4 border-b pb-4">
+                    <Avatar className="h-20 w-20 ring-4 ring-[#136CB9] ring-offset-2 shadow-md">
+                      <AvatarImage src={participant.major} />
+                      <AvatarFallback className="bg-gradient-to-br from-[#136CB9] to-[#49BBBD] text-white text-3xl font-semibold">
+                        {participant.fullname.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {participant.fullname}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {participant.studentDetailId}
+                      </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2 text-[#136CB9]">
-                          Contact Information
-                        </h4>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <Mail className="h-4 w-4 text-[#136CB9]" />
-                            <span>{participant.email}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <Phone className="h-4 w-4 text-[#136CB9]" />
-                            <span>{participant.phonenumber}</span>
-                          </div>
+                  </div>
+
+                  {/* Main Info: Contact + Academic */}
+                  <div className="grid grid-cols-2 gap-6 mt-6">
+                    {/* Contact Info */}
+                    <div>
+                      <h4 className="text-lg font-medium text-[#136CB9] mb-3">
+                        Contact
+                      </h4>
+                      <div className="space-y-3 text-sm text-gray-700">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-[#136CB9]" />
+                          <span>{participant.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-[#136CB9]" />
+                          <span>{participant.phonenumber}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={getStatusColor(participant.status)}>
+                            {participant.status === "CHECKED_IN"
+                              ? "Checked In"
+                              : "Waiting"}
+                          </Badge>
                         </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-2 text-[#136CB9]">
-                          Academic Details
-                        </h4>
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <University className="h-4 w-4 text-[#136CB9]" />
-                            <span>{participant.universityName}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <GraduationCap className="h-4 w-4 text-[#136CB9]" />
-                            <span>{participant.major}</span>
-                          </div>
-                          <div className="text-gray-600 flex items-center gap-2">
-                            <BookAIcon className="h-4 w-4 text-[#136CB9]" />
-                            <span className="text-gray-500">
-                              Year of Study:
-                            </span>{" "}
-                            {participant.yearOfStudy}
-                          </div>
-                          <div>
-                            <Badge
-                              className={getStatusColor(participant.status)}
-                            >
-                              {participant.status === "CHECKED_IN"
-                                ? "Checked In"
-                                : "Waiting"}
-                            </Badge>
-                          </div>
+                    </div>
+
+                    {/* Academic Info */}
+                    <div>
+                      <h4 className="text-lg font-medium text-[#136CB9] mb-3">
+                        Academic
+                      </h4>
+                      <div className="space-y-3 text-sm text-gray-700">
+                        <div className="flex items-center gap-2">
+                          <University className="h-4 w-4 text-[#136CB9]" />
+                          <span>{participant.universityName}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <GraduationCap className="h-4 w-4 text-[#136CB9]" />
+                          <span>{participant.major}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <BookAIcon className="h-4 w-4 text-[#136CB9]" />
+                          <span>Year {participant.yearOfStudy}</span>
                         </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Status Badge */}
+                  <div className="mt-6 flex justify-center"></div>
                 </DialogContent>
               </Dialog>
             </div>

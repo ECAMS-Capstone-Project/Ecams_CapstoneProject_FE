@@ -14,12 +14,12 @@ import { useInterTask } from "@/hooks/club/useInterTask";
 import { InterClubEventDTO } from "@/models/Event";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { useNavigate } from "react-router-dom";
-
+import { ClubResponse } from "@/models/Club";
 interface TaskItemProps {
   task: InterTask;
   isHost: boolean;
   selectedEvent: InterClubEventDTO;
-  currentClub: EventClubDTO;
+  currentClub: EventClubDTO | ClubResponse;
 }
 
 export const TaskItem = ({

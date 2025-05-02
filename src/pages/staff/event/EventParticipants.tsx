@@ -8,6 +8,9 @@ import ParticipantsSearchBar from "@/components/partial/club_owner/event-partici
 import { ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
+import { Separator } from "@/components/ui/separator";
+import { RepEventFeedback } from "@/components/partial/staff/staff-events/event-participants/EventFeedback";
+import ParticipantPagination from "@/components/partial/staff/staff-events/event-participants/ParticipantPagination";
 
 interface props {
   eventId: string;
@@ -20,8 +23,15 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
     "all"
   );
   const { state } = useLocation();
+
   const eventName = state?.eventName;
-  const { participants } = useEventDetail(eventId, 10, 1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6);
+  const { participants, totalPages } = useEventDetail(
+    eventId,
+    searchTerm ? 999 : pageSize,
+    currentPage
+  );
 
   // Filter participants list
   const filteredParticipants = participants.filter((participant) => {
@@ -43,6 +53,9 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
   const checkedInCount = participants.filter(
     (p) => p.status === "CHECKED_IN"
   ).length;
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -66,7 +79,15 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
                 statusFilter={statusFilter}
                 onStatusChange={setStatusFilter}
               />
+
               <ParticipantsList participants={filteredParticipants} />
+              <ParticipantPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+              <Separator />
+              <RepEventFeedback eventId={eventId} />
             </>
           ) : (
             <div className="flex justify-center items-center h-full mt-10">

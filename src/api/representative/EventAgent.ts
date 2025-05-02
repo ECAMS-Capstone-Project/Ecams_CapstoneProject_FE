@@ -7,6 +7,7 @@ import axiosMultipartForm from "../axiosMultipartForm";
 import toast from "react-hot-toast";
 import { FieldDTO } from "../club-owner/RequestClubAPI";
 import { ClubMemberDTO } from "../club-owner/ClubByUser";
+import { topEvents } from "@/models/Club";
 
 export interface EventClubDTO {
   clubId: string;
@@ -21,16 +22,18 @@ export interface EventClubDTO {
   clubFields?: FieldDTO[];
   clubMembers?: ClubMemberDTO[];
   isEventClub: boolean;
+  topEvents: topEvents[];
 }
 
 export const getEventList = async (
   uniId: string,
   pageNumber: number,
-  pageSize: number
+  pageSize: number,
+  status: string
 ): Promise<ResponseDTO<ResponseData<Event>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<Event>>>(
-      `/Event?UniversityId=${uniId}&PageNumber=${pageNumber}&PageSize=${pageSize}`
+      `/Event?UniversityId=${uniId}&Status=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
     );
 
     return response;
@@ -182,7 +185,7 @@ export const approveEvent = async (body: {
     );
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
-    console.error("Error in UniversityList API call:", error.response || error);
+    console.error("Error in approve event API call:", error.response || error);
     throw error;
   }
 };
@@ -195,7 +198,7 @@ export const rejectEvent = async (event: any): Promise<ResponseDTO<Event>> => {
     );
     return response; // Trả về toàn bộ phản hồi
   } catch (error: any) {
-    console.error("Error in UniversityList API call:", error.response || error);
+    console.error("Error in reject event API call:", error.response || error);
     throw error;
   }
 };

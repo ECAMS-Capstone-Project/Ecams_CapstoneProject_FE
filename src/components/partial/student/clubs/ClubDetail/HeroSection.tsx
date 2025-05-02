@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { JoinClubDialog } from "../../club-register/JoinClubDialog";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface HeroSectionProps {
   club: ClubResponse;
@@ -39,46 +40,57 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               transition={{ duration: 0.6 }}
               className="text-white max-w-2xl"
             >
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                {club.clubName}
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-200 mb-8">
-                Contact: {club.contactEmail}
-              </p>
-              <div className="flex gap-4">
-                <Button
-                  variant={
-                    isInClub.isMember || isInClub.hasPendingRequest
-                      ? "outline"
-                      : "custom"
-                  }
-                  className={`text-white px-10 py-7 rounded-full font-semibold text-base hover:bg-opacity-90 transition ${
-                    isInClub.isMember || isInClub.hasPendingRequest
-                      ? "border-2 border-white text-black"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    {
-                      isInClub.isMember
-                        ? navigate(`/club/detail/${club.clubId}`)
+              <div className="flex items-start gap-4 w-fit">
+                <div>
+                  <Avatar className="w-32 h-32">
+                    <AvatarImage src={club.logoUrl} alt="@shadcn" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+                <div>
+                  {" "}
+                  <h1 className="text-5xl md:text-6xl font-bold mb-3 leading-tight">
+                    {club.clubName}
+                  </h1>
+                  <p className="text-xl md:text-2xl text-gray-200 mb-5">
+                    Contact: {club.contactEmail}
+                  </p>
+                  <div className="flex gap-4">
+                    <Button
+                      variant={
+                        isInClub.isMember || isInClub.hasPendingRequest
+                          ? "outline"
+                          : "custom"
+                      }
+                      className={`text-white px-10 py-7 rounded-full font-semibold text-base hover:bg-opacity-90 transition ${
+                        isInClub.isMember || isInClub.hasPendingRequest
+                          ? "border-2 border-white text-black"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        {
+                          isInClub.isMember
+                            ? navigate(`/club/detail/${club.clubId}`)
+                            : isInClub.hasPendingRequest
+                            ? () => {}
+                            : setIsJoinDialogOpen(true);
+                        }
+                      }}
+                    >
+                      {isInClub.isMember
+                        ? "View your club"
                         : isInClub.hasPendingRequest
-                        ? () => {}
-                        : setIsJoinDialogOpen(true);
-                    }
-                  }}
-                >
-                  {isInClub.isMember
-                    ? "View your club"
-                    : isInClub.hasPendingRequest
-                    ? "Pending"
-                    : "Join Club"}
-                </Button>
-                {/* <Button
+                        ? "Pending"
+                        : "Join Club"}
+                    </Button>
+                    {/* <Button
                   variant="outline"
                   className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition"
                 >
                   Learn More
                 </Button> */}
+                  </div>
+                </div>
               </div>
             </motion.div>
 

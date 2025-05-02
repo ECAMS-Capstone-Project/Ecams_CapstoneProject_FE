@@ -215,3 +215,18 @@ export const GetAvailableTask = async (
     throw error;
   }
 };
+
+export const getTrendClub = async (
+  uniId: string
+): Promise<ResponseDTO<EventClubDTO>> => {
+  try {
+    const response = await get<ResponseDTO<EventClubDTO>>(
+      `/Clubs/university/${uniId}/trending`
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error fetching trending clubs list:", error);
+    throw error;
+  }
+};

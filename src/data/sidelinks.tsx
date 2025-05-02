@@ -142,7 +142,7 @@ const SidebarLinks = () => {
         href: "/representative/wallet-representative",
         icon: <ReceiptText size={18} />,
         id: 22,
-      },
+      }
     );
 
     if (currentPackage && !loading) {
@@ -178,16 +178,10 @@ const SidebarLinks = () => {
               id: 28,
             },
             {
-              title: "University Event",
-              href: "/representative/university-event",
+              title: "Event",
+              href: "/representative/event",
               icon: <EventAvailableTwoTone />,
               id: 29,
-            },
-            {
-              title: "Club Event",
-              href: "/representative/club-event",
-              icon: <Event />,
-              id: 30,
             },
             {
               title: "Event Refund",

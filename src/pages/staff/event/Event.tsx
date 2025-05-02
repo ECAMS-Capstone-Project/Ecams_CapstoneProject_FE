@@ -16,7 +16,8 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 const Events = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(5);
+  const [statusFilter, setStatusFilter] = useState<string | null>("ACTIVE");
   // const [, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
@@ -37,7 +38,8 @@ const Events = () => {
   const { events, isLoading, totalPages } = useEvents(
     userInfo?.universityId,
     pageNo,
-    pageSize
+    pageSize,
+    statusFilter || ""
   );
 
   return (
@@ -75,10 +77,9 @@ const Events = () => {
           <Separator />
 
           <EventTable
-            data={events.filter(
-              (events) =>
-                events.representativeId != null && events.status != "PENDING"
-            )}
+            data={events}
+            setStatusFilter={setStatusFilter}
+            enableFilter={true}
           />
           <DataTablePagination
             currentPage={pageNo}

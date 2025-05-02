@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Event } from "@/models/Event";
 import { format } from "date-fns";
@@ -17,6 +18,17 @@ export const OtherEvents = ({
   breadcrumbLabel,
 }: EventProps) => {
   const navigate = useNavigate();
+
+  const handleEventClick = (eventId: string) => {
+    window.scrollTo(0, 0);
+    navigate(`/student/events/${eventId}`, {
+      state: {
+        previousPage: previousPage,
+        breadcrumb: breadcrumbLabel,
+      },
+    });
+  };
+
   return (
     <section className="bg-gray-100 py-8">
       <div className="container mx-auto px-4">
@@ -29,21 +41,16 @@ export const OtherEvents = ({
               .map((event, index) => (
                 <MagicCard
                   key={index}
-                  className="cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
+                  className="h-[550px] cursor-pointe w-full max-w-md flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105"
                   gradientColor="#D1EAF0"
-                  onClick={() => navigate(`/student/events/${event.eventId}`, {
-                    state: {
-                      previousPage: previousPage,
-                      breadcrumb: breadcrumbLabel,
-                    },
-                  })}
+                  onClick={() => handleEventClick(event.eventId)}
                 >
                   <div className="w-full p-5 h-auto">
                     {/* Hình ảnh */}
                     <img
                       src={event.imageUrl}
                       alt={event.eventName}
-                      className="w-full h-auto aspect-auto object-cover rounded-lg mb-4"
+                      className="w-full h-[180px] aspect-auto object-cover rounded-lg mb-4"
                     />
 
                     {/* Nội dung */}
@@ -51,14 +58,12 @@ export const OtherEvents = ({
                       <p className="inline-block italic text-sm font-semibold text-[#2786c6] uppercase">
                         {event.eventAreas && event.eventAreas.length > 0
                           ? event.eventAreas
-                            ?.map((area) => area.name)
-                            .join(" & ")
+                              ?.map((area) => area.name)
+                              .join(" & ")
                           : "Have yet to"}
                       </p>
                       {/* Tên sự kiện */}
-                      <h3
-                        className="cursor-pointer text-2xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent"
-                      >
+                      <h3 className="cursor-pointer text-2xl font-bold bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
                         {event.eventName}
                       </h3>
 
@@ -75,11 +80,33 @@ export const OtherEvents = ({
                             : "Free"}
                         </span>
                       </div>
-
+                      <p className="font-semibold text-base">
+                        {event?.eventFields?.map((field) => (
+                          <span
+                            key={field.fieldId}
+                            className="px-2 py-1 rounded-md bg-[#49bbbd]/20 text-[#49bbbd] mr-2"
+                          >
+                            {field.fieldName}
+                          </span>
+                        ))}
+                      </p>
+                      {event.startDate && event.endDate ? (
+                        <div className="flex items-center gap-2 text-md text-slate-600">
+                          <CalendarDays size={16} /> Registration:
+                          <span>
+                            {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
+                            {format(new Date(event.endDate), "dd/MM/yyyy")}
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-slate-600">
+                          Invalid event dates
+                        </p>
+                      )}
                       {/* Ngày bắt đầu - kết thúc */}
                       {event.startDate && event.endDate ? (
                         <div className="flex items-center gap-2 text-md text-slate-600">
-                          <CalendarDays size={16} />
+                          <CalendarDays size={16} /> Event Date:
                           <span>
                             {format(new Date(event.startDate), "dd/MM/yyyy")} -{" "}
                             {format(new Date(event.endDate), "dd/MM/yyyy")}

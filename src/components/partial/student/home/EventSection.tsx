@@ -1,5 +1,4 @@
 import { MagicCard } from "@/components/magicui/magic-card";
-import { EventCategoryFilter } from "../events/EventFilter";
 // import { Input } from "@/components/ui/input";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { useState } from "react";
@@ -11,7 +10,7 @@ import { AnimatedGradientText } from "@/components/magicui/animated-gradient-tex
 import HomePage from "@/pages/student/home/HomePage";
 
 export const EventsSection = () => {
-  const [pageNo, setPageNo] = useState(1);
+  const [pageNo] = useState(1);
   const [pageSize] = useState(10);
   // const [, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
@@ -19,7 +18,7 @@ export const EventsSection = () => {
   // const [search, setSearch] = useState("");
   // State cho filter scope (["inside", "outside"]).
   // Có thể là mảng rỗng nếu chưa chọn gì.
-  const [scopeFilter, setScopeFilter] = useState<string[]>([]);
+  const [scopeFilter] = useState<string[]>([]);
 
   // Get data from API
   const { getAllEventListQuery } = useEvents();
@@ -53,14 +52,14 @@ export const EventsSection = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           /> */}
-          <EventCategoryFilter
+          {/* <EventCategoryFilter
             value={scopeFilter}
             onChange={(newVal) => {
               setScopeFilter(newVal);
               // Mỗi khi filter thay đổi, reset pageNo về 1 (nếu muốn)
               setPageNo(1);
             }}
-          />
+          /> */}
         </div>
       </div>
       {isLoading && (
@@ -98,7 +97,7 @@ export const EventsSection = () => {
               })
             }
           >
-            <div className="w-full p-5 h-auto">
+            <div className="w-full p-5 h-2/3">
               {/* Hình ảnh */}
               <img
                 src={event.imageUrl}

@@ -22,14 +22,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, fixTime } from "@/lib/utils";
-import { CalendarIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Trash2Icon } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { Heading } from "@/components/ui/heading";
-import { AreaPicker, DatePicker } from "./AreaPicker";
 
 import { useAreas } from "@/hooks/staff/Area/useArea";
 import { updateEvent } from "@/api/representative/EventAgent";
@@ -40,6 +39,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AreaPicker,
+  DatePicker,
+} from "@/components/partial/staff/staff-events/AreaPicker";
 const EventSchema = z.object({
   eventName: z.string().min(1, "Event name is required"),
   description: z.string().min(1, "Description is required"),
@@ -86,7 +89,7 @@ const EventSchema = z.object({
 
 // type EventFormValues = z.infer<typeof EventSchema>;
 
-export function EditEventForm() {
+export function ClubEditEventForm() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -266,7 +269,14 @@ export function EditEventForm() {
 
   return (
     <>
-      <Heading title={`Edit Event`} description={`Edit event details`} />
+      <div className="flex justify-start items-center gap-2">
+        <ArrowLeft
+          size={24}
+          onClick={() => navigate(-1)}
+          className="cursor-pointer"
+        />
+        <Heading title={`Edit Event`} description={`Edit event details`} />
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

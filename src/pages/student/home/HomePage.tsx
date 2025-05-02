@@ -38,24 +38,30 @@ const HomePage = () => {
       <div className="px-4 py-6">
         <Hero />
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-800 mt-8">
-            <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-              Events{" "}
-            </span>
-            around you
-          </h2>
           {userInfo && userInfo.isRecommended !== true ? (
-            <div className="flex flex-col items-center justify-center text-center mt-20 mb-24 text-gray-600">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
-                alt="Not recommended"
-                className="w-24 h-24 mb-4 opacity-80"
-              />
-              <h2 className="text-xl font-semibold mb-2">No event recommendations</h2>
-              <p className="text-sm max-w-md">
-                You have opted out of personalized event recommendations. If you change your mind, you can turn it back on in your preferences 🎯
-              </p>
-            </div>
+            <>
+              <h2 className="text-3xl font-bold text-gray-800 mt-8">
+                <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
+                  Events{" "}
+                </span>
+                around you
+              </h2>
+              <div className="flex flex-col items-center justify-center text-center mt-20 mb-24 text-gray-600">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
+                  alt="Not recommended"
+                  className="w-24 h-24 mb-4 opacity-80"
+                />
+                <h2 className="text-xl font-semibold mb-2">
+                  No event recommendations
+                </h2>
+                <p className="text-sm max-w-md">
+                  You have opted out of personalized event recommendations. If
+                  you change your mind, you can turn it back on in your
+                  preferences 🎯
+                </p>
+              </div>
+            </>
           ) : (
             <>
               <EventRecommendedSection userId={userInfo?.userId} flag={flag} />

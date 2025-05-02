@@ -57,15 +57,20 @@ export function DataTableRowActions<TData>({
       >
         <EyeIcon className="mr-2 h-4 w-4 cursor-pointer text-black" />
       </button>
-      <button
-        className="bg-transparent border-none"
-        onClick={() => {
-          navigate(`/representative/event/update/${row.getValue("eventId")}`);
-        }}
-      >
-        <Edit className="mr-2 h-4 w-4 cursor-pointer text-black" />
-      </button>
-
+      {row.getValue("status") !== "PENDING" &&
+        row.getValue("status") !== "ENDED" &&
+        row.getValue("status") !== "CANCELED" && (
+          <button
+            className="bg-transparent border-none"
+            onClick={() => {
+              navigate(
+                `/representative/event/update/${row.getValue("eventId")}`
+              );
+            }}
+          >
+            <Edit className="mr-2 h-4 w-4 cursor-pointer text-black" />
+          </button>
+        )}
       {/* Chỉ mở dialog khi eventDetail có dữ liệu */}
 
       {/* <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

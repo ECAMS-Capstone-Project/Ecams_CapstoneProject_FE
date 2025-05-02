@@ -19,14 +19,19 @@ import {
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import { format, formatDate } from "date-fns";
-import { EventSubmissionTaskDetail, GradeStudentTaskAPI, SubmissionReviewDTO } from "@/api/club-owner/TaskAPI";
+import {
+  EventSubmissionTaskDetail,
+  GradeStudentTaskAPI,
+  SubmissionReviewDTO,
+} from "@/api/club-owner/TaskAPI";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { EventTaskDetail } from "@/models/InterTask";
 import parse from "html-react-parser";
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { Grid2 } from "@mui/material";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import useAuth from "@/hooks/useAuth";
+import { Grid2 } from "@mui/material";
+import { cn } from "@/lib/utils";
 
 const ViewTaskSubmissionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +42,10 @@ const ViewTaskSubmissionPage: React.FC = () => {
   const { user } = useAuth();
 
   const deadline = taskDetail.deadline;
-  const isSubmitted = submission.submissionDate !== "0001-01-01T00:00:00" || (submission.studentSubmission != null || "");
+  const isSubmitted =
+    submission.submissionDate !== "0001-01-01T00:00:00" ||
+    submission.studentSubmission != null ||
+    "";
 
   const isDeadlinePassed = deadline
     ? new Date(deadline).getTime() < Date.now()
@@ -52,7 +60,9 @@ const ViewTaskSubmissionPage: React.FC = () => {
 
   const handleSaveScore = async () => {
     if (!isSubmitted && !isAllowedToReviewAsZero) {
-      alert("Cannot grade because the student has not submitted the assignment and the deadline has not passed.");
+      alert(
+        "Cannot grade because the student has not submitted the assignment and the deadline has not passed."
+      );
       return;
     }
 
@@ -68,26 +78,23 @@ const ViewTaskSubmissionPage: React.FC = () => {
       comment: feedback,
       eventTaskDetailId: taskDetail.eventTaskDetailId,
       reviewedBy: user.userId,
-      submissionScore: score
-    }
+      submissionScore: score,
+    };
 
     try {
-      setIsSaving(true)
+      setIsSaving(true);
       await GradeStudentTaskAPI(data);
     } catch (err) {
       console.error(err);
     } finally {
       setIsSaving(false);
-      toast.success("Submit successfully")
+      toast.success("Submit successfully");
       window.history.back();
     }
   };
 
   const handleDownloadAll = async () => {
-    if (
-      submission?.submissionFile &&
-      submission.submissionFile.length > 0
-    ) {
+    if (submission?.submissionFile && submission.submissionFile.length > 0) {
       const zip = new JSZip();
 
       const fetchPromises = submission.submissionFile.map(async (fileUrl) => {
@@ -111,6 +118,21 @@ const ViewTaskSubmissionPage: React.FC = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    if (status === "COMPLETED") return "bg-green-100 text-green-800";
+    if (status === "ON_GOING") return "bg-yellow-100 text-yellow-800";
+    if (status === "NOT_STARTED") return "bg-gray-200 text-gray-800";
+    if (status === "REVIEWING") return "bg-gray-200 text-gray-800";
+    return "bg-red-100 text-red-800";
+  };
+
+  const getStatusText = (status: string) => {
+    if (status === "COMPLETED") return "Completed";
+    if (status === "ON_GOING") return "On going";
+    if (status === "NOT_STARTED") return "Not started";
+    if (status === "REVIEWING") return "Reviewing";
+    return "Overdue";
+  };
   return (
     <div className="max-w-full mx-auto space-y-6 ">
       <EventTaskBreadcrumb
@@ -149,9 +171,9 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p>
                   {taskDetail?.startTime
                     ? format(
-                      new Date(taskDetail.startTime),
-                      "dd/MM/yyyy - HH:mm a"
-                    )
+                        new Date(taskDetail.startTime),
+                        "dd/MM/yyyy - HH:mm a"
+                      )
                     : "N/A"}
                 </p>
               </div>
@@ -164,21 +186,28 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p>
                   {taskDetail?.deadline
                     ? format(
-                      new Date(taskDetail.deadline),
-                      "dd/MM/yyyy - HH:mm a"
-                    )
+                        new Date(taskDetail.deadline),
+                        "dd/MM/yyyy - HH:mm a"
+                      )
                     : "N/A"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {taskDetail?.status ? (
+              {submission?.status ? (
                 <>
                   <span className="w-5 h-5 rounded-full bg-green-500 inline-block" />
                   <div>
                     <p className="text-sm font-medium text-gray-700">Status</p>
-                    <p className="text-green-600 font-semibold">Active</p>
+                    <span
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-sm font-medium",
+                        getStatusColor(submission.status)
+                      )}
+                    >
+                      {getStatusText(submission.status)}
+                    </span>
                   </div>
                 </>
               ) : (
@@ -200,7 +229,11 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p className="text-sm font-medium text-gray-700">
                   Member assign
                 </p>
-                <p>{submission?.memberName ? `${submission?.memberName} - ${submission.memberEmail}` : "N/A"}</p>
+                <p>
+                  {submission?.memberName
+                    ? `${submission?.memberName} - ${submission.memberEmail}`
+                    : "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -208,7 +241,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
           <div>
             <p className="text-gray-700">
               <strong>Max score:</strong>{" "}
-              <Badge className="bg-green-100 text-green-700 text-base">
+              <Badge className="bg-green-100 text-green-700 text-base hover:bg-green-200">
                 10
               </Badge>
             </p>
@@ -236,7 +269,10 @@ const ViewTaskSubmissionPage: React.FC = () => {
                   <p className="flex items-center gap-2">
                     <Clock size={16} />
                     <strong>Submit date:</strong>{" "}
-                    {formatDate(new Date(submission.submissionDate).toISOString(), "dd/MM/yyyy - HH:mm a")}
+                    {formatDate(
+                      new Date(submission.submissionDate).toISOString(),
+                      "dd/MM/yyyy - HH:mm a"
+                    )}
                   </p>
                   <p className="flex text-justify items-center gap-2">
                     <SquareChartGantt size={16} />
@@ -301,9 +337,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <strong>Score:</strong>
                 {score !== null ? (
-                  <Badge className="text-green-400 text-base">
-                    {score}
-                  </Badge>
+                  <Badge className="text-green-400 text-base">{score}</Badge>
                 ) : (
                   <span className="italic text-muted-foreground">
                     Not scored
@@ -367,7 +401,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
       </Card>
 
       <div className="flex justify-end gap-3">
-        {(hasFeedback && isSubmitted) || (!isSubmitted) ? (
+        {(hasFeedback && isSubmitted) || !isSubmitted ? (
           <Button variant="outline" onClick={() => navigate(-1)}>
             Close
           </Button>

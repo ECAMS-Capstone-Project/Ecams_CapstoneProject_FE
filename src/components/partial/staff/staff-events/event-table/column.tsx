@@ -7,21 +7,71 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
+import { Button } from "@/components/ui/button";
 import {
   CheckCircle2Icon,
-  XCircleIcon,
-  CircleEllipsis,
   CircleCheck,
+  CircleEllipsis,
   CircleX,
+  Plus,
+  XCircleIcon,
 } from "lucide-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
+// import { useState } from "react";
 import { Event } from "@/models/Event";
 import { DataTableRowActions } from "./row-actions";
 
+const getStatusStyle = (status: string) => {
+  switch (status) {
+    case "ACTIVE":
+      return {
+        bg: "bg-[#CBF2DA]",
+        text: "text-[#2F4F4F]",
+        icon: <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />,
+      };
+    case "INACTIVE":
+      return {
+        bg: "bg-[#FFF5BA]",
+        text: "text-[#5A3825]",
+        icon: <XCircleIcon size={12} className="text-[#5A3825]" />,
+      };
+    case "PENDING":
+      return {
+        bg: "bg-[#FFE6CC]",
+        text: "text-[#CC6600]",
+        icon: <CircleEllipsis size={12} className="text-[#CC6600]" />,
+      };
+    case "ENDED":
+      return {
+        bg: "bg-[#D1E7F3]",
+        text: "text-[#1E4A7D]",
+        icon: <CircleCheck size={12} className="text-[#1E4A7D]" />,
+      };
+    case "WAITING":
+      return {
+        bg: "bg-[#F9E3D1]",
+        text: "text-[#9E5C3F]",
+        icon: <CircleEllipsis size={12} className="text-[#9E5C3F]" />,
+      };
+    case "CANCELED":
+      return {
+        bg: "bg-[#eca6a6]",
+        text: "text-[#b62e2e]",
+        icon: <CircleX size={12} className="text-[#b62e2e]" />,
+      };
+    default:
+      return { bg: "", text: "text-gray-500", icon: null };
+  }
+};
+
 // Định nghĩa columns cho DataTable
-export const EventColums: ColumnDef<Event>[] = [
+export const EventColums = (
+  setStatusFilter: (status: string | null) => void,
+  selectedStatus: string,
+  setSelectedStatus: (status: string) => void,
+  open: boolean,
+  setOpen: (open: boolean) => void,
+  enableFilter?: boolean
+): ColumnDef<Event>[] => [
   { accessorKey: "eventId", header: undefined, cell: undefined },
   {
     accessorKey: "imageUrl",
@@ -97,102 +147,50 @@ export const EventColums: ColumnDef<Event>[] = [
     accessorKey: "status",
     header: ({ column }) => (
       <div className="flex items-center justify-center">
-        <DataTableFacetedFilter
-          column={column}
-          title="Status"
-          options={[
-            { label: "Active", value: "ACTIVE" },
-            { label: "Inactive", value: "INACTIVE" },
-            { label: "Pending", value: "PENDING" },
-            { label: "Ended", value: "ENDED" },
-            { label: "Waiting", value: "WAITING" },
-          ]}
-        />
+        {enableFilter ? (
+          <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 border-dashed">
+                <Plus className="mr-2 h-4 w-4" />
+                {selectedStatus || "All"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[200px]">
+              {["All", "ACTIVE", "INACTIVE", "ENDED", "WAITING"].map(
+                (status) => (
+                  <DropdownMenuItem
+                    key={status}
+                    onClick={() => {
+                      setStatusFilter(status === "All" ? "" : status);
+                      setSelectedStatus(status);
+                      setOpen(false);
+                    }}
+                  >
+                    {status === "All"
+                      ? "All"
+                      : status.charAt(0) + status.slice(1).toLowerCase()}
+                  </DropdownMenuItem>
+                )
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <DataTableColumnHeader column={column} title="Status" />
+        )}
       </div>
     ),
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const [currentStatus, setCurrentStatus] = useState(status);
-      const [, setIsDialogOpen] = useState(false);
-      const reactivateUni = async () => {
-        try {
-          // Gửi API để cập nhật trạng thái
-          //   await reactiveUni(row.original.universityId); // Hàm này là một giả định
-          toast.success("Reactivate University Successfully.");
-          setCurrentStatus("ACTIVE");
-        } catch (error) {
-          console.error("Failed to update status:", error);
-          toast.error("Failed to update status.");
-        }
-      };
-
+      const status = row.original.status as string;
+      console.log("stt", row.original.status as string);
+      const { bg, text, icon } = getStatusStyle(status);
       return (
-        <div className="flex justify-center p-0">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div
-                className={`flex items-center justify-center gap-1 py-2 px-1.5 rounded-md cursor-pointer ${
-                  currentStatus === "ACTIVE"
-                    ? "bg-[#CBF2DA] text-[#2F4F4F]"
-                    : currentStatus === "INACTIVE"
-                    ? "bg-[#FFF5BA] text-[#5A3825]"
-                    : currentStatus === "PENDING"
-                    ? "bg-[#FFE6CC] text-[#CC6600]"
-                    : currentStatus === "ENDED"
-                    ? "bg-[#D1E7F3] text-[#1E4A7D]"
-                    : currentStatus === "WAITING"
-                    ? "bg-[#F9E3D1] text-[#9E5C3F]"
-                    : currentStatus === "CANCELED"
-                    ? "bg-[#eca6a6] text-[#b62e2e]"
-                    : ""
-                } w-auto`}
-              >
-                {currentStatus === "ACTIVE" && (
-                  <CheckCircle2Icon size={12} className="text-[#2F4F4F]" />
-                )}
-                {currentStatus === "INACTIVE" && (
-                  <XCircleIcon size={12} className=" text-[#5A3825]" />
-                )}
-                {currentStatus === "PENDING" && (
-                  <CircleEllipsis size={12} className=" text-[#CC6600]" />
-                )}
-                {currentStatus === "ENDED" && (
-                  <CircleCheck size={12} className=" text-[#2F4F4F]" />
-                )}
-                {currentStatus === "WAITING" && (
-                  <CircleEllipsis size={12} className=" text-[#2F4F4F]" />
-                )}
-                {currentStatus === "CANCELED" && (
-                  <CircleX size={12} className=" text-[#2F4F4F]" />
-                )}
-                <span>{currentStatus}</span>
-                {/* <ChevronDown size={16} /> */}
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40">
-              <DropdownMenuItem
-                onClick={() => reactivateUni()}
-                className={`${
-                  currentStatus === "ACTIVE" ? "bg-[#CBF2DA]" : ""
-                } cursor-pointer`}
-              >
-                <CheckCircle2Icon size={18} className=" text-[#2F4F4F]" />{" "}
-                Active
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsDialogOpen(true);
-                }}
-                className={`${
-                  currentStatus === "INACTIVE" ? "bg-[#FFF5BA]" : ""
-                } cursor-pointer`}
-              >
-                <XCircleIcon size={18} className=" text-[#5A3825]" /> Inactive
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex justify-center">
+          <div
+            className={`flex items-center gap-1 p-2 rounded-md ${bg} ${text}`}
+          >
+            {icon}
+            <span className="text-sm font-semibold">{status}</span>
+          </div>
         </div>
       );
     },

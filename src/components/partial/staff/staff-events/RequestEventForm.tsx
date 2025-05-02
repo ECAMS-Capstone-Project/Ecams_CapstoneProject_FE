@@ -298,7 +298,7 @@ export const RequestEventDetail: React.FC = () => {
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-4">
-              <DialogHeader className="p-1 mb-3">
+              <DialogHeader className="p-1 mb-2">
                 <DialogTitle>Event Approval</DialogTitle>
                 <DialogDescription>
                   {(event?.price ?? 0) > 0
@@ -306,24 +306,30 @@ export const RequestEventDetail: React.FC = () => {
                     : "This is a free event. You can approve it directly."}
                 </DialogDescription>
               </DialogHeader>
-              {(event?.price ?? 0) > 0 && (
-                <div className="p-5">
-                  <Label className="mb-3">Wallet name</Label>
-                  <EventWalletPicker
-                    value={selectedWalletId}
-                    onChange={(walletId) => setSelectedWalletId(walletId)}
+              <div
+                className={`grid grid-cols-1  ${
+                  (event?.price ?? 0) == 0 ? "md:grid-cols-1" : "md:grid-cols-2"
+                } gap-2 p-2 mb-2`}
+              >
+                {(event?.price ?? 0) > 0 && (
+                  <div className="">
+                    <Label className="mb-5">Wallet name</Label>
+                    <EventWalletPicker
+                      value={selectedWalletId}
+                      onChange={(walletId) => setSelectedWalletId(walletId)}
+                    />
+                  </div>
+                )}
+                <div className="">
+                  <Label className="mb-5">Training Point</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={20}
+                    value={trainingPoint}
+                    onChange={(e) => setTrainingPoint(Number(e.target.value))}
                   />
                 </div>
-              )}
-              <div className="p-5">
-                <Label className="mb-3">Training Point</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={20}
-                  value={trainingPoint}
-                  onChange={(e) => setTrainingPoint(Number(e.target.value))}
-                />
               </div>
               <div className="flex justify-end gap-2">
                 <DialogFooter>
