@@ -7,6 +7,7 @@ import axiosMultipartForm from "../axiosMultipartForm";
 import toast from "react-hot-toast";
 import { FieldDTO } from "../club-owner/RequestClubAPI";
 import { ClubMemberDTO } from "../club-owner/ClubByUser";
+import { topEvents } from "@/models/Club";
 
 export interface EventClubDTO {
   clubId: string;
@@ -21,6 +22,7 @@ export interface EventClubDTO {
   clubFields?: FieldDTO[];
   clubMembers?: ClubMemberDTO[];
   isEventClub: boolean;
+  topEvents: topEvents[];
 }
 
 export const getEventList = async (

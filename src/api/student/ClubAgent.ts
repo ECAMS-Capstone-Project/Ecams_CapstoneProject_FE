@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ClubResponse, isInClubResponse } from "@/models/Club";
+import { isInClubResponse } from "@/models/Club";
 import { get, post } from "../agent";
 import { ResponseData, ResponseDTO } from "../BaseResponse";
 import { EventClubDTO } from "../representative/EventAgent";
@@ -68,9 +68,9 @@ export const getClub = async (
   pageNumber: number,
   pageSize: number,
   status: string
-): Promise<ResponseDTO<ResponseData<ClubResponse>>> => {
+): Promise<ResponseDTO<ResponseData<EventClubDTO>>> => {
   try {
-    const response = await get<ResponseDTO<ResponseData<ClubResponse>>>(
+    const response = await get<ResponseDTO<ResponseData<EventClubDTO>>>(
       `/Clubs/university/${uniId}?Status=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
     );
 

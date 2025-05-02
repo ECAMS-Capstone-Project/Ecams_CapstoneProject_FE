@@ -19,6 +19,7 @@ import useAuth from "@/hooks/useAuth";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ClubResponse } from "@/models/Club";
 
 interface ClubPickerProps {
   value: string[];
@@ -33,7 +34,7 @@ const ClubPicker: React.FC<ClubPickerProps> = ({ value = [], onChange }) => {
   const { user } = useAuth();
   const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
 
-  const currentClub = clubs?.find((club: EventClubDTO) =>
+  const currentClub = clubs?.find((club: EventClubDTO | ClubResponse) =>
     club.clubMembers?.some(
       (member) =>
         member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
@@ -41,10 +42,10 @@ const ClubPicker: React.FC<ClubPickerProps> = ({ value = [], onChange }) => {
   );
 
   const clubsNotCurrentClub = clubs.filter(
-    (club: EventClubDTO) => club.clubId !== currentClub?.clubId
+    (club: EventClubDTO | ClubResponse) => club.clubId !== currentClub?.clubId
   );
-  const selectedClubs = clubsNotCurrentClub.filter((club: EventClubDTO) =>
-    value.includes(club.clubName.trim())
+  const selectedClubs = clubsNotCurrentClub.filter(
+    (club: EventClubDTO | ClubResponse) => value.includes(club.clubName.trim())
   );
 
   const handleSelect = (club: EventClubDTO) => {
