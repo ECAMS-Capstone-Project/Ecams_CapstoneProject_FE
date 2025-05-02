@@ -45,7 +45,7 @@ import {
 // } from "@/components/ui/command";
 import { InterClubEventSchema } from "@/schema/EventSchema";
 import { ArrowLeft, CalendarIcon, Trash2Icon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, combineDateTime } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Heading } from "@/components/ui/heading";
@@ -147,6 +147,14 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
 
     try {
       setIsLoading(true);
+      const finalRegisteredStartTime = combineDateTime(
+        values.registeredStartDate,
+        values.startTimeTime || "00:00"
+      );
+      const finalRegisteredEndTime = combineDateTime(
+        values.registeredEndDate,
+        values.deadlineTime || "00:00"
+      );
       const formData = new FormData();
       formData.append("UserId", values.userId ?? "");
       formData.append("UniversityId", values.universityId);
@@ -154,11 +162,11 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
       formData.append("Description", values.description ?? "");
       formData.append(
         "RegisteredStartDate",
-        fixTime(values.registeredStartDate).toISOString()
+        fixTime(finalRegisteredStartTime).toISOString()
       );
       formData.append(
         "RegisteredEndDate",
-        fixTime(values.registeredEndDate).toISOString()
+        fixTime(finalRegisteredEndTime).toISOString()
       );
       formData.append("Price", values.price.toString());
       formData.append("MaxParticipants", values.maxParticipants.toString());
@@ -243,7 +251,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                   {/* <div className="w-full">
                   
                   </div> */}
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <FormField
                       control={form.control}
                       name="imageUrl"
@@ -293,7 +301,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                         );
                       }}
                     />
-                    <div className="grid grid-cols-2 gap-5">
+                    <div className="grid grid-cols-2 gap-5 mb-2">
                       {/* <FormField
                         control={form.control}
                         name="imageUrl"
@@ -349,9 +357,35 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                         name="price"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Price</FormLabel>
+                            <FormLabel>Price (VNĐ)</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} min={0} />
+                              <Input
+                                min={0}
+                                type="text"
+                                placeholder="Enter price (VNĐ)"
+                                {...field}
+                                onChange={(e) => {
+                                  // Remove all non-digit characters
+                                  const value = e.target.value.replace(
+                                    /\D/g,
+                                    ""
+                                  );
+                                  // Format with thousand separators
+                                  const formattedValue = value.replace(
+                                    /\B(?=(\d{3})+(?!\d))/g,
+                                    ","
+                                  );
+                                  field.onChange(value);
+                                  e.target.value = formattedValue;
+                                }}
+                                value={
+                                  field.value
+                                    ? field.value
+                                        .toString()
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                    : ""
+                                }
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -439,89 +473,131 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                         )}
                       />
                       {/* Hiển thị ngày bắt đầu và kết thúc cho mỗi khu vực */}
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-5 w-full mt-3">
                       <FormField
                         control={form.control}
                         name="registeredStartDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Registered Start Date</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                      " text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0 mb-0 pb-0"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-
-                            <FormMessage />
+                          <FormItem className="flex flex-col h-full">
+                            <FormLabel className="mb-2">
+                              Register start date
+                            </FormLabel>
+                            <div className="flex-1">
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                        "text-left font-normal w-full",
+                                        !field.value && "text-muted-foreground"
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        format(new Date(field.value), "PPP")
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0 mb-0 pb-0"
+                                  align="start"
+                                >
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => date < new Date()}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                            <FormMessage className="mt-1 text-sm text-red-500" />
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name="startTimeTime"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col h-full">
+                            <FormLabel className="mb-2">Time</FormLabel>
+                            <div className="flex-1">
+                              <FormControl>
+                                <Input type="time" {...field} />
+                              </FormControl>
+                            </div>
+                            <FormMessage className="mt-1 text-sm text-red-500" />
+                          </FormItem>
+                        )}
+                      />
+
                       <FormField
                         control={form.control}
                         name="registeredEndDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Registered End Date</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                      "text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto p-0"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  disabled={(date) => date < new Date()}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
+                          <FormItem className="flex flex-col h-full">
+                            <FormLabel className="mb-2">
+                              Register end date
+                            </FormLabel>
+                            <div className="flex-1">
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                        "text-left font-normal w-full",
+                                        !field.value && "text-muted-foreground"
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        format(new Date(field.value), "PPP")
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0 mb-0 pb-0"
+                                  align="start"
+                                >
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={field.onChange}
+                                    disabled={(date) => date < new Date()}
+                                    initialFocus
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                            <FormMessage className="mt-1 text-sm text-red-500" />
+                          </FormItem>
+                        )}
+                      />
 
-                            <FormMessage />
+                      <FormField
+                        control={form.control}
+                        name="deadlineTime"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col h-full">
+                            <FormLabel className="mb-2">Time</FormLabel>
+                            <div className="flex-1">
+                              <FormControl>
+                                <Input type="time" {...field} />
+                              </FormControl>
+                            </div>
+                            <FormMessage className="mt-1 text-sm text-red-500" />
                           </FormItem>
                         )}
                       />
