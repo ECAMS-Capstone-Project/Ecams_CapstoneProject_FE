@@ -53,10 +53,7 @@ export const paymentEvent = async (data: {
     return response.data; // Hoặc trả về dữ liệu mặc định nếu cần
   } catch (error: any) {
     console.error("Error in paymentEvent:", error);
-    toast.error(
-      error.response.data.message ||
-        "An error occurred while processing the payment."
-    );
+
     throw error; // Để các phần khác xử lý lỗi này
   }
 };
