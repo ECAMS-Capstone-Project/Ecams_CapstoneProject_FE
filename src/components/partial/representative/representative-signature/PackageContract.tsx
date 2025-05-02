@@ -16,11 +16,11 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { paymentPackage } from "@/api/representative/PaymentAPI";
 import { StatusCodeEnum } from "@/lib/statusCodeEnum";
 import { formatPrice } from "@/lib/FormatPrice";
+import useAuth from "@/hooks/useAuth";
 
 const schema = z.object({
   fullName: z.string().min(1, "Vui lòng nhập họ tên."),

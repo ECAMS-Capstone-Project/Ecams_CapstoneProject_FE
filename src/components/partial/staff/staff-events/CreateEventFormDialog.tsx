@@ -394,6 +394,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                               <FormLabel>Event's Name</FormLabel>
                               <FormControl>
                                 <Input
+                                  placeholder="Enter event name"
                                   type="text"
                                   {...field}
                                   value={initialData?.eventName}
@@ -408,9 +409,34 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           name="price"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price</FormLabel>
+                              <FormLabel>Price (VNĐ)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} min={0} />
+                                <Input
+                                  type="text"
+                                  placeholder="Enter price (VNĐ)"
+                                  {...field}
+                                  onChange={(e) => {
+                                    // Remove all non-digit characters
+                                    const value = e.target.value.replace(
+                                      /\D/g,
+                                      ""
+                                    );
+                                    // Format with thousand separators
+                                    const formattedValue = value.replace(
+                                      /\B(?=(\d{3})+(?!\d))/g,
+                                      ","
+                                    );
+                                    field.onChange(value);
+                                    e.target.value = formattedValue;
+                                  }}
+                                  value={
+                                    field.value
+                                      ? field.value
+                                          .toString()
+                                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                      : ""
+                                  }
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

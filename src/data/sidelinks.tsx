@@ -1,4 +1,3 @@
-import useAuth from "@/hooks/useAuth";
 import {
   AreaChart,
   BellRingIcon,
@@ -26,6 +25,10 @@ import {
   Stars,
 } from "@mui/icons-material";
 import { HiReceiptRefund } from "react-icons/hi";
+import { useEffect, useState } from "react";
+import { PackageCurrent } from "@/api/agent/PackageAgent";
+import { Package } from "@/models/Package";
+import useAuth from "@/hooks/useAuth";
 
 export interface NavLink {
   title: string;
@@ -41,6 +44,29 @@ export interface SideLink extends NavLink {
 
 const SidebarLinks = () => {
   const { user } = useAuth();
+  const [currentPackage, setCurrentPackage] = useState<Package | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackage = async () => {
+      if (user?.roles.includes("REPRESENTATIVE")) {
+        try {
+          setLoading(true);
+          const response = await PackageCurrent(user.universityId || "");
+          setCurrentPackage(response.data || null);
+        } catch (error) {
+          console.error("Error fetching package:", error);
+          setCurrentPackage(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetchPackage();
+  }, [user]);
 
   const sidelinks: SideLink[] = [];
 
@@ -97,7 +123,7 @@ const SidebarLinks = () => {
     );
   }
 
-  if (user?.roles[0].toLocaleLowerCase() === "representative") {
+  if (user?.roles.includes("REPRESENTATIVE")) {
     sidelinks.push(
       {
         title: "Dashboard",
@@ -110,114 +136,119 @@ const SidebarLinks = () => {
         href: "/view-package",
         icon: <FileText size={18} />,
         id: 8,
-      },
-      {
-        title: "Contract",
-        href: "/representative/wallet-representative",
-        icon: <ReceiptText size={18} />,
-        id: 22,
-      },
-      {
-        title: "Student",
-        href: "/representative/request-student",
-        icon: <UserCheck size={18} />,
-        id: 23,
-      },
-      {
-        title: "Area",
-        href: "/representative/area",
-        icon: <AreaChart size={18} />,
-        id: 24,
-      },
-      {
-        title: "Wallet",
-        href: "/representative/wallet",
-        icon: <Wallet size={18} />,
-        id: 25,
-      },
-      {
-        title: "Event",
-        href: "/representative/event",
-        icon: <Event />,
-        id: 26,
-        sub: [
-          {
-            title: "Event Refund",
-            href: "/representative/event-refund",
-            icon: <HiReceiptRefund />,
-            id: 27,
-          },
-          {
-            title: "Pending Event",
-            href: "/representative/pending-event",
-            icon: <Pending />,
-            id: 28,
-          },
-          {
-            title: "University Event",
-            href: "/representative/university-event",
-            icon: <EventAvailableTwoTone />,
-            id: 29,
-          },
-          {
-            title: "Club Event",
-            href: "/representative/club-event",
-            icon: <Event />,
-            id: 30,
-          },
-        ],
-      },
-      {
-        title: "Manage Club",
-        href: "/representative/club",
-        icon: <Groups2Icon />,
-        id: 27,
-        sub: [
-          {
-            title: "Event-Club",
-            href: "/representative/event-club",
-            icon: <EventAvailableTwoTone />,
-            id: 28,
-          },
-          {
-            title: "Request-Club",
-            href: "/representative/club",
-            icon: <Pending />,
-            id: 29,
-          },
-          {
-            title: "Active-Club",
-            href: "/representative/active-club",
-            icon: <Diversity3 />,
-            id: 31,
-          },
-          {
-            title: "Request Change Owner",
-            href: "/representative/request-change-owner",
-            icon: <UserCheck />,
-            id: 33,
-          },
-          {
-            title: "Ranking-Club",
-            href: "/representative/club-ranking",
-            icon: <Stars />,
-            id: 32,
-          },
-        ],
-      },
-      {
-        title: "Change Representative",
-        href: "/representative/request-change",
-        icon: <UserPen />,
-        id: 26,
-      },
-      {
-        title: "History Representative",
-        href: "/representative/history-representative",
-        icon: <History />,
-        id: 27,
       }
     );
+
+    if (currentPackage && !loading) {
+      sidelinks.push(
+        {
+          title: "Contract",
+          href: "/representative/wallet-representative",
+          icon: <ReceiptText size={18} />,
+          id: 22,
+        },
+        {
+          title: "Student",
+          href: "/representative/request-student",
+          icon: <UserCheck size={18} />,
+          id: 23,
+        },
+        {
+          title: "Area",
+          href: "/representative/area",
+          icon: <AreaChart size={18} />,
+          id: 24,
+        },
+        {
+          title: "Wallet",
+          href: "/representative/wallet",
+          icon: <Wallet size={18} />,
+          id: 25,
+        },
+        {
+          title: "Event",
+          href: "/representative/event",
+          icon: <Event />,
+          id: 26,
+          sub: [
+            {
+              title: "Pending Event",
+              href: "/representative/pending-event",
+              icon: <Pending />,
+              id: 28,
+            },
+            {
+              title: "University Event",
+              href: "/representative/university-event",
+              icon: <EventAvailableTwoTone />,
+              id: 29,
+            },
+            {
+              title: "Club Event",
+              href: "/representative/club-event",
+              icon: <Event />,
+              id: 30,
+            },
+            {
+              title: "Event Refund",
+              href: "/representative/event-refund",
+              icon: <HiReceiptRefund />,
+              id: 27,
+            },
+          ],
+        },
+        {
+          title: "Manage Club",
+          href: "/representative/club",
+          icon: <Groups2Icon />,
+          id: 27,
+          sub: [
+            {
+              title: "Club Ranking",
+              href: "/representative/club-ranking",
+              icon: <Stars />,
+              id: 32,
+            },
+            {
+              title: "Event Club",
+              href: "/representative/event-club",
+              icon: <EventAvailableTwoTone />,
+              id: 28,
+            },
+            {
+              title: "Active Club",
+              href: "/representative/active-club",
+              icon: <Diversity3 />,
+              id: 31,
+            },
+            {
+              title: "Club Request",
+              href: "/representative/club",
+              icon: <Pending />,
+              id: 29,
+            },
+            {
+              title: "Owner Request",
+              href: "/representative/request-change-owner",
+              icon: <UserCheck />,
+              id: 33,
+            },
+          ],
+        },
+        {
+          title: "Change Representative",
+          href: "/representative/request-change",
+          icon: <UserPen />,
+          id: 26,
+        },
+        {
+          title: "History Representative",
+          href: "/representative/history-representative",
+          icon: <History />,
+          id: 27,
+        }
+      );
+    }
   }
 
   if (
