@@ -13,4 +13,10 @@ export interface UserAuthDTO {
   status: string;
   isRecommended: boolean;
   userType: string;
+  yearOfStudy: number;
+  address: string;
+  startDate: Date;
+  endDate: Date;
+  major: string;
+  gender: string;
 }
