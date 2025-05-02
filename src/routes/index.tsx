@@ -83,10 +83,11 @@ import CreateEventTaskClub from "@/components/partial/representative/representat
 import { SubtaskDetailPage } from "@/pages/club-owner/inter-club-event/task/SubtaskDetailPage";
 import { EditEventForm } from "@/components/partial/staff/staff-events/EditEventForm";
 import EventRefunds from "@/pages/staff/event/EventRefund";
-import ClubEvents from "@/pages/staff/event/ClubEvent";
 import PendingEvents from "@/pages/staff/event/PendingEvent";
 import StaffEventDetailPage from "@/pages/staff/event/EventDetailPage";
 import { EventTaskOverViewList } from "@/pages/club-owner/task-event/EventTaskOverViewList";
+import { ClubEditEventForm } from "@/components/partial/club_owner/manage_club/event/ClubEditEventForm";
+import RepClubDetailPage from "@/components/partial/representative/representative-club/RepClubDetailPage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const PrivateRoute = ({ element, ...rest }: any) => {
@@ -260,7 +261,7 @@ export const router = createBrowserRouter([
         errorElement: <ErrorException />,
       },
       {
-        path: "/representative/university-event",
+        path: "/representative/event",
         element: <Events />,
         errorElement: <ErrorException />,
       },
@@ -314,6 +315,11 @@ export const router = createBrowserRouter([
         element: <UniversityRepresentativeHistory />,
         errorElement: <ErrorException />,
       },
+      {
+        path: "/representative/club-detail/:clubId",
+        element: <RepClubDetailPage />,
+        errorElement: <ErrorException />,
+      },
       // {
       //   path: "/representative/event/refund/:eventId",
       //   element: <EventRefund />,
@@ -329,11 +335,7 @@ export const router = createBrowserRouter([
         element: <EventRefunds />,
         errorElement: <ErrorException />,
       },
-      {
-        path: "/representative/club-event",
-        element: <ClubEvents />,
-        errorElement: <ErrorException />,
-      },
+
       {
         path: "/representative/pending-event",
         element: <PendingEvents />,
@@ -558,6 +560,11 @@ export const router = createBrowserRouter([
       {
         path: "/club/event-task-list",
         element: <EventTaskOverViewList />,
+      },
+      {
+        path: "/club/detail/update-event/:eventId",
+        element: <ClubEditEventForm />,
+        errorElement: <ErrorException />,
       },
     ],
     errorElement: <ErrorException />,

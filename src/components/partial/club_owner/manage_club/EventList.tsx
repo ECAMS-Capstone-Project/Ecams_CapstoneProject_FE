@@ -1,18 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@mui/material";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState, useCallback } from "react";
-import {
-  EventResponse,
-  GetEventInClubsAPI,
-} from "@/api/club-owner/ClubByUser";
+import { EventResponse, GetEventInClubsAPI } from "@/api/club-owner/ClubByUser";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import LoadingAnimation from "@/components/ui/loading";
 import { Card } from "@/components/ui/card";
-import toast from "react-hot-toast";
-import { TriangleAlert } from "lucide-react";
+import { Edit } from "lucide-react";
 
 interface Props {
   clubId: string;
@@ -65,7 +62,10 @@ export default function EventList({ clubId, isClubOwner }: Props) {
   const statusMap = {
     ACTIVE: { className: "border-green-600 text-green-600", label: "Active" },
     ENDED: { className: "border-red-600 text-red-600", label: "Ended" },
-    PENDING: { className: "border-yellow-500 text-yellow-500", label: "Pending" },
+    PENDING: {
+      className: "border-yellow-500 text-yellow-500",
+      label: "Pending",
+    },
     ON_GOING: { className: "border-blue-600 text-blue-600", label: "On Going" },
   };
 
@@ -122,7 +122,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                 <Card
                   key={index}
                   onClick={() => {
-                    if (evt.status !== "PENDING") {
+                    evt.status !== "PENDING" &&
                       navigate(`/club/event-task/${evt.eventId}`, {
                         state: {
                           isClubOwner,
@@ -130,16 +130,6 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                           clubEventId: evt.clubEventId,
                         },
                       });
-                    } else {
-                      toast("It is pending event!", {
-                        icon: <TriangleAlert className="text-red-700" />,
-                        style: {
-                          borderRadius: "10px",
-                          background: "#FDEE21",
-                          color: "black",
-                        },
-                      });
-                    }
                   }}
                   className="flex items-center gap-4 rounded-3xl bg-white shadow-md border hover:scale-105 transition cursor-pointer no-underline"
                   style={{ height: "105px", marginBottom: "15px" }}
@@ -169,10 +159,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                           {evt.eventName}
                         </span>
                         {status && (
-                          <Badge
-                            variant="outline"
-                            className={status.className}
-                          >
+                          <Badge variant="outline" className={status.className}>
                             {status.label}
                           </Badge>
                         )}
@@ -182,10 +169,22 @@ export default function EventList({ clubId, isClubOwner }: Props) {
                         <b>Registration:</b>{" "}
                         {format(evt.registeredStartDate, "dd/MM/yyyy")} -{" "}
                         {format(evt.registeredEndDate, "dd/MM/yyyy")} {" · "}
-                        <b>Max:</b> {evt.maxParticipants ?? "N/A"} people {" · "}
+                        <b>Max:</b> {evt.maxParticipants ?? "N/A"} people{" "}
+                        {" · "}
                         <b>Type:</b> {evt.eventType ?? "N/A"}
                       </span>
                     </div>
+                    {evt.status == "PENDING" && (
+                      <Button
+                        variant={"outline"}
+                        className="bg-transparent mr-4 border-yellow-500 text-yellow-500 hover:text-yellow-700"
+                        onClick={() => {
+                          navigate(`/club/detail/update-event/${evt.eventId}`);
+                        }}
+                      >
+                        <Edit className=" cursor-pointer " size={22} />
+                      </Button>
+                    )}
                   </div>
                 </Card>
               );

@@ -3,42 +3,49 @@ import { DataTableColumnHeader } from "@/components/ui/datatable/data-table-colu
 import { DataTableFacetedFilter } from "@/components/ui/datatable/data-table-faceted-filter";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, Eye, Clock } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ClubResponseDTO } from "@/api/club-owner/ClubByUser";
-import { DataTableClubRowActions } from "./row-actions";
+import { useNavigate } from "react-router-dom";
 // import useAuth from "@/hooks/useAuth";
 
 export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
   // const { user } = useAuth(); // Get the user from useAuth
-
+  const navigate = useNavigate();
   return [
+    { accessorKey: "clubId", header: undefined, cell: undefined },
+
     {
       accessorKey: "clubName",
       header: ({ column }) => (
-        <div >
+        <div>
           <DataTableColumnHeader column={column} title="Club Name" />
         </div>
       ),
-      cell: ({ row }) => <div >{row.getValue("clubName")}</div>,
+      cell: ({ row }) => <div>{row.getValue("clubName")}</div>,
     },
     {
       accessorKey: "foundingDate",
       header: ({ column }) => (
-        <div >
+        <div>
           <DataTableColumnHeader column={column} title="Founding Date" />
         </div>
       ),
-      cell: ({ row }) => <div >{row.getValue("foundingDate") ? format(row.getValue("foundingDate"), 'dd/MM/yyyy') : "No time"}</div>,
+      cell: ({ row }) => (
+        <div>
+          {row.getValue("foundingDate")
+            ? format(row.getValue("foundingDate"), "dd/MM/yyyy")
+            : "No time"}
+        </div>
+      ),
     },
     {
       accessorKey: "contactEmail",
       header: ({ column }) => (
-        <div >
+        <div>
           <DataTableColumnHeader column={column} title="Contact Email" />
         </div>
       ),
-      cell: ({ row }) => <div >{row.getValue("contactEmail")}</div>,
+      cell: ({ row }) => <div>{row.getValue("contactEmail")}</div>,
     },
     {
       accessorKey: "status",
@@ -59,16 +66,21 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
 
         return (
           <div
-            className={`flex items-center justify-center gap-2 p-2 rounded-md w-2/4 ${row.getValue("status") == "INACTIVE"
-              ? "bg-[#D6E4FF] text-[#007BFF]"
-              : row.getValue("status") == "ACTIVE"
+            className={`flex items-center justify-center gap-2 p-2 rounded-md w-2/4 ${
+              row.getValue("status") == "INACTIVE"
+                ? "bg-[#D6E4FF] text-[#007BFF]"
+                : row.getValue("status") == "ACTIVE"
                 ? "bg-[#CBF2DA] text-[#2F4F4F]"
                 : ""
-              }`}
+            }`}
             style={{ margin: "0 auto" }}
           >
-            {row.getValue("status") == "INACTIVE" && <Clock size={20} className="text-[#007BFF]" />}
-            {row.getValue("status") == "ACTIVE" && <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />}
+            {row.getValue("status") == "INACTIVE" && (
+              <Clock size={20} className="text-[#007BFF]" />
+            )}
+            {row.getValue("status") == "ACTIVE" && (
+              <CheckCircle2Icon size={20} className="text-[#2F4F4F]" />
+            )}
             <span>{status ? "Active" : "In Active"}</span>
           </div>
         );
@@ -79,16 +91,24 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
       header: () => <div>Action</div>,
       cell: ({ row }) => (
         <>
-          <Dialog>
-            <DialogTrigger>
-              <div className="flex justify-center">
-                <Eye size={18} />
-              </div>
-            </DialogTrigger>
+          {/* <Dialog>
+            <DialogTrigger> */}
+          <div className="">
+            <Eye
+              size={18}
+              className="cursor-pointer"
+              onClick={() =>
+                navigate(
+                  `/representative/club-detail/${row.getValue("clubId")}`
+                )
+              }
+            />
+          </div>
+          {/* </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DataTableClubRowActions row={row} />
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </>
       ),
     },

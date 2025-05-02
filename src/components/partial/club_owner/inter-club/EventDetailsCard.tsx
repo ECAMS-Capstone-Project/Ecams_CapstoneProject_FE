@@ -1,12 +1,5 @@
 import { format } from "date-fns";
-import {
-  Calendar,
-  Clock,
-  Users,
-  MapPin,
-  Building2,
-  ArrowLeft,
-} from "lucide-react";
+import { Calendar, Users, MapPin, Building2, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { InterClubEventDTO } from "@/models/Event";
@@ -19,10 +12,11 @@ import { EndEventDialog } from "./EndEventDialog";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import toast from "react-hot-toast";
+import { ClubResponse } from "@/models/Club";
 
 interface EventDetailsCardProps {
   selectedEvent: InterClubEventDTO;
-  currentClub: EventClubDTO;
+  currentClub: EventClubDTO | ClubResponse;
 }
 
 export const EventDetailsCard = ({
@@ -156,20 +150,16 @@ export const EventDetailsCard = ({
             <span className="text-gray-700">
               {format(
                 new Date(selectedEvent.registeredStartDate),
-                "dd/MM/yyyy"
+                "dd/MM/yyyy HH:mm"
               )}{" "}
               -{" "}
-              {format(new Date(selectedEvent.registeredEndDate), "dd/MM/yyyy")}
+              {format(
+                new Date(selectedEvent.registeredEndDate),
+                "dd/MM/yyyy HH:mm"
+              )}
             </span>
           </div>
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
-            <Clock className="w-5 h-5 text-[#136cb9]" />
-            <span className="text-[#136cb9]">Registration Time: </span>
-            <span className="text-gray-700">
-              {format(new Date(selectedEvent.registeredStartDate), "HH:mm")} -{" "}
-              {format(new Date(selectedEvent.registeredEndDate), "HH:mm")}
-            </span>
-          </div>
+
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Users className="w-5 h-5 text-[#136cb9]" />
             <span className="text-[#136cb9]">Number of Participants: </span>
@@ -182,13 +172,6 @@ export const EventDetailsCard = ({
 
         {/* Thông tin bổ sung */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
-            <MapPin className="w-5 h-5 text-[#136cb9]" />
-            <span className="text-[#136cb9]">Areas: </span>
-            <span className="text-gray-700">
-              {selectedEvent.eventAreas?.map((area) => area.name).join(", ")}
-            </span>
-          </div>
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Building2 className="w-5 h-5 text-[#136cb9]" />
             <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
@@ -230,6 +213,47 @@ export const EventDetailsCard = ({
           ))}
         </div>
       </div>
+
+      {/* Danh sách khu vực tổ chức */}
+      {selectedEvent.eventAreas && selectedEvent.eventAreas.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-3 text-[#136cb9] flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-[#136cb9] " /> Event Areas
+          </h3>
+          <div className="overflow-x-auto w-full">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th className="px-3 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th className="px-3 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-3 py-2 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
+                    Time
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {selectedEvent.eventAreas.map((area) => (
+                  <tr key={area.areaId} className="hover:bg-gray-50">
+                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {area.name}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {format(new Date(area.date), "dd/MM/yyyy")}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {area.startTime}h - {area.endTime}h
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Dialog xác nhận kết thúc sự kiện */}
       <EndEventDialog

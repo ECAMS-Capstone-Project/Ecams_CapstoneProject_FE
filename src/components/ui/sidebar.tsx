@@ -5,6 +5,7 @@ import { ChevronLeft, Menu, X } from "lucide-react";
 import Nav from "./nav";
 import { Layout } from "../layout/layout";
 import SidebarLinks from "@/data/sidelinks";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   isCollapsed: boolean;
@@ -18,7 +19,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const [navOpened, setNavOpened] = useState(false);
   const sidebarLinks = SidebarLinks(); // Gọi hàm để lấy danh sách link dựa vào user.roleName
-
+  const navigate = useNavigate();
   /* Make body not scrollable when navBar is opened */
   useEffect(() => {
     if (navOpened) {
@@ -64,6 +65,8 @@ export default function Sidebar({
                 href="https://res.cloudinary.com/ecams/image/upload/v1739124259/ECAMS_Logo_ow82lc.png"
                 width="300"
                 height="250"
+                className="cursor-pointer"
+                onClick={() => navigate("/student")}
               />
               <span className="sr-only">ECAMS</span>
             </svg>

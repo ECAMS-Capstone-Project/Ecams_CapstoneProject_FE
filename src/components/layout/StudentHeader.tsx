@@ -1,11 +1,12 @@
 import useCheckActiveNav from "@/hooks/use-check-active-nav";
 import { UserNav } from "../ui/user-nav";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 
 export const StudentHeader = () => {
   const { checkActiveNav } = useCheckActiveNav();
   const { user } = useAuth();
+  const navigate = useNavigate();
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 w-full px-4 py-2 box-border">
       <div className="container mx-auto flex items-center justify-between pb-1">
@@ -13,7 +14,8 @@ export const StudentHeader = () => {
           <img
             src="https://res.cloudinary.com/ecams/image/upload/v1739124259/ECAMS_Logo_ow82lc.png"
             alt="logo"
-            className="w-20 h-16 pb-1"
+            className="w-20 h-16 pb-1 cursor-pointer"
+            onClick={() => navigate("/student")}
           />
           {user &&
             user.roles.includes("STUDENT") &&
