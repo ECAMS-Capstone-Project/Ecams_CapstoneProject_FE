@@ -59,7 +59,8 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
-
+  console.log(initialData?.clubMembers);
+  
   const handleApprove = async () => {
     if (!initialData) return;
     if (!user) return;
@@ -232,8 +233,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {initialData?.clubMembers
-                          ?.filter((a) => a.status == "ACTIVE")
+                        {initialData?.clubMembers && initialData?.clubMembers
                           .map((member, index) => (
                             <TableRow key={index + 1}>
                               <TableCell>
