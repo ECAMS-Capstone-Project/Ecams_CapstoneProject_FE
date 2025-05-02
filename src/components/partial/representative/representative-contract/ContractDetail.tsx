@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card, Grid2 } from "@mui/material";
 import { ContractRepresentativeById } from "@/api/representative/ContractAPI";
-import useAuth from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import { PackageDetail } from "@/models/Package";
 import { format } from "date-fns";
+import useAuth from "@/hooks/useAuth";
 
 export default function RepresentativeContractDetail() {
   const { contractId = "" } = useParams();
@@ -67,8 +67,8 @@ export default function RepresentativeContractDetail() {
           <Card
             className="p-6 bg-white shadow-lg rounded-lg h-fit"
             style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}
-            // gradientColor="#F3FAFB"
-            // gradientOpacity={0.5}
+          // gradientColor="#F3FAFB"
+          // gradientOpacity={0.5}
           >
             <div className="flex justify-between mb-2">
               <h2 className="text-2xl font-bold mb-2">
@@ -125,11 +125,10 @@ export default function RepresentativeContractDetail() {
                     <p className="text-gray-600 font-semibold mt-3 flex items-center gap-2">
                       🔹 Contract status:{" "}
                       <span
-                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${
-                          contract?.status
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
+                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${contract?.status
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
+                          }`}
                       >
                         {contract?.status ? "Active ✅" : "Inactive ❌"}
                       </span>

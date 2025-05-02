@@ -70,9 +70,7 @@ const EventSchema1 = z
 
     fieldIds: z.array(z.string()).min(1, "At least one field is required"),
 
-    price: z.coerce
-      .number()
-      .min(0, { message: "Price must be a positive number" }),
+    price: z.coerce.number().min(1000, { message: "Price must be > 1000 VND" }),
     maxParticipants: z.coerce
       .number()
       .int()
@@ -410,7 +408,11 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                         <FormItem>
                           <FormLabel>Event's Name</FormLabel>
                           <FormControl>
-                            <Input type="text" {...field} />
+                            <Input
+                              placeholder="Enter event name"
+                              type="text"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -423,9 +425,31 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                       name="price"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Price</FormLabel>
+                          <FormLabel>Price (VNĐ)</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Enter price (VNĐ)"
+                              {...field}
+                              onChange={(e) => {
+                                // Remove all non-digit characters
+                                const value = e.target.value.replace(/\D/g, "");
+                                // Format with thousand separators
+                                const formattedValue = value.replace(
+                                  /\B(?=(\d{3})+(?!\d))/g,
+                                  ","
+                                );
+                                field.onChange(value);
+                                e.target.value = formattedValue;
+                              }}
+                              value={
+                                field.value
+                                  ? field.value
+                                      .toString()
+                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                  : ""
+                              }
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

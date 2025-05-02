@@ -1,10 +1,10 @@
 import { Grid, Paper, Typography, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { GetStatisticUniversity, StatisticResponse } from "@/api/admin/Statistic";
-import useAuth from "@/hooks/useAuth";
 import LoadingAnimation from "@/components/ui/loading";
 import { formatPrice } from "@/lib/FormatPrice";
 import { BarChart2, Users, CalendarCheck, Building2 } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
 const iconMap = {
     ER: <BarChart2 size={24} />,
