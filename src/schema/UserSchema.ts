@@ -38,5 +38,15 @@ export const StaffSchema = z.object({
     isVerified: z.boolean(),
     universityId: z.string().optional(), // Optional field
     roles: z.array(z.string()), // Array of strings
+    // Common fields
+    phone: z.string().min(10).max(15).optional(),
+    address: z.string().optional(),
+    // Representative specific fields
+    gender: z.enum(["male", "female", "other"]).optional(),
+    // Student specific fields
+    major: z.string().optional(),
+    year: z.number().min(1).max(4).optional(),
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
   });
 
