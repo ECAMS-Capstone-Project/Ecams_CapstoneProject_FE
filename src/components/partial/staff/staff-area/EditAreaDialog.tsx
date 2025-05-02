@@ -77,7 +77,7 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
       universityId: "",
       name: "",
       description: "",
-      capacity: 0,
+      capacity: 1,
     },
   });
 
@@ -211,7 +211,16 @@ export const EditAreaDialog: React.FC<AreaDialogProps> = ({
                         <FormItem>
                           <FormLabel>Capacity</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input
+                              type="number"
+                              min={1}
+                              {...field}
+                              onKeyDown={(e) => {
+                                if (e.key === "-" || e.key === "e") {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
