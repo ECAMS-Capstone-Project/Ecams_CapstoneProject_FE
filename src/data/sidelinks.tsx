@@ -136,17 +136,17 @@ const SidebarLinks = () => {
         href: "/view-package",
         icon: <FileText size={18} />,
         id: 8,
-      }
+      },
+      {
+        title: "Contract",
+        href: "/representative/wallet-representative",
+        icon: <ReceiptText size={18} />,
+        id: 22,
+      },
     );
 
     if (currentPackage && !loading) {
       sidelinks.push(
-        {
-          title: "Contract",
-          href: "/representative/wallet-representative",
-          icon: <ReceiptText size={18} />,
-          id: 22,
-        },
         {
           title: "Student",
           href: "/representative/request-student",

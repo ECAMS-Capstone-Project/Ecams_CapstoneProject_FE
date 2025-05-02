@@ -32,7 +32,13 @@ const clubSchema = z.object({
   description: z.string().min(5, "Description is required"),
   purpose: z.string().min(5, "Purpose is required"),
   contactEmail: z.string().email("Invalid email"),
-  contactPhone: z.string().min(5, "Phone is required"),
+  contactPhone: z
+  .string()
+  .min(5, "Contact phone at least 10 number")
+  .regex(/^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/, {
+    message: "Invalid format phone number",
+  }),
+
   websiteUrl: z.string().url("Invalid URL"),
   logo: z.instanceof(File).optional(),
 });
@@ -127,12 +133,13 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
       await ChangeClubOwnerAPI(clubId, clubOwnerId, { leaveReason: reason, requestedMemberId: selectedMember!.userId });
       toast.success("Request to change successfully.");
       setOpenRequestDialog(false)
-      setSelectedMember(null)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
+      setSelectedMember(null)
+      setReason("")
     }
   }
 
@@ -446,7 +453,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
 
           <DialogFooter>
             <Button type="button" onClick={handleRequest} disabled={!selectedMember} color="primary">
-              Request Change
+              Submit
             </Button>
           </DialogFooter>
         </DialogContent>
