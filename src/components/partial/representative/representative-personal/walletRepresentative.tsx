@@ -135,7 +135,7 @@ const WalletRepresentative = () => {
                           : "bg-red-100 text-red-600"
                           }`}
                       >
-                        {curPackage.status ? "Active ✅" : "Inactive ❌"}
+                        {curPackage.status ? "Active" : "Inactive"}
                       </span>
                     </Typography>
                   </Grid2>
@@ -144,7 +144,7 @@ const WalletRepresentative = () => {
             ) : (
               <div className="flex justify-center">
                 <Typography color="textSecondary" variant="h6">
-                  ❌ No package assigned
+                  No package assigned
                 </Typography>
               </div>
             )}
