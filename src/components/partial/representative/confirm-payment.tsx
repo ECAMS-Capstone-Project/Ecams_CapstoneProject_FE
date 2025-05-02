@@ -17,8 +17,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import toast from 'react-hot-toast';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useAuth from '@/hooks/useAuth';
 import { formatPrice } from '@/lib/FormatPrice';
+import useAuth from '@/hooks/useAuth';
 
 const BackgroundWrapper = styled(Box)({
     minHeight: '100vh',

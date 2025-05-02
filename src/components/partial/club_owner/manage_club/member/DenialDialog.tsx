@@ -10,8 +10,8 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import DialogLoading from "@/components/ui/dialog-loading";
-import useAuth from "@/hooks/useAuth";
 import { ApproveOrDenyRequestJoinClub } from "@/api/club-owner/ClubByUser";
+import useAuth from "@/hooks/useAuth";
 
 interface DenyProps {
   clubId: string

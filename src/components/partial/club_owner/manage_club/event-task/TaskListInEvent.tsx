@@ -13,7 +13,6 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import useAuth from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,6 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useAuth from "@/hooks/useAuth";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -92,7 +92,7 @@ export default function TaskListInEvent() {
       return "bg-green-100 text-green-800";
     if (percentage >= 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
-    if(status == "NOT_STARTED") return "bg-gray-100 text-gray-800"
+    if (status == "NOT_STARTED") return "bg-gray-100 text-gray-800"
     return "bg-red-100 text-red-800";
   };
 
@@ -345,13 +345,12 @@ export default function TaskListInEvent() {
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border ${
-                      task.priority.toUpperCase() === "HIGH"
-                        ? "bg-red-50 border-red-200 text-red-900"
-                        : task.priority.toUpperCase() === "MEDIUM"
+                    className={`rounded-lg border ${task.priority.toUpperCase() === "HIGH"
+                      ? "bg-red-50 border-red-200 text-red-900"
+                      : task.priority.toUpperCase() === "MEDIUM"
                         ? "bg-yellow-50 border-yellow-200 text-yellow-900"
                         : "bg-blue-50 border-blue-200 text-blue-900"
-                    }`}
+                      }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
