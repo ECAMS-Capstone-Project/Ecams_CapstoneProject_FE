@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateInterTaskRequest } from "@/models/InterTask";
 import { InterTaskSchema } from "@/schema/InterTaskSchema";
-import useAuth from "@/hooks/useAuth";
 import {
   Popover,
   PopoverContent,
@@ -43,6 +42,7 @@ import {
 import { InterClubEventDTO } from "@/models/Event";
 import toast from "react-hot-toast";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
+import useAuth from "@/hooks/useAuth";
 interface TaskCreateDialogProps {
   onCreateTask: (task: CreateInterTaskRequest) => void;
   eventId: string;
@@ -199,8 +199,8 @@ export const TaskCreateDialog = ({
                             >
                               {field.value
                                 ? selectedEvent.clubs.find(
-                                    (club) => club.clubId === field.value
-                                  )?.clubName
+                                  (club) => club.clubId === field.value
+                                )?.clubName
                                 : "Select club"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>

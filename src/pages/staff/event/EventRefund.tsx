@@ -5,6 +5,8 @@ import LoadingAnimation from "@/components/ui/loading";
 import { Heading } from "@/components/ui/heading";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import EventTable from "@/components/partial/staff/staff-events/EventTable";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";

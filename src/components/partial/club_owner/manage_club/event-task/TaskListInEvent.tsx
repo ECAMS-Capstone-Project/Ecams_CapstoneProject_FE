@@ -13,7 +13,6 @@ import {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import useAuth from "@/hooks/useAuth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,6 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useAuth from "@/hooks/useAuth";
 
 export default function TaskListInEvent() {
   const { eventId = "" } = useParams();
@@ -90,7 +90,7 @@ export default function TaskListInEvent() {
   const getStatusColor = (status: string, percentage: number) => {
     if (status === "COMPLETED" && percentage === 100)
       return "bg-green-100 text-green-800";
-    if (percentage > 0 && status === "ON_GOING")
+    if (percentage >= 0 && status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     if (status === "NOT_STARTED") return "bg-gray-200 text-gray-800";
     return "bg-red-100 text-red-800";
@@ -98,7 +98,7 @@ export default function TaskListInEvent() {
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED" && percentage === 100) return "Completed";
-    if (percentage > 0 && status === "ON_GOING")
+    if (percentage >= 0 && status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     if (status === "NOT_STARTED") return "Not started";
     return "Overdue";

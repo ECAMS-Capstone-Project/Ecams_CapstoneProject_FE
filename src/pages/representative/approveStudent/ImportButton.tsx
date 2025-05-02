@@ -10,13 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import {
   Table,
   TableBody,
   TableCell,
@@ -24,10 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// import fileUrl from "../../../../assets/template/Template_Import_Syllabus.xlsx";
+import { Upload, Download, AlertCircle, X } from "lucide-react";
 import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
+
+// import fileUrl from "../../../../assets/template/Template_Import_Syllabus.xlsx";
 
 interface DuplicatedRow {
   rowNumber: number;
@@ -40,19 +34,20 @@ export default function ImportButton({
   visible,
   onClose,
   setIsLoading,
+  setFlag,
 }: {
   visible: boolean;
   onClose: () => void;
   setIsLoading?: (isLoading: boolean) => void;
+  setFlag?: (flag: boolean) => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState<File[]>([]);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
   const [duplicatedRows, setDuplicatedRows] = useState<DuplicatedRow[]>([]);
   const { user } = useAuth();
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     const validTypes = [
       "application/vnd.ms-excel",
@@ -63,7 +58,7 @@ export default function ImportButton({
     if (file && validTypes.some((type) => file.type.includes(type))) {
       setFileList([file]);
     } else {
-      toast.error("Invalid file type");
+      toast.error("Please select a valid Excel or CSV file");
     }
   };
 
@@ -104,6 +99,7 @@ export default function ImportButton({
       toast.error("Error during import");
     } finally {
       setUploading(false);
+      setFlag?.(true);
     }
   };
 
@@ -115,7 +111,7 @@ export default function ImportButton({
       if (!response.ok) {
         throw new Error("Failed to fetch file");
       }
-      const blob = await response.blob(); // Đảm bảo là phương thức blob() tồn tại
+      const blob = await response.blob();
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "Template_Import_Student.xlsx";
@@ -138,83 +134,116 @@ export default function ImportButton({
       >
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Import Student</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              Import Students
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4">
-            {/* File Upload */}
-            <div>
-              <Label htmlFor="file">Select File (.xlsx)</Label>
-              <Input
-                type="file"
-                accept=".xlsx,.csv"
-                onChange={handleFileChange}
-              />
-            </div>
-
-            {/* Encoding Type */}
-            <div>
-              <Label>Encoding type</Label>
-              <Select defaultValue="autodetect">
-                <SelectTrigger>
-                  <SelectValue placeholder="Encoding" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="autodetect">Auto detect</SelectItem>
-                  <SelectItem value="utf">UTF-8</SelectItem>
-                  <SelectItem value="ansi">ANSI</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Separator */}
-            <div>
-              <Label>Column Separator</Label>
-              <Select defaultValue="comma">
-                <SelectTrigger>
-                  <SelectValue placeholder="Separator" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="comma">Comma</SelectItem>
-                  <SelectItem value="semicolon">Semi-colon</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Label>Download Template:</Label>
-              <Button
-                variant="link"
-                className="text-blue-600 p-0 h-auto"
-                onClick={handleDownload}
-              >
-                Download
-              </Button>
-            </div>
-            {duplicatedRows.length > 0 && (
-              <div className="flex items-center gap-2">
-                <Label className="text-red-500 text-base">
-                  Duplicate Student:
+          <div className="space-y-6 py-4">
+            {/* File Upload Section */}
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+                <Input
+                  type="file"
+                  accept=".xlsx,.csv"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="file-upload"
+                />
+                <Label
+                  htmlFor="file-upload"
+                  className="cursor-pointer flex flex-col items-center gap-2"
+                >
+                  <Upload className="h-8 w-8 text-gray-400" />
+                  <div className="text-sm text-gray-600">
+                    {fileList.length > 0 ? (
+                      <div className="flex items-center gap-2">
+                        <span>{fileList[0].name}</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFileList([]);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="font-medium text-blue-600">
+                          Click to upload
+                        </span>{" "}
+                        or drag and drop
+                        <span className="text-xs text-gray-500">
+                          .xlsx or .csv files only
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </Label>
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Download className="h-4 w-4" />
+                <span>Need a template?</span>
+                <Button
+                  variant="link"
+                  className="text-blue-600 p-0 h-auto font-medium"
+                  onClick={handleDownload}
+                >
+                  Download Template
+                </Button>
+              </div>
+            </div>
+
+            {/* Duplicate Warning */}
+            {duplicatedRows.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="h-5 w-5" />
+                  <span className="font-medium">Duplicate Students Found</span>
+                </div>
+                <p className="text-sm text-red-600 mt-1">
+                  {duplicatedRows.length} students were not imported due to
+                  duplicates
+                </p>
                 <Button
                   variant="outline"
-                  className="text-red-400 text-sm"
+                  size="sm"
+                  className="mt-2 text-red-600 border-red-200 hover:bg-red-50"
                   onClick={() => setShowDuplicateDialog(true)}
                 >
-                  View
+                  View Details
                 </Button>
               </div>
             )}
+
             {/* Footer Actions */}
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="ghost" onClick={onClose}>
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button variant="outline" onClick={onClose}>
                 Cancel
               </Button>
               <Button
                 onClick={handleUpload}
                 disabled={!fileList.length || uploading}
+                className="min-w-[100px]"
               >
-                Import
+                {uploading ? (
+                  <div className="flex items-center gap-2">
+                    <l-pinwheel
+                      size="20"
+                      stroke="3"
+                      speed="0.9"
+                      color="white"
+                    ></l-pinwheel>
+                    <span>Importing...</span>
+                  </div>
+                ) : (
+                  "Import"
+                )}
               </Button>
             </div>
           </div>
@@ -224,30 +253,33 @@ export default function ImportButton({
       <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>
-            <DialogTitle>Duplicated Students</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              Duplicated Students
+            </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Student ID</TableHead>
-                  <TableHead>Reason</TableHead>
+                  <TableHead className="font-medium">Email</TableHead>
+                  <TableHead className="font-medium">Student ID</TableHead>
+                  <TableHead className="font-medium">Reason</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {duplicatedRows.map((row) => (
                   <TableRow key={row.rowNumber}>
-                    <TableCell>{row.email}</TableCell>
-
+                    <TableCell className="font-medium">{row.email}</TableCell>
                     <TableCell>{row.studentDetailId}</TableCell>
-                    <TableCell>{row.message}</TableCell>
+                    <TableCell className="text-red-600">
+                      {row.message}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-6">
             <Button onClick={() => setShowDuplicateDialog(false)}>Close</Button>
           </div>
         </DialogContent>

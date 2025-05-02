@@ -15,11 +15,11 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { CheckIcon, ChevronDownIcon, X } from "lucide-react";
 import { useClubs } from "@/hooks/student/useClub";
-import useAuth from "@/hooks/useAuth";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ClubResponse } from "@/models/Club";
+import useAuth from "@/hooks/useAuth";
 
 interface ClubPickerProps {
   value: string[];

@@ -151,6 +151,11 @@ interface DenyDTO {
   reason: string;
 }
 
+export interface KickDTO {
+  clubMemberId: string;
+  reason: string;
+}
+
 interface AlertClubDTO {
   warningMessage: string;
 }
@@ -545,7 +550,7 @@ export const CreateClubJoinedRequest = async (
     return apiResponse;
   } catch (error: any) {
     if (error.response.status == 400) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 401) {
       toast.error(error.response.data.message);
@@ -770,6 +775,36 @@ export const EditClubAPI = async (data: FormData): Promise<ResponseDTO<string>> 
       toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     } else if (error.response.status == 404) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    }
+    if (error.response) {
+      toast.error(error.response.data.message);
+      console.error("API Error:", error.response.data);
+      throw new Error(error.response.data.message || "API Error");
+    } else {
+      console.error("Network Error:", error.message);
+      throw new Error("Network error. Please try again later.");
+    }
+  }
+};
+
+export const KickMemberAPI = async (
+  clubMemberId: string,
+  data: KickDTO
+): Promise<ResponseDTO<string>> => {
+  try {
+    const response = await put<ResponseDTO<string>>(
+      `/Clubs/Member/${clubMemberId}/kick`,data);
+    return response;
+  } catch (error: any) {
+    if (error.response.status == 400) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    } else if (error.response.status == 401) {
+      toast.error(error.response.data.message);
+      throw new Error(error.response.data.message || "API Error");
+    } else if (error.response.status == 409) {
       toast.error(error.response.data.message);
       throw new Error(error.response.data.message || "API Error");
     }

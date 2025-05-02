@@ -14,10 +14,10 @@ import {
   GetClubRankingAPI,
 } from "@/api/club-owner/ClubByUser";
 import ClubRankingDetail from "./ClubRankingDetail";
-import useAuth from "@/hooks/useAuth";
 import { Dialog } from "@/components/ui/dialog";
 import { WarningClubDialog } from "./WarningClubDialog";
 import { PointClubDialog } from "./PointClubDialog";
+import useAuth from "@/hooks/useAuth";
 
 const rankFilters: string[] = ["All", "EXCELENT", "GOOD", "AVERAGE", "NEED_IMPROVEMENT"];
 

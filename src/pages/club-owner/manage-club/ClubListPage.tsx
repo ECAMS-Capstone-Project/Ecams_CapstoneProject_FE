@@ -3,11 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Grid2, Typography } from "@mui/material";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ClubResponseDTO,
-  GetAllClubsAPI,
-} from "@/api/club-owner/ClubByUser";
-import useAuth from "@/hooks/useAuth";
+import { ClubResponseDTO, GetAllClubsAPI } from "@/api/club-owner/ClubByUser";
 import DialogLoading from "@/components/ui/dialog-loading";
 import PageNavigation from "@/components/global/PageNavigation";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +11,14 @@ import { ClubListSection } from "./ClubListSection";
 import InviteClubCard from "@/components/partial/club_owner/manage_club/InviteClubCard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { InviteClubDialog } from "@/components/partial/club_owner/manage_club/InviteClubDialog";
-
+import { useLocation } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 const ClubListPage: React.FC = () => {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
+  const location = useLocation();
+  const status = location.state?.status;
   const [clubs, setClubs] = useState<ClubResponseDTO[]>([]);
 
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -35,7 +33,9 @@ const ClubListPage: React.FC = () => {
     PENDING: { status: "PENDING", memberStatus: "ACTIVE" },
     PROCESSING: { status: "PROCESSING", memberStatus: "ACTIVE" },
   };
-  const [currentTab, setCurrentTab] = useState<"PARTICIPATED" | "HISTORY" | "PENDING" | "PROCESSING">("PARTICIPATED");
+  const [currentTab, setCurrentTab] = useState<
+    "PARTICIPATED" | "HISTORY" | "PENDING" | "PROCESSING"
+  >(status ? status : "PARTICIPATED");
 
   useEffect(() => {
     const loadClubs = async () => {
@@ -71,7 +71,7 @@ const ClubListPage: React.FC = () => {
   const handleClick = (club: ClubResponseDTO) => {
     setClubDetail(club);
     setOpenDialog(true);
-  }
+  };
 
   return (
     <>
@@ -111,13 +111,22 @@ const ClubListPage: React.FC = () => {
           </Grid2>
         </Box>
 
-        {/* Danh sách Clubs */}
         <TabsContent value="PARTICIPATED">
-          <ClubListSection status={currentTab} clubs={clubs} loading={loading} error={error} />
+          <ClubListSection
+            status={currentTab}
+            clubs={clubs}
+            loading={loading}
+            error={error}
+          />
         </TabsContent>
 
         <TabsContent value="HISTORY">
-          <ClubListSection status={currentTab} clubs={clubs} loading={loading} error={error} />
+          <ClubListSection
+            status={currentTab}
+            clubs={clubs}
+            loading={loading}
+            error={error}
+          />
         </TabsContent>
 
         <TabsContent value="PENDING">
@@ -145,31 +154,47 @@ const ClubListPage: React.FC = () => {
                     justifyContent="center"
                     onClick={() => handleClick(club)}
                   >
-                    <InviteClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} />
+                    <InviteClubCard
+                      image={club.logoUrl}
+                      title={club.clubName}
+                      field={club.clubFields}
+                    />
                   </Grid2>
                 ))}
               </Grid2>
-            ) : <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              py={6}
-              px={2}
-            >
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
-                alt="No clubs"
-                style={{ width: 100, height: 100, opacity: 0.85, marginBottom: 16 }}
-              />
-              <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
-                No clubs found
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Try adjusting your filters or come back later to explore more student clubs 💡
-              </Typography>
-            </Box>
-            }
+            ) : (
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                py={6}
+                px={2}
+              >
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
+                  alt="No clubs"
+                  style={{
+                    width: 100,
+                    height: 100,
+                    opacity: 0.85,
+                    marginBottom: 16,
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  No clubs found
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Try adjusting your filters or come back later to explore more
+                  student clubs 💡
+                </Typography>
+              </Box>
+            )}
           </Box>
         </TabsContent>
 
@@ -198,31 +223,47 @@ const ClubListPage: React.FC = () => {
                     justifyContent="center"
                     onClick={() => handleClick(club)}
                   >
-                    <InviteClubCard image={club.logoUrl} title={club.clubName} field={club.clubFields} />
+                    <InviteClubCard
+                      image={club.logoUrl}
+                      title={club.clubName}
+                      field={club.clubFields}
+                    />
                   </Grid2>
                 ))}
               </Grid2>
-            ) : <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              py={6}
-              px={2}
-            >
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
-                alt="No clubs"
-                style={{ width: 100, height: 100, opacity: 0.85, marginBottom: 16 }}
-              />
-              <Typography variant="h6" fontWeight={600} color="textSecondary" gutterBottom>
-                No clubs found
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Try adjusting your filters or come back later to explore more student clubs 💡
-              </Typography>
-            </Box>
-            }
+            ) : (
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                py={6}
+                px={2}
+              >
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGPZuTNVvXmIRxRNnuPa5wAqQvyawEG-96fw&s"
+                  alt="No clubs"
+                  style={{
+                    width: 100,
+                    height: 100,
+                    opacity: 0.85,
+                    marginBottom: 16,
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  fontWeight={600}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  No clubs found
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Try adjusting your filters or come back later to explore more
+                  student clubs 💡
+                </Typography>
+              </Box>
+            )}
           </Box>
         </TabsContent>
 

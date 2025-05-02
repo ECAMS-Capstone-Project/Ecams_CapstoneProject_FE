@@ -1,4 +1,5 @@
 import { Contract } from "@/models/Contract";
+import { format } from "date-fns";
 
 interface ContractData {
   data: Contract;
@@ -11,6 +12,9 @@ export const TransactionTable = (contract: ContractData) => {
         <table className="w-full text-left">
           <thead className="bg-gray-100">
             <tr>
+              <th className="p-3">Transaction number</th>
+              <th className="p-3">Transaction information</th>
+              <th className="p-3">Type</th>
               <th className="p-3">Amount</th>
               <th className="p-3">Date</th>
               <th className="p-3">Method</th>
@@ -20,16 +24,19 @@ export const TransactionTable = (contract: ContractData) => {
           <tbody>
             {contract.data.transactions?.map((txn) => (
               <tr key={txn.transactionId} className="border-b">
+                <td className="p-3">{txn.transactionNumber}</td>
+                <td className="p-3">{txn.transactionInfo}</td>
+                <td className="p-3">{txn.type}</td>
                 <td className="p-3">{txn.amount.toLocaleString()} VND</td>
-                <td className="p-3">{txn.paymentDate.split("T")[0]}</td>
+                <td className="p-3">{format(txn.paymentDate, "yyyy-MM-dd")}</td>
                 <td className="p-3">{txn.methodName}</td>
                 <td className="p-3 font-semibold">
                   {txn.status === "PAID" ? (
-                    <span className="text-green-500">✅ PAID</span>
+                    <span className="text-green-500">PAID</span>
                   ) : txn.status === "PENDING" ? (
-                    <span className="text-yellow-500">⏳ PENDING</span>
+                    <span className="text-yellow-500">PENDING</span>
                   ) : (
-                    <span className="text-red-500">❌ FAILED</span>
+                    <span className="text-red-500">FAILED</span>
                   )}
                 </td>
               </tr>

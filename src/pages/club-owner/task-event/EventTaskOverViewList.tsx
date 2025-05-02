@@ -2,11 +2,11 @@ import { GetEventSingleTask } from "@/api/club-owner/TaskAPI";
 import { EventItemOverView } from "@/components/partial/club_owner/event-task-overview/EventItemOverView";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useAuth from "@/hooks/useAuth";
 import { EventSingleClubTask } from "@/models/Event";
 import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { CalendarX, SearchX, ChevronLeft, ChevronRight } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
 const ITEMS_PER_PAGE = 5;
 

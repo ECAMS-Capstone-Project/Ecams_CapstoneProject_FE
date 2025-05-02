@@ -45,7 +45,7 @@ export const clubColumn = (): ColumnDef<ClubResponseDTO>[] => {
           <DataTableColumnHeader column={column} title="Contact Email" />
         </div>
       ),
-      cell: ({ row }) => <div>{row.getValue("contactEmail")}</div>,
+      cell: ({ row }) => <div>{row.getValue("contactEmail") || "N/A"}</div>,
     },
     {
       accessorKey: "status",

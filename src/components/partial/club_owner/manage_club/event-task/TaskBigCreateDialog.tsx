@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import useAuth from "@/hooks/useAuth";
 import {
   Popover,
   PopoverContent,
@@ -36,6 +35,7 @@ import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { EventTaskSchema } from "@/schema/EventTaskSchema";
 import toast from "react-hot-toast";
 import { CreateInterTaskRequest2 } from "@/models/InterTask";
+import useAuth from "@/hooks/useAuth";
 interface TaskCreateDialogProps {
   onCreateTask: (task: CreateInterTaskRequest2) => void;
   eventId: string;

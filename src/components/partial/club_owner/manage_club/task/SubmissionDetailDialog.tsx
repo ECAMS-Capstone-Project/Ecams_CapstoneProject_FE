@@ -5,12 +5,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Grid2 } from "@mui/material";
 import { format } from "date-fns";
 import { ReviewSubmissionRequest, SendStudentSubmission, Submission } from "@/api/club-owner/TaskAPI";
-import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import useAuth from "@/hooks/useAuth";
 
 interface SubmissionDetailDialogProps {
     submission: Submission;
@@ -277,7 +277,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
                 </div>
                 {/* Footer */}
                 <DialogFooter className="bg-gray-50 px-6 py-3 border-t border-gray-200 flex justify-end space-x-2">
-                    {((hasFeedback || isDeadlinePassed) && (!isOwnerSelfTask)) ? (
+                    {((hasFeedback || isDeadlinePassed || submission.submissionDate == "0001-01-01T00:00:00") && (!isOwnerSelfTask)) ? (
                         <Button variant="secondary" onClick={onClose}>
                             Close
                         </Button>

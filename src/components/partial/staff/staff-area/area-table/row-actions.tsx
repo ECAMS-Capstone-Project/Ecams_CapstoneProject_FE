@@ -30,16 +30,15 @@ export function DataTableRowActions<TData>({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { deleteArea, refetchArea } = useAreas();
+  const { deleteArea } = useAreas();
   const queryClient = useQueryClient();
   const onConfirm = async () => {
     setLoading(true);
     try {
       await deleteArea(row.getValue("areaId"));
       queryClient.invalidateQueries({ queryKey: ["areas"] });
-      await refetchArea();
       setOpen(false);
-      // window.location.reload();
+      toast.success("Area deleted successfully!");
     } catch (error: any) {
       const errorMessage = error.response.data?.message || "An error occurred";
       toast.error(errorMessage);

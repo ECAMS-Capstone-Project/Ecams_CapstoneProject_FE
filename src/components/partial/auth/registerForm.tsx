@@ -21,13 +21,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import useAuth from "@/hooks/useAuth";
 import { ACCEPTED_IMAGE_MIME_TYPES, MAX_FILE_SIZE } from "@/lib/Constant";
 import { University } from "@/models/University";
 import { UniversityList } from "@/api/agent/UniversityAgent";
 import { ring2 } from "ldrs";
 import toast from "react-hot-toast";
 import PoliciesDialog from "./policiesDiablog";
+import useAuth from "@/hooks/useAuth";
 
 // Validation schema using Zod
 const schema = z

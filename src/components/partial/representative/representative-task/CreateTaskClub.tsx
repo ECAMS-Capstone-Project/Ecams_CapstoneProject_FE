@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
+import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
 // shadcn/ui & Components
@@ -27,8 +27,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn, fixTime } from "@/lib/utils";
 
 import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
-
-// Lazy import danh sách student
 
 // Import API lấy danh sách member trong club và API tạo task
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
@@ -98,8 +96,6 @@ export default function CreateTaskClub() {
   const selectedMembers = watch("selectedMembers");
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
-  const taskName = watch("taskName");
-  const taskDescription = watch("description");
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
@@ -246,7 +242,7 @@ export default function CreateTaskClub() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-3/4">
               {/* Task Name */}
               <Grid2 container spacing={2}>
-                <Grid2 size={4}>
+                <Grid2 size={6}>
                   <FormField
                     control={form.control}
                     name="taskName"
@@ -493,8 +489,6 @@ export default function CreateTaskClub() {
                           students={filteredStudents}
                           selected={selectedMembers}
                           handleToggleStudent={handleToggleStudent}
-                          recommendedReasons={recommendedReasons}
-                          recommendedStudents={recommendedStudents}
                         />
                       </Suspense>
 

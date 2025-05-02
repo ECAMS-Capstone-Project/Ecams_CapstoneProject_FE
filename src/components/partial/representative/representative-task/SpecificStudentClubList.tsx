@@ -142,7 +142,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                         <CardHeader>
                             <div className="flex items-center gap-6 mb-4">
                                 <img
-                                    src="https://github.com/shadcn.png"
+                                    src={"https://res.cloudinary.com/ecams/image/upload/v1744904775/c4716427-c487-4b42-b7d2-8b833cab5148_shslpl.jpg"}
                                     alt="Avatar"
                                     className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-sm"
                                 />
@@ -188,7 +188,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
 
 
                     {/* 2. Current Tasks */}
-                    {selectedStudent?.currentTasks && selectedStudent?.currentTasks?.length > 0 ? (
+                    {selectedStudent?.currentTasks && selectedStudent?.currentTasks?.length > 0 && (
                         <Card className="shadow-lg border mt-6 rounded-2xl">
                             <CardHeader>
                                 <h2 className="text-xl font-semibold text-gray-800">Current task</h2>
@@ -224,9 +224,7 @@ const SpecificStudentClubList: React.FC<SpecificStudentListProps> = ({
                                 </div>
                             </CardContent>
                         </Card>
-                    ) : <Card className="py-4">
-                        <p className="text-sm text-center text-gray-500 italic">No current tasks</p>
-                    </Card>}
+                    )}
 
                     {/* 3. Related Tasks */}
                     {selectedStudent?.relatedTasks && selectedStudent?.relatedTasks?.length > 0 && (

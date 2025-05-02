@@ -6,7 +6,6 @@ import { Button } from "@mui/material"; // Dùng Button từ MUI
 import { PackageCurrent } from "@/api/agent/PackageAgent";
 import { Package } from "@/models/Package";
 import ContractRepresentativePage from "@/pages/representative/contract/ContractRepresentativePage";
-import useAuth from "@/hooks/useAuth";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { GetContractCurrentAPI } from "@/api/representative/ContractAPI";
 import { Contract } from "@/models/Contract";
@@ -17,6 +16,7 @@ import { format } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
@@ -131,11 +131,11 @@ const WalletRepresentative = () => {
                       🔘 <b>Package Status:</b>{" "}
                       <span
                         className={`inline-block px-3 py-1 rounded text-sm font-semibold ${curPackage.status
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
                           }`}
                       >
-                        {curPackage.status ? "Active ✅" : "Inactive ❌"}
+                        {curPackage.status ? "Active" : "Inactive"}
                       </span>
                     </Typography>
                   </Grid2>
@@ -144,7 +144,7 @@ const WalletRepresentative = () => {
             ) : (
               <div className="flex justify-center">
                 <Typography color="textSecondary" variant="h6">
-                  ❌ No package assigned
+                  No package assigned
                 </Typography>
               </div>
             )}

@@ -66,7 +66,8 @@ export const JoinClubDialog: React.FC<JoinClubDialogProps> = ({
       onClose();
       onSuccess();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to join the club!");
+      console.log(error);
+      onClose();
     }
   };
 

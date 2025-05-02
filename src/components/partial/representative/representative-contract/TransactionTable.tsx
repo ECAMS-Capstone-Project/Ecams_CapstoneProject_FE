@@ -36,11 +36,11 @@ export const TransactionTable = (contract: ContractData) => {
                   <td className="p-3">{txn.amount.toLocaleString()} VND</td>
                   <td className="p-3 font-semibold">
                     {txn.status === "PAID" ? (
-                      <span className="text-green-500">✅ PAID</span>
+                      <span className="text-green-500">PAID</span>
                     ) : txn.status === "PENDING" ? (
-                      <span className="text-yellow-500">⏳ PENDING</span>
+                      <span className="text-yellow-500">PENDING</span>
                     ) : (
-                      <span className="text-red-500">❌ FAILED</span>
+                      <span className="text-red-500">FAILED</span>
                     )}
                   </td>
                 </tr>

@@ -56,12 +56,13 @@ export const contractColumn: ColumnDef<Contract>[] = [
 
       return (
         <div
-          className={`flex items-center justify-center gap-2 p-2 rounded-md ${isActive
-            ? "bg-[#CBF2DA] text-[#2F4F4F]"
-            : isInactive
+          className={`flex items-center justify-center gap-2 p-2 rounded-md ${
+            isActive
+              ? "bg-[#CBF2DA] text-[#2F4F4F]"
+              : isInactive
               ? "bg-[#FFF5BA] text-[#5A3825]"
               : ""
-            } w-full`} // Đặt width cố định
+          } w-full`} // Đặt width cố định
         >
           {isActive && (
             <CheckCircle2Icon size={20} className="h-5 w-5 text-[#2F4F4F]" />

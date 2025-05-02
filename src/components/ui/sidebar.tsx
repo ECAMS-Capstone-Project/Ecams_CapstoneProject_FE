@@ -76,7 +76,7 @@ export default function Sidebar({
               }`}
             >
               <span className="font-medium">ECAMS</span>
-              <span className="text-xs">Platform for student</span>
+              <span className="text-xs">Platform for universities</span>
             </div>
           </div>
 

@@ -45,7 +45,7 @@ import {
 // } from "@/components/ui/command";
 import { EventSchema } from "@/schema/EventSchema";
 import { ArrowLeft, CalendarIcon, Eye, Search, Trash2Icon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, fixTime } from "@/lib/utils";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -117,7 +117,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       fetchUserInfo();
     }
   }, [initialData]);
-  const { areas } = useAreas(1, 10, userInfo?.universityId); // Lấy mutation từ React Query
+  const { areas } = useAreas(1, 200, userInfo?.universityId); // Lấy mutation từ React Query
   const { createEvent, isPending } = useEvents();
   const navigate = useNavigate();
 
@@ -188,12 +188,27 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     name: "eventAreas", // Liên kết với mảng eventAreas
   });
 
+    const combineDateTime = (dateObj: Date, timeStr?: string) => {
+    const [hour, minute] = (timeStr?.split(":") ?? ["0", "0"]).map(Number);
+    const newDate = new Date(dateObj);
+    newDate.setHours(hour, minute, 0, 0);
+    return newDate;
+  };
+
   // Handle form submit
   const onSubmit = async (values: EventFormValues) => {
     console.log("Form Submitted with values:", values);
 
     try {
       setIsLoading(true);
+      const finalDeadline = combineDateTime(
+        values.registeredEndDate,
+        values.deadlineTime
+      );
+      const finalStartTime = combineDateTime(
+        values.registeredStartDate,
+        values.startTimeTime
+      );
       const formData = new FormData();
       formData.append("RepresentativeId", values.representativeId ?? "");
       formData.append("UniversityId", values.universityId);
@@ -201,12 +216,11 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
       formData.append("Description", values.description ?? "");
       formData.append(
         "RegisteredStartDate",
-        format(values.registeredStartDate, "yyyy-MM-dd")
+        fixTime(finalStartTime).toISOString()
       );
-      formData.append("WalletId", values.walletId ?? "");
       formData.append(
         "RegisteredEndDate",
-        format(values.registeredEndDate, "yyyy-MM-dd")
+        fixTime(finalDeadline).toISOString()
       );
       formData.append("Price", values.price.toString());
       formData.append("MaxParticipants", values.maxParticipants.toString());
@@ -256,14 +270,28 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     }
   };
   const onError = (errors: any) => {
-    // Nếu lỗi validation từ zod được gắn vào eventAreas, hiển thị toast.error
-    if (errors.eventAreas) {
-      // Nếu lỗi được gắn vào _error hoặc trực tiếp vào message
-      const message =
-        errors.eventAreas._error?.message ||
-        errors.eventAreas.message ||
-        "Area is not allowed to be duplicated.";
-      toast.error(message);
+    const areaErrors = errors.eventAreas;
+
+    if (areaErrors?._error) {
+      toast.error(areaErrors._error.message);
+      return;
+    }
+
+    if (Array.isArray(areaErrors)) {
+      areaErrors.forEach((err: any, index: number) => {
+        if (err?.AreaId?.message) {
+          toast.error(`Area ${index + 1}: ${err.AreaId.message}`);
+        }
+        if (err?.Date?.message) {
+          toast.error(`Area ${index + 1}: ${err.Date.message}`);
+        }
+        if (err?.StartTime?.message) {
+          toast.error(`Area ${index + 1}: ${err.StartTime.message}`);
+        }
+        if (err?.EndTime?.message) {
+          toast.error(`Area ${index + 1}: ${err.EndTime.message}`);
+        }
+      });
     }
   };
   return (
@@ -349,43 +377,6 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                         }}
                       />
                       <div className="grid grid-cols-2 gap-5">
-                        {/* <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Upload Image</FormLabel>
-                  <FormControl>
-              
-                    <>
-                      {initialData && initialData.imageUrl && (
-                        <img
-                          src={String(initialData.imageUrl)} // Hiển thị ảnh từ URL
-                          alt="Current Image"
-                          className="w-full h-52 object-contain mb-4"
-                          onChange={field.onChange}
-                        />
-                      )}
-                      <Input
-                        className="w-60"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            field.onChange(file); // Cập nhật ảnh mới khi người dùng chọn file mới
-                          } else {
-                            // Nếu không chọn ảnh mới, giữ nguyên ảnh cũ (không thay đổi state của ảnh)
-                            field.onChange(null);
-                          }
-                        }} // Lưu file vào state nếu có file mới
-                      />
-                    </>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
                         <FormField
                           control={form.control}
                           name="eventName"
@@ -394,6 +385,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                               <FormLabel>Event's Name</FormLabel>
                               <FormControl>
                                 <Input
+                                  placeholder="Enter event name"
                                   type="text"
                                   {...field}
                                   value={initialData?.eventName}
@@ -408,9 +400,34 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           name="price"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Price</FormLabel>
+                              <FormLabel>Price (VNĐ)</FormLabel>
                               <FormControl>
-                                <Input type="number" {...field} min={0} />
+                                <Input
+                                  type="text"
+                                  placeholder="Enter price (VNĐ)"
+                                  {...field}
+                                  onChange={(e) => {
+                                    // Remove all non-digit characters
+                                    const value = e.target.value.replace(
+                                      /\D/g,
+                                      ""
+                                    );
+                                    // Format with thousand separators
+                                    const formattedValue = value.replace(
+                                      /\B(?=(\d{3})+(?!\d))/g,
+                                      ","
+                                    );
+                                    field.onChange(value);
+                                    e.target.value = formattedValue;
+                                  }}
+                                  value={
+                                    field.value
+                                      ? field.value
+                                          .toString()
+                                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                      : ""
+                                  }
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -497,57 +514,68 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                             </FormItem>
                           )}
                         />
-
-                        {/* Hiển thị ngày bắt đầu và kết thúc cho mỗi khu vực */}
+                      </div>
+                      <div className="grid grid-cols-4 gap-5 w-full">
                         <FormField
                           control={form.control}
                           name="registeredStartDate"
                           render={({ field }) => (
-                            <FormItem className="flex flex-col justify-end">
-                              <FormLabel>Registered Start Date</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant={"outline"}
-                                      className={cn(
-                                        "text-left font-normal",
-                                        !field.value && "text-muted-foreground"
-                                      )}
-                                    >
-                                      {field.value ? (
-                                        format(new Date(field.value), "PPP")
-                                      ) : (
-                                        <span>Pick a date</span>
-                                      )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className="w-auto p-0 mb-0 pb-0"
-                                  align="start"
-                                >
-                                  <Calendar
-                                    mode="single"
-                                    selected={
-                                      field.value
-                                        ? new Date(field.value)
-                                        : undefined
-                                    }
-                                    onSelect={(date) => {
-                                      if (date) {
-                                        // Chuyển đổi ngày chọn thành ISO String
-                                        const adjustedDate = date.toISOString();
-                                        field.onChange(adjustedDate); // Cập nhật ngày chọn dưới dạng ISO String
-                                      }
-                                    }}
-                                    disabled={(date) => date < new Date()}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
+                            <FormItem className="flex flex-col h-full">
+                              <FormLabel className="mb-2">
+                                Register start date
+                              </FormLabel>
+                              <div className="flex-1">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                          "text-left font-normal w-full",
+                                          !field.value &&
+                                            "text-muted-foreground"
+                                        )}
+                                      >
+                                        {field.value ? (
+                                          format(new Date(field.value), "PPP")
+                                        ) : (
+                                          <span>Pick a date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    className="w-auto p-0 mb-0 pb-0"
+                                    align="start"
+                                  >
+                                    <Calendar
+                                      mode="single"
+                                      selected={field.value}
+                                      onSelect={field.onChange}
+                                      disabled={(date) => date < new Date()}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                              <FormMessage className="mt-1 text-sm text-red-500" />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="startTimeTime"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col h-full">
+                              <FormLabel className="mb-2">Time</FormLabel>
+                              <div className="flex-1">
+                                <FormControl>
+                                  <Input type="time" {...field} />
+                                </FormControl>
+                              </div>
+                              <FormMessage className="mt-1 text-sm text-red-500" />
                             </FormItem>
                           )}
                         />
@@ -556,54 +584,65 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           control={form.control}
                           name="registeredEndDate"
                           render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel>Registered End Date</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant={"outline"}
-                                      className={cn(
-                                        "text-left font-normal",
-                                        !field.value && "text-muted-foreground"
-                                      )}
-                                    >
-                                      {field.value ? (
-                                        format(field.value, "PPP")
-                                      ) : (
-                                        <span>Pick a date</span>
-                                      )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className="w-auto p-0"
-                                  align="start"
-                                >
-                                  <Calendar
-                                    mode="single"
-                                    selected={
-                                      field.value
-                                        ? new Date(field.value)
-                                        : undefined
-                                    }
-                                    onSelect={(date) => {
-                                      if (date) {
-                                        // Chuyển đổi ngày chọn thành ISO String
-                                        const adjustedDate = date.toISOString();
-                                        field.onChange(adjustedDate); // Cập nhật ngày chọn dưới dạng ISO String
-                                      }
-                                    }}
-                                    disabled={(date) => date < new Date()}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
+                            <FormItem className="flex flex-col h-full">
+                              <FormLabel className="mb-2">Register end date</FormLabel>
+                              <div className="flex-1">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                          "text-left font-normal w-full",
+                                          !field.value &&
+                                            "text-muted-foreground"
+                                        )}
+                                      >
+                                        {field.value ? (
+                                          format(new Date(field.value), "PPP")
+                                        ) : (
+                                          <span>Pick a date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    className="w-auto p-0 mb-0 pb-0"
+                                    align="start"
+                                  >
+                                    <Calendar
+                                      mode="single"
+                                      selected={field.value}
+                                      onSelect={field.onChange}
+                                      disabled={(date) => date < new Date()}
+                                      initialFocus
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                              <FormMessage className="mt-1 text-sm text-red-500" />
                             </FormItem>
                           )}
                         />
+
+                        <FormField
+                          control={form.control}
+                          name="deadlineTime"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col h-full">
+                              <FormLabel className="mb-2">Time</FormLabel>
+                              <div className="flex-1">
+                                <FormControl>
+                                  <Input type="time" {...field} />
+                                </FormControl>
+                              </div>
+                              <FormMessage className="mt-1 text-sm text-red-500" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="grid grid-col-2 gap-5 w-1/2">
                         <FormField
                           control={form.control}
                           name="walletId"
@@ -623,7 +662,6 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           )}
                         />
                       </div>
-
                       <FormField
                         control={form.control}
                         name="eventAreas"
@@ -663,7 +701,9 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                           item={item}
                                           index={index}
                                           update={update}
-                                          areas={areas}
+                                          areas={areas.filter(
+                                            (a) => a.status == true
+                                          )}
                                         />
                                       </div>
 

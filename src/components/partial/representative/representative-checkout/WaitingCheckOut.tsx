@@ -5,16 +5,16 @@ import Alert from "@mui/material/Alert";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
-import useAuth from "@/hooks/useAuth";
 import { handleResponse } from "@/api/representative/PaymentAPI";
 import { StatusCodeEnum } from "@/lib/statusCodeEnum";
 import { HandleResponse } from "@/models/Payment";
+import useAuth from "@/hooks/useAuth";
 
 function WaitingCheckout() {
   const { user } = useAuth();
   const [paymentStatus, setPaymentStatus] = useState("pending");
-  const hasProcessedPayment = useRef(false); 
-  const [loading, setLoading] = useState(true); 
+  const hasProcessedPayment = useRef(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const queryParams = window.location.search;
@@ -29,9 +29,9 @@ function WaitingCheckout() {
 
     const processPayment = async () => {
       let data: HandleResponse = {
-        representativeId: user?.representativeId ?? '',
-        transactionInfo: '',
-        transactionNumber: '',
+        representativeId: user?.representativeId ?? "",
+        transactionInfo: "",
+        transactionNumber: "",
         isSuccess: false,
       };
       let isSuccess = false;
@@ -119,7 +119,7 @@ function WaitingCheckout() {
 
       <Box className="buttonLoading" marginTop={4}>
         <Box className="buttonItem" marginBottom={2}>
-          <Link to="/staff">
+          <Link to="/representative">
             <Button variant="contained">Back to home page</Button>
           </Link>
         </Box>

@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, CircleX, XCircle, FileText, Eye } from "lucide-react";
 import { DenyMemberJoinClub } from "./DenialDialog";
 import { ApproveOrDenyRequestJoinClub, ClubMemberDTO } from "@/api/club-owner/ClubByUser";
-import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import useAuth from "@/hooks/useAuth";
 
 export interface UserDetailDialogProps {
   initialData: ClubMemberDTO | null;
@@ -144,7 +144,7 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
                       className="w-28 h-28 object-cover rounded-lg border cursor-pointer"
                     />
                   ) : (
-                    <div 
+                    <div
                       className="w-28 h-28 flex flex-col items-center justify-center gap-2 bg-gray-100 rounded-lg border cursor-pointer hover:bg-gray-200 transition-colors"
                       onClick={() => {
                         if (isPdfFile(item.evidenceLink) || isDocFile(item.evidenceLink)) {

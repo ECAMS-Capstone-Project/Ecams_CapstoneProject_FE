@@ -90,7 +90,10 @@ const ApproveStudentPage = () => {
             />
             <div className="flex justify-end px-6 gap-4">
               <div>
-                <ExportButton universityId={user?.universityId} />{" "}
+                <ExportButton
+                  universityId={user?.universityId}
+                  data={stuList.filter((a) => a.status == "ACTIVE")}
+                />{" "}
               </div>
               <div className="flex justify-end">
                 <Button variant="custom" onClick={handleOpenImport}>
@@ -101,13 +104,13 @@ const ApproveStudentPage = () => {
                 visible={isImportOpen}
                 onClose={handleCloseImport}
                 setIsLoading={setIsLoading}
+                setFlag={setFlag}
               />
             </div>
           </div>
           <Separator />
 
           <Tabs
-            // Điều khiển tab bằng state
             value={activeTab}
             onValueChange={(val) =>
               setActiveTab(val as "request" | "registered")

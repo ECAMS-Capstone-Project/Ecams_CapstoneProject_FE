@@ -23,43 +23,39 @@ export const StudentHeader = () => {
               <nav className="flex space-x-6">
                 <Link
                   to="/student"
-                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition duration-300 scroll-smooth ${
-                    checkActiveNav("/student")
-                      ? "font-extrabold text-[#2982cc] "
-                      : ""
-                  }`}
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition duration-300 scroll-smooth ${checkActiveNav("/student")
+                    ? "font-extrabold text-[#2982cc] "
+                    : ""
+                    }`}
                 >
                   Home
                 </Link>
 
                 <Link
                   to="/student/event"
-                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
-                    checkActiveNav("/student/event")
-                      ? "font-extrabold text-[#2982cc]"
-                      : ""
-                  }`}
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${checkActiveNav("/student/event")
+                    ? "font-extrabold text-[#2982cc]"
+                    : ""
+                    }`}
                 >
                   Events
                 </Link>
 
                 <Link
                   to="/student/club"
-                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
-                    checkActiveNav("/student/club")
-                      ? "font-extrabold text-[#2982cc]"
-                      : ""
-                  }`}
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${checkActiveNav("/student/club")
+                    ? "font-extrabold text-[#2982cc]"
+                    : ""
+                    }`}
                 >
                   Clubs
                 </Link>
                 <Link
                   to="/student/student-events"
-                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${
-                    checkActiveNav("/student/student-events")
-                      ? "font-extrabold text-[#2982cc]"
-                      : ""
-                  }`}
+                  className={`text-gray-700 font-medium hover:text-[#136CB5] transition ${checkActiveNav("/student/student-events")
+                    ? "font-extrabold text-[#2982cc]"
+                    : ""
+                    }`}
                 >
                   My events
                 </Link>

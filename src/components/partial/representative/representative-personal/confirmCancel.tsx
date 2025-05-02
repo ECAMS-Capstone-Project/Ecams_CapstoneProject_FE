@@ -7,11 +7,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import useAuth from "@/hooks/useAuth";
 import { Contract } from "@/models/Contract";
 import { CancelContractRepresentative } from "@/api/representative/ContractAPI";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import useAuth from "@/hooks/useAuth";
 
 interface ConfirmDialogProps {
   open: boolean;
