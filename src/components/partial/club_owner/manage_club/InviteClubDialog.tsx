@@ -24,9 +24,19 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import WaitingModal from "@/components/global/WaitingModal";
 import { ApproveClubAPI, ClubResponseDTO } from "@/api/club-owner/ClubByUser";
-import { Grid2, Typography } from "@mui/material";
-import useAuth from "@/hooks/useAuth";
+import {
+  Grid2,
+  TableHead,
+  Paper,
+  Table,
+  TableContainer,
+  TableRow,
+  Typography,
+  TableCell,
+  TableBody,
+} from "@mui/material";
 import { DenyClubByStu } from "@/pages/club-owner/manage-club/DenialDialog";
+import useAuth from "@/hooks/useAuth";
 
 type FormMode = "view" | "pending" | "edit";
 
@@ -41,7 +51,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
   initialData,
   mode,
   setFlag,
-  setOpenDialog
+  setOpenDialog,
 }) => {
   const form = useForm<ClubResponseDTO>({
     defaultValues: initialData || {},
@@ -57,7 +67,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
       setIsLoading(true);
       await ApproveClubAPI(initialData.clubId, user.userId);
       toast.success("Club approved successfully.");
-      if (setFlag) setFlag(prev => !prev);
+      if (setFlag) setFlag((prev) => !prev);
       setOpenDialog(false);
     } catch (error: any) {
       console.log(error.response?.data?.message);
@@ -106,7 +116,9 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                       name="clubName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-bold text-base">Club Name</FormLabel>
+                          <FormLabel className="font-bold text-base">
+                            Club Name
+                          </FormLabel>
                           <FormControl>
                             <Input {...field} readOnly className="bg-gray-50" />
                           </FormControl>
@@ -123,7 +135,9 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                       name="purpose"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-bold text-base">Purpose</FormLabel>
+                          <FormLabel className="font-bold text-base">
+                            Purpose
+                          </FormLabel>
                           <FormControl>
                             <textarea
                               {...field}
@@ -144,7 +158,9 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="font-bold text-base">Description</FormLabel>
+                          <FormLabel className="font-bold text-base">
+                            Description
+                          </FormLabel>
                           <FormControl>
                             <textarea
                               {...field}
@@ -157,7 +173,6 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                       )}
                     />
                   </Grid2>
-
                 </Grid2>
 
                 <div className="mt-6 flex justify-between items-start gap-4 flex-wrap">
@@ -197,6 +212,51 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                   </div>
                 </div>
 
+                {/* Danh sách Members */}
+                <div className="mt-6">
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
+                    Club Members
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table size="medium">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Avatar</TableCell>
+                          <TableCell>Student ID</TableCell>
+                          <TableCell>Name</TableCell>
+                          <TableCell>Position</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {initialData?.clubMembers
+                          ?.filter((a) => a.status == "ACTIVE")
+                          .map((member, index) => (
+                            <TableRow key={index + 1}>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-2 justify-center">
+                                  <img
+                                    src={
+                                      member.avatar ||
+                                      "https://github.com/shadcn.png"
+                                    }
+                                    alt={"Product Image"}
+                                    className="w-12 h-12 object-cover rounded-full"
+                                  />
+                                </div>
+                              </TableCell>
+                              <TableCell>{member.studentId}</TableCell>
+                              <TableCell>{member.fullname}</TableCell>
+                              <TableCell>{member.clubRoleName}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
 
                 {/* Action Buttons */}
                 <div className="flex w-full justify-end mt-10 space-x-3">
@@ -211,7 +271,13 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                             : "bg-[#D4F8E8] text-[#007B55] hover:bg-[#C2F2DC] hover:text-[#005B40]"
                             }`}
                         >
-                          {isLoading ? "Processing..." : <><CheckCircle2 size={18} /> Approve</>}
+                          {isLoading ? (
+                            "Processing..."
+                          ) : (
+                            <>
+                              <CheckCircle2 size={18} /> Approve
+                            </>
+                          )}
                         </Button>
 
                         {/* Reject Button */}
@@ -245,11 +311,10 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
         setFlag={setFlag}
         open={open}
         onClose={() => {
-          setOpenDialog(false)
-          setOpen(false)
+          setOpenDialog(false);
+          setOpen(false);
         }}
       />
     </div>
-
   );
 };

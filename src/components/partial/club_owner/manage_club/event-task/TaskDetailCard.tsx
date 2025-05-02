@@ -9,7 +9,6 @@ import {
 } from "@/api/club-owner/TaskAPI";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import useAuth from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
@@ -25,6 +24,7 @@ import {
 } from "@/api/student/ClubAgent";
 import { AssignMembersDialog } from "./AssignMemberDialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
+import useAuth from "@/hooks/useAuth";
 
 const TaskDetailCard = () => {
   const { taskId = "" } = useParams();
