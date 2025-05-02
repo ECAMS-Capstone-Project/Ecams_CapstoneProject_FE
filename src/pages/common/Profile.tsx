@@ -30,37 +30,45 @@ const ProfilePage = () => {
 
     fetchUserInfo();
   }, []);
+
   if (isLoading) {
     return <LoadingAnimation />;
   }
+
+  const isRepresentative = userInfo?.roles.includes("REPRESENTATIVE");
+
   return (
     <>
       <div className="flex items-center justify-between pt-4">
         <Heading
           title={`Settings`}
-          description="Manage your account settings and set e-mail preferences."
+          description={
+            isRepresentative
+              ? "Manage your representative account settings and profile information."
+              : "Manage your account settings and profile information."
+          }
         />
       </div>
       <Separator />
-      <Tabs
-        defaultValue="profile"
-        // value={activeTab}
-        // onValueChange={setActiveTab}
-        className="w-full mt-3 p-2"
-      >
+      <Tabs defaultValue="profile" className="w-full mt-3 p-2">
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
+          {!isRepresentative && (
+            <TabsTrigger value="account">Preference</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="profile">
-          <ProfileForm initialData={userInfo || null} />
+          <ProfileForm />
         </TabsContent>
-        <TabsContent value="account">
-          <UserFavoritesPage />
-        </TabsContent>
+        {!isRepresentative && (
+          <TabsContent value="account">
+            <UserFavoritesPage />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );
 };
+
 export default ProfilePage;

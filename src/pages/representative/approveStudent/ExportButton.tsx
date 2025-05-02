@@ -19,9 +19,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 import { exportStudentAPI } from "@/api/student/StudentScheduleAgent";
+import StudentRequest from "@/models/StudentRequest";
 
 interface ExportButtonProps {
   universityId: string | undefined;
+  data: StudentRequest[];
 }
 
 export interface StudentTrainingPoint {
@@ -38,7 +40,7 @@ const Transition = (
   return <Slide direction="up" {...props} />;
 };
 
-const ExportButton = ({ universityId }: ExportButtonProps) => {
+const ExportButton = ({ universityId, data }: ExportButtonProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -58,15 +60,13 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
       // ✅ Kiểm tra đầy đủ các tầng
       const rawData: StudentTrainingPoint[] = response?.data || [];
 
-      console.log("Export Data:", rawData);
-
       if (rawData.length <= 0) {
         toast.error("No data found!");
         return;
       }
 
       exportToExcel(rawData);
-      toast.success("Export thành công!");
+      toast.success("Export successfully!");
       handleCloseDialog();
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -191,6 +191,7 @@ const ExportButton = ({ universityId }: ExportButtonProps) => {
     <>
       <Button
         variant="custom"
+        disabled={data.length <= 0}
         onClick={handleOpenDialog}
         className="rounded-xl bg-[#4F81BD] hover:bg-[#3b6a9e] text-white px-4 py-2 flex items-center gap-2 transition"
       >
