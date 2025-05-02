@@ -260,10 +260,6 @@ export function EditEventForm() {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (!event) {
     return <div>Event not found</div>;
   }
