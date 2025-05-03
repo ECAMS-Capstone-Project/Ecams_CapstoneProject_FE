@@ -81,7 +81,7 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
               You have joined this event!
             </Button>
           ))}
-        {event.status.toLowerCase() == "canceled" && (
+        {event.status.toLowerCase() == "canceled" && isRequestRefund && (
           <Button
             className={`w-full p-6 mt-5 font-light text-md ${
               event.eventRegistrations?.find(

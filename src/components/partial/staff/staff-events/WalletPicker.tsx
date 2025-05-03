@@ -22,11 +22,13 @@ import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
 interface EventWalletPickerProps {
   value?: string | null; // Đây là walletId
   onChange: (walletId: string) => void;
+  price: number;
 }
 
 const EventWalletPicker: React.FC<EventWalletPickerProps> = ({
   value,
   onChange,
+  price,
 }) => {
   const [open, setOpen] = useState(false);
   const [pageNo] = useState(1);
@@ -66,6 +68,7 @@ const EventWalletPicker: React.FC<EventWalletPickerProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={price == 0}
           variant="outline"
           className="h-9 px-3 w-full rounded-md flex items-center justify-between"
           onClick={() => setOpen(true)}

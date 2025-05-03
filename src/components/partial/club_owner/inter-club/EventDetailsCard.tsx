@@ -29,7 +29,14 @@ export const EventDetailsCard = ({
   const [isHostEnded, setIsHostEnded] = useState(false); // Trạng thái của club host đã kết thúc sự kiện chưa
   const [remainingClubsPercentage, setRemainingClubsPercentage] =
     useState<number>(0); // Tỷ lệ phần trăm của các club còn lại đã kết thúc
-
+  const isAllClubsEnded = selectedEvent.clubs.every((club) => club.isEnd);
+  const endedClubsCount = selectedEvent.clubs.filter(
+    (club) => club.isEnd
+  ).length;
+  const isClubEnded = selectedEvent.clubs.find(
+    (club) => club.clubId == currentClub.clubId
+  )?.isEnd;
+  const isEventEnded = selectedEvent.status === "ENDED";
   useEffect(() => {
     // Kiểm tra xem club host đã bấm "End Event" chưa
     const hostClub = selectedEvent.clubs.find((club) => club.isHost);
@@ -59,8 +66,18 @@ export const EventDetailsCard = ({
   // const isEnded = selectedEvent.clubs.find(
   //   (club) => club.clubId == currentClub.clubId
   // )?.isEnd;
+  // Host - chưa end nhưng event đã kết thúc => cần End
+  const shouldHostSeeEndButton = isHost && isEventEnded && !isHostEnded;
 
-  console.log("ishost end", isHostEnded);
+  // Host - đã end rồi => hiển thị tiến trình
+  const shouldHostSeeProgress = isHost && isHostEnded;
+
+  // Club tham gia - chưa end và còn club khác chưa end
+  const shouldMemberSeeEndButton =
+    !isHost && isHostEnded && !isClubEnded && !isAllClubsEnded;
+
+  // Club tham gia - xem progress khi host đã end và chưa end full
+  const shouldMemberSeeProgress = !isHost && isHostEnded;
 
   return (
     <div className="bg-[#136cb9]/10 rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb] p-6">
@@ -82,12 +99,23 @@ export const EventDetailsCard = ({
         </div>
 
         <div>
-          {isHostEnded && isHost ? (
+          {/* Host thấy nút End khi cần */}
+          {shouldHostSeeEndButton && (
             <Button
-              variant={"custom"}
+              variant="outline"
+              onClick={() => setIsEndEventDialogOpen(true)}
+              className="bg-white text-[#136cb9] border-[#136cb9]/20"
+            >
+              End Event
+            </Button>
+          )}
+
+          {/* Tất cả roles đều có thể thấy progress nếu hợp lệ */}
+          {(shouldHostSeeProgress || shouldMemberSeeProgress) && (
+            <Button
+              variant="custom"
               className="relative bg-[#136cb9]/60 text-[#136cb9] border-[#136cb9]/20 p-3 overflow-hidden hover:bg-none"
             >
-              {/* Background color bar */}
               <div
                 className="absolute inset-0 bg-gradient-to-r from-[#136cb9] to-[#49bbbd] transition-all duration-1000 ease-in-out rounded-md"
                 style={{
@@ -98,40 +126,29 @@ export const EventDetailsCard = ({
               />
               <style>
                 {`
-                  @keyframes slideIn {
-                    from {
-                      clip-path: inset(0 100% 0 0);
-                    }
-                    to {
-                      clip-path: inset(0 ${
-                        100 - remainingClubsPercentage
-                      }% 0 0);
-                    }
-                  }
-
-                `}
+        @keyframes slideIn {
+          from { clip-path: inset(0 100% 0 0); }
+          to { clip-path: inset(0 ${100 - remainingClubsPercentage}% 0 0); }
+        }
+      `}
               </style>
               <span className="relative z-10 text-white">
-                {selectedEvent.clubs.every((club) => club.isEnd)
+                {isAllClubsEnded
                   ? "ENDED"
-                  : `${
-                      selectedEvent.clubs.filter((club) => club.isEnd).length
-                    } clubs have ended the event`}
+                  : `${endedClubsCount} clubs have ended the event`}
               </span>
             </Button>
-          ) : isHostEnded ? (
-            selectedEvent.status === "ENDED" && (
-              <Button
-                variant="outline"
-                onClick={() => setIsEndEventDialogOpen(true)}
-                className="bg-white text-[#136cb9] border-[#136cb9]/20"
-              >
-                End Event
-              </Button>
-            )
-          ) : (
-            // )
-            ""
+          )}
+
+          {/* CLB chưa End thì thấy nút End */}
+          {shouldMemberSeeEndButton && (
+            <Button
+              variant="outline"
+              onClick={() => setIsEndEventDialogOpen(true)}
+              className="bg-white text-[#136cb9] border-[#136cb9]/20"
+            >
+              End Event
+            </Button>
           )}
         </div>
       </div>

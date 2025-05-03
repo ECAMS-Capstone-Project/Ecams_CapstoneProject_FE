@@ -44,10 +44,19 @@ export const EventSchema = z
       .array(
         z.object({
           ClubId: z.string(),
-          IsHost: z.boolean(),
+          IsHost: z.boolean({
+            required_error: "You must select a host",
+            invalid_type_error: "Invalid value: must be true or false",
+          }),
         })
       )
-      .optional(), // Có thể là string hoặc null
+      .optional()
+      .refine((clubs) => clubs?.some((c) => c.IsHost), {
+        message: "You must assign a host club",
+      })
+      .refine((clubs) => clubs?.filter((c) => c.IsHost).length === 1, {
+        message: "Only one host club is allowed",
+      }), // Có thể là string hoặc null
     clubName: z.string().optional(), // Có thể là string hoặc null
     eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
     startTimeTime: z.string().min(1, "Please select a time"),
@@ -103,7 +112,7 @@ export const EventSchema = z
     eventType: z.string().min(1, { message: "Event type is required" }),
     trainingPoint: z.coerce
       .number()
-      .min(0, { message: "Training point must be a positive number" })
+      .min(1, { message: "Training point must be a positive number" })
       .max(30, { message: "Training point must be less than 30" }),
   })
   .superRefine((data, ctx) => {

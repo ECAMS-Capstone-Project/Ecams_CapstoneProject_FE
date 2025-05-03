@@ -49,6 +49,7 @@ export interface EventFilterParams {
   startDate?: string;
   endDate?: string;
   status?: string;
+  exceptStatus?: string;
   // ... các trường khác
 }
 
@@ -81,6 +82,7 @@ export const getAllEventList = async (
     StartDate: filterParams?.startDate,
     EndDate: filterParams?.endDate,
     Status: "ACTIVE",
+    ExceptStatus: filterParams?.exceptStatus,
     // ... các filter khác nếu có
   };
 

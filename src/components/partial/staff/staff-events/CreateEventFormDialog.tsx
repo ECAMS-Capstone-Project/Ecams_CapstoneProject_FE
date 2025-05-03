@@ -180,15 +180,13 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
   );
 
   // Now that we have start and end dates, we can call the useClub hook
-
-  console.log("form error", form.formState.errors);
-
+  console.log(form.formState.errors);
   const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "eventAreas", // Liên kết với mảng eventAreas
   });
 
-    const combineDateTime = (dateObj: Date, timeStr?: string) => {
+  const combineDateTime = (dateObj: Date, timeStr?: string) => {
     const [hour, minute] = (timeStr?.split(":") ?? ["0", "0"]).map(Number);
     const newDate = new Date(dateObj);
     newDate.setHours(hour, minute, 0, 0);
@@ -585,7 +583,9 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                           name="registeredEndDate"
                           render={({ field }) => (
                             <FormItem className="flex flex-col h-full">
-                              <FormLabel className="mb-2">Register end date</FormLabel>
+                              <FormLabel className="mb-2">
+                                Register end date
+                              </FormLabel>
                               <div className="flex-1">
                                 <Popover>
                                   <PopoverTrigger asChild>
@@ -655,6 +655,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                   onChange={(selectedWalletId) =>
                                     field.onChange(selectedWalletId)
                                   }
+                                  price={form.watch("price")}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -849,7 +850,9 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                             {isClubEvent && (
                               <div className="space-y-4">
                                 <FormLabel>Assigned Clubs</FormLabel>
-
+                                <FormMessage>
+                                  {form.formState.errors.clubs?.message}
+                                </FormMessage>
                                 <div className="flex items-center gap-4">
                                   <div className="flex-1 relative">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
