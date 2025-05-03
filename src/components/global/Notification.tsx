@@ -107,8 +107,7 @@ const NotificationDropdown = () => {
           }
 
           if (
-            message.includes("New club owner has been add! You are kicked!") ||
-            message.includes("New representative has been add! You are kicked!")
+            message.includes("New club owner has been add! You are kicked!")
           ) {
             try {
               // Hiển thị popup đẹp với 1 nút OK
@@ -117,8 +116,30 @@ const NotificationDropdown = () => {
                 text: "Your request to change club owner is accepted, please log in again!",
                 icon: "error",
                 confirmButtonText: "OK",
-                allowOutsideClick: false, 
-                allowEscapeKey: false, 
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              });
+
+              // Sau khi bấm OK thì logout
+              if (result.isConfirmed) {
+                await logout();
+                window.location.href = "/login";
+              }
+            } catch (error) {
+              console.error("Error during logout", error);
+            }
+          } else if (
+            message.includes("New representative has been add! You are kicked!")
+          ) {
+            try {
+              // Hiển thị popup đẹp với 1 nút OK
+              const result = await Swal.fire({
+                title: "Alert",
+                text: "Your request to change representative is accepted, please log in again!",
+                icon: "error",
+                confirmButtonText: "OK",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
               });
 
               // Sau khi bấm OK thì logout

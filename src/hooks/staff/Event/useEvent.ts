@@ -24,15 +24,22 @@ export const useEvents = (
   uniId?: string,
   pageNumber?: number,
   pageSize?: number,
-  status?: string
+  status?: string,
+  exceptStatus?: string
 ) => {
   const queryClient = useQueryClient();
 
   // Fetch danh sách area theo trang
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["events", uniId, status, pageNumber, pageSize], // Query key động
+    queryKey: ["events", uniId, status, pageNumber, pageSize, exceptStatus], // Query key động
     queryFn: () =>
-      getEventList(uniId || "", pageNumber || 1, pageSize || 20, status || ""),
+      getEventList(
+        uniId || "",
+        pageNumber || 1,
+        pageSize || 20,
+        status || "",
+        exceptStatus || ""
+      ),
     refetchOnMount: true, // 🔥 Bắt buộc lấy dữ liệu mới sau khi xóa
     refetchOnWindowFocus: false, // 🔥 Không tự động refetch khi chuyển tab
     enabled: !!uniId,

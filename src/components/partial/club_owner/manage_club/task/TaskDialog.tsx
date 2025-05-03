@@ -5,7 +5,11 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { GetTaskDetailByMember, SendStudentSubmission, TaskDetailForStudent } from "@/api/club-owner/TaskAPI";
+import {
+  GetTaskDetailByMember,
+  SendStudentSubmission,
+  TaskDetailForStudent,
+} from "@/api/club-owner/TaskAPI";
 import toast from "react-hot-toast";
 import LoadingAnimation from "@/components/ui/loading";
 
@@ -14,8 +18,13 @@ interface TaskDetailDialogProps {
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFlag }) => {
-  const [taskDetail, setTaskDetail] = useState<TaskDetailForStudent | null>(null);
+const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({
+  initialData,
+  setFlag,
+}) => {
+  const [taskDetail, setTaskDetail] = useState<TaskDetailForStudent | null>(
+    null
+  );
   const [editorContent, setEditorContent] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -23,7 +32,10 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
   useEffect(() => {
     async function fetchTask() {
       try {
-        const response = await GetTaskDetailByMember(initialData.taskId, initialData.clubMemberId);
+        const response = await GetTaskDetailByMember(
+          initialData.taskId,
+          initialData.clubMemberId
+        );
         if (response.data) {
           setTaskDetail(response.data);
           // Nếu đã có bài nộp của sinh viên, set vào editorContent
@@ -45,7 +57,9 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
   };
 
   // Task được coi là đã nộp nếu submissionStatus là "COMPLETED"
-  const isSubmitted = taskDetail?.submissionStatus === "COMPLETED" || taskDetail?.submissionStatus === "REVIEWING";
+  const isSubmitted =
+    taskDetail?.submissionStatus === "COMPLETED" ||
+    taskDetail?.submissionStatus === "REVIEWING";
   const isDeadlineOver = taskDetail?.deadline
     ? new Date(taskDetail.deadline).getTime() < Date.now()
     : false;
@@ -56,17 +70,17 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
       toast.error("Submission content cannot be empty");
       return;
     }
-    setLoading(true)
-    const form = new FormData()
-    form.append("ClubMemberId", initialData.clubMemberId)
-    form.append("TaskId", initialData.taskId)
-    form.append("StudentSubmission", editorContent)
+    setLoading(true);
+    const form = new FormData();
+    form.append("ClubMemberId", initialData.clubMemberId);
+    form.append("TaskId", initialData.taskId);
+    form.append("StudentSubmission", editorContent);
     files.forEach((file) => {
-        form.append("ListSubmissions", file)
-    })
+      form.append("ListSubmissions", file);
+    });
     await SendStudentSubmission(initialData.taskId, form);
     if (setFlag) {
-      setFlag(pre => !pre);
+      setFlag((pre) => !pre);
     }
     toast.success("Submission sent successfully!");
     setLoading(true);
@@ -106,7 +120,11 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
             </div>
             <div>
               <p className="font-bold">Task Score:</p>
-              <p>{taskDetail.taskScore ? `${taskDetail.taskScore} points` : "Unknown"}</p>
+              <p>
+                {taskDetail.taskScore
+                  ? `${taskDetail.taskScore} points`
+                  : "Unknown"}
+              </p>
             </div>
             <div>
               <p className="font-bold">Submission Status:</p>
@@ -150,8 +168,12 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
             <div>
               <p className="font-bold">Submission Date:</p>
               <p>
-                {taskDetail.submissionDate && taskDetail.submissionDate !== "0001-01-01T00:00:00"
-                  ? format(new Date(taskDetail.submissionDate), "HH:mm:ss dd/MM/yyyy")
+                {taskDetail.submissionDate &&
+                taskDetail.submissionDate !== "0001-01-01T00:00:00"
+                  ? format(
+                      new Date(taskDetail.submissionDate),
+                      "HH:mm:ss dd/MM/yyyy"
+                    )
                   : "Not submitted"}
               </p>
             </div>
@@ -178,7 +200,9 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
             {isSubmitted ? (
               <div className="bg-gray-100 p-2 rounded-md border border-gray-300">
                 <p className="font-bold">Comment:</p>
-                <p className="text-center">{taskDetail.comment || "No comment"}</p>
+                <p className="text-center">
+                  {taskDetail.comment || "No comment"}
+                </p>
               </div>
             ) : isDeadlineOver ? (
               <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-md text-center font-medium">
@@ -190,6 +214,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                   theme="snow"
                   value={editorContent}
                   onChange={setEditorContent}
+                  readOnly={taskDetail.submissionStatus === "NOT_STARTED"}
                   className="max-h-[400px] overflow-y-auto"
                 />
                 <div className="space-y-2 mt-2">
@@ -204,6 +229,7 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                       Choose Files
                     </label>
                     <input
+                      disabled={taskDetail.submissionStatus === "NOT_STARTED"}
                       id="customFileUpload"
                       type="file"
                       multiple
@@ -226,7 +252,9 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                               className="w-16 h-16 object-cover rounded border"
                             />
                           )}
-                          <span className="text-sm text-gray-700">{file.name}</span>
+                          <span className="text-sm text-gray-700">
+                            {file.name}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -245,7 +273,14 @@ const TaskDetailDialog: React.FC<TaskDetailDialogProps> = ({ initialData, setFla
                 </Button>
               </DialogClose>
             ) : (
-              <Button onClick={handleSubmit} disabled={loading}>{loading ? <LoadingAnimation /> : "Submit"}</Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={
+                  loading || taskDetail.submissionStatus === "NOT_STARTED"
+                }
+              >
+                {loading ? <LoadingAnimation /> : "Submit"}
+              </Button>
             )}
           </div>
         </>

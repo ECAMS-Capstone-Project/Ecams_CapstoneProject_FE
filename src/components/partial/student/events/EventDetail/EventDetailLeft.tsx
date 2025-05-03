@@ -17,7 +17,7 @@ export const EventDetailLeft: React.FC<EventDetailLeftProps> = ({ event }) => {
       transition={{ duration: 0.5 }}
       className="md:col-span-1 space-y-8"
     >
-      <div className="md:col-span-1 space-y-12">
+      <div className="md:col-span-1 space-y-7">
         <div className="description">
           <h2 className="mb-4 text-3xl font-bold">Description</h2>
           <p className="mb-4 text-gray-700 text-lg leading-relaxed">

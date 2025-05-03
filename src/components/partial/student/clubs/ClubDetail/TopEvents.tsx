@@ -2,6 +2,7 @@ import { MagicCard } from "@/components/magicui/magic-card";
 import { useNavigate } from "react-router-dom";
 import { ClubResponse } from "@/models/Club";
 import { motion } from "framer-motion";
+import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 
 interface TopEventProps {
   club: ClubResponse;
@@ -19,6 +20,26 @@ export const TopEvents = ({ club }: TopEventProps) => {
     >
       <div className="social-share">
         <h3 className="text-2xl font-bold mb-4">Top Events</h3>
+        {club?.topEvents.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-64">
+            <img
+              src="https://img.freepik.com/premium-vector/events-big-text-online-corporate-party-meeting-friends-colleagues-video-conference_501813-9.jpg?w=1800"
+              alt="No clubs"
+              className="w-44 h-44  object-contain opacity-90"
+            />
+            <div className="flex justify-center items-center ">
+              <AnimatedGradientText>
+                <span
+                  className={
+                    "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+                  }
+                >
+                  No top event yet!
+                </span>
+              </AnimatedGradientText>
+            </div>
+          </div>
+        )}
         <div className="grid md:grid-cols-3 gap-7 mt-6 w-full px-8">
           {club?.topEvents.map((event, index) => (
             <MagicCard

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, CalendarIcon, Sparkles } from "lucide-react";
+import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
 // shadcn/ui & Components
@@ -35,7 +35,6 @@ import { Grid2 } from "@mui/material";
 import {
   AvailableMemberEventTask,
   GetAvailableMember,
-  TaskRecommendedByAI,
 } from "@/api/student/ClubAgent";
 import SpecificStudentClubList from "./SpecificStudentClubList";
 import {
@@ -53,12 +52,9 @@ export default function CreateTaskClub() {
   const location = useLocation();
   const clubId = location.state?.clubId;
   const [priority, setPriority] = useState<string>("LOW");
-  const [error, setError] = useState("");
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
     []
   );
-  const [, setRecommendedStudents] = useState<AvailableMemberEventTask[]>([]);
-  const [, setRecommendedReasons] = useState<Record<string, string>>({});
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,8 +88,6 @@ export default function CreateTaskClub() {
   const selectedMembers = watch("selectedMembers");
   const startTimeDate = watch("startTimeDate");
   const deadlineTimeDate = watch("deadlineDate");
-  const taskName = watch("taskName");
-  const taskDescription = watch("description");
 
   // Kết hợp ngày & giờ thành 1 Date final
   const combineDateTime = (dateObj: Date, timeStr: string) => {
@@ -181,41 +175,6 @@ export default function CreateTaskClub() {
         "selectedMembers",
         current.filter((id: string) => id !== studentId)
       );
-    }
-  };
-
-  const handleAIRecommend = async () => {
-    setIsLoading(true);
-    try {
-      const body = {
-        clubId: clubId as string,
-        taskName: taskName.trim().toString(),
-        taskDescription: taskDescription.trim().toString(),
-        startTime: startTimeDate.toISOString(),
-        endTime: deadlineTimeDate.toISOString(),
-        priority: priority,
-      };
-
-      const response = await TaskRecommendedByAI(body.clubId, body);
-      const data = response.data;
-
-      // Update danh sách recommend
-      if (data) {
-        setRecommendedStudents(data);
-      } else {
-        setError(response.message);
-      }
-
-      // Lưu lại lý do recommend theo studentId
-      const reasonMap: Record<string, string> = {};
-      data?.forEach((student) => {
-        reasonMap[student.studentId] = student.reason || "";
-      });
-      setRecommendedReasons(reasonMap);
-    } catch (error) {
-      console.error("Recommendation failed", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -449,25 +408,6 @@ export default function CreateTaskClub() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                           />
                         </div>
-
-                        <Button
-                          onClick={handleAIRecommend}
-                          type="button"
-                          disabled={isLoading || !taskName || !taskDescription}
-                          className="relative overflow-hidden btn-style501 text-[#133a95] 
-                            px-6 py-2 rounded-lg font-semibold transition-all duration-300 
-                            hover:scale-105 hover:shadow-lg group"
-                        >
-                          <span
-                            className="absolute inset-0 before:content-[''] before:absolute before:top-0 before:left-[-75%] 
-                      before:w-[50%] before:h-full before:bg-white before:opacity-20 before:rotate-12
-                      before:animate-none group-hover:before:animate-shine pointer-events-none"
-                          />
-                          <span className="relative z-10 flex items-center gap-2">
-                            <Sparkles className="h-4 w-4" />
-                            {isLoading ? "Is loading..." : "AI Recommendation"}
-                          </span>
-                        </Button>
                       </div>
                       <Suspense
                         fallback={
@@ -476,13 +416,6 @@ export default function CreateTaskClub() {
                           </div>
                         }
                       >
-                        {error && (
-                          <div className="text-indigo-900 text-center">
-                            <p className="font-medium bg-gradient-to-br from-indigo-50 to-purple-50 w-fit mx-auto py-1 px-3 rounded-xl">
-                              😢 {error}
-                            </p>
-                          </div>
-                        )}
                         <SpecificStudentClubList
                           students={filteredStudents}
                           selected={selectedMembers}

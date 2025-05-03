@@ -29,7 +29,8 @@ const GuestLandingPage = () => {
             <img
               src="https://res.cloudinary.com/ecams/image/upload/v1739124259/ECAMS_Logo_ow82lc.png"
               alt="logo"
-              className="w-20 h-16 pb-1"
+              className="w-20 h-16 pb-1 cursor-pointer "
+              onClick={() => scrollTo(0, 0)}
             />
             <nav className="flex space-x-6">
               <a

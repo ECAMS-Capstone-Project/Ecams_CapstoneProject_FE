@@ -29,11 +29,12 @@ export const getEventList = async (
   uniId: string,
   pageNumber: number,
   pageSize: number,
-  status: string
+  status: string,
+  exceptStatus?: string
 ): Promise<ResponseDTO<ResponseData<Event>>> => {
   try {
     const response = await get<ResponseDTO<ResponseData<Event>>>(
-      `/Event?UniversityId=${uniId}&Status=${status}&PageNumber=${pageNumber}&PageSize=${pageSize}`
+      `/Event?UniversityId=${uniId}&Status=${status}&ExceptStatus=${exceptStatus}&PageNumber=${pageNumber}&PageSize=${pageSize}`
     );
 
     return response;
@@ -80,6 +81,7 @@ export const getAllEventList = async (
     StartDate: filterParams?.startDate,
     EndDate: filterParams?.endDate,
     Status: "ACTIVE",
+    ExceptStatus: filterParams,
     // ... các filter khác nếu có
   };
 
