@@ -128,7 +128,7 @@ const MemberActiveDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData
           <div className="flex justify-center mt-6">
             <Avatar className="w-72 h-52 rounded-lg">
               <AvatarImage
-                src={member?.imageUrl || "https://github.com/shadcn.png"}
+                src={member?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
                 alt="empty"
                 className="object-cover w-full h-full"
               />

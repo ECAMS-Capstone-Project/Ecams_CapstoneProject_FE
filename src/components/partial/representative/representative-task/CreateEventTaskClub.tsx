@@ -480,7 +480,10 @@ export default function CreateEventTaskClub() {
                                   field.onChange(date);
                                   // setDeadlineDate(date ?? null)
                                 }}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date) => {
+                                  const startDate = form.watch("startTimeDate");
+                                  return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                }}
                                 initialFocus
                               />
                             </PopoverContent>
