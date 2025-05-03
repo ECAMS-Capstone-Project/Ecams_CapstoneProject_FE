@@ -7,7 +7,10 @@ import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, CircleX, XCircle, FileText, Eye } from "lucide-react";
 import { DenyMemberJoinClub } from "./DenialDialog";
-import { ApproveOrDenyRequestJoinClub, ClubMemberDTO } from "@/api/club-owner/ClubByUser";
+import {
+  ApproveOrDenyRequestJoinClub,
+  ClubMemberDTO,
+} from "@/api/club-owner/ClubByUser";
 import toast from "react-hot-toast";
 import { DescriptionWithToggle } from "@/lib/DescriptionWithToggle";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -19,7 +22,11 @@ export interface UserDetailDialogProps {
   clubId: string;
 }
 
-const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setFlag, clubId }) => {
+const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({
+  initialData,
+  setFlag,
+  clubId,
+}) => {
   const [member, setMember] = useState<StudentRequest>();
   const [loading, setLoading] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -54,7 +61,7 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
         reason: "",
       });
       toast.success("Student approved successfully.");
-      if (setFlag) setFlag(prev => !prev);
+      if (setFlag) setFlag((prev) => !prev);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "An error occurred");
     } finally {
@@ -63,17 +70,17 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
   };
 
   const isImageFile = (url: string) => {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-    return imageExtensions.some(ext => url.toLowerCase().endsWith(ext));
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"];
+    return imageExtensions.some((ext) => url.toLowerCase().endsWith(ext));
   };
 
   const isPdfFile = (url: string) => {
-    return url.toLowerCase().endsWith('.pdf');
+    return url.toLowerCase().endsWith(".pdf");
   };
 
   const isDocFile = (url: string) => {
-    const docExtensions = ['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
-    return docExtensions.some(ext => url.toLowerCase().endsWith(ext));
+    const docExtensions = [".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx"];
+    return docExtensions.some((ext) => url.toLowerCase().endsWith(ext));
   };
 
   return (
@@ -86,17 +93,18 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
           <div className="flex items-center gap-6 mb-6">
             <Avatar className="w-24 h-24 ">
               <AvatarImage
-                src={member?.imageUrl || "https://github.com/shadcn.png"}
+                src={member?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
                 alt="Avatar"
                 className="object-cover w-full h-full"
               />
             </Avatar>
             <div className="flex flex-col">
-              <h2 className="text-2xl font-semibold text-gray-900">{member?.fullname}</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">
+                {member?.fullname}
+              </h2>
               <p className="text-sm text-gray-500">{member?.email}</p>
             </div>
           </div>
-
 
           {/* Basic Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -147,19 +155,24 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
                     <div
                       className="w-28 h-28 flex flex-col items-center justify-center gap-2 bg-gray-100 rounded-lg border cursor-pointer hover:bg-gray-200 transition-colors"
                       onClick={() => {
-                        if (isPdfFile(item.evidenceLink) || isDocFile(item.evidenceLink)) {
-                          window.open(item.evidenceLink, '_blank');
+                        if (
+                          isPdfFile(item.evidenceLink) ||
+                          isDocFile(item.evidenceLink)
+                        ) {
+                          window.open(item.evidenceLink, "_blank");
                         }
                       }}
                     >
                       <FileText className="w-8 h-8 text-gray-600" />
                       <span className="text-xs text-gray-600 text-center px-2">
-                        {isPdfFile(item.evidenceLink) ? 'PDF File' : 'Document File'}
+                        {isPdfFile(item.evidenceLink)
+                          ? "PDF File"
+                          : "Document File"}
                       </span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.open(item.evidenceLink, '_blank');
+                          window.open(item.evidenceLink, "_blank");
                         }}
                         className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800"
                       >
@@ -169,9 +182,13 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <p className="font-semibold text-base">{item.conditionName}</p>
+                    <p className="font-semibold text-base">
+                      {item.conditionName}
+                    </p>
                     <p className="text-sm">{item.conditionContent}</p>
-                    <p className="text-xs italic text-gray-500 mt-1">{item.description}</p>
+                    <p className="text-xs italic text-gray-500 mt-1">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -208,28 +225,36 @@ const MemberDetailDialog: React.FC<UserDetailDialogProps> = ({ initialData, setF
           </Dialog>
           {previewImage && isImageFile(previewImage) && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+              className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
               onClick={() => setPreviewImage(null)}
             >
-              <div className="relative max-w-[90%] max-h-[90%]">
-                <img
-                  src={previewImage}
-                  alt="Preview"
-                  className="w-full h-full object-contain rounded-lg shadow-xl transition-all duration-300 ease-in-out"
-                  style={{
-                    backgroundColor: previewImage.endsWith('.png') ? 'transparent' : 'none',
-                  }}
-                />
-                <button
-                  onClick={() => setPreviewImage(null)}
-                  className="absolute top-4 right-4 bg-white text-black rounded-full p-2 hover:bg-gray-300 transition-all duration-150"
-                >
-                  <CircleX className="w-6 h-6" />
-                </button>
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative">
+                  <img
+                    src={previewImage}
+                    alt="Preview"
+                    className="rounded-lg shadow-xl"
+                    style={{
+                      maxWidth: "90vw",
+                      maxHeight: "90vh",
+                      backgroundColor: previewImage.endsWith(".png")
+                        ? "transparent"
+                        : "white",
+                    }}
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPreviewImage(null);
+                    }}
+                    className="absolute -top-4 -right-4 bg-white text-black rounded-full p-2 hover:bg-gray-300 transition-all duration-150 shadow-lg"
+                  >
+                    <CircleX className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
             </div>
           )}
-
         </div>
       )}
     </div>
