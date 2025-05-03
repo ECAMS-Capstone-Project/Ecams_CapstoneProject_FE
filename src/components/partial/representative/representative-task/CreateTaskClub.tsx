@@ -144,7 +144,7 @@ export default function CreateTaskClub() {
       console.log("CreateTask data:", data);
       await CreateTaskToStudent(data);
       toast.success("Task created successfully!");
-      navigate(-1);
+      navigate(`/club/detail/${clubId}`, { state: { status: "tasks" } });
     } catch (error: any) {
       toast.error(
         error.message || "An error occurred while creating/updating task."
@@ -327,7 +327,10 @@ export default function CreateTaskClub() {
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date) => {
+                                  const startDate = form.watch("startTimeDate");
+                                  return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                }}
                                 initialFocus
                               />
                             </PopoverContent>
