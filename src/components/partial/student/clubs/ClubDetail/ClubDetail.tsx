@@ -17,8 +17,9 @@ export const StudentClubDetail: React.FC = () => {
   const location = useLocation();
   const { user } = useAuth();
   // Lấy thông tin trang trước (truyền qua state khi navigate)
-  const previousPage = location.state?.previousPage || "/student/event";
-  const breadcrumbLabel = location.state?.breadcrumb || "Event";
+  const previousPage = location.state?.previousPage || "/student/club";
+  const breadcrumbLabel = location.state?.breadcrumb || "Club";
+  console.log("??", previousPage);
 
   const { data: ClubDetail, isLoading: isEventDetailLoading } =
     getClubDetailQuery(clubId);

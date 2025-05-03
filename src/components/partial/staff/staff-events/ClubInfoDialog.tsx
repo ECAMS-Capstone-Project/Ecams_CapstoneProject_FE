@@ -25,7 +25,7 @@ export const ClubInfoDialog: React.FC<ClubInfoDialogProps> = ({
 }) => {
   return (
     <Dialog open={openDialog} onOpenChange={() => setOpenDialog(false)}>
-      <DialogContent className="rounded-lg p-6 bg-white shadow-xl">
+      <DialogContent className="rounded-lg p-6 bg-white shadow-xl max-w-2xl">
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="text-xl font-semibold text-gray-800">
             Club Information

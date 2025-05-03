@@ -99,19 +99,26 @@ export const EventSection = () => {
         <div className="flex justify-center items-center h-screen text-xl">
           <LoadingAnimation />
         </div>
-      ) : !isLoading && events.length === 0 ? (
-        <div className="flex justify-center items-center h-64">
-          <AnimatedGradientText>
-            <SearchXIcon size={26} color="#136CB5" />{" "}
-            <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "}
-            <span
-              className={
-                "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-              }
-            >
-              No event found!
-            </span>
-          </AnimatedGradientText>
+      ) : !isLoading && (events.length === 0 || filteredEvents.length === 0) ? (
+        <div className="flex flex-col items-center justify-center h-64">
+          <img
+            src="https://img.freepik.com/free-photo/calendar-with-checklist-date-schedule-3d-icon_107791-15691.jpg?t=st=1746267682~exp=1746271282~hmac=2740894c17b97194613de8282bc090acb12be8f6e1d2b5ccd2e2da415cb40f0b&w=1800"
+            alt="No clubs"
+            className="w-32 h-32 object-cover opacity-90"
+          />
+          <div className="flex justify-center items-center ">
+            <AnimatedGradientText>
+              <SearchXIcon size={26} color="#136CB5" />{" "}
+              <hr className="mx-2 h-4 w-px shrink-0 bg-gray-300" />{" "}
+              <span
+                className={
+                  "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+                }
+              >
+                No event found!
+              </span>
+            </AnimatedGradientText>
+          </div>
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-7 mt-6 w-full px-8">

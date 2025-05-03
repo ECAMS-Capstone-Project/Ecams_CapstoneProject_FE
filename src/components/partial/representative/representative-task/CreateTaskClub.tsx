@@ -32,7 +32,10 @@ import { TaskFormValues, TaskSchema } from "@/schema/TaskSchema";
 import { CreateTaskToStudent } from "@/api/club-owner/TaskAPI";
 import useAuth from "@/hooks/useAuth";
 import { Grid2 } from "@mui/material";
-import { AvailableMemberEventTask, GetAvailableMember } from "@/api/student/ClubAgent";
+import {
+  AvailableMemberEventTask,
+  GetAvailableMember,
+} from "@/api/student/ClubAgent";
 import SpecificStudentClubList from "./SpecificStudentClubList";
 
 export default function CreateTaskClub() {
@@ -43,7 +46,9 @@ export default function CreateTaskClub() {
   const clubId = location.state?.clubId;
   const [priority] = useState<string>("MEDIUM");
 
-  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>([]);
+  const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
+    []
+  );
 
   // Search & debounce
   const [searchTerm, setSearchTerm] = useState("");
@@ -124,11 +129,10 @@ export default function CreateTaskClub() {
 
       // Nếu assignAll là true, lấy tất cả member (sử dụng clubMemberId)
       // Nếu không, chuyển selectedMembers (được lưu là studentId) sang clubMemberId qua việc tra cứu trong allStudents.
-      const assignedMembers =
-        selectedMembers.map((id: string) => {
-          const stu = allStudents.find((s) => s.studentId === id);
-          return { clubMemberId: stu ? stu.clubMemberId : id };
-        });
+      const assignedMembers = selectedMembers.map((id: string) => {
+        const stu = allStudents.find((s) => s.studentId === id);
+        return { clubMemberId: stu ? stu.clubMemberId : id };
+      });
 
       const data = {
         clubId,
@@ -268,7 +272,10 @@ export default function CreateTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -322,7 +329,10 @@ export default function CreateTaskClub() {
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
                               <Calendar
                                 mode="single"
                                 selected={field.value}
@@ -397,12 +407,11 @@ export default function CreateTaskClub() {
                           Selected Students:
                         </p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {selectedMembers &&
-                            selectedMembers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">
-                                No students selected.
-                              </span>
-                            )}
+                          {selectedMembers && selectedMembers.length === 0 && (
+                            <span className="text-sm text-muted-foreground">
+                              No students selected.
+                            </span>
+                          )}
                           {selectedMembers &&
                             selectedMembers.map((id) => {
                               const st = allStudents.find(

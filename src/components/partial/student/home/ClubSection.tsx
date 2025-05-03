@@ -47,7 +47,7 @@ export const ClubsSection = () => {
                 window.scrollTo(0, 0);
                 navigate(`/student/club/${club.clubId}`, {
                   state: {
-                    previousPage: location.pathname,
+                    previousPage: "/student",
                     breadcrumb: "Home",
                   },
                 });
@@ -72,7 +72,7 @@ export const ClubsSection = () => {
                         window.scrollTo(0, 0);
                         navigate(`/student/club/${club.clubId}`, {
                           state: {
-                            previousPage: location.pathname,
+                            previousPage: "/student",
                             breadcrumb: "Home",
                           },
                         });

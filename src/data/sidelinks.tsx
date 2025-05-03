@@ -236,7 +236,7 @@ const SidebarLinks = () => {
           id: 26,
         },
         {
-          title: "History Representative",
+          title: "Representative History",
           href: "/representative/history-representative",
           icon: <History />,
           id: 27,
