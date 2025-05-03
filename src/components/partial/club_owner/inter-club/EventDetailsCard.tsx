@@ -171,7 +171,7 @@ export const EventDetailsCard = ({
         </div>
 
         {/* Thông tin bổ sung */}
-        <div className="space-y-4">
+        <div className="space-y-4 text-base">
           <div className="flex items-center gap-2 p-3 rounded-lg bg-white shadow-sm">
             <Building2 className="w-5 h-5 text-[#136cb9]" />
             <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
@@ -204,8 +204,8 @@ export const EventDetailsCard = ({
               className={cn(
                 "text-xs",
                 club.status === "ACTIVE"
-                  ? "bg-green-100 text-green-800 border-green-200"
-                  : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                  ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200"
+                  : "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200"
               )}
             >
               {club.clubName} ({club.status})
@@ -224,13 +224,13 @@ export const EventDetailsCard = ({
             <table className="min-w-full">
               <thead>
                 <tr className="bg-white border-b border-[#d1e7f5]">
-                  <th className="px-5 py-3 text-left text-sm font-bold text-[#136cb9] uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-5 py-3 text-left text-sm font-bold text-[#136cb9] uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-5 py-3 text-left text-sm font-bold text-[#136cb9] uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
                     Time
                   </th>
                 </tr>
@@ -241,13 +241,13 @@ export const EventDetailsCard = ({
                     key={area.areaId}
                     className="hover:bg-[#d1e7f5] transition-colors"
                   >
-                    <td className="px-5 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-5 py-3 whitespace-nowrap text-base font-medium text-gray-900">
                       {area.name}
                     </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">
+                    <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
                       {format(new Date(area.date), "dd/MM/yyyy")}
                     </td>
-                    <td className="px-5 py-3 whitespace-nowrap text-sm text-gray-700">
+                    <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
                       {area.startTime}h - {area.endTime}h
                     </td>
                   </tr>

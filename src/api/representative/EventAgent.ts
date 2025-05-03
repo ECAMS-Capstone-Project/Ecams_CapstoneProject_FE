@@ -81,7 +81,6 @@ export const getAllEventList = async (
     StartDate: filterParams?.startDate,
     EndDate: filterParams?.endDate,
     Status: "ACTIVE",
-    ExceptStatus: filterParams,
     // ... các filter khác nếu có
   };
 

@@ -1,11 +1,5 @@
 import { format } from "date-fns";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Building2,
-  ArrowLeft,
-} from "lucide-react";
+import { Calendar, Clock, MapPin, Building2, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Event } from "@/models/Event";
@@ -20,16 +14,20 @@ import toast from "react-hot-toast";
 
 interface EventDetailsCardProps {
   selectedEvent: Event;
-  clubId: string
-  isClubOwner: boolean
+  clubId: string;
+  isClubOwner: boolean;
 }
 
-export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: EventDetailsCardProps) => {
+export const EventDetailsTaskCard = ({
+  selectedEvent,
+  clubId,
+  isClubOwner,
+}: EventDetailsCardProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const handleSubmit = async () => {
-    await EndOneEventAPI(clubId, selectedEvent.eventId)
-    toast.success("End event successfully")
+    await EndOneEventAPI(clubId, selectedEvent.eventId);
+    toast.success("End event successfully");
     window.history.back();
   };
 
@@ -56,16 +54,22 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
               <ArrowLeft className="w-5 h-5 text-[#136cb9]" />
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-white">{selectedEvent.eventName}</h1>
+              <h1 className="text-2xl font-bold text-white">
+                {selectedEvent.eventName}
+              </h1>
               <p className="text-gray-200 mt-1">{selectedEvent.description}</p>
             </div>
           </div>
-          {(selectedEvent.status == "ENDED" && isClubOwner) && (
-          <div>
-            <Button onClick={() => setOpen(true)} variant={"custom"} className="font-bold">
-              End event
-            </Button>
-          </div>
+          {selectedEvent.status == "ENDED" && isClubOwner && (
+            <div>
+              <Button
+                onClick={() => setOpen(true)}
+                variant={"custom"}
+                className="font-bold"
+              >
+                End event
+              </Button>
+            </div>
           )}
         </div>
 
@@ -87,15 +91,23 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
               <Calendar className="w-5 h-5 text-[#136cb9]" />
               <span className="text-[#136cb9]">Registration Period: </span>
               <span className="text-gray-800">
-                {format(new Date(selectedEvent.registeredStartDate), "dd/MM/yyyy")} -{" "}
-                {format(new Date(selectedEvent.registeredEndDate), "dd/MM/yyyy")}
+                {format(
+                  new Date(selectedEvent.registeredStartDate),
+                  "dd/MM/yyyy"
+                )}{" "}
+                -{" "}
+                {format(
+                  new Date(selectedEvent.registeredEndDate),
+                  "dd/MM/yyyy"
+                )}
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
               <Clock className="w-5 h-5 text-[#136cb9]" />
               <span className="text-[#136cb9]">Time: </span>
               <span className="text-gray-800">
-                {format(selectedEvent.registeredStartDate, "HH:mm a")} -  {format(selectedEvent.registeredEndDate, "HH:mm a")}
+                {format(selectedEvent.registeredStartDate, "HH:mm a")} -{" "}
+                {format(selectedEvent.registeredEndDate, "HH:mm a")}
               </span>
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
@@ -127,18 +139,21 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
             </div>
             <div className="flex items-center gap-2 p-3 rounded-lg bg-white/90 backdrop-blur-sm shadow-sm">
               <Building2 className="w-5 h-5 text-[#136cb9]" />
-              <span className="text-[#136cb9]">Number of Organizing Clubs:</span>
+              <span className="text-[#136cb9]">
+                Number of Organizing Clubs:
+              </span>
               <span className="text-gray-800">
                 {selectedEvent.clubs?.length || 0} clubs
               </span>
             </div>
-
           </div>
         </div>
 
         {/* Participating Clubs */}
         <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-3 text-white">Participating Clubs</h3>
+          <h3 className="text-lg font-semibold mb-3 text-white">
+            Participating Clubs
+          </h3>
           <div className="flex flex-wrap gap-2">
             {selectedEvent.clubs?.map((club, index) => (
               <Badge
@@ -147,8 +162,8 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
                 className={cn(
                   "text-xs",
                   club.status === "ACTIVE"
-                    ? "bg-green-100 text-green-800 border-green-200"
-                    : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                    ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-200"
+                    : "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200"
                 )}
               >
                 {club.clubName} ({club.status})
@@ -157,7 +172,12 @@ export const EventDetailsTaskCard = ({ selectedEvent, clubId, isClubOwner }: Eve
           </div>
         </div>
       </div>
-      <ConfirmEndEventDialog open={open} setOpen={setOpen} handleSubmit={handleSubmit} title="Do you want to complete this event?" />
+      <ConfirmEndEventDialog
+        open={open}
+        setOpen={setOpen}
+        handleSubmit={handleSubmit}
+        title="Do you want to complete this event?"
+      />
     </div>
   );
 };
