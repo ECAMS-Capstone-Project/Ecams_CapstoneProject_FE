@@ -43,7 +43,7 @@ export const UserAuthDTOSchema = z
     gender: z.string().optional(),
     // Student specific fields
     major: z.string().optional(),
-    year: z.number().optional(),
+    year: z.number().nullable().optional(),
     startDate: z.date().optional(),
     endDate: z.date().optional(),
   })

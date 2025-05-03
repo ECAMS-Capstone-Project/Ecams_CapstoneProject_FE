@@ -19,8 +19,8 @@ export interface UserUpdateDTO {
   gender: string;
   major: string;
   yearOfStudy: number;
-  startDate: string;
-  endDate: string;
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export const loginAPI = async (
