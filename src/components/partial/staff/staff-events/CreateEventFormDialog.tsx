@@ -188,7 +188,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     name: "eventAreas", // Liên kết với mảng eventAreas
   });
 
-    const combineDateTime = (dateObj: Date, timeStr?: string) => {
+  const combineDateTime = (dateObj: Date, timeStr?: string) => {
     const [hour, minute] = (timeStr?.split(":") ?? ["0", "0"]).map(Number);
     const newDate = new Date(dateObj);
     newDate.setHours(hour, minute, 0, 0);
@@ -423,8 +423,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                   value={
                                     field.value
                                       ? field.value
-                                          .toString()
-                                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                        .toString()
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                       : ""
                                   }
                                 />
@@ -533,7 +533,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                         className={cn(
                                           "text-left font-normal w-full",
                                           !field.value &&
-                                            "text-muted-foreground"
+                                          "text-muted-foreground"
                                         )}
                                       >
                                         {field.value ? (
@@ -595,7 +595,7 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                         className={cn(
                                           "text-left font-normal w-full",
                                           !field.value &&
-                                            "text-muted-foreground"
+                                          "text-muted-foreground"
                                         )}
                                       >
                                         {field.value ? (
@@ -615,7 +615,10 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                       mode="single"
                                       selected={field.value}
                                       onSelect={field.onChange}
-                                      disabled={(date) => date < new Date()}
+                                      disabled={(date) => {
+                                        const startDate = form.watch("registeredStartDate");
+                                        return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                      }}
                                       initialFocus
                                     />
                                   </PopoverContent>
@@ -948,10 +951,10 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                                                     field.value.map((c) =>
                                                       c.ClubId === club.clubId
                                                         ? {
-                                                            ...c,
-                                                            IsHost:
-                                                              checked as boolean,
-                                                          }
+                                                          ...c,
+                                                          IsHost:
+                                                            checked as boolean,
+                                                        }
                                                         : c
                                                     );
                                                   form.setValue(
@@ -996,8 +999,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
                             ? "Updating..."
                             : "Creating..."
                           : initialData
-                          ? "Update Event"
-                          : "Create Event"}
+                            ? "Update Event"
+                            : "Create Event"}
                       </Button>
                     </div>
                   </form>

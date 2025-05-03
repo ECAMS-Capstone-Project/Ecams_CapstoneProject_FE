@@ -482,8 +482,8 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                               value={
                                 field.value
                                   ? field.value
-                                      .toString()
-                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                    .toString()
+                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                   : ""
                               }
                             />
@@ -645,7 +645,10 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                                   mode="single"
                                   selected={field.value}
                                   onSelect={field.onChange}
-                                  disabled={(date) => date < new Date()}
+                                  disabled={(date) => {
+                                    const startDate = form.watch("registeredStartDate");
+                                    return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                  }}
                                   initialFocus
                                 />
                               </PopoverContent>
@@ -964,15 +967,15 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting
                       ? isSubmitting && (
-                          <l-ring-2
-                            size="40"
-                            stroke="5"
-                            stroke-length="0.25"
-                            bg-opacity="0.1"
-                            speed="0.8"
-                            color="black"
-                          ></l-ring-2>
-                        )
+                        <l-ring-2
+                          size="40"
+                          stroke="5"
+                          stroke-length="0.25"
+                          bg-opacity="0.1"
+                          speed="0.8"
+                          color="black"
+                        ></l-ring-2>
+                      )
                       : "Create event"}
                   </Button>
                 </div>
