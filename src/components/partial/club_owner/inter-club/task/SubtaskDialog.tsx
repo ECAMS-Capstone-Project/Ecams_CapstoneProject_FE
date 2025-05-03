@@ -111,15 +111,15 @@ export const SubtaskDialog = ({
     defaultValues: initialValues
       ? initialValues
       : {
-          detailName: "",
-          description: "",
-          startTime: new Date(),
-          startTimeTime: "00:00",
-          deadline: new Date(),
-          deadlineTime: "00:00",
-          status: "ON_GOING",
-          priority: "MEDIUM",
-        },
+        detailName: "",
+        description: "",
+        startTime: new Date(),
+        startTimeTime: "00:00",
+        deadline: new Date(),
+        deadlineTime: "00:00",
+        status: "ON_GOING",
+        priority: "MEDIUM",
+      },
   });
 
   const handleSubmit = (values: z.infer<typeof subtaskSchema>) => {
@@ -272,7 +272,10 @@ export const SubtaskDialog = ({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) => date < new Date()}
+                          disabled={(date) => {
+                            const startDate = form.watch("startTime");
+                            return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                          }}
                           initialFocus
                         />
                       </PopoverContent>
