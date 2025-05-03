@@ -31,11 +31,14 @@ const ApproveStudentPage = () => {
   const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(0);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [flag, setFlag] = useState<boolean>(false);
 
   const handleOpenImport = () => setIsImportOpen(true);
-  const handleCloseImport = () => setIsImportOpen(false);
+  const handleCloseImport = () => {
+    setIsImportOpen(false);
+    setFlag?.(true);
+  };
   // State để refresh data sau khi duyệt
-  const [flag, setFlag] = useState<boolean>(false);
 
   // State cho tab
   const [activeTab, setActiveTab] = useState<"request" | "registered">(

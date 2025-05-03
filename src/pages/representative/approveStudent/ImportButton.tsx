@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import {
@@ -87,19 +88,20 @@ export default function ImportButton({
       } else {
         if (data.data.duplicatedRows && data.data.duplicatedRows.length > 0) {
           setDuplicatedRows(data.data.duplicatedRows);
-          //   setShowDuplicateDialog(true);
-          toast.error("Some rows were duplicated and not imported");
+          // setShowDuplicateDialog(true);
+          toast.success(
+            "Import successful but some rows were duplicated and not imported"
+          );
         } else {
           toast.success("Import successful");
           setIsLoading?.(false);
-          onClose();
+          setFlag?.(true);
         }
       }
     } catch (err) {
       toast.error("Error during import");
     } finally {
       setUploading(false);
-      setFlag?.(true);
     }
   };
 

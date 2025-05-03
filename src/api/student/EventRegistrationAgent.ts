@@ -53,7 +53,9 @@ export const paymentEvent = async (data: {
     return response.data; // Hoặc trả về dữ liệu mặc định nếu cần
   } catch (error: any) {
     console.error("Error in paymentEvent:", error);
-
+    toast.error(
+      error.response?.data.message || "Có lỗi xảy ra khi đăng ký sự kiện"
+    );
     throw error; // Để các phần khác xử lý lỗi này
   }
 };

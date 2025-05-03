@@ -25,6 +25,7 @@ export interface Event {
   eventFields: FieldDTO[];
   eventRegistrations?: EventRefundDTO[];
   totalRevenue: number;
+  universityName: string;
 }
 export interface EventRefundDTO {
   refundId: string;

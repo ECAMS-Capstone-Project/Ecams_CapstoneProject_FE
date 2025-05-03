@@ -56,9 +56,11 @@ export const EventDetailsCard = ({
   const isHost = selectedEvent.clubs.find(
     (club) => club.clubId === currentClub.clubId
   )?.isHost;
-  const isEnded = selectedEvent.clubs.find(
-    (club) => club.clubId == currentClub.clubId
-  )?.isEnd;
+  // const isEnded = selectedEvent.clubs.find(
+  //   (club) => club.clubId == currentClub.clubId
+  // )?.isEnd;
+
+  console.log("ishost end", isHostEnded);
 
   return (
     <div className="bg-[#136cb9]/10 rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb] p-6">
@@ -80,7 +82,7 @@ export const EventDetailsCard = ({
         </div>
 
         <div>
-          {(isHostEnded && isHost) || (isHostEnded && !isHost && isEnded) ? (
+          {isHostEnded && isHost ? (
             <Button
               variant={"custom"}
               className="relative bg-[#136cb9]/60 text-[#136cb9] border-[#136cb9]/20 p-3 overflow-hidden hover:bg-none"
@@ -117,7 +119,7 @@ export const EventDetailsCard = ({
                     } clubs have ended the event`}
               </span>
             </Button>
-          ) : (
+          ) : isHostEnded ? (
             selectedEvent.status === "ENDED" && (
               <Button
                 variant="outline"
@@ -127,6 +129,9 @@ export const EventDetailsCard = ({
                 End Event
               </Button>
             )
+          ) : (
+            // )
+            ""
           )}
         </div>
       </div>
