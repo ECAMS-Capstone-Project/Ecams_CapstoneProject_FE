@@ -80,7 +80,7 @@ export function ProfileForm() {
       address: user?.address || "",
       gender: user?.gender || "",
       major: user?.major || "",
-      year: user?.yearOfStudy,
+      year: user?.yearOfStudy || 0,
       startDate: user?.startDate ? new Date(user.startDate) : undefined,
       endDate: user?.endDate ? new Date(user.endDate) : undefined,
     },
@@ -103,22 +103,24 @@ export function ProfileForm() {
       setIsLoading(true);
       const value: UserUpdateDTO = {
         address: data.address || "",
-        endDate: data.endDate ? format(data.endDate, "yyyy-MM-dd") : "",
+        endDate: data.endDate ? format(data.endDate, "yyyy-MM-dd") : null,
         fullname: data.fullname || "",
         gender: data.gender || "",
         major: data.major || "",
         phonenumber: data.phone || "",
-        startDate: data.startDate ? format(data.startDate, "yyyy-MM-dd") : "",
+        startDate: data.startDate ? format(data.startDate, "yyyy-MM-dd") : null,
         yearOfStudy: data.year || 0,
       };
       if (user?.userId != null || user?.userId != undefined)
         await updateUserInfoAPI(user.userId, value);
       toast.success("Profile updated successfully");
+      setTimeout(() => {
+        window.location.reload();
+      }, 700);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
-      window.location.reload();
     }
   }
 
@@ -164,6 +166,8 @@ export function ProfileForm() {
       setIsLoading2(false);
     }
   };
+
+  console.log(form.formState.errors);
 
   return (
     <>
@@ -305,9 +309,9 @@ export function ProfileForm() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="male">Male</SelectItem>
-                            <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="MALE">Male</SelectItem>
+                            <SelectItem value="FEMALE">Female</SelectItem>
+                            <SelectItem value="OTHER">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

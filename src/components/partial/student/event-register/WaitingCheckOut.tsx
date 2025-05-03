@@ -34,7 +34,7 @@ function WaitingCheckout() {
     // Kiểm tra nếu OrderInfo hoặc OrderCode có từ khóa "Event" hoặc bất kỳ chuỗi nào xác định sự kiện
     const isEventReg = Boolean(
       vnp_OrderInfo?.toLowerCase().includes("pay") ||
-        pos_orderCode?.toLowerCase().includes("pay")
+      pos_orderCode?.toLowerCase().includes("pay")
     );
 
     setIsEventRegistration(isEventReg || user?.userType === "STUDENT");
@@ -64,7 +64,7 @@ function WaitingCheckout() {
     // Kiểm tra nếu OrderInfo hoặc OrderCode có từ khóa "Event"
     const isEventReg = Boolean(
       vnp_OrderInfo?.toLowerCase().includes("pay") ||
-        pos_orderCode?.toLowerCase().includes("pay")
+      pos_orderCode?.toLowerCase().includes("pay")
     );
 
     if (vnp_OrderInfo && vnp_ResponseCode && vnp_TransactionNo && user) {
@@ -135,7 +135,7 @@ function WaitingCheckout() {
             if (isEventReg || user.userType === "STUDENT") {
               window.location.href = "/student/student-events";
             } else {
-              window.location.href = "/representative";
+              window.location.href = "/representative/wallet-representative";
             }
           }, 2000);
         } else {
