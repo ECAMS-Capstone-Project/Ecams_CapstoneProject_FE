@@ -171,6 +171,49 @@ export const EventDetailsTaskCard = ({
             ))}
           </div>
         </div>
+        {/* Danh sách khu vực tổ chức */}
+        {selectedEvent.eventAreas && selectedEvent.eventAreas.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-3 text-[#136cb9] flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-[#136cb9] " /> Event Areas
+            </h3>
+            <div className="overflow-x-auto w-full rounded-lg border border-[#d1e7f5] bg-[#d1e7f5]">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-white border-b border-[#d1e7f5]">
+                    <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-5 py-3 text-left text-base font-bold text-[#136cb9] uppercase tracking-wider">
+                      Time
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedEvent.eventAreas.map((area) => (
+                    <tr
+                      key={area.areaId}
+                      className="hover:bg-[#d1e7f5] transition-colors"
+                    >
+                      <td className="px-5 py-3 whitespace-nowrap text-base font-medium text-gray-900">
+                        {area.name}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
+                        {format(new Date(area.date), "dd/MM/yyyy")}
+                      </td>
+                      <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
+                        {area.startTime}h - {area.endTime}h
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
       <ConfirmEndEventDialog
         open={open}

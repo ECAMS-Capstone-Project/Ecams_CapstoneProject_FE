@@ -110,13 +110,13 @@ export const TaskEditDialog = ({
           startTime: fixTime(
             new Date(
               values.listEventTaskDetails[index].startTime ||
-                task.eventTaskDetails[index].startTime
+              task.eventTaskDetails[index].startTime
             )
           ),
           deadline: fixTime(
             new Date(
               values.listEventTaskDetails[index].deadline ||
-                task.eventTaskDetails[index].deadline
+              task.eventTaskDetails[index].deadline
             )
           ),
           status: detail.status || task.eventTaskDetails[index].status,
@@ -363,7 +363,10 @@ export const TaskEditDialog = ({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
+                              disabled={(date) => {
+                                const startDate = form.watch("startTime");
+                                return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
@@ -411,8 +414,8 @@ export const TaskEditDialog = ({
                               >
                                 {field.value
                                   ? selectedEvent.clubs.find(
-                                      (club) => club.clubId === field.value
-                                    )?.clubName
+                                    (club) => club.clubId === field.value
+                                  )?.clubName
                                   : "Select club"}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                               </Button>
