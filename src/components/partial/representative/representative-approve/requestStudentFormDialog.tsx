@@ -98,7 +98,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                           <FormLabel>Avatar</FormLabel>
                           <FormControl>
                             <Avatar className="w-20 h-20">
-                              <AvatarImage src={initialData?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1745505937/671f7785-67ee-4627-822a-730fbcb3ac53_vnkjip.jpg"} />
+                              <AvatarImage src={initialData?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"} />
                               <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                           </FormControl>
@@ -272,7 +272,7 @@ export const ViewRequestStudentDialog: React.FC<StudentDialogProps> = ({
                   <div className="flex justify-center mt-6">
                     <Avatar className="w-96 h-72 rounded-lg">
                       <AvatarImage
-                        src={initialData?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1745505937/671f7785-67ee-4627-822a-730fbcb3ac53_vnkjip.jpg"}
+                        src={initialData?.imageUrl || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
                         alt={initialData?.fullname}
                         className="object-cover w-full h-full"
                       />
