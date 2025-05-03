@@ -315,6 +315,7 @@ export const RequestEventDetail: React.FC = () => {
                   <div className="">
                     <Label className="mb-5">Wallet name</Label>
                     <EventWalletPicker
+                      price={event?.price || 0}
                       value={selectedWalletId}
                       onChange={(walletId) => setSelectedWalletId(walletId)}
                     />
