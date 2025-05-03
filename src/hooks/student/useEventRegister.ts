@@ -25,6 +25,7 @@ export const usePaymentEvent = () => {
         return response;
       } catch (error) {
         console.log("error", error);
+
         throw error;
       }
     },
@@ -34,7 +35,6 @@ export const usePaymentEvent = () => {
     },
     onError: (error: any) => {
       console.error("Payment error:", error);
-      // toast.error(error.response?.message || "Có lỗi xảy ra khi đăng ký sự kiện");
     },
   });
 };

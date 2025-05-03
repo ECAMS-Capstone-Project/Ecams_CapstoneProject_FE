@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
-import { Calendar } from "lucide-react";
+import { ArrowLeftCircle, Calendar } from "lucide-react";
 import { RefundFormPopup, RefundFormData } from "./RefundFormPopup";
 import { useEventSchedule } from "@/hooks/student/useEventRegister";
 import useAuth from "@/hooks/useAuth";
@@ -83,10 +83,32 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
           ))}
         {event.status.toLowerCase() == "canceled" && (
           <Button
-            className="w-full p-6 mt-5 font-light text-md bg-red-500 text-white hover:bg-red-600"
+            className={`w-full p-6 mt-5 font-light text-md ${
+              event.eventRegistrations?.find(
+                (user2) => user2.userId === user?.userId
+              )?.refundStatus === "REFUNDED"
+                ? "inline-flex items-center gap-2 px-4 py-4 bg-indigo-100 text-indigo-800 rounded-full hover:bg-indigo-200 transition-colors duration-200 shadow-sm"
+                : "  bg-red-500 text-white hover:bg-red-600"
+            }  `}
             onClick={() => setIsRefundPopupOpen(true)}
           >
-            {isRequestRefund ? "Your refund is pending!" : "Request Refund"}
+            {isRequestRefund &&
+            event.eventRegistrations?.find(
+              (user2) => user2.userId === user?.userId
+            )?.refundStatus !== "REFUNDED" ? (
+              "Your refund is pending!"
+            ) : event.eventRegistrations?.find(
+                (user2) => user2.userId === user?.userId
+              )?.refundStatus === "REFUNDED" ? (
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center">
+                  <ArrowLeftCircle className="w-5 h-5 text-indigo-700" />
+                </div>
+                <span className="font-medium">Refunded</span>
+              </div>
+            ) : (
+              "Request Refund"
+            )}
           </Button>
         )}
       </div>

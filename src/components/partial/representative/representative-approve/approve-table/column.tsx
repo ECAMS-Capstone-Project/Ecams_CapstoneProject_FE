@@ -46,7 +46,11 @@ export const contractColumn = (
       </div>
     ),
     cell: ({ row }) => (
-      <div>{format(row.getValue("startDate"), "dd/MM/yyyy")}</div>
+      <div>
+        {row.getValue("startDate") !== "0001-01-01T00:00:00"
+          ? format(row.getValue("startDate"), "dd/MM/yyyy")
+          : "N/A"}
+      </div>
     ),
   },
   {
@@ -57,7 +61,11 @@ export const contractColumn = (
       </div>
     ),
     cell: ({ row }) => (
-      <div>{format(row.getValue("endDate") || new Date(), "dd/MM/yyyy")}</div>
+      <div>
+        {row.getValue("endDate") !== "0001-01-01T00:00:00"
+          ? format(row.getValue("endDate") || new Date(), "dd/MM/yyyy")
+          : "N/A"}
+      </div>
     ),
   },
   {

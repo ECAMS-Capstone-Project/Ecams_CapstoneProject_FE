@@ -13,6 +13,7 @@ import {
   CircleCheck,
   CircleEllipsis,
   CircleX,
+  LoaderCircle,
   Plus,
   XCircleIcon,
 } from "lucide-react";
@@ -58,8 +59,14 @@ const getStatusStyle = (status: string) => {
         text: "text-[#b62e2e]",
         icon: <CircleX size={12} className="text-[#b62e2e]" />,
       };
+    case "NOT_START":
+      return {
+        bg: "bg-gray-100",
+        text: "text-gray-500",
+        icon: <LoaderCircle size={12} className="text-gray-500" />,
+      };
     default:
-      return { bg: "", text: "text-gray-500", icon: null };
+      return { bg: "text-gray-100", text: "text-gray-500", icon: null };
   }
 };
 
@@ -156,22 +163,20 @@ export const EventColums = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
-              {["All", "ACTIVE", "INACTIVE", "ENDED", "WAITING"].map(
-                (status) => (
-                  <DropdownMenuItem
-                    key={status}
-                    onClick={() => {
-                      setStatusFilter(status === "All" ? "" : status);
-                      setSelectedStatus(status);
-                      setOpen(false);
-                    }}
-                  >
-                    {status === "All"
-                      ? "All"
-                      : status.charAt(0) + status.slice(1).toLowerCase()}
-                  </DropdownMenuItem>
-                )
-              )}
+              {["All", "ACTIVE", "ENDED"].map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => {
+                    setStatusFilter(status === "All" ? "" : status);
+                    setSelectedStatus(status);
+                    setOpen(false);
+                  }}
+                >
+                  {status === "All"
+                    ? "All"
+                    : status.charAt(0) + status.slice(1).toLowerCase()}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
@@ -181,7 +186,6 @@ export const EventColums = (
     ),
     cell: ({ row }) => {
       const status = row.original.status as string;
-      console.log("stt", row.original.status as string);
       const { bg, text, icon } = getStatusStyle(status);
       return (
         <div className="flex justify-center">

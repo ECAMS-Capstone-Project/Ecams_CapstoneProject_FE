@@ -23,11 +23,13 @@ export const EventDetailLeft: React.FC<EventDetailLeftProps> = ({ event }) => {
           <p className="mb-4 text-gray-700 text-lg leading-relaxed">
             {event?.description}
           </p>
-          <p className="mb-4 text-[#368e90] text-lg leading-relaxed italic">
-            If you join this event, you will get{" "}
-            <span className="font-bold">{event?.trainingPoint}</span> training
-            points
-          </p>
+          {event?.trainingPoint > 0 && (
+            <p className="mb-4 text-[#368e90] text-lg leading-relaxed italic">
+              If you join this event, you will get{" "}
+              <span className="font-bold">{event?.trainingPoint}</span> training
+              points
+            </p>
+          )}
         </div>
         <div className="mb-6 flex items-center gap-6">
           <h2 className="text-3xl font-bold">Price: </h2>
