@@ -33,11 +33,11 @@ const clubSchema = z.object({
   purpose: z.string().min(5, "Purpose is required"),
   contactEmail: z.string().email("Invalid email"),
   contactPhone: z
-  .string()
-  .min(5, "Contact phone at least 10 number")
-  .regex(/^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/, {
-    message: "Invalid format phone number",
-  }),
+    .string()
+    .min(5, "Contact phone at least 10 number")
+    .regex(/^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$/, {
+      message: "Invalid format phone number",
+    }),
 
   websiteUrl: z.string().url("Invalid URL"),
   logo: z.instanceof(File).optional(),
@@ -354,7 +354,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
           {/* Thông tin chủ hiện tại */}
           <div className="flex items-center gap-4  p-4 border border-gray-200 rounded-md">
             <img
-              src={user?.avatar || 'https://github.com/shadcn.png'}
+              src={user?.avatar || 'https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png'}
               alt="Club Owner"
               className="h-12 w-12 rounded-full"
             />
@@ -392,7 +392,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
                   {selectedMember ? (
                     <div className="flex items-center gap-3">
                       <img
-                        src={selectedMember.avatar || 'https://github.com/shadcn.png'}
+                        src={selectedMember.avatar || 'https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png'}
                         alt={selectedMember.fullname || 'Member'}
                         className="h-8 w-8 rounded-full"
                       />
@@ -431,7 +431,7 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
                             className="flex items-center gap-3"
                           >
                             <img
-                              src={member.avatar || 'https://github.com/shadcn.png'}
+                              src={member.avatar || 'https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png'}
                               alt={member.fullname || 'Member'}
                               className="h-8 w-8 rounded-full"
                             />

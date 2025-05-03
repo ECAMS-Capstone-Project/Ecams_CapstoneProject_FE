@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { PopoverClub } from "./PopoverClub";
 import { Grid2 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ClubResponse } from "@/models/Club";
 import { GetClubsDetailAPI } from "@/api/club-owner/ClubByUser";
@@ -20,10 +20,13 @@ import ClubSchedulePage from "../club-schedule/ClubSchedulePage";
 
 export default function ClubDetailPage() {
     const { clubId = "" } = useParams();
+    const location = useLocation();
+    const status = location.state?.status as string;
     const [clubData, setClubData] = useState<ClubResponse | null>(null);
     const { user } = useAuth();
-    const [flag, setFlag] = useState<boolean>(false)
-
+    const [flag, setFlag] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<string>(status || "club-condition");
+    const navigate = useNavigate();
     useEffect(() => {
         async function fetchClubDetail() {
             const response = await GetClubsDetailAPI(clubId);
@@ -39,7 +42,11 @@ export default function ClubDetailPage() {
                 {/* Dòng 1: Tiêu đề + Badge Active + Popover menu */}
                 <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="flex items-center flex-wrap">
-                        <Button onClick={() => history.back()} variant="link" className="mr-2">
+                        <Button
+                            onClick={() => navigate("/club")}
+                            variant="link"
+                            className="mr-2"
+                        >
                             <ChevronLeft />
                         </Button>
                         <h1 className="text-3xl font-bold mr-4 whitespace-nowrap">
@@ -53,7 +60,13 @@ export default function ClubDetailPage() {
                         </Badge>
                     </div>
                     <div>
-                        <PopoverClub isClubOwner={isClubOwner} clubId={clubId} clubOwnerId={clubData?.clubOwnerId} club={clubData} setFlag={setFlag} />
+                        <PopoverClub
+                            isClubOwner={isClubOwner}
+                            clubId={clubId}
+                            clubOwnerId={clubData?.clubOwnerId}
+                            club={clubData}
+                            setFlag={setFlag}
+                        />
                     </div>
                 </div>
 
@@ -84,14 +97,14 @@ export default function ClubDetailPage() {
                                 {/* <b className="text-xl">{clubData.}</b> days until now */}
                             </p>
                             <p>
-                                Created on {formatDate(clubData?.foundingDate || new Date(), "dd/MM/yyyy")}
+                                Created on{" "}
+                                {formatDate(clubData?.foundingDate || new Date(), "dd/MM/yyyy")}
                             </p>
                             <p>Contact: {clubData?.contactPhone || "No info"}</p>
                             <p>Email: {clubData?.contactEmail || "No info"}</p>
                             <p>Website URL: {clubData?.websiteUrl || "No info"}</p>
                         </div>
                     </Grid2>
-
                 </Grid2>
 
                 {/* Dòng 3: Gạch ngang */}
@@ -104,16 +117,28 @@ export default function ClubDetailPage() {
                         {/* Box 1 */}
                         <div
                             className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3"
-                            style={{ background: "linear-gradient(to right, #136CB5, #49BBBD)" }}
+                            style={{
+                                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                            }}
                         >
-                            <span className="text-sm text-white font-bold">Total Members</span>
-                            <span className="text-xl font-bold text-white">{clubData?.numOfMems}</span>
+                            <span className="text-sm text-white font-bold">
+                                Total Members
+                            </span>
+                            <span className="text-xl font-bold text-white">
+                                {clubData?.numOfMems}
+                            </span>
                         </div>
                         {/* Box 2 */}
-                        <div className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3 bg-gray-100"
-                            style={{ background: "linear-gradient(to right, #136CB5, #49BBBD)" }}>
+                        <div
+                            className="flex flex-col items-center justify-center w-40 h-16 rounded-md border p-3 bg-gray-100"
+                            style={{
+                                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                            }}
+                        >
                             <span className="text-sm text-white font-bold">Total Event </span>
-                            <span className="text-xl font-bold text-white">{clubData?.numOfEvents} </span>
+                            <span className="text-xl font-bold text-white">
+                                {clubData?.numOfEvents}{" "}
+                            </span>
                         </div>
                     </div>
 
@@ -151,24 +176,119 @@ export default function ClubDetailPage() {
                 </div>
             </div>
 
-            {/* ------------- PHẦN TABS ------------- */}
-            <Tabs defaultValue="club-condition" className="w-full">
+            {/* Tab */}
+            <Tabs
+                defaultValue="club-condition"
+                className="w-full"
+                value={activeTab}
+                onValueChange={setActiveTab}
+            >
                 {/* TabsList */}
                 {isClubOwner ? (
                     <TabsList className="grid w-full grid-cols-6 mb-2">
-                        <TabsTrigger value="club-condition">Club Condition</TabsTrigger>
-                        <TabsTrigger value="events">Event List</TabsTrigger>
-                        <TabsTrigger value="members">Active Members</TabsTrigger>
-                        <TabsTrigger value="member pending">Pending Members</TabsTrigger>
-                        <TabsTrigger value="tasks">Task List</TabsTrigger>
-                        <TabsTrigger value="schedule">Schedule Club</TabsTrigger>
+                        <TabsTrigger
+                            value="club-condition"
+                            className={
+                                activeTab === "club-condition"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Club Condition
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="events"
+                            className={
+                                activeTab === "events"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Event List
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="members"
+                            className={
+                                activeTab === "members"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Active Members
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="member pending"
+                            className={
+                                activeTab === "member pending"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Pending Members
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="tasks"
+                            className={
+                                activeTab === "tasks"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Task List
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="schedule"
+                            className={
+                                activeTab === "schedule"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Schedule Club
+                        </TabsTrigger>
                     </TabsList>
                 ) : (
                     <TabsList className="grid w-4/6 grid-cols-4 mb-2">
-                        <TabsTrigger value="club-condition">Club Condition</TabsTrigger>
-                        <TabsTrigger value="events">Event List</TabsTrigger>
-                        <TabsTrigger value="members">Active Members</TabsTrigger>
-                        <TabsTrigger value="tasks">Task List</TabsTrigger>
+                        <TabsTrigger
+                            value="club-condition"
+                            className={
+                                activeTab === "club-condition"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Club Condition
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="events"
+                            className={
+                                activeTab === "events"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Event List
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="members"
+                            className={
+                                activeTab === "members"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Active Members
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="tasks"
+                            className={
+                                activeTab === "tasks"
+                                    ? "bg-primary text-primary-foreground"
+                                    : ""
+                            }
+                        >
+                            Task List
+                        </TabsTrigger>
                     </TabsList>
                 )}
                 {/* Nội dung tab 1 */}
@@ -180,7 +300,7 @@ export default function ClubDetailPage() {
                 <TabsContent value="members">
                     <ActiveMemberList clubId={clubId} isClubOwner={isClubOwner} />
                 </TabsContent>
-                {(isClubOwner) && (
+                {isClubOwner && (
                     <TabsContent value="member pending">
                         <PendingMemberList clubId={clubId} />
                     </TabsContent>
@@ -194,7 +314,7 @@ export default function ClubDetailPage() {
                         <TaskListMember clubId={clubId} isClubOwner={isClubOwner} />
                     </TabsContent>
                 )}
-                {(isClubOwner) && (
+                {isClubOwner && (
                     <TabsContent value="schedule">
                         <ClubSchedulePage clubId={clubId} />
                     </TabsContent>

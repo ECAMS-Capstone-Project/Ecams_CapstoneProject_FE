@@ -75,13 +75,13 @@ const ClubRequirements = ({ clubId, conditionEvidences, setConditionEvidences, s
           <TableBody>
             {conditions?.data?.map((condition: ClubCondition) => (
               <TableRow key={condition.conditionId} className="bg-white">
-                <TableCell className="font-medium text-gray-600" style={{ width: "100px" }}>
+                <TableCell className="font-medium text-gray-600" style={{ width: "140px" }}>
                   {condition.conditionName} {condition.isRequired ? <span className="text-red-600">*</span> : ""}
                 </TableCell>
                 <TableCell className="font-medium text-[#2e7fa7]" style={{ width: "250px" }}>
                   {condition.conditionContent}
                 </TableCell>
-                <TableCell className="font-medium text-justify text-[#2e7fa7]" style={{ width: "650px" }} >
+                <TableCell className="font-medium text-justify text-[#2e7fa7]" style={{ width: "580px" }} >
                   <DescriptionWithToggle text={condition.description} />
                 </TableCell>
                 <TableCell className="text-right space-x-2" >

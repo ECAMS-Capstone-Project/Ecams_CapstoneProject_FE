@@ -58,7 +58,9 @@ const ClubListPage: React.FC = () => {
       } catch (error: any) {
         setError(error.message);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       }
     };
 
@@ -267,7 +269,7 @@ const ClubListPage: React.FC = () => {
           </Box>
         </TabsContent>
 
-        {clubs.length > 0 && (
+        {!loading && clubs.length > 0 && (
           <div style={{ position: "relative", minHeight: "80px" }}>
             <ul
               style={{
