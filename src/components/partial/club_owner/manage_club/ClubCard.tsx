@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
 
 interface ClubCardProps {
   image: string;
@@ -54,18 +55,16 @@ const ClubCard: React.FC<ClubCardProps> = ({
               </Typography>
               <Chip
                 label={clubOwnerId == user?.userId ? "Club Owner" : "Member"}
-                color="secondary"
+                color="primary"
                 size="small"
-                sx={{ justifyContent: "end" }}
+                sx={{ justifyContent: "end", fontWeight: "bold" }}
               />
             </div>
             <div
+              className="space-x-1"
               style={{
-                display: "grid",
-                gridTemplateColumns:
-                  field.length === 1
-                    ? "auto"
-                    : "repeat(auto-fit, minmax(90px, 1fr))",
+                display: "flex",
+                flexWrap: "wrap",
                 gap: "8px",
                 justifyContent: field.length === 1 ? "start" : "start",
                 marginTop: "13px",
@@ -73,19 +72,13 @@ const ClubCard: React.FC<ClubCardProps> = ({
             >
               {field &&
                 field.map((item, index) => (
-                  <Chip
+                  <Badge
                     key={index}
-                    label={item.fieldName}
-                    color="secondary"
-                    className="text-sm"
-                    size="medium"
-                    sx={{
-                      backgroundColor: "#4A90E2",
-                      color: "white",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                  />
+                    // color="secondary"
+                    className="bg-[#78e1e33c] text-[#348687] text-center text-sm w-fit font-semibold px-2 py-1 rounded-full"
+                  >
+                    {item.fieldName}
+                  </Badge>
                 ))}
             </div>
             {status == "PARTICIPATED" && (

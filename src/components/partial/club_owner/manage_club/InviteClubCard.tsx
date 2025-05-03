@@ -1,7 +1,8 @@
 import React from "react";
-import { Card, Typography, Chip } from "@mui/material";
+import { Card, Typography } from "@mui/material";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { FieldDTO } from "@/api/club-owner/RequestClubAPI";
+import { Badge } from "@/components/ui/badge";
 
 interface ClubCardProps {
   image: string;
@@ -39,29 +40,24 @@ const InviteClubCard: React.FC<ClubCardProps> = ({ image, title, field }) => {
             </Typography>
 
             <div
+              className="space-x-1"
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(90px, 1fr))",
+                display: "flex",
+                flexWrap: "wrap",
                 gap: "8px",
-                justifyContent: "center",
+                justifyContent: field.length === 1 ? "start" : "start",
                 marginTop: "13px",
               }}
             >
               {field &&
                 field.map((item, index) => (
-                  <Chip
+                  <Badge
                     key={index}
-                    label={item.fieldName}
-                    color="secondary"
-                    className="text-sm"
-                    size="medium"
-                    sx={{
-                      backgroundColor: "#4A90E2",
-                      color: "white",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                  />
+                    // color="secondary"
+                    className="bg-[#78e1e33c] text-[#348687] text-center text-sm w-fit font-semibold px-2 py-1 rounded-full"
+                  >
+                    {item.fieldName}
+                  </Badge>
                 ))}
             </div>
           </div>
