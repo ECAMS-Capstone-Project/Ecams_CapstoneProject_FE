@@ -37,13 +37,6 @@ import {
   GetAvailableMember,
 } from "@/api/student/ClubAgent";
 import SpecificStudentClubList from "./SpecificStudentClubList";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function CreateTaskClub() {
   const navigate = useNavigate();
@@ -51,7 +44,8 @@ export default function CreateTaskClub() {
   const { user } = useAuth();
   const location = useLocation();
   const clubId = location.state?.clubId;
-  const [priority, setPriority] = useState<string>("LOW");
+  const [priority] = useState<string>("MEDIUM");
+
   const [allStudents, setAllStudents] = useState<AvailableMemberEventTask[]>(
     []
   );
@@ -214,27 +208,7 @@ export default function CreateTaskClub() {
                     )}
                   />
                 </Grid2>
-                <Grid2 size={4}>
-                  <div className="space-y-2 mt-1">
-                    <label className="block text-sm font-medium">
-                      Priority
-                    </label>
-                    <Select
-                      onValueChange={(value) => setPriority(value)}
-                      value={priority}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="LOW">Low</SelectItem>
-                        <SelectItem value="MEDIUM">Medium</SelectItem>
-                        <SelectItem value="HIGH">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </Grid2>
-                <Grid2 size={4}>
+                <Grid2 size={6}>
                   {/* Score */}
                   <FormField
                     control={form.control}
