@@ -305,7 +305,7 @@ const TaskDetailCard = () => {
                         <div className="flex gap-3">
                           <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                             <img
-                              src="https://github.com/shadcn.png"
+                              src={"https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
                               alt="avatar"
                               className="w-full h-full object-cover"
                             />

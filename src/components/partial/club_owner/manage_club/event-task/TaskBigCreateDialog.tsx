@@ -269,7 +269,10 @@ export const TaskBigCreateDialog = ({
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date) => {
+                                  const startDate = form.watch("startTime");
+                                  return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                }}
                                 initialFocus
                               />
                             </PopoverContent>
