@@ -48,6 +48,8 @@ export const GetRecommendedEventsAPI = async (
     // 1. Append filter first
     params.append("Type", type);
 
+    params.append("Status", "ACTIVE");
+
     if (startTime) {
       params.append("StartDate", startTime);
     }
