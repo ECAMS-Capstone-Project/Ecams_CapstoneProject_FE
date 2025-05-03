@@ -119,7 +119,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                     sx={{ width: 120, height: 120, mb: 2 }}
                   />
                   <Typography variant="h6" fontWeight="bold" color="primary">
-                    Name: {initialData?.clubName}
+                    {initialData?.clubName}
                   </Typography>
                 </Grid2>
 
@@ -132,7 +132,6 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                       </Typography>
                       <Typography
                         variant="body2"
-                        style={{ textAlign: "justify" }}
                         className="text-gray-700 text-ba"
                       >
                         <DescriptionWithToggle
@@ -223,7 +222,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
                                 <img
                                   src={
                                     member.avatar ||
-                                    "https://inthenhua.net.vn/wp-content/uploads/2017/01/the-sinh-vien-2.jpg"
+                                    "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"
                                   }
                                   alt={"Product Image"}
                                   className="w-12 h-12 object-cover rounded-full"

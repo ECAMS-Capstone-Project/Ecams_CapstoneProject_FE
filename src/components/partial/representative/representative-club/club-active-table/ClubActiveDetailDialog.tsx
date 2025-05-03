@@ -63,7 +63,7 @@ const ClubActiveDetailDialog: React.FC<ClubDetailDialogProps> = ({
       <Box className="mb-6">
         <Avatar className="w-72 h-52 rounded-lg mx-auto shadow-lg">
           <AvatarImage
-            src={initialData?.logoUrl || "https://github.com/shadcn.png"}
+            src={initialData?.logoUrl || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
             alt="club-logo"
             className="object-cover w-full h-full"
           />

@@ -31,11 +31,11 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
     const sortedStudents = [...students].sort((a, b) => {
         const aRecommended = recommendedStudents?.some(rs => rs.studentId === a.studentId);
         const bRecommended = recommendedStudents?.some(rs => rs.studentId === b.studentId);
-      
+
         if (aRecommended && !bRecommended) return -1;
         if (!aRecommended && bRecommended) return 1;
         return 0;
-      });
+    });
 
     // Mỗi lần load 5 sinh viên
     const CHUNK_SIZE = 5;
@@ -156,13 +156,8 @@ const SpecificStudentList: React.FC<SpecificStudentListProps> = ({
                     <Card className="shadow-lg border rounded-2xl p-6 bg-[#ebf5f8]">
                         <CardHeader>
                             <div className="flex items-center gap-6 mb-4">
-                                {/* <img
-                                    src="https://github.com/shadcn.png"
-                                    alt="Avatar"
-                                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-sm"
-                                /> */}
                                 <Avatar className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-sm">
-                                    {selectedStudent?.fullName.slice(0, 1)}
+                                    {selectedStudent?.fullName.slice(0, 1) || "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
                                 </Avatar>
                                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 p-4 rounded-xl border bg-white shadow">
                                     <div className="space-y-2">

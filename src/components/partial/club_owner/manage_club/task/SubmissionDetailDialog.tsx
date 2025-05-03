@@ -101,6 +101,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
             toast.success("Submission sent successfully!");
             setLoading(true)
             onClose();
+            return;
         }
         if (user) {
             // Validate: điểm nhập vào không được vượt quá taskScore
@@ -117,6 +118,7 @@ const SubmissionDetailDialog: React.FC<SubmissionDetailDialogProps> = ({
             };
             onSaveFeedback(reviewBody);
             onClose();
+            return;
         }
     };
 

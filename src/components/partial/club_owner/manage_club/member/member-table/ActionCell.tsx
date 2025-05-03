@@ -37,13 +37,13 @@ export const ActionCell = ({
         clubMemberId: clubMemberId,
         reason: reason,
       });
+      toast.success("Kick member successfully");
       setFlag?.((prev) => !prev);
       setIsKickDialogOpen(false);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
-      toast.success("Kick member successfully");
     }
   };
 

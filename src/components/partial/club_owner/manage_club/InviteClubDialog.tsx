@@ -60,7 +60,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   console.log(initialData?.clubMembers);
-  
+
   const handleApprove = async () => {
     if (!initialData) return;
     if (!user) return;
@@ -241,7 +241,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
                                   <img
                                     src={
                                       member.avatar ||
-                                      "https://github.com/shadcn.png"
+                                      "https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"
                                     }
                                     alt={"Product Image"}
                                     className="w-12 h-12 object-cover rounded-full"
