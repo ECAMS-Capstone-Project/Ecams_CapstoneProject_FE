@@ -120,18 +120,18 @@ export default function TaskListInEvent() {
       try {
         const response = isClubOwner
           ? await GetSubTaskEventAPI(
-              task.eventTaskId,
-              pageNo,
-              debouncedSearch,
-              pageSize
-            )
+            task.eventTaskId,
+            pageNo,
+            debouncedSearch,
+            pageSize
+          )
           : await GetSubTaskEventByUserAPI(
-              task.eventTaskId,
-              pageNo,
-              debouncedSearch,
-              user.userId,
-              pageSize
-            );
+            task.eventTaskId,
+            pageNo,
+            debouncedSearch,
+            user.userId,
+            pageSize
+          );
 
         setSubTaskList(response.data?.data || []);
         setTotalPages(response.data?.totalPages);
@@ -208,7 +208,7 @@ export default function TaskListInEvent() {
       <EventTaskBreadcrumb
         items={[
           { label: "Event List" },
-          { label: "Task list in event", href: `/club/event-task/${eventId}` },
+          { label: "Task list in event" },
           { label: "Sub task list in event" },
         ]}
       />
@@ -351,13 +351,12 @@ export default function TaskListInEvent() {
                   transition={{ duration: 0.3 }}
                 >
                   <Card
-                    className={`rounded-lg border ${
-                      task.priority.toUpperCase() === "HIGH"
+                    className={`rounded-lg border ${task.priority.toUpperCase() === "HIGH"
                         ? "bg-red-50 border-red-200 text-red-900"
                         : task.priority.toUpperCase() === "MEDIUM"
-                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
-                        : "bg-blue-50 border-blue-200 text-blue-900"
-                    }`}
+                          ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                          : "bg-blue-50 border-blue-200 text-blue-900"
+                      }`}
                   >
                     <CardContent className="p-5 space-y-4">
                       <div className="flex justify-between items-start">
