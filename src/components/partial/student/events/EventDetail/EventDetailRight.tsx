@@ -24,6 +24,9 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
             {event.universityName}
           </span>
         </div>
+        <div className="px-2 mt-1">
+          <b>Address:</b> {event.universityAddress || "N/A"}
+        </div>
         <div className="overflow-x-auto rounded-lg w-full bg-transparent mb-5">
           <table className="min-w-full divide-y divide-gray-200 px-2 rounded-lg">
             <thead>

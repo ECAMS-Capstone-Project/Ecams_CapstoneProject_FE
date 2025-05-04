@@ -26,6 +26,7 @@ export interface Event {
   eventRegistrations?: EventRefundDTO[];
   totalRevenue: number;
   universityName: string;
+  universityAddress: string;
 }
 export interface EventRefundDTO {
   refundId: string;
