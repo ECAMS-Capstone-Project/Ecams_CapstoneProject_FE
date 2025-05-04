@@ -17,14 +17,14 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
     >
-      <div className="rounded-lg bg-white p-5 shadow space-y-2">
-        <h3 className="mb-2 text-3xl font-semibold">Event location</h3>
+      <div className="rounded-lg bg-white p-5 pt-0 shadow space-y-2">
+        <h3 className="mb-3 text-3xl font-semibold">Event location</h3>
         <div className="flex items-center gap-2 px-2">
           <span className="text-2xl font-bold bg-gradient-to-r from-[#136cb9] to-[#49bbbd] bg-clip-text text-transparent">
             {event.universityName}
           </span>
         </div>
-        <div className="px-2 mt-1">
+        <div className="px-2 mt-4">
           <b>Address:</b> {event.universityAddress || "N/A"}
         </div>
         <div className="overflow-x-auto rounded-lg w-full bg-transparent mb-5">
