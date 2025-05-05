@@ -62,7 +62,7 @@ export const InterClubEventList = () => {
         return "bg-yellow-100 text-yellow-800";
       case "INACTIVE":
         return "bg-black-100 text-black-800";
-      case "NOT_START":
+      case "NOT_STARTED":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-red-100 text-red-800";
