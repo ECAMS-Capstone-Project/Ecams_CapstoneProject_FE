@@ -607,7 +607,7 @@ export const NewSubtaskDialog = ({
                             />
                           </div>
                           <a
-                            className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap"
+                            className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap cursor-pointer"
                             onClick={async () => {
                               try {
                                 setIsLoading(true);
@@ -632,8 +632,37 @@ export const NewSubtaskDialog = ({
                                   setAIRecommendations(response.data);
                                   setShowAIRecommendations(true);
                                   form.setValue("assignedMemberIds", []);
+                                } else if (
+                                  response.message ===
+                                  "Sequence contains no elements"
+                                ) {
+                                  toast("We're busy, please try again", {
+                                    icon: "⏳", // biểu tượng chờ
+                                    style: {
+                                      borderRadius: "8px",
+                                      background: "#FFCC00", // màu nền vàng để dễ nhận diện
+                                      color: "#333", // chữ màu đen
+                                      fontWeight: "bold",
+                                      fontSize: "16px",
+                                      padding: "10px 20px",
+                                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                    },
+                                    position: "top-right", // Đặt vị trí thông báo ở phía trên giữa màn hình
+                                  });
                                 } else {
-                                  toast.error(response.message);
+                                  toast(response.message, {
+                                    icon: "😢", // biểu tượng chờ
+                                    style: {
+                                      borderRadius: "8px",
+                                      background: "#FFCC00", // màu nền vàng để dễ nhận diện
+                                      color: "#333", // chữ màu đen
+                                      fontWeight: "bold",
+                                      fontSize: "16px",
+                                      padding: "10px 20px",
+                                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                    },
+                                    position: "top-right", // Đặt vị trí thông báo ở phía trên giữa màn hình
+                                  });
                                 }
                               } catch (error: any) {
                                 toast.error(error.response.data.message);

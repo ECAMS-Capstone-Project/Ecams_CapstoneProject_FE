@@ -59,7 +59,7 @@ const getStatusStyle = (status: string) => {
         text: "text-[#b62e2e]",
         icon: <CircleX size={12} className="text-[#b62e2e]" />,
       };
-    case "NOT_START":
+    case "NOT_STARTED":
       return {
         bg: "bg-gray-100",
         text: "text-gray-500",
