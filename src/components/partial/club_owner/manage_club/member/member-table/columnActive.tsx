@@ -57,25 +57,25 @@ export const memberActiveColumn = (
 
   const conditionalColumn: ColumnDef<ClubMemberDTO> = isClubOwner
     ? {
-        id: "actions",
-        header: () => <div className="text-center">Action</div>,
-        cell: ({ row }) => <ActionCell row={row} setFlag={setFlag} />,
-      }
+      id: "actions",
+      header: () => <div className="text-center">Action</div>,
+      cell: ({ row }) => <ActionCell row={row} setFlag={setFlag} />,
+    }
     : {
-        accessorKey: "joinedAt",
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title="Join Date" />
-        ),
-        cell: ({ row }) => {
-          const value = row.getValue("joinedAt");
-          const date = new Date(value as string | number | Date);
-          return (
-            <div>
-              {value && isValid(date) ? format(date, "dd/MM/yyyy") : "N/A"}
-            </div>
-          );
-        },
-      };
+      accessorKey: "joinedAt",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Join Date" />
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue("joinedAt");
+        const date = new Date(value as string | number | Date);
+        return (
+          <div>
+            {value && isValid(date) ? format(date, "dd/MM/yyyy") : "N/A"}
+          </div>
+        );
+      },
+    };
 
   return [...baseColumns, conditionalColumn];
 };
