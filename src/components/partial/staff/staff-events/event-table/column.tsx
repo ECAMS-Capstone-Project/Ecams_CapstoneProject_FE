@@ -163,7 +163,7 @@ export const EventColums = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
-              {["All", "ACTIVE", "ENDED", "NOT_STARTED"].map((status) => (
+              {["All", "ACTIVE", "ENDED", "NOT_START"].map((status) => (
                 <DropdownMenuItem
                   key={status}
                   onClick={() => {
