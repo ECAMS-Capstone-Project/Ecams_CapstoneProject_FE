@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <header className="w-full h-[80px] md:h-[100px] top-0 left-0 z-50">
       <div className="fixed top-7 left-28 gap-4 ">
@@ -6,7 +9,8 @@ const Header = () => {
         <img
           src="https://res.cloudinary.com/ecams/image/upload/v1739124259/ECAMS_Logo_ow82lc.png"
           alt="App Logo"
-          className="w-24 h-20"
+          className="w-24 h-20 cursor-pointer"
+          onClick={() => navigate("/")}
         />
         {/* Title */}
       </div>
