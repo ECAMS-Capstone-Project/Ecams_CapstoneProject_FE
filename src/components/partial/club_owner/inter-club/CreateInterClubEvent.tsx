@@ -381,8 +381,8 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                 value={
                                   field.value
                                     ? field.value
-                                      .toString()
-                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                        .toString()
+                                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                     : ""
                                 }
                               />
@@ -513,7 +513,8 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                     selected={field.value}
                                     onSelect={field.onChange}
                                     disabled={(date) =>
-                                      date < new Date(new Date().setHours(0, 0, 0, 0))
+                                      date <
+                                      new Date(new Date().setHours(0, 0, 0, 0))
                                     }
                                     initialFocus
                                   />
@@ -578,8 +579,15 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                     selected={field.value}
                                     onSelect={field.onChange}
                                     disabled={(date) => {
-                                      const startDate = form.watch("registeredStartDate");
-                                      return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                      const startDate = form.watch(
+                                        "registeredStartDate"
+                                      );
+                                      return startDate
+                                        ? date <
+                                            new Date(
+                                              startDate.setHours(0, 0, 0, 0)
+                                            )
+                                        : date < new Date();
                                     }}
                                     initialFocus
                                   />
@@ -610,13 +618,11 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                     <FormField
                       control={form.control}
                       name="eventAreas"
-                      render={() => (
+                      render={(field) => (
                         <FormItem className="mt-2">
-                          {/* Tiêu đề chung */}
-                          <FormLabel className="mt-2  text-gray-800">
+                          <FormLabel className="mt-2 text-gray-800">
                             Event Areas
                           </FormLabel>
-
                           <FormControl>
                             <div className="flex flex-col space-y-6">
                               {fields.map((item, index) => (
@@ -646,11 +652,12 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                         item={item}
                                         index={index}
                                         update={update}
-                                        areas={areas}
+                                        areas={areas.filter(
+                                          (a) => a.status == true
+                                        )}
                                       />
                                     </div>
 
-                                    {/* Date */}
                                     <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                       <DatePicker
                                         label="Date"
@@ -664,66 +671,39 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                       />
                                     </div>
 
-                                    {/* Start Time */}
                                     <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                       <FormLabel>Start Time</FormLabel>
-                                      <Select
-                                        value={item.StartTime}
-                                        onValueChange={(value) =>
-                                          update(index, {
-                                            ...item,
-                                            StartTime: value,
-                                          })
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select start time" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {Array.from(
-                                            { length: 24 },
-                                            (_, i) => (
-                                              <SelectItem
-                                                key={i}
-                                                value={i.toString()}
-                                              >
-                                                {`${i}:00`}
-                                              </SelectItem>
-                                            )
-                                          )}
-                                        </SelectContent>
-                                      </Select>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          type="time"
+                                          {...field}
+                                          value={item.StartTime} // Gán giá trị StartTime hiện tại
+                                          onChange={(e) => {
+                                            const value = e.target.value; // Lấy giá trị từ input (theo định dạng HH:mm)
+                                            update(index, {
+                                              ...item,
+                                              StartTime: value, // Cập nhật lại giá trị StartTime với giờ và phút
+                                            });
+                                          }}
+                                        />
+                                      </div>
                                     </div>
 
                                     {/* End Time */}
                                     <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                       <FormLabel>End Time</FormLabel>
-                                      <Select
-                                        value={item.EndTime}
-                                        onValueChange={(value) =>
+                                      <Input
+                                        type="time"
+                                        {...field}
+                                        value={item.EndTime} // Gán giá trị EndTime hiện tại
+                                        onChange={(e) => {
+                                          const value = e.target.value; // Lấy giá trị từ input (theo định dạng HH:mm)
                                           update(index, {
                                             ...item,
-                                            EndTime: value,
-                                          })
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select end time" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {Array.from(
-                                            { length: 24 },
-                                            (_, i) => (
-                                              <SelectItem
-                                                key={i}
-                                                value={i.toString()}
-                                              >
-                                                {`${i}:00`}
-                                              </SelectItem>
-                                            )
-                                          )}
-                                        </SelectContent>
-                                      </Select>
+                                            EndTime: value, // Cập nhật lại giá trị EndTime với giờ và phút
+                                          });
+                                        }}
+                                      />
                                     </div>
                                   </div>
                                 </div>
@@ -732,7 +712,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                               {/* Nút thêm Area mới */}
                               <Button
                                 type="button"
-                                variant="custom"
+                                variant={"custom"}
                                 onClick={() =>
                                   append({
                                     AreaId: "",
@@ -741,7 +721,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                                     EndTime: "17",
                                   })
                                 }
-                                className="inline-flex w-fit items-center justify-center px-4 py-2 text-sm font-medium text-white  rounded-md shadow-sm  transition-colors"
+                                className="inline-flex w-fit items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm transition-colors"
                               >
                                 Add Area
                               </Button>
@@ -775,8 +755,8 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           ? "Updating..."
                           : "Creating..."
                         : initialData
-                          ? "Update Event"
-                          : "Create Event"}
+                        ? "Update Event"
+                        : "Create Event"}
                     </Button>
                   </div>
                 </form>

@@ -52,7 +52,7 @@ export const EventDetailRight: React.FC<EventDetailRightProps> = ({
                     {format(new Date(area.date), "dd/MM/yyyy")}
                   </td>
                   <td className="text-left px-3 py-4 whitespace-nowrap text-md text-gray-900">
-                    {area.startTime}h - {area.endTime}h
+                    {area.startTime} - {area.endTime}
                   </td>
                 </tr>
               ))}

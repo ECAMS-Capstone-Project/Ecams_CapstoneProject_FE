@@ -482,8 +482,8 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                               value={
                                 field.value
                                   ? field.value
-                                    .toString()
-                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                                      .toString()
+                                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                   : ""
                               }
                             />
@@ -585,7 +585,8 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                                   selected={field.value}
                                   onSelect={field.onChange}
                                   disabled={(date) =>
-                                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                                    date <
+                                    new Date(new Date().setHours(0, 0, 0, 0))
                                   }
                                   initialFocus
                                 />
@@ -618,7 +619,9 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                       name="registeredEndDate"
                       render={({ field }) => (
                         <FormItem className="flex flex-col h-full">
-                          <FormLabel className="mb-2">Register end date</FormLabel>
+                          <FormLabel className="mb-2">
+                            Register end date
+                          </FormLabel>
                           <div className="flex-1">
                             <Popover>
                               <PopoverTrigger asChild>
@@ -648,8 +651,15 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                                   selected={field.value}
                                   onSelect={field.onChange}
                                   disabled={(date) => {
-                                    const startDate = form.watch("registeredStartDate");
-                                    return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                    const startDate = form.watch(
+                                      "registeredStartDate"
+                                    );
+                                    return startDate
+                                      ? date <
+                                          new Date(
+                                            startDate.setHours(0, 0, 0, 0)
+                                          )
+                                      : date < new Date();
                                   }}
                                   initialFocus
                                 />
@@ -757,7 +767,7 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                   <FormField
                     control={form.control}
                     name="eventAreas"
-                    render={() => (
+                    render={(field) => (
                       <FormItem className="mt-2">
                         <FormLabel className="mt-2 text-gray-800">
                           Event Areas
@@ -810,60 +820,39 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                                     />
                                   </div>
 
-                                  {/* Start Time */}
                                   <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                     <FormLabel>Start Time</FormLabel>
-                                    <Select
-                                      value={item.StartTime}
-                                      onValueChange={(value) =>
-                                        update(index, {
-                                          ...item,
-                                          StartTime: value,
-                                        })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select start time" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {Array.from({ length: 24 }, (_, i) => (
-                                          <SelectItem
-                                            key={i}
-                                            value={i.toString()}
-                                          >
-                                            {`${i}:00`}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        type="time"
+                                        {...field}
+                                        value={item.StartTime} // Gán giá trị StartTime hiện tại
+                                        onChange={(e) => {
+                                          const value = e.target.value; // Lấy giá trị từ input (theo định dạng HH:mm)
+                                          update(index, {
+                                            ...item,
+                                            StartTime: value, // Cập nhật lại giá trị StartTime với giờ và phút
+                                          });
+                                        }}
+                                      />
+                                    </div>
                                   </div>
 
                                   {/* End Time */}
                                   <div className="w-full sm:w-auto flex-1 min-w-[100px]">
                                     <FormLabel>End Time</FormLabel>
-                                    <Select
-                                      value={item.EndTime}
-                                      onValueChange={(value) =>
+                                    <Input
+                                      type="time"
+                                      {...field}
+                                      value={item.EndTime} // Gán giá trị EndTime hiện tại
+                                      onChange={(e) => {
+                                        const value = e.target.value; // Lấy giá trị từ input (theo định dạng HH:mm)
                                         update(index, {
                                           ...item,
-                                          EndTime: value,
-                                        })
-                                      }
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select end time" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {Array.from({ length: 24 }, (_, i) => (
-                                          <SelectItem
-                                            key={i}
-                                            value={i.toString()}
-                                          >
-                                            {`${i}:00`}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
+                                          EndTime: value, // Cập nhật lại giá trị EndTime với giờ và phút
+                                        });
+                                      }}
+                                    />
                                   </div>
                                 </div>
                               </div>
@@ -969,15 +958,15 @@ export const CreateEventClub: React.FC<EventDialogProps> = ({
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting
                       ? isSubmitting && (
-                        <l-ring-2
-                          size="40"
-                          stroke="5"
-                          stroke-length="0.25"
-                          bg-opacity="0.1"
-                          speed="0.8"
-                          color="black"
-                        ></l-ring-2>
-                      )
+                          <l-ring-2
+                            size="40"
+                            stroke="5"
+                            stroke-length="0.25"
+                            bg-opacity="0.1"
+                            speed="0.8"
+                            color="black"
+                          ></l-ring-2>
+                        )
                       : "Create event"}
                   </Button>
                 </div>
