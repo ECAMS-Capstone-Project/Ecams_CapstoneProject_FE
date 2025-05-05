@@ -19,6 +19,7 @@ interface DenyProps {
   onSuccess?: () => void;
   open: boolean;
   setFlag?: React.Dispatch<React.SetStateAction<boolean>>
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const DenyClubByStu: React.FC<DenyProps> = ({
@@ -27,7 +28,8 @@ export const DenyClubByStu: React.FC<DenyProps> = ({
   onClose,
   onSuccess,
   open,
-  setFlag
+  setFlag,
+  setOpen
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
@@ -60,7 +62,7 @@ export const DenyClubByStu: React.FC<DenyProps> = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-lg min-h-[200px] sm:min-h-[300px] h-auto">
         {isLoading ? (
           <div className="flex justify-center items-center h-full w-full">

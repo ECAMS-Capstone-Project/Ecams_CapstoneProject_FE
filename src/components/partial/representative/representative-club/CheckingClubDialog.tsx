@@ -292,6 +292,7 @@ export const CheckingClubDialog: React.FC<PendingClubDialogProps> = ({
           setIsDialogOpen(false);
           setOpenDialog(false);
         }}
+        setIsDialogOpen={setIsDialogOpen}
         setFlag={setFlag}
       />
     </Dialog>

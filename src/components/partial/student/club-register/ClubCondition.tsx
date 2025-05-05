@@ -108,7 +108,7 @@ const ClubRequirements = ({
               <TableRow key={condition.conditionId} className="bg-white">
                 <TableCell
                   className="font-medium text-gray-600"
-                  style={{ width: "170px" }}
+                  style={{ width: "180px" }}
                 >
                   {condition.conditionName}{" "}
                   {condition.isRequired ? (

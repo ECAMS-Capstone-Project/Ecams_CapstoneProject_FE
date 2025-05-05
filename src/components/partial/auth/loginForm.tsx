@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextField, Button, FormControl } from '@mui/material';
+import {
+  TextField,
+  Button,
+  FormControl,
+  CircularProgress,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 
@@ -16,8 +21,13 @@ type userFormValue = z.infer<typeof formSchema>;
 
 const LoginForm: React.FC = () => {
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { handleSubmit, register, formState: { errors } } = useForm<userFormValue>({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<userFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -26,7 +36,12 @@ const LoginForm: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<userFormValue> = async (data) => {
-    await login(data);
+    try {
+      setIsLoading(true);
+      await login(data);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,13 +61,12 @@ const LoginForm: React.FC = () => {
               <TextField
                 id="email"
                 label="Email"
-                {...register('email')}
+                {...register("email")}
                 autoComplete="email"
                 variant="outlined"
                 placeholder="guest@email.com"
                 error={!!errors.email}
                 helperText={errors.email?.message}
-
               />
             </FormControl>
 
@@ -63,7 +77,7 @@ const LoginForm: React.FC = () => {
                 label="Password"
                 placeholder="*********"
                 type="password"
-                {...register('password')}
+                {...register("password")}
                 variant="outlined"
                 error={!!errors.password}
                 helperText={errors.password?.message}
@@ -73,7 +87,10 @@ const LoginForm: React.FC = () => {
 
             {/* Forgot Password */}
             <div className="flex items-center justify-end mt-4">
-              <Link to="/forgot-password" style={{ color: '#FF8682', textDecoration: 'none' }}>
+              <Link
+                to="/forgot-password"
+                style={{ color: "#FF8682", textDecoration: "none" }}
+              >
                 Forgot Password
               </Link>
             </div>
@@ -84,19 +101,27 @@ const LoginForm: React.FC = () => {
               variant="contained"
               color="primary"
               fullWidth
+              disabled={isLoading}
               sx={{
                 mt: 3,
-                background: 'linear-gradient(to right, #136CB5, #49BBBD)',
-                textTransform: "none"
+                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                textTransform: "none",
               }}
             >
-              Login
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Login"
+              )}
             </Button>
 
             {/* Sign Up Link */}
             <p className="text-center text-gray-600 mt-4">
-              Don't have an account?{' '}
-              <Link to="/choose-register" style={{ color: '#FF8682', textDecoration: 'none' }}>
+              Don't have an account?{" "}
+              <Link
+                to="/choose-register"
+                style={{ color: "#FF8682", textDecoration: "none" }}
+              >
                 Sign up
               </Link>
             </p>
@@ -111,7 +136,6 @@ const LoginForm: React.FC = () => {
             className="w-4/5 md:w-3/4 lg:w-1/2 xl:w-2/3 mb-20"
           />
         </div>
-
       </div>
     </>
   );
