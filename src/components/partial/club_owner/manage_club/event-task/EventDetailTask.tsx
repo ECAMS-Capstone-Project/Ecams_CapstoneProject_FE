@@ -73,7 +73,7 @@ export const EventDetailTask = () => {
                   "data-[state=active]:shadow-sm transition-all duration-200"
                 )}
               >
-                Participants Event
+                Event Participants
               </TabsTrigger>
             )}
             <TabsTrigger

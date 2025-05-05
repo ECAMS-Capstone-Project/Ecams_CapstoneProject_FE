@@ -19,7 +19,7 @@ import { WarningClubDialog } from "./WarningClubDialog";
 import { PointClubDialog } from "./PointClubDialog";
 import useAuth from "@/hooks/useAuth";
 
-const rankFilters: string[] = ["All", "EXCELENT", "GOOD", "AVERAGE", "NEED_IMPROVEMENT"];
+const rankFilters: string[] = ["All", "EXCELLENT", "GOOD", "AVERAGE", "NEEDS_IMPROVEMENT"];
 
 export default function FancyClubRankingPage() {
   const { user } = useAuth();
@@ -90,7 +90,7 @@ export default function FancyClubRankingPage() {
         return "text-blue-700 bg-blue-100 px-2 py-1 rounded";
       case "average":
         return "text-yellow-700 bg-yellow-100 px-2 py-1 rounded";
-      case "need improve":
+      case "needs_improvement":
         return "text-red-700 bg-red-100 px-2 py-1 rounded";
       default:
         return "text-gray-700 bg-gray-100 px-2 py-1 rounded";
