@@ -8,6 +8,8 @@ import { ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import ParticipantsHeader from "@/components/partial/staff/staff-events/event-participants/ParticipantsHeader";
+import { ClubEventFeedback } from "./EventFeedback";
+import { Separator } from "@/components/ui/separator";
 
 interface props {
   eventId: string;
@@ -51,39 +53,45 @@ const EventParticipants = ({ eventId }: props) => {
       {isLoading ? (
         <LoadingAnimation />
       ) : (
-        <div className="space-y-6">
-          <ParticipantsHeader
-            eventName={eventName}
-            totalParticipants={totalParticipants}
-            participants={participants}
-            checkedInCount={checkedInCount}
-            waitingCount={waitingCount}
-          />
+        <>
+          <div className="space-y-6">
+            <ParticipantsHeader
+              eventName={eventName}
+              totalParticipants={totalParticipants}
+              participants={participants}
+              checkedInCount={checkedInCount}
+              waitingCount={waitingCount}
+            />
 
-          {participants.length > 0 ? (
-            <>
-              <ParticipantsSearchBar
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                statusFilter={statusFilter}
-                onStatusChange={setStatusFilter}
-              />
-              <ParticipantsList participants={filteredParticipants} />
-            </>
-          ) : (
-            <div className="flex justify-center items-center h-full mt-10">
-              <AnimatedGradientText>
-                <span
-                  className={
-                    "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-                  }
-                >
-                  There is no participant in this event!
-                </span>
-              </AnimatedGradientText>
-            </div>
-          )}
-        </div>
+            {participants.length > 0 ? (
+              <>
+                <ParticipantsSearchBar
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  statusFilter={statusFilter}
+                  onStatusChange={setStatusFilter}
+                />
+                <ParticipantsList participants={filteredParticipants} />
+              </>
+            ) : (
+              <div className="flex justify-center items-center h-full mt-10">
+                <AnimatedGradientText>
+                  <span
+                    className={
+                      "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+                    }
+                  >
+                    There is no participant in this event!
+                  </span>
+                </AnimatedGradientText>
+              </div>
+            )}
+          </div>
+          <Separator className="my-8" />
+          <div className="mt-4">
+            <ClubEventFeedback eventId={eventId} />
+          </div>
+        </>
       )}
     </React.Suspense>
   );

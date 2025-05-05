@@ -56,7 +56,7 @@ export const EventDetailPage = () => {
   const clubStatus = currentClubInEvent?.status;
 
   // Kiểm tra xem club hiện tại có phải là club tạo event không
-  const isCreatorClub = !currentClubInEvent;
+  const isCreatorClub = event?.data?.clubs.find((clb) => clb.isHost);
 
   const handleAccept = async () => {
     try {
