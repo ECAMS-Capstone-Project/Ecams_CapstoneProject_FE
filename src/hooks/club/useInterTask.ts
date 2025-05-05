@@ -120,7 +120,7 @@ export const useInterTask = (
       onSuccess: () => {
         toast.success("Subtask created successfully!");
         queryClient.invalidateQueries({ queryKey: ["interTasks"] }); // Tự động refetch danh sách ✅
-        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["subtasks"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         console.error("Error:", error.response.data.errors);
@@ -253,7 +253,7 @@ export const useInterTask = (
           params.eventTaskId
         ),
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] });
+        queryClient.invalidateQueries({ queryKey: ["subtasks"] });
         toast.success("Subtask updated successfully!");
       },
     });
@@ -266,7 +266,7 @@ export const useInterTask = (
       onSuccess: () => {
         // refetch();
         queryClient.invalidateQueries({ queryKey: ["interTasks"] });
-        queryClient.invalidateQueries({ queryKey: ["interTaskDetail"] }); // Tự động refetch danh sách ✅
+        queryClient.invalidateQueries({ queryKey: ["subtasks"] }); // Tự động refetch danh sách ✅
       },
       onError: (error: any) => {
         toast.error(error.response.data.message || "Error approving event");
