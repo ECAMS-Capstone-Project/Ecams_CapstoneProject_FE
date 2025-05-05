@@ -16,7 +16,6 @@ import {
   DialogClose,
   Dialog,
 } from "@/components/ui/dialog";
-// import { useState } from "react";
 
 import DialogLoading from "@/components/ui/dialog-loading";
 import { useState } from "react";
@@ -314,6 +313,7 @@ export const InviteClubDialog: React.FC<InviteClubDialogProps> = ({
           setOpenDialog(false);
           setOpen(false);
         }}
+        setOpen={setOpen}
       />
     </div>
   );

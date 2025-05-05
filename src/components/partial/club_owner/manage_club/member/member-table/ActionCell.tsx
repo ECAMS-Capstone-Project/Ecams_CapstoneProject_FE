@@ -74,12 +74,14 @@ export const ActionCell = ({
           <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
             View Detail
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => setIsKickDialogOpen(true)}
-            className="text-red-600"
-          >
-            Kick
-          </DropdownMenuItem>
+          {row.getValue("clubRoleName") != "CLUB_OWNER" && (
+            <DropdownMenuItem
+              onClick={() => setIsKickDialogOpen(true)}
+              className="text-red-600"
+            >
+              Kick
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

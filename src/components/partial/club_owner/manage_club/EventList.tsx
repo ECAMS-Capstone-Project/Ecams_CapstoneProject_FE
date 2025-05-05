@@ -24,10 +24,10 @@ export default function EventList({ clubId, isClubOwner }: Props) {
   const [eventList, setEventList] = useState<EventResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedTab, setSelectedTab] = useState("ACTIVE");
-
   const tabOptions = [
     { label: "Active", value: "ACTIVE" },
     ...(isClubOwner ? [{ label: "Pending", value: "PENDING" }] : []),
+    { label: "Not Started", value: "NOT_START" },
     { label: "Ended", value: "ENDED" },
   ];
 
@@ -67,6 +67,7 @@ export default function EventList({ clubId, isClubOwner }: Props) {
       label: "Pending",
     },
     ON_GOING: { className: "border-blue-600 text-blue-600", label: "On Going" },
+    NOT_START: { className: "border-gray-500 text-black", label: "Not started" },
   };
 
   return (
