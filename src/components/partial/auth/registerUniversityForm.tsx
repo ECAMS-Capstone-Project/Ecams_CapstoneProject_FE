@@ -110,7 +110,7 @@ const RegisterUniversityForm: React.FC = () => {
             variant="h4"
             gutterBottom
           >
-            Sign up for university
+            Sign up for representative
           </Typography>
           <Typography
             color="#313131"

@@ -30,10 +30,9 @@ export const TaskItem = ({
 }: TaskItemProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const navigate = useNavigate();
-  const getStatusColor = (status: string, percentage: number) => {
+  const getStatusColor = (status: string) => {
     if (status === "COMPLETED") return "bg-green-100 text-green-800";
-    if (percentage > 0 && status === "ON_GOING")
-      return "bg-yellow-100 text-yellow-800";
+    if (status === "ON_GOING") return "bg-yellow-100 text-yellow-800";
     if (status === "NOT_STARTED")
       return "bg-gray-100 text-gray-700 hover:bg-gray-200";
     return "bg-red-100 text-red-800";
@@ -41,8 +40,7 @@ export const TaskItem = ({
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED") return "Completed";
-    if (percentage > 0 && status === "ON_GOING")
-      return `ON_GOING (${percentage}%)`;
+    if (status === "ON_GOING") return `ON_GOING (${percentage}%)`;
     if (status === "NOT_STARTED") return "Not Started";
     return "Overdue";
   };
@@ -78,7 +76,17 @@ export const TaskItem = ({
 
   return (
     <>
-      <div className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+      <div
+        className="border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+        onClick={() =>
+          navigate(`/club/inter-club-event/task/${task.eventTaskId}`, {
+            state: {
+              currentClub: currentClub,
+              selectedEvent: selectedEvent,
+            },
+          })
+        }
+      >
         <div className="flex justify-between items-start">
           <div>
             <h3 className="font-bold text-[#136CB9]">Task: {task.taskName}</h3>
@@ -102,8 +110,7 @@ export const TaskItem = ({
           <div className="flex items-center gap-2 h-full">
             <span
               className={`px-2 py-1 rounded-full text-xs ${getStatusColor(
-                task.status,
-                task.completionPercentage
+                task.status
               )}`}
             >
               {getStatusText(task.status, task.completionPercentage)}
@@ -133,7 +140,11 @@ export const TaskItem = ({
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  onClick={() => setIsEditOpen(true)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsEditOpen(true);
+                  }}
                   disabled={task.completionPercentage === 100 || !isHost}
                 >
                   Edit

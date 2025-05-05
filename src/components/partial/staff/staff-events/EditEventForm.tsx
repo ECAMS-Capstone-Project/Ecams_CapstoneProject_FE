@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn, fixTime } from "@/lib/utils";
-import { CalendarIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Trash2Icon } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -266,7 +266,14 @@ export function EditEventForm() {
 
   return (
     <>
-      <Heading title={`Edit Event`} description={`Edit event details`} />
+      <div className="flex items-center gap-3">
+        <ArrowLeft
+          size={22}
+          onClick={() => navigate(-1)}
+          className="cursor-pointer"
+        />
+        <Heading title={`Edit Event`} description={`Edit event details`} />
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

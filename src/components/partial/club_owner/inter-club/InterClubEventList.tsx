@@ -8,6 +8,8 @@ import {
   Building2,
   Users,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -18,8 +20,8 @@ import { useEventDetail } from "@/hooks/club/useEventDetail";
 import useAuth from "@/hooks/useAuth";
 
 export const InterClubEventList = () => {
-  const [pageNo] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageNo, setPageNo] = useState(1);
+  const [pageSize] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<
     InterClubEventDTO["status"] | "ALL"
@@ -46,6 +48,7 @@ export const InterClubEventList = () => {
     pageNo
   );
   const events = interEvents?.data?.data || [];
+  const totalPages = interEvents?.data?.totalPages || 1;
   console.log("events", events);
   const getStatusColor = (status: InterClubEventDTO["status"]) => {
     switch (status) {
@@ -59,6 +62,8 @@ export const InterClubEventList = () => {
         return "bg-yellow-100 text-yellow-800";
       case "INACTIVE":
         return "bg-black-100 text-black-800";
+      case "NOT_START":
+        return "bg-gray-100 text-gray-800";
       default:
         return "bg-red-100 text-red-800";
     }
@@ -115,7 +120,7 @@ export const InterClubEventList = () => {
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-300px)]">
+      <ScrollArea className="h-[calc(100vh-350px)]">
         <div className="space-y-4">
           {filteredEvents.map((event) => (
             <div
@@ -191,6 +196,29 @@ export const InterClubEventList = () => {
           ))}
         </div>
       </ScrollArea>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-center gap-2 mt-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setPageNo((prev) => Math.max(prev - 1, 1))}
+          disabled={pageNo === 1}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          Page {pageNo} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setPageNo((prev) => Math.min(prev + 1, totalPages))}
+          disabled={pageNo === totalPages}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };

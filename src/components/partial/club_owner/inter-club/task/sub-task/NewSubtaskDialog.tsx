@@ -158,17 +158,17 @@ export const NewSubtaskDialog = ({
     defaultValues: initialValues
       ? initialValues
       : {
-        detailName: "",
-        description: "",
-        startTime: new Date(),
-        startTimeTime: "00:00",
-        deadline: new Date(),
-        deadlineTime: "00:00",
-        status: "NOT_STARTED",
-        priority: "MEDIUM",
-        assignedMemberIds: [],
-        taskDependencyIds: [],
-      },
+          detailName: "",
+          description: "",
+          startTime: new Date(),
+          startTimeTime: "00:00",
+          deadline: new Date(),
+          deadlineTime: "00:00",
+          status: "NOT_STARTED",
+          priority: "MEDIUM",
+          assignedMemberIds: [],
+          taskDependencyIds: [],
+        },
   });
 
   console.log("form.formState.errors", form.formState.errors);
@@ -232,25 +232,25 @@ export const NewSubtaskDialog = ({
   const filteredSubtaskDependency =
     subtaskDependency?.data && Array.isArray(subtaskDependency.data)
       ? subtaskDependency.data.filter((subtask: any) => {
-        const searchStr = searchQuery.toLowerCase();
-        const name = subtask.detailName.toLowerCase();
-        return name.includes(searchStr);
-      })
+          const searchStr = searchQuery.toLowerCase();
+          const name = subtask.detailName.toLowerCase();
+          return name.includes(searchStr);
+        })
       : [];
 
   // Thêm hàm filter members
   const filteredMembers = (
     availableMembers
       ? availableMembers.map((member) => {
-        const recommendation = aiRecommendations.find(
-          (rec) => rec.clubMemberId === member.clubMemberId
-        );
-        return {
-          isRecommended: !!recommendation,
-          recommendationDetails: recommendation,
-          ...member,
-        };
-      })
+          const recommendation = aiRecommendations.find(
+            (rec) => rec.clubMemberId === member.clubMemberId
+          );
+          return {
+            isRecommended: !!recommendation,
+            recommendationDetails: recommendation,
+            ...member,
+          };
+        })
       : members
   )
     .filter((member: AvailableMember | ClubMemberDTO) => {
@@ -439,7 +439,10 @@ export const NewSubtaskDialog = ({
                               onSelect={field.onChange}
                               disabled={(date) => {
                                 const startDate = form.watch("startTime");
-                                return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                return startDate
+                                  ? date <
+                                      new Date(startDate.setHours(0, 0, 0, 0))
+                                  : date < new Date();
                               }}
                               initialFocus
                             />

@@ -150,6 +150,10 @@ export const TaskDetailPage = () => {
         subtask: createData,
         eventTaskId: task.eventTaskId,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["interTaskDetail", task.eventTaskId],
+      }); // Tự động refetch danh sách ✅
+
       if (response.statusCode === 200) {
         setIsCreateDialogOpen(false);
       } else {

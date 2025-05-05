@@ -9,30 +9,34 @@ import {
 } from "@/components/ui/dialog";
 import { useInterTask } from "@/hooks/club/useInterTask";
 import { EventTaskDetail } from "@/models/InterTask";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 interface DeleteSubtaskDialogProps {
   open: boolean;
   onClose: () => void;
   subtask: EventTaskDetail | null;
-  setFlag: React.Dispatch<React.SetStateAction<boolean>>
+  setFlag: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function DeleteSubtaskDialog({
   open,
   onClose,
   subtask,
-  setFlag
+  setFlag,
 }: DeleteSubtaskDialogProps) {
   const { deleteSubtask } = useInterTask();
-
+  const queryClient = useQueryClient();
   const handleDeleteSubtask = async () => {
     await deleteSubtask({
       eventTaskDetailId: subtask ? subtask.eventTaskDetailId : "",
       eventTaskId: subtask ? subtask.eventTaskId : "",
     });
-    setFlag(pre => !pre)
-    toast.success("Delete subtask successfully")
+    queryClient.invalidateQueries({
+      queryKey: ["interTaskDetail", subtask?.eventTaskId],
+    });
+    setFlag((pre) => !pre);
+    toast.success("Delete subtask successfully");
     onClose();
   };
 
