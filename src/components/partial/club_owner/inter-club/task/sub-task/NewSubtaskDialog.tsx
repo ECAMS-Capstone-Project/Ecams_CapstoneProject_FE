@@ -158,17 +158,17 @@ export const NewSubtaskDialog = ({
     defaultValues: initialValues
       ? initialValues
       : {
-        detailName: "",
-        description: "",
-        startTime: new Date(),
-        startTimeTime: "00:00",
-        deadline: new Date(),
-        deadlineTime: "00:00",
-        status: "NOT_STARTED",
-        priority: "MEDIUM",
-        assignedMemberIds: [],
-        taskDependencyIds: [],
-      },
+          detailName: "",
+          description: "",
+          startTime: new Date(),
+          startTimeTime: "00:00",
+          deadline: new Date(),
+          deadlineTime: "00:00",
+          status: "NOT_STARTED",
+          priority: "MEDIUM",
+          assignedMemberIds: [],
+          taskDependencyIds: [],
+        },
   });
 
   console.log("form.formState.errors", form.formState.errors);
@@ -232,25 +232,25 @@ export const NewSubtaskDialog = ({
   const filteredSubtaskDependency =
     subtaskDependency?.data && Array.isArray(subtaskDependency.data)
       ? subtaskDependency.data.filter((subtask: any) => {
-        const searchStr = searchQuery.toLowerCase();
-        const name = subtask.detailName.toLowerCase();
-        return name.includes(searchStr);
-      })
+          const searchStr = searchQuery.toLowerCase();
+          const name = subtask.detailName.toLowerCase();
+          return name.includes(searchStr);
+        })
       : [];
 
   // Thêm hàm filter members
   const filteredMembers = (
     availableMembers
       ? availableMembers.map((member) => {
-        const recommendation = aiRecommendations.find(
-          (rec) => rec.clubMemberId === member.clubMemberId
-        );
-        return {
-          isRecommended: !!recommendation,
-          recommendationDetails: recommendation,
-          ...member,
-        };
-      })
+          const recommendation = aiRecommendations.find(
+            (rec) => rec.clubMemberId === member.clubMemberId
+          );
+          return {
+            isRecommended: !!recommendation,
+            recommendationDetails: recommendation,
+            ...member,
+          };
+        })
       : members
   )
     .filter((member: AvailableMember | ClubMemberDTO) => {
@@ -441,7 +441,10 @@ export const NewSubtaskDialog = ({
                               onSelect={field.onChange}
                               disabled={(date) => {
                                 const startDate = form.watch("startTime");
-                                return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                return startDate
+                                  ? date <
+                                      new Date(startDate.setHours(0, 0, 0, 0))
+                                  : date < new Date();
                               }}
                               initialFocus
                             />
@@ -604,7 +607,7 @@ export const NewSubtaskDialog = ({
                             />
                           </div>
                           <a
-                            className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap"
+                            className="click-btn btn-style501 px-3 w-fit m-0 whitespace-nowrap cursor-pointer"
                             onClick={async () => {
                               try {
                                 setIsLoading(true);
@@ -629,8 +632,37 @@ export const NewSubtaskDialog = ({
                                   setAIRecommendations(response.data);
                                   setShowAIRecommendations(true);
                                   form.setValue("assignedMemberIds", []);
+                                } else if (
+                                  response.message ===
+                                  "Sequence contains no elements"
+                                ) {
+                                  toast("We're busy, please try again", {
+                                    icon: "⏳", // biểu tượng chờ
+                                    style: {
+                                      borderRadius: "8px",
+                                      background: "#FFCC00", // màu nền vàng để dễ nhận diện
+                                      color: "#333", // chữ màu đen
+                                      fontWeight: "bold",
+                                      fontSize: "16px",
+                                      padding: "10px 20px",
+                                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                    },
+                                    position: "top-right", // Đặt vị trí thông báo ở phía trên giữa màn hình
+                                  });
                                 } else {
-                                  toast.error(response.message);
+                                  toast(response.message, {
+                                    icon: "😢", // biểu tượng chờ
+                                    style: {
+                                      borderRadius: "8px",
+                                      background: "#FFCC00", // màu nền vàng để dễ nhận diện
+                                      color: "#333", // chữ màu đen
+                                      fontWeight: "bold",
+                                      fontSize: "16px",
+                                      padding: "10px 20px",
+                                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                                    },
+                                    position: "top-right", // Đặt vị trí thông báo ở phía trên giữa màn hình
+                                  });
                                 }
                               } catch (error: any) {
                                 toast.error(error.response.data.message);

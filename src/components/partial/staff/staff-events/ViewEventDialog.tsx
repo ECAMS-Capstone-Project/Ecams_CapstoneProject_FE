@@ -2,7 +2,7 @@ import LoadingAnimation from "@/components/ui/loading";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import useAuth from "@/hooks/useAuth";
 import { format } from "date-fns";
-import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
+import { CheckCircle2Icon, LoaderCircle, XCircleIcon } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CancelEventDialog } from "./CancelEventDialog";
 
@@ -215,7 +215,7 @@ export const EventDetail: React.FC = () => {
                       ? "bg-[#F9E3D1] text-[#9E5C3F]"
                       : event?.status === "CANCELED"
                       ? "bg-[#eca6a6] text-[#b62e2e]"
-                      : ""
+                      : "bg-gray-100 text-gray-500"
                   }`}
                 >
                   {event?.status === "ACTIVE"
@@ -230,12 +230,14 @@ export const EventDetail: React.FC = () => {
                     ? "Waiting"
                     : event?.status === "CANCELED"
                     ? "Canceled"
-                    : ""}
+                    : "Not start"}
 
                   {event?.status === "ACTIVE" ? (
                     <CheckCircle2Icon size={19} className="text-[#2F4F4F]" />
-                  ) : (
+                  ) : event?.status === "PENDING" ? (
                     <XCircleIcon size={19} className=" text-[#5A3825]" />
+                  ) : (
+                    <LoaderCircle size={12} className="text-gray-500" />
                   )}
                 </span>
               </div>

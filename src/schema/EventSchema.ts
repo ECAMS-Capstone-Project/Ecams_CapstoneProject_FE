@@ -51,12 +51,24 @@ export const EventSchema = z
         })
       )
       .optional()
-      .refine((clubs) => clubs?.some((c) => c.IsHost), {
-        message: "You must assign a host club",
-      })
-      .refine((clubs) => clubs?.filter((c) => c.IsHost).length === 1, {
-        message: "Only one host club is allowed",
-      }), // Có thể là string hoặc null
+      .refine(
+        (clubs) => {
+          if (!clubs || clubs.length === 0) return true; // ✅ Không validate nếu không có clubs
+          return clubs.some((c) => c.IsHost);
+        },
+        {
+          message: "You must assign a host club",
+        }
+      )
+      .refine(
+        (clubs) => {
+          if (!clubs || clubs.length === 0) return true; // ✅ Không validate nếu không có clubs
+          return clubs.filter((c) => c.IsHost).length === 1;
+        },
+        {
+          message: "Only one host club is allowed",
+        }
+      ), // Có thể là string hoặc null
     clubName: z.string().optional(), // Có thể là string hoặc null
     eventName: z.string().min(1, { message: "Event name is required" }), // Event name không được rỗng
     startTimeTime: z.string().min(1, "Please select a time"),
@@ -80,7 +92,9 @@ export const EventSchema = z
     }), // Kiểm tra là đối tượng Date hợp lệ
 
     // Kiểm tra ngày kết thúc đăng ký phải lớn hơn ngày bắt đầu đăng ký
-    fieldIds: z.array(z.string()),
+    fieldIds: z
+      .array(z.string())
+      .nonempty({ message: "Event field is required" }),
     price: z.coerce.number().min(0, { message: "Price is required" }),
     maxParticipants: z.coerce
       .number()
@@ -213,14 +227,6 @@ export const EventSchema = z
           code: z.ZodIssueCode.custom,
           message: "End time must be after start time.",
           path: ["eventAreas", index, "EndTime"],
-        });
-      }
-
-      if (area.Date <= data.registeredEndDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Event date must be after registered end date.",
-          path: ["eventAreas", index, "Date"],
         });
       }
     });

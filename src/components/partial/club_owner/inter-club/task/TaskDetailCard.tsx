@@ -28,17 +28,17 @@ export default function TaskDetailCard({
 }: TaskDetailCardProps) {
   const navigate = useNavigate();
   const [isCompleteDialogOpen, setIsCompleteDialogOpen] = useState(false);
-  const getStatusColor = (status: string, percentage: number) => {
+  const getStatusColor = (status: string) => {
     if (status === "COMPLETED") return "bg-green-100 text-green-800";
-    if (percentage > 0 || status === "ON_GOING")
-      return "bg-yellow-100 text-yellow-800";
+    if (status === "ON_GOING") return "bg-yellow-100 text-yellow-800";
+    if (status === "NOT_STARTED") return "bg-gray-100 text-gray-800";
     return "bg-blue-100 text-blue-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
     if (status === "COMPLETED") return "Completed";
-    if (percentage > 0 || status === "ON_GOING")
-      return `ON_GOING (${percentage}%)`;
+    if (status === "ON_GOING") return `ON_GOING (${percentage}%)`;
+    if (status === "NOT_STARTED") return "Not started";
     return "Overdue";
   };
 
@@ -108,7 +108,7 @@ export default function TaskDetailCard({
             <span
               className={cn(
                 "px-3 py-1.5 rounded-full text-sm font-medium",
-                getStatusColor(task.status, task.completionPercentage)
+                getStatusColor(task.status)
               )}
             >
               {getStatusText(task.status, task.completionPercentage)}
