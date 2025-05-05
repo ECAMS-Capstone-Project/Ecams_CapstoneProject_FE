@@ -92,7 +92,6 @@ const ClubRequirements = ({
     setConditionEvidences((prev) =>
       prev.filter((e) => e.conditionId !== conditionId)
     );
-    // reset input để có thể chọn lại file giống nhau liên tiếp
     const input = fileInputRefs.current[conditionId];
     if (input) input.value = "";
   };
@@ -109,11 +108,11 @@ const ClubRequirements = ({
               <TableRow key={condition.conditionId} className="bg-white">
                 <TableCell
                   className="font-medium text-gray-600"
-                  style={{ width: "100px" }}
+                  style={{ width: "170px" }}
                 >
                   {condition.conditionName}{" "}
                   {condition.isRequired ? (
-                    <span className="text-red-600">*</span>
+                    <span className="text-red-600 align-top">*</span>
                   ) : (
                     ""
                   )}
@@ -126,7 +125,7 @@ const ClubRequirements = ({
                 </TableCell>
                 <TableCell
                   className="font-medium text-justify text-[#2e7fa7]"
-                  style={{ width: "650px" }}
+                  style={{ width: "600px" }}
                 >
                   <DescriptionWithToggle text={condition.description} />
                 </TableCell>

@@ -80,8 +80,8 @@ export const AreaPicker: React.FC<AreaPickerProps> = ({
                   >
                     <CheckIcon
                       className={`mr-2 h-4 w-4 ${item.AreaId === area.areaId
-                          ? "opacity-100"
-                          : "opacity-0"
+                        ? "opacity-100"
+                        : "opacity-0"
                         }`}
                     />
                     {area.name}
@@ -127,7 +127,9 @@ export const DatePicker = ({ selectedDate, onDateSelect, label }: any) => {
                 onDateSelect(date);
                 setOpen(false);
               }}
-              disabled={(date) => date < new Date()}
+              disabled={(date) =>
+                date < new Date(new Date().setHours(0, 0, 0, 0))
+              }
               initialFocus
             />
           </PopoverContent>

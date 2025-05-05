@@ -32,7 +32,7 @@ export const EventDetailsTaskCard = ({
   };
 
   return (
-    <div className="relative h-[550px] rounded-xl overflow-hidden shadow-md border border-gray-200">
+    <div className="relative h-[620px] rounded-xl overflow-hidden shadow-md border border-gray-200">
       {/* Background image */}
       <img
         src="https://blog.topcv.vn/wp-content/uploads/2021/07/nmEvents_Page_Header_2903ed9c-40c1-4f6c-9a69-70bb8415295b.jpg"
@@ -174,8 +174,8 @@ export const EventDetailsTaskCard = ({
         {/* Danh sách khu vực tổ chức */}
         {selectedEvent.eventAreas && selectedEvent.eventAreas.length > 0 && (
           <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-3 text-[#136cb9] flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-[#136cb9] " /> Event Areas
+            <h3 className="text-lg font-semibold mb-3 text-white flex items-center gap-2">
+              Event Areas
             </h3>
             <div className="overflow-x-auto w-full rounded-lg border border-[#d1e7f5] bg-[#d1e7f5]">
               <table className="min-w-full">

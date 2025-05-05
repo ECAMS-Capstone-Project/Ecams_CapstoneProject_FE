@@ -412,7 +412,9 @@ export default function CreateEventTaskClub() {
                                   field.onChange(date);
                                   // setStartDate(date ?? null)
                                 }}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date) =>
+                                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                                }
                                 initialFocus
                               />
                             </PopoverContent>
