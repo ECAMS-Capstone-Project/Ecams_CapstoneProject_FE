@@ -199,8 +199,8 @@ export const TaskCreateDialog = ({
                             >
                               {field.value
                                 ? selectedEvent.clubs.find(
-                                  (club) => club.clubId === field.value
-                                )?.clubName
+                                    (club) => club.clubId === field.value
+                                  )?.clubName
                                 : "Select club"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -309,7 +309,9 @@ export const TaskCreateDialog = ({
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
+                              disabled={(date) =>
+                                date < new Date(new Date().setHours(0, 0, 0, 0))
+                              }
                               initialFocus
                             />
                           </PopoverContent>
@@ -367,7 +369,10 @@ export const TaskCreateDialog = ({
                               onSelect={field.onChange}
                               disabled={(date) => {
                                 const startDate = form.watch("startTime");
-                                return startDate ? date < new Date(startDate.setHours(0, 0, 0, 0)) : date < new Date();
+                                return startDate
+                                  ? date <
+                                      new Date(startDate.setHours(0, 0, 0, 0))
+                                  : date < new Date();
                               }}
                               initialFocus
                             />
