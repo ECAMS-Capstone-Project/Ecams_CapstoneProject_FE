@@ -59,7 +59,7 @@ const getStatusStyle = (status: string) => {
         text: "text-[#b62e2e]",
         icon: <CircleX size={12} className="text-[#b62e2e]" />,
       };
-    case "NOT_STARTED":
+    case "NOT_START":
       return {
         bg: "bg-gray-100",
         text: "text-gray-500",
@@ -163,7 +163,7 @@ export const EventColums = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[200px]">
-              {["All", "ACTIVE", "ENDED"].map((status) => (
+              {["All", "ACTIVE", "ENDED", "NOT_STARTED"].map((status) => (
                 <DropdownMenuItem
                   key={status}
                   onClick={() => {
