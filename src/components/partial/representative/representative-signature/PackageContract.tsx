@@ -23,8 +23,8 @@ import { formatPrice } from "@/lib/FormatPrice";
 import useAuth from "@/hooks/useAuth";
 
 const schema = z.object({
-  fullName: z.string().min(1, "Vui lòng nhập họ tên."),
-  signature: z.string().min(1, "Vui lòng ký trước khi xác nhận."),
+  fullName: z.string().min(1, "Please enter your full name."),
+  signature: z.string().min(1, "Please sign before confirm."),
 });
 
 const PackageContract = () => {
@@ -224,8 +224,11 @@ const PackageContract = () => {
               <b>Article 5: Contract Validity</b>
             </ListItem>
             <ListItem>
-              📅 The contract is effective from {formattedDate} and ends after 1
-              month.
+              📅 The contract is effective from {formattedDate} and ends after {selectedPlan?.duration === 1
+                ? `${selectedPlan?.duration} month`
+                : selectedPlan?.duration > 1
+                  ? `${selectedPlan?.duration} months`
+                  : "No package yet!"}
             </ListItem>
           </List>
 
