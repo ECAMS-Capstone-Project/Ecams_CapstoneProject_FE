@@ -9,9 +9,6 @@ const PendingUniversityList = React.lazy(
       "@/components/partial/admin/admin-dashboard/pending-request/PendingRequest"
     )
 );
-const ReportList = React.lazy(
-  () => import("@/components/partial/admin/admin-dashboard/report/Report")
-);
 
 import { UniversityList } from "@/api/agent/UniversityAgent";
 // import { getReportList } from "@/api/agent/ReportAgent";
@@ -24,11 +21,12 @@ import {
   StatisticSystemResponse,
 } from "@/api/admin/Statistic";
 import { formatPrice } from "@/lib/FormatPrice";
+import DashboardAdminRepRequestsPage from "./DashboardAdminRepRequestsPage";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [universityList, setUniversityList] = useState<University[]>([]);
-  const [reportList, setReportList] = useState<Report[]>([]);
+  const [, setReportList] = useState<Report[]>([]);
   const [pageNo] = useState(1);
   const [pageSize] = useState(99);
   const [statistics, setStatistics] = useState<StatisticSystemResponse>();
@@ -156,8 +154,9 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <PendingUniversityList data={universityList} />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <ReportList data={reportList} />
+            <div className="mt-6  border rounded-xl">
+              {/* <ReportList data={reportList} /> */}
+              <DashboardAdminRepRequestsPage />
             </div>
           </>
         )}
