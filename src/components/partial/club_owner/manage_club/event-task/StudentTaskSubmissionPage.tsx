@@ -8,7 +8,7 @@ import { CalendarDays, CheckCircle2, Pencil, ArrowLeft, CircleDot, UserRound } f
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
-import { EventTaskDetail } from "@/models/InterTask";
+import { EventTaskDetail, InterTask } from "@/models/InterTask";
 import { EventSubmissionTaskDetail, SubmitTaskByStudent } from "@/api/club-owner/TaskAPI";
 import toast from "react-hot-toast";
 import parse from "html-react-parser";
@@ -19,6 +19,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
     const location = useLocation();
     const taskDetail = location.state.taskDetail as EventTaskDetail;
     const submission = location.state.submission as EventSubmissionTaskDetail;
+    const bigTask = location.state?.bigTask as InterTask;
 
     const [content, setContent] = useState(submission.studentSubmission || "");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -147,7 +148,7 @@ const StudentTaskSubmissionPage: React.FC = () => {
                                 </div>
                             )}
                         </div>
-                    ) : isDeadlineOver ? (
+                    ) : (isDeadlineOver || bigTask.status.toUpperCase() == "OVERDUE" || bigTask.status.toUpperCase() == "COMPLETED") ? (
                         <div>
                             <p className="text-red-500 font-semibold">The deadline has passed. You can not submit.</p>
                             {hasFeedback && (

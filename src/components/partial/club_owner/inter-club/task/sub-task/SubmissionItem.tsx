@@ -29,7 +29,7 @@ export const SubmissionItem = ({
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
               <img
-                src={"https://res.cloudinary.com/ecams/image/upload/v1746281259/%E1%BA%A3nh_fpt_xqriyr.png"}
+                src={"https://github.com/shadcn.png"}
                 alt="avatar"
                 className="w-full h-full object-cover"
               />
@@ -58,12 +58,12 @@ export const SubmissionItem = ({
           ) : (
             <span
               className={`text-sm font-medium px-2 py-0.5 rounded-full ${submission.status === "ON_GOING"
-                  ? "text-blue-600 bg-blue-100"
-                  : submission.status === "REVIEWING"
-                    ? "text-yellow-600 bg-yellow-100"
-                    : submission.status === "COMPLETED"
-                      ? "text-green-900 bg-green-300"
-                      : "text-red-700 bg-red-200"
+                ? "text-blue-600 bg-blue-100"
+                : submission.status === "REVIEWING"
+                  ? "text-yellow-600 bg-yellow-100"
+                  : submission.status === "COMPLETED"
+                    ? "text-green-900 bg-green-300"
+                    : "text-red-700 bg-red-200"
                 }`}
             >
               {submission.status}

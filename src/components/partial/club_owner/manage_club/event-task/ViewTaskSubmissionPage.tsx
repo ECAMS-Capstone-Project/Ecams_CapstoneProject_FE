@@ -25,7 +25,7 @@ import {
   SubmissionReviewDTO,
 } from "@/api/club-owner/TaskAPI";
 import EventTaskBreadcrumb from "./EventTaskBreadcrumb";
-import { EventTaskDetail } from "@/models/InterTask";
+import { EventTaskDetail, InterTask } from "@/models/InterTask";
 import parse from "html-react-parser";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -38,6 +38,8 @@ const ViewTaskSubmissionPage: React.FC = () => {
   const location = useLocation();
   const taskDetail = location.state.taskDetail as EventTaskDetail;
   const submission = location.state.submission as EventSubmissionTaskDetail;
+  const bigTask = location.state?.bigTask as InterTask;
+
   const [feedback, setFeedback] = useState<string>(submission?.comment ?? "");
   const { user } = useAuth();
 
@@ -171,9 +173,9 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p>
                   {taskDetail?.startTime
                     ? format(
-                        new Date(taskDetail.startTime),
-                        "dd/MM/yyyy - HH:mm a"
-                      )
+                      new Date(taskDetail.startTime),
+                      "dd/MM/yyyy - HH:mm a"
+                    )
                     : "N/A"}
                 </p>
               </div>
@@ -186,9 +188,9 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <p>
                   {taskDetail?.deadline
                     ? format(
-                        new Date(taskDetail.deadline),
-                        "dd/MM/yyyy - HH:mm a"
-                      )
+                      new Date(taskDetail.deadline),
+                      "dd/MM/yyyy - HH:mm a"
+                    )
                     : "N/A"}
                 </p>
               </div>
@@ -199,7 +201,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                 <>
                   <span className="w-5 h-5 rounded-full bg-green-500 inline-block" />
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Status</p>
+                    <p className="text-sm font-medium text-gray-700 ml-2 mb-1">Status</p>
                     <span
                       className={cn(
                         "px-3 py-1.5 rounded-full text-sm font-medium",
@@ -363,6 +365,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                         type="number"
                         placeholder={`Enter score (max 10 points)`}
                         value={score}
+                        disabled={bigTask.status == "COMPLETED" || bigTask.status == "OVERDUE"}
                         onChange={(e) => {
                           const value = Number(e.target.value);
                           if (value >= 0) {
@@ -376,7 +379,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
                     </div>
                     <textarea
                       placeholder="Fill in feedback"
-                      disabled={!(isSubmitted || isAllowedToReviewAsZero)}
+                      disabled={!(isSubmitted || isAllowedToReviewAsZero) || bigTask.status == "COMPLETED" || bigTask.status == "OVERDUE"}
                       onChange={(e) => setFeedback(e.target.value)}
                       className="block w-full rounded-md border border-gray-300 p-2 text-sm"
                       rows={4}
@@ -401,7 +404,7 @@ const ViewTaskSubmissionPage: React.FC = () => {
       </Card>
 
       <div className="flex justify-end gap-3">
-        {(hasFeedback && isSubmitted) || !isSubmitted ? (
+        {(hasFeedback && isSubmitted) || !isSubmitted || bigTask.status == "COMPLETED" || bigTask.status == "OVERDUE" ? (
           <Button variant="outline" onClick={() => navigate(-1)}>
             Close
           </Button>
