@@ -94,6 +94,7 @@ export const StudentEventCheckIn = () => {
               state: {
                 previousPath: "/club/event-check-in",
                 clubEventId: clubEventId,
+                isClubOwner: true,
               },
             });
             localStorage.removeItem("redirectAfterLogin");
