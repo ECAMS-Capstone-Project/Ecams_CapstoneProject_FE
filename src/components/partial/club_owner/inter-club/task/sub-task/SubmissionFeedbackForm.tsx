@@ -30,7 +30,8 @@ export const SubmissionFeedbackForm = ({
   const isDisabled =
     submission?.status !== "REVIEWING" || // submission phải có trạng thái "REVIEWING"
     new Date() > new Date(subtask?.deadline || "") || // Kiểm tra thời gian hiện tại có vượt qua deadline của subtask
-    subtask.status === "COMPLETED";
+    subtask.status === "COMPLETED" ||
+    task.status === "COMPLETED";
 
   const handleScoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
