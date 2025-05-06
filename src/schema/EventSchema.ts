@@ -196,11 +196,18 @@ export const EventSchema = z
           const area1 = areas[i];
           const area2 = areas[j];
 
-          // Convert time strings to minutes
-          const start1 = parseInt(area1.StartTime) * 60;
-          const end1 = parseInt(area1.EndTime) * 60;
-          const start2 = parseInt(area2.StartTime) * 60;
-          const end2 = parseInt(area2.EndTime) * 60;
+          // Convert time strings to minutes (including both hours and minutes)
+          const [start1Hour, start1Minute] =
+            area1.StartTime.split(":").map(Number);
+          const [end1Hour, end1Minute] = area1.EndTime.split(":").map(Number);
+          const [start2Hour, start2Minute] =
+            area2.StartTime.split(":").map(Number);
+          const [end2Hour, end2Minute] = area2.EndTime.split(":").map(Number);
+
+          const start1 = start1Hour * 60 + start1Minute;
+          const end1 = end1Hour * 60 + end1Minute;
+          const start2 = start2Hour * 60 + start2Minute;
+          const end2 = end2Hour * 60 + end2Minute;
 
           // Check for time overlap
           if (
@@ -209,7 +216,7 @@ export const EventSchema = z
           ) {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
-              message: `Time slots overlap between 2 Area`,
+              message: "Time slots overlap between 2 Area",
               path: ["eventAreas", "_error"],
             });
             return;
@@ -219,8 +226,11 @@ export const EventSchema = z
     });
 
     data.eventAreas.forEach((area, index) => {
-      const start = parseInt(area.StartTime) * 60;
-      const end = parseInt(area.EndTime) * 60;
+      const [startHour, startMinute] = area.StartTime.split(":").map(Number);
+      const [endHour, endMinute] = area.EndTime.split(":").map(Number);
+
+      const start = startHour * 60 + startMinute;
+      const end = endHour * 60 + endMinute;
 
       if (end <= start) {
         ctx.addIssue({

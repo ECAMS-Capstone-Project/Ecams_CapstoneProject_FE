@@ -174,7 +174,7 @@ export const SubmissionDetailDialog = ({
           <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          {submission.status == "REVIEWING" && (
+          {submission.status == "REVIEWING" && task.status !== "COMPLETED" && (
             <Button
               onClick={onSaveFeedback}
               disabled={isSubmitting}

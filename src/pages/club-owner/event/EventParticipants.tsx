@@ -10,6 +10,7 @@ import { AnimatedGradientText } from "@/components/magicui/animated-gradient-tex
 import ParticipantsHeader from "@/components/partial/staff/staff-events/event-participants/ParticipantsHeader";
 import { ClubEventFeedback } from "./EventFeedback";
 import { Separator } from "@/components/ui/separator";
+import ParticipantPagination from "@/components/partial/staff/staff-events/event-participants/ParticipantPagination";
 
 interface props {
   eventId: string;
@@ -22,8 +23,16 @@ const EventParticipants = ({ eventId }: props) => {
   );
   const { state } = useLocation();
   const eventName = state?.eventName;
-  const { participants } = useEventDetail(eventId, 10, 1);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(6);
+  const { participants, totalPages } = useEventDetail(
+    eventId,
+    searchTerm ? 999 : pageSize,
+    currentPage
+  );
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
   // Filter participants list
   const filteredParticipants = participants.filter((participant) => {
     const matchesSearch =
@@ -72,6 +81,11 @@ const EventParticipants = ({ eventId }: props) => {
                   onStatusChange={setStatusFilter}
                 />
                 <ParticipantsList participants={filteredParticipants} />
+                <ParticipantPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </>
             ) : (
               <div className="flex justify-center items-center h-full mt-10">
