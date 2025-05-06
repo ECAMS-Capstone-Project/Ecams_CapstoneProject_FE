@@ -175,7 +175,7 @@ export const EventDetail: React.FC = () => {
                           {format(new Date(area.date), "P")}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {area.startTime}h - {area.endTime}h
+                          {area.startTime} - {area.endTime}
                         </td>
                       </tr>
                     ))}

@@ -93,7 +93,7 @@ export interface InterClubEventDTO {
     | "WAITING"
     | "ENDED"
     | "CANCELED"
-    | "NOT_STARTED";
+    | "NOT_START";
   startDate: Date;
   endDate: Date;
 }

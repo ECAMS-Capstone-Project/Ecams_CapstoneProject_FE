@@ -88,7 +88,9 @@ export const newSubtaskSchema = z.object({
     .date()
     .min(new Date(new Date().setHours(0, 0, 0, 0)), "Start date is required"),
   startTimeTime: z.string().min(1, "Start time is required"),
-  deadline: z.date().min(new Date(), "Deadline is required"),
+  deadline: z
+    .date()
+    .min(new Date(new Date().setHours(0, 0, 0, 0)), "Deadline is required"),
   deadlineTime: z.string().min(1, "Deadline is required"),
   priority: z.string().min(1, "Priority is required"),
   assignedMemberIds: z.array(z.string()).optional(),

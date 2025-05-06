@@ -18,7 +18,25 @@ interface EventDetailsCardProps {
   selectedEvent: InterClubEventDTO;
   currentClub: EventClubDTO | ClubResponse;
 }
+const convertToDate = (time: string): Date => {
+  if (time.length === 2 || time.length === 1) {
+    time = `${time}:00`;
+  }
 
+  const [hours, minutes] = time.split(":").map(Number); // Tách giờ và phút
+  const now = new Date(); // Lấy ngày hiện tại
+  now.setHours(hours, minutes, 0, 0); // Thiết lập giờ và phút vào ngày hiện tại
+  return now;
+};
+const getFormattedTime = (time: string) => {
+  const date = convertToDate(time); // Chuyển đổi sang đối tượng Date nếu là chuỗi
+
+  if (isNaN(date.getTime())) {
+    // Nếu không phải ngày hợp lệ, trả về chuỗi mặc định hoặc xử lý theo yêu cầu
+    return "Invalid time";
+  }
+  return format(date, "HH:mm");
+};
 export const EventDetailsCard = ({
   selectedEvent,
   currentClub,
@@ -270,7 +288,8 @@ export const EventDetailsCard = ({
                       {format(new Date(area.date), "dd/MM/yyyy")}
                     </td>
                     <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
-                      {area.startTime}h - {area.endTime}h
+                      {getFormattedTime(area.startTime)} -{" "}
+                      {getFormattedTime(area.endTime)}
                     </td>
                   </tr>
                 ))}

@@ -205,7 +205,7 @@ export const EventDetailsTaskCard = ({
                         {format(new Date(area.date), "dd/MM/yyyy")}
                       </td>
                       <td className="px-5 py-3 whitespace-nowrap text-base text-gray-700">
-                        {area.startTime}h - {area.endTime}h
+                        {area.startTime} - {area.endTime}
                       </td>
                     </tr>
                   ))}
