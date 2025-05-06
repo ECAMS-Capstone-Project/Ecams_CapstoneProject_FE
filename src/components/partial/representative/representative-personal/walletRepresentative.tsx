@@ -12,18 +12,19 @@ import { Contract } from "@/models/Contract";
 import ConfirmDialog from "./confirmDialog";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
-import { format } from "date-fns";
+import { format, differenceInMonths } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
+import ConfirmCancelDialog from "./confirmCancel";
 
 const WalletRepresentative = () => {
   const { user } = useAuth();
 
   // State cho package và contract
   const [curPackage, setCurPackage] = useState<Package | null>(null);
-  const [, setContractCurrent] = useState<Contract | null>(null);
+  const [contractCurrent, setContractCurrent] = useState<Contract | null>(null);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,7 +33,7 @@ const WalletRepresentative = () => {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState<boolean>(false);
-  // const [openCancel, setOpenCancel] = useState<boolean>(false);
+  const [openCancel, setOpenCancel] = useState<boolean>(false);
 
   const loadData = async () => {
     if (!user) return;
@@ -55,6 +56,26 @@ const WalletRepresentative = () => {
   useEffect(() => {
     loadData();
   }, [user]);
+
+  const canCancelPackage = () => {
+    if (!curPackage?.endDate || !curPackage?.duration) return false;
+    const endDate = new Date(curPackage.endDate);
+    const startDate = new Date(endDate);
+    startDate.setMonth(startDate.getMonth() - curPackage.duration);
+    const monthsUsed = differenceInMonths(new Date(), startDate);
+    return monthsUsed >= 1;
+  };
+
+  const canUpgradePackage = () => {
+    if (!curPackage?.endDate || !curPackage?.duration) return false;
+    const endDate = new Date(curPackage.endDate);
+    const startDate = new Date(endDate);
+    startDate.setMonth(startDate.getMonth() - curPackage.duration);
+    const monthsUsed = differenceInMonths(new Date(), startDate);
+    const oneThirdDuration = Math.ceil(curPackage.duration / 3);
+    const remainingMonths = curPackage.duration - monthsUsed;
+    return remainingMonths <= oneThirdDuration;
+  };
 
   if (loading) {
     return (
@@ -130,10 +151,11 @@ const WalletRepresentative = () => {
                     <Typography mb={2}>
                       🔘 <b>Package Status:</b>{" "}
                       <span
-                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${curPackage.status
-                          ? "bg-green-100 text-green-600"
-                          : "bg-red-100 text-red-600"
-                          }`}
+                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${
+                          curPackage.status
+                            ? "bg-green-100 text-green-600"
+                            : "bg-red-100 text-red-600"
+                        }`}
                       >
                         {curPackage.status ? "Active" : "Inactive"}
                       </span>
@@ -189,14 +211,23 @@ const WalletRepresentative = () => {
               </DialogContent>
             </Dialog>
 
-            {/* <Button
+            <Button
               className="block mt-4 hover:scale-105"
               variant="contained"
-              sx={{ background: "#f24141", textTransform: "none" }}
-              onClick={() => setOpenCancel(true)}
+              sx={{
+                background: canCancelPackage() ? "#f24141" : "#cccccc",
+                textTransform: "none",
+                cursor: canCancelPackage() ? "pointer" : "not-allowed",
+              }}
+              onClick={() => {
+                if (curPackage?.endDate && canCancelPackage()) {
+                  setOpenCancel(true);
+                }
+              }}
+              disabled={!canCancelPackage()}
             >
               Cancel package
-            </Button> */}
+            </Button>
             <Button
               className="block mt-4 hover:scale-105"
               sx={{
@@ -211,11 +242,19 @@ const WalletRepresentative = () => {
             <Button
               className="block mt-4 hover:scale-105"
               sx={{
-                background: "#4CAF50",
+                background: canUpgradePackage() ? "#4CAF50" : "#cccccc",
                 textTransform: "none",
+                cursor: canUpgradePackage() ? "pointer" : "not-allowed",
               }}
               variant="contained"
-              onClick={() => navigate('/view-package-update', { state: { curPackage: curPackage } })}
+              onClick={() => {
+                if (canUpgradePackage()) {
+                  navigate("/view-package-update", {
+                    state: { curPackage: curPackage },
+                  });
+                }
+              }}
+              disabled={!canUpgradePackage()}
             >
               Upgrade package
             </Button>
@@ -243,11 +282,11 @@ const WalletRepresentative = () => {
       <ConfirmDialog open={open} setOpen={setOpen} />
 
       {/* Dialog Cancel */}
-      {/* <ConfirmCancelDialog
+      <ConfirmCancelDialog
         open={openCancel}
         setOpen={setOpenCancel}
         contract={contractCurrent}
-      /> */}
+      />
     </Container>
   );
 };
