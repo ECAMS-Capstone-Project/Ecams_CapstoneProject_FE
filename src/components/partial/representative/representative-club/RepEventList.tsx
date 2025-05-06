@@ -28,6 +28,7 @@ export default function RepEventList({ clubId, isClubOwner }: Props) {
   const tabOptions = [
     { label: "Active", value: "ACTIVE" },
     ...(isClubOwner ? [{ label: "Pending", value: "PENDING" }] : []),
+    { label: "Not Started", value: "NOT_START" },
     { label: "Ended", value: "ENDED" },
   ];
 
@@ -67,6 +68,10 @@ export default function RepEventList({ clubId, isClubOwner }: Props) {
       label: "Pending",
     },
     ON_GOING: { className: "border-blue-600 text-blue-600", label: "On Going" },
+    NOT_START: {
+      className: "border-gray-500 text-black",
+      label: "Not started",
+    },
   };
 
   return (
@@ -131,7 +136,7 @@ export default function RepEventList({ clubId, isClubOwner }: Props) {
                         },
                       });
                   }}
-                  className="flex items-center gap-4 rounded-3xl bg-white shadow-md border hover:scale-105 transition cursor-pointer no-underline"
+                  className="flex items-center gap-4 rounded-3xl bg-white shadow-md border hover:scale-[1.025] transition cursor-pointer no-underline"
                   style={{ height: "105px", marginBottom: "15px" }}
                 >
                   <div

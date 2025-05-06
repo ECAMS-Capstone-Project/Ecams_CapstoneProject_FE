@@ -72,7 +72,7 @@ const SliderContainer = styled(Box)({
 });
 
 interface props {
-  curPackage: Package
+  curPackage: Package;
 }
 
 const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
@@ -86,7 +86,10 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
     const loadPackage = async () => {
       try {
         const packageData = await PackageList3(100, 1);
-        const packageList = packageData.data?.data.filter((pkg) => pkg.status == true && pkg.price > curPackage.price) || [];
+        const packageList =
+          packageData.data?.data.filter(
+            (pkg) => pkg.status == true && pkg.price > curPackage.price
+          ) || [];
         setPackages(packageList);
       } catch (error: any) {
         setError(error.message);
@@ -145,8 +148,9 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
           </Typography>
 
           <Typography variant="h6" color="#6C6A8A" maxWidth={600} mx="auto">
-            Flexible pricing to match your needs. Pick a plan that fits your
-            goals and start unlocking premium features today.
+            {packages.length > 0
+              ? "Flexible pricing to match your needs. Pick a plan that fits your goals and start unlocking premium features today."
+              : "You have currently purchased the highest plan available in the system. If you wish to upgrade, please contact us."}
           </Typography>
         </Box>
 
@@ -156,72 +160,71 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
         {!loading && !error && packages.length > 0 && (
           <SliderContainer>
             <Slider {...settings}>
-              {packages
-                .map((plan, index) => {
-                  const isPopular = index === popularIndex;
-                  return (
-                    <Box key={`${plan.packageName}-${index}`} p={2}>
-                      <StyledCard isPopular={isPopular}>
-                        <CardContent
-                          sx={{
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
+              {packages.map((plan, index) => {
+                const isPopular = index === popularIndex;
+                return (
+                  <Box key={`${plan.packageName}-${index}`} p={2}>
+                    <StyledCard isPopular={isPopular}>
+                      <CardContent
+                        sx={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        {isPopular && (
+                          <Chip
+                            label="MOST POPULAR"
+                            color="secondary"
+                            size="small"
+                            sx={{ alignSelf: "flex-end", mb: 2 }}
+                          />
+                        )}
+                        <Typography
+                          variant="h6"
+                          fontWeight={"600"}
+                          component="h2"
+                          gutterBottom
                         >
-                          {isPopular && (
-                            <Chip
-                              label="MOST POPULAR"
-                              color="secondary"
-                              size="small"
-                              sx={{ alignSelf: "flex-end", mb: 2 }}
-                            />
-                          )}
-                          <Typography
-                            variant="h6"
-                            fontWeight={"600"}
-                            component="h2"
-                            gutterBottom
-                          >
-                            {formatPrice(plan.price)}
-                            <Typography variant="subtitle1" component="span">
-                              / {plan.duration} months
-                            </Typography>
+                          {formatPrice(plan.price)}
+                          <Typography variant="subtitle1" component="span">
+                            / {plan.duration} months
                           </Typography>
-                          <Typography variant="h5" gutterBottom>
-                            {plan.packageName}
-                          </Typography>
-                          <Typography variant="body1">
-                            {plan.description}
-                          </Typography>
-                          <List sx={{ flexGrow: 1 }}>
-                            {plan.packageDetails.map((detail, i) => (
-                              <ListItem
-                                key={detail.packageType + "-" + i}
-                                sx={{ padding: "4px 0" }}
-                              >
-                                <ListItemIcon sx={{ minWidth: 36 }}>
-                                  <CheckIcon sx={{ color: "#BB6BD9" }} />
-                                </ListItemIcon>
-                                <ListItemText
-                                  primary={`${detail.packageType}: ${detail.value}`}
-                                />
-                              </ListItem>
-                            ))}
-                          </List>
-                          <StyledButton
-                            onClick={() => handleClick(plan)}
-                            isPopular={isPopular}
-                            variant="contained"
-                            fullWidth
-                          >
-                            Choose plan
-                          </StyledButton>
-                        </CardContent>
-                      </StyledCard>
-                    </Box>
-                  );
-                })}
+                        </Typography>
+                        <Typography variant="h5" gutterBottom>
+                          {plan.packageName}
+                        </Typography>
+                        <Typography variant="body1">
+                          {plan.description}
+                        </Typography>
+                        <List sx={{ flexGrow: 1 }}>
+                          {plan.packageDetails.map((detail, i) => (
+                            <ListItem
+                              key={detail.packageType + "-" + i}
+                              sx={{ padding: "4px 0" }}
+                            >
+                              <ListItemIcon sx={{ minWidth: 36 }}>
+                                <CheckIcon sx={{ color: "#BB6BD9" }} />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={`${detail.packageType}: ${detail.value}`}
+                              />
+                            </ListItem>
+                          ))}
+                        </List>
+                        <StyledButton
+                          onClick={() => handleClick(plan)}
+                          isPopular={isPopular}
+                          variant="contained"
+                          fullWidth
+                        >
+                          Choose plan
+                        </StyledButton>
+                      </CardContent>
+                    </StyledCard>
+                  </Box>
+                );
+              })}
             </Slider>
           </SliderContainer>
         )}

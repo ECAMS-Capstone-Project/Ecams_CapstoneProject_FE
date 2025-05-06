@@ -107,7 +107,7 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                       <FormItem>
                         <FormLabel>Bank's Name</FormLabel>
                         <FormControl>
-                          <Input type="text" {...field} />
+                          <Input type="text" {...field} readOnly />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -131,6 +131,7 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                               )}
                               {...(field ?? "")}
                               placeholder="Enter API Key"
+                              readOnly
                             />
                             <Button
                               type="button"
@@ -170,6 +171,7 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                               )}
                               {...(field ?? "")}
                               placeholder="Enter Client ID"
+                              readOnly
                             />
                             <Button
                               type="button"
@@ -200,17 +202,22 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                         <FormLabel>CheckSumKey</FormLabel>
                         <FormControl>
                           <div className="relative rounded-md">
-                            <input
+                            <Input
                               type={
                                 passwordVisibility.checkSumKey
                                   ? "text"
                                   : "password"
                               }
                               className={cn(
-                                "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                                "flex w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+                                passwordVisibility.checkSumKey
+                                  ? "h-10"
+                                  : "h-10",
+                                "pr-8 overflow-hidden word-wrap break-word" // Thêm khoảng trống bên phải để tạo không gian cho biểu tượng con mắt
                               )}
                               {...field}
                               placeholder="Enter CheckSumKey"
+                              readOnly
                             />
                             <Button
                               type="button"
@@ -233,6 +240,7 @@ export const OnlyViewWalletDialog: React.FC<WalletDialogProps> = ({
                       </FormItem>
                     )}
                   />
+
                   {/* 
                     <FormField
                       control={form.control}
