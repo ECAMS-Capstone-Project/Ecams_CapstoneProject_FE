@@ -34,21 +34,21 @@ export const StudentEventCheckIn = () => {
   const [userId, setUserId] = useState("");
   const [eventId, setEventId] = useState("");
   const [canCheckIn, setCanCheckIn] = useState<boolean | null>(null);
-
+  const [clubEventId, setClubEventId] = useState("");
   const navigate = useNavigate();
   useEffect(() => {
     // Lấy URL hiện tại của trang
     const urlParams = new URLSearchParams(window.location.search);
     const user = urlParams.get("userId");
     const event = urlParams.get("eventId");
-
-    if (user && event) {
+    const clubEventID = urlParams.get("clubEventId");
+    if (user && event && clubEventID) {
       setUserId(user);
       setEventId(event);
-
+      setClubEventId(clubEventID);
       // Nếu chưa đăng nhập, lưu URL hiện tại và redirect đến trang login
       if (!isAuthenticated) {
-        const currentPath = `/club/event-check-in?userId=${user}&eventId=${event}`;
+        const currentPath = `/club/event-check-in?userId=${user}&eventId=${event}&clubEventId=${clubEventID}`;
         localStorage.setItem("redirectAfterLogin", currentPath);
         navigate("/login");
         return;
@@ -93,6 +93,7 @@ export const StudentEventCheckIn = () => {
             navigate(`/club/event-task/${eventId}`, {
               state: {
                 previousPath: "/club/event-check-in",
+                clubEventId: clubEventId,
               },
             });
             localStorage.removeItem("redirectAfterLogin");
@@ -124,8 +125,8 @@ export const StudentEventCheckIn = () => {
       </div>
 
       {checkInInfo?.data?.startDate &&
-        checkInInfo?.data?.endDate &&
-        new Date() < new Date(checkInInfo.data.startDate) ? (
+      checkInInfo?.data?.endDate &&
+      new Date() < new Date(checkInInfo.data.startDate) ? (
         <div className="flex justify-center items-center  h-full mt-20">
           <AnimatedGradientText>
             <span className="text-center inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold">
@@ -226,9 +227,9 @@ export const StudentEventCheckIn = () => {
                         </span>
                         <span className="text-xs sm:text-sm">
                           {checkInInfo?.data?.price &&
-                            checkInInfo?.data?.price > 0
+                          checkInInfo?.data?.price > 0
                             ? checkInInfo?.data?.price.toLocaleString("vi-VN") +
-                            " VND"
+                              " VND"
                             : "Free"}
                         </span>
                       </div>
