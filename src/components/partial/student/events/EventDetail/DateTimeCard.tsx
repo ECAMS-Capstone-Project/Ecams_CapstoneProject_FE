@@ -36,6 +36,22 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
   const isRequestRefund =
     event.eventRegistrations?.find((student) => student.userId == user?.userId)
       ?.refundInforStatus === "UPDATED";
+  const isNotYet =
+    event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
+      ?.refundInforStatus === "NOT_YET";
+
+  const isRefunded =
+    event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
+      ?.refundStatus === "REFUNDED";
+
+  const isRefundPending =
+    event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
+      ?.refundStatus === "PENDING";
+
+  console.log("isRequestRefund", isRequestRefund);
+  console.log("isNotYet", isNotYet);
+  console.log("isRefunded", isRefunded);
+  console.log("isRefundPending", isRefundPending);
 
   return (
     <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/5">
@@ -81,41 +97,33 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
               You have joined this event!
             </Button>
           ))}
-        {event.status.toLowerCase() == "canceled" && (
+        {event.status.toLowerCase() === "canceled" && isNotYet && (
           <Button
-            className={`w-full p-6 mt-5 font-light text-md ${
-              event.eventRegistrations?.find(
-                (user2) => user2.userId === user?.userId
-              )?.refundStatus === "REFUNDED"
-                ? "inline-flex items-center gap-2 px-4 py-4 bg-indigo-100 text-indigo-800 rounded-full hover:bg-indigo-200 transition-colors duration-200 shadow-sm"
-                : event.eventRegistrations?.find(
-                    (user2) => user2.userId === user?.userId
-                  )?.refundStatus === "PENDING"
-                ? " bg-red-500 text-white hover:bg-red-600"
-                : "w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white"
-            }  `}
+            className="w-full p-6 mt-5 font-light text-md bg-red-500 text-white hover:bg-red-600"
             onClick={() => setIsRefundPopupOpen(true)}
           >
-            {isRequestRefund &&
-            event.eventRegistrations?.find(
-              (user2) => user2.userId === user?.userId
-            )?.refundStatus == "PENDING" ? (
-              "Your refund is pending!"
-            ) : isRequestRefund &&
-              event.eventRegistrations?.find(
-                (user2) => user2.userId === user?.userId
-              )?.refundStatus === "REFUNDED" ? (
+            Request refund
+          </Button>
+        )}
+        {event.status.toLowerCase() === "canceled" &&
+          isRequestRefund &&
+          isRefundPending && (
+            <Button className="w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white">
+              Your refund is pending!
+            </Button>
+          )}
+        {event.status.toLowerCase() === "canceled" &&
+          isRequestRefund &&
+          isRefunded && (
+            <Button className="w-full p-5 mt-2 font-light text-md inline-flex items-center gap-2  bg-indigo-100 text-indigo-800 rounded-full hover:bg-indigo-200 transition-colors duration-200 shadow-sm">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-indigo-200 rounded-full flex items-center justify-center">
                   <ArrowLeftCircle className="w-5 h-5 text-indigo-700" />
                 </div>
                 <span className="font-medium">Refunded</span>
               </div>
-            ) : (
-              "Request Refund"
-            )}
-          </Button>
-        )}
+            </Button>
+          )}
       </div>
 
       <RefundFormPopup

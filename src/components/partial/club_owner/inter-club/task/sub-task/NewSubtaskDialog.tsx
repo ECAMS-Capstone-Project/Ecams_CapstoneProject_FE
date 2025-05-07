@@ -257,6 +257,7 @@ export const NewSubtaskDialog = ({
 
     try {
       onSubmit(newSubtask);
+      form.reset();
     } catch (error) {
       // Giữ dialog mở khi có lỗi
       console.error("Error submitting subtask:", error);

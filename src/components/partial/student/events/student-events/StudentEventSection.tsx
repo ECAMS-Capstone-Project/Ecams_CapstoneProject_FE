@@ -1,7 +1,7 @@
 import { MagicCard } from "@/components/magicui/magic-card";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { CalendarDays, SearchXIcon } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import LoadingAnimation from "@/components/ui/loading";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
@@ -25,11 +25,32 @@ export const StudentEventSection = () => {
     event.eventName.toLowerCase().includes(search.toLowerCase())
   );
 
+  const renderEmptyState = (message: string) => (
+    <>
+      <div className="flex flex-col justify-center items-center h-64 space-y-4">
+        <img
+          src="https://img.freepik.com/premium-vector/online-events-text-smartphone-screen-corporate-party-meeting-friends-colleagues_501813-11.jpg?w=1800" // Placeholder image, thay bằng hình sự kiện dễ thương của bạn
+          alt="Cute Event Placeholder"
+          className=" h-44 w-44"
+        />
+        <AnimatedGradientText>
+          <span
+            className={
+              "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
+            }
+          >
+            {message}
+          </span>
+        </AnimatedGradientText>
+        <p className="text-indigo-300">Try adjusting your search or filters</p>
+      </div>
+    </>
+  );
+
   return (
     <>
       <HeroSection />
       {/* New Statistics Section */}
-
       <EventStatistics events={events} />
 
       <section className="py-12 container mx-auto px-8">
@@ -56,33 +77,9 @@ export const StudentEventSection = () => {
             <LoadingAnimation />
           </div>
         ) : !isLoading && events.length && filteredEvents.length === 0 ? (
-          <div className="flex flex-col justify-center items-center h-64 space-y-4">
-            <SearchXIcon size={48} className="text-gray-400" />
-            <AnimatedGradientText>
-              <span
-                className={
-                  "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-                }
-              >
-                No event found!
-              </span>
-            </AnimatedGradientText>
-            <p className="text-gray-500">
-              Try adjusting your search or filters
-            </p>
-          </div>
+          renderEmptyState("No event found!")
         ) : !isLoading && events.length === 0 ? (
-          <div className="flex justify-center items-center h-full mt-10">
-            <AnimatedGradientText>
-              <span
-                className={
-                  "inline animate-gradient bg-gradient-to-r from-[#136CB5] via-[#6A5ACD] to-[#49BBBD] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-4xl text-bold"
-                }
-              >
-                You have not registered for any event yet!
-              </span>
-            </AnimatedGradientText>
-          </div>
+          renderEmptyState("You have not registered for any event yet!")
         ) : (
           <>
             <Tabs defaultValue="event-upcoming">
@@ -96,11 +93,17 @@ export const StudentEventSection = () => {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="event-upcoming">
-                <div className="grid md:grid-cols-3 gap-7 w-full">
-                  {(search ? filteredEvents : events)
-                    .filter((event: EventSchedule) => event.status === "ACTIVE")
-                    .map((event: EventSchedule, index: number) => (
-                      <>
+                {events.filter(
+                  (event: EventSchedule) => event.status === "ACTIVE"
+                ).length === 0 ? (
+                  renderEmptyState("No upcoming events found!")
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-7 w-full">
+                    {(search ? filteredEvents : events)
+                      .filter(
+                        (event: EventSchedule) => event.status === "ACTIVE"
+                      )
+                      .map((event: EventSchedule, index: number) => (
                         <MagicCard
                           key={index}
                           className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
@@ -166,16 +169,23 @@ export const StudentEventSection = () => {
                             </div>
                           </div>
                         </MagicCard>
-                      </>
-                    ))}
-                </div>
+                      ))}
+                  </div>
+                )}
               </TabsContent>
+
               <TabsContent value="event-completed">
-                <div className="grid md:grid-cols-3 gap-7 w-full">
-                  {(search ? filteredEvents : events)
-                    .filter((event: EventSchedule) => event.status === "ENDED")
-                    .map((event: EventSchedule, index: number) => (
-                      <>
+                {events.filter(
+                  (event: EventSchedule) => event.status === "ENDED"
+                ).length === 0 ? (
+                  renderEmptyState("No completed events found!")
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-7 w-full">
+                    {(search ? filteredEvents : events)
+                      .filter(
+                        (event: EventSchedule) => event.status === "ENDED"
+                      )
+                      .map((event: EventSchedule, index: number) => (
                         <MagicCard
                           key={index}
                           className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
@@ -241,18 +251,23 @@ export const StudentEventSection = () => {
                             </div>
                           </div>
                         </MagicCard>
-                      </>
-                    ))}
-                </div>
+                      ))}
+                  </div>
+                )}
               </TabsContent>
+
               <TabsContent value="event-cancelled">
-                <div className="grid md:grid-cols-3 gap-7 w-full">
-                  {(search ? filteredEvents : events)
-                    .filter(
-                      (event: EventSchedule) => event.status === "CANCELED"
-                    )
-                    .map((event: EventSchedule, index: number) => (
-                      <>
+                {events.filter(
+                  (event: EventSchedule) => event.status === "CANCELED"
+                ).length === 0 ? (
+                  renderEmptyState("No cancelled events found!")
+                ) : (
+                  <div className="grid md:grid-cols-3 gap-7 w-full">
+                    {(search ? filteredEvents : events)
+                      .filter(
+                        (event: EventSchedule) => event.status === "CANCELED"
+                      )
+                      .map((event: EventSchedule, index: number) => (
                         <MagicCard
                           key={index}
                           className="cursor-pointer overflow-hidden rounded-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
@@ -318,9 +333,9 @@ export const StudentEventSection = () => {
                             </div>
                           </div>
                         </MagicCard>
-                      </>
-                    ))}
-                </div>
+                      ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </>

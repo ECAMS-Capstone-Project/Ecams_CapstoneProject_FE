@@ -54,7 +54,7 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
     EvidenceRegistration: "",
   });
   const [selectedMethod, setSelectedMethod] = useState<"bank" | "qr" | null>(
-    null
+    "qr"
   );
   const { user } = useAuth();
   const formRef = useRef<HTMLDivElement | null>(null);

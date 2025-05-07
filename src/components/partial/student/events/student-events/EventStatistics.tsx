@@ -19,7 +19,7 @@ export const EventStatistics = ({ events }: EventProps) => {
         <MagicCard className="p-6 text-center" gradientColor="#E8F4FF">
           <Clock className="w-8 h-8 mx-auto mb-4 text-[#49BBBD]" />
           <h3 className="text-2xl font-bold text-gray-800">
-            {events.filter((e) => new Date(e.endDate) > new Date()).length}
+            {events.filter((events) => events.status == "ACTIVE").length}
           </h3>
           <p className="text-gray-600">Upcoming Events</p>
         </MagicCard>
@@ -27,7 +27,7 @@ export const EventStatistics = ({ events }: EventProps) => {
         <MagicCard className="p-6 text-center" gradientColor="#E8F4FF">
           <Users2 className="w-8 h-8 mx-auto mb-4 text-[#49BBBD]" />
           <h3 className="text-2xl font-bold text-gray-800">
-            {events.filter((e) => new Date(e.endDate) < new Date()).length}
+            {events.filter((events) => events.status == "ENDED").length}
           </h3>
           <p className="text-gray-600">Completed Events</p>
         </MagicCard>
