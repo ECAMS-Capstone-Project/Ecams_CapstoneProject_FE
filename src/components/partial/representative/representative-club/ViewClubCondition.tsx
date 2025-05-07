@@ -125,7 +125,7 @@ export function ClubConditionView({ clubId, isClubOwner }: Props) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {clubCondition &&
-              clubCondition.map((c) => (
+              clubCondition?.sort((a, b) => (b.isRequired ? 1 : 0) - (a.isRequired ? 1 : 0)).map((c) => (
                 <Card
                   key={c.conditionId}
                   className="p-4 border shadow-md hover:shadow-lg cursor-pointer duration-200 overflow-hidden rounded-lg transition-transform hover:scale-105"

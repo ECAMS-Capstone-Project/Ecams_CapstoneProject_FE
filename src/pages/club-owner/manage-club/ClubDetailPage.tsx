@@ -141,38 +141,6 @@ export default function ClubDetailPage() {
                             </span>
                         </div>
                     </div>
-
-                    {/* Social icons */}
-                    <div className="flex space-x-4">
-                        <button className="bg-blue-600 p-3 rounded-full hover:bg-blue-700 transition duration-300">
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/1024px-Facebook_f_logo_%282019%29.svg.png"
-                                alt="Facebook"
-                                className="w-5 h-5"
-                            />
-                        </button>
-                        <button className="bg-green-600 p-3 rounded-full hover:bg-green-700 transition duration-300">
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-                                alt="WhatsApp"
-                                className="w-5 h-5"
-                            />
-                        </button>
-                        <button className="bg-blue-800 p-3 rounded-full hover:bg-blue-900 transition duration-300">
-                            <img
-                                src="https://img.icons8.com/?size=100&id=xuvGCOXi8Wyg&format=png&color=000000"
-                                alt="LinkedIn"
-                                className="w-5 h-5"
-                            />
-                        </button>
-                        <button className="bg-gray-400 p-3 rounded-full hover:bg-gray-500 transition duration-300">
-                            <img
-                                src="https://img.icons8.com/?size=100&id=phOKFKYpe00C&format=png&color=000000"
-                                alt="Twitter"
-                                className="w-5 h-5"
-                            />
-                        </button>
-                    </div>
                 </div>
             </div>
 

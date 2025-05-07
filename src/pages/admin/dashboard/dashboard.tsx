@@ -144,9 +144,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Sử dụng Suspense cho Lazy Loading */}
       <React.Suspense fallback={<LoadingAnimation />}>
-        {/* Hiển thị spinner nếu API chưa tải xong */}
         {isLoading ? (
           <LoadingAnimation />
         ) : (
