@@ -131,7 +131,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {statistics?.numOfContracts ? `${statistics?.numOfContracts} contract` : `${statistics?.numOfContracts} contracts`}
+              {statistics?.numOfContracts ? (statistics.numOfContracts <= 1 ? `${statistics?.numOfContracts} contract` : `${statistics?.numOfContracts} contracts`) : `N/A`}
             </div>
           </CardContent>
         </Card>
