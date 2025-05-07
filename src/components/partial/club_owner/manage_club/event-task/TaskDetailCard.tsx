@@ -43,6 +43,22 @@ const TaskDetailCard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { updateInterEventTask3 } = useInterTask();
+  const getStatusColor = (status: string) => {
+    if (status === "COMPLETED")
+      return "bg-green-100 text-green-800";
+    if (status === "ON_GOING")
+      return "bg-yellow-100 text-yellow-800";
+    if (status === "NOT_STARTED") return "bg-gray-200 text-gray-800";
+    return "bg-red-100 text-red-800";
+  };
+
+  const getStatusText = (status: string) => {
+    if (status === "COMPLETED") return "Completed";
+    if (status === "ON_GOING")
+      return `ON_GOING`;
+    if (status === "NOT_STARTED") return "Not started";
+    return "Overdue";
+  };
 
   const [flag, setFlag] = useState<boolean>(false);
 
@@ -122,13 +138,13 @@ const TaskDetailCard = () => {
           toast.error("This task has not started");
         } else {
           navigate("/club/task-submission-student", {
-            state: { taskDetail, submission: data },
+            state: { taskDetail, submission: data, bigTask: bigTask },
           });
         }
       }
     } else if (isClubOwner) {
       navigate("/club/task-submission", {
-        state: { taskDetail, submission: data },
+        state: { taskDetail, submission: data, bigTask: bigTask },
       });
     } else if (isUserSubmission) {
       if (
@@ -141,7 +157,7 @@ const TaskDetailCard = () => {
           toast.error("Task has not started yet");
         } else {
           navigate("/club/task-submission-student", {
-            state: { taskDetail, submission: data },
+            state: { taskDetail, submission: data, bigTask: bigTask },
           });
         }
       }
@@ -236,17 +252,11 @@ const TaskDetailCard = () => {
                   <div>
                     <p className="text-sm font-bold text-gray-700 ml-1">Status</p>
                     <p
-                      className={`text-sm font-medium px-2 py-0.5 rounded-full ${taskDetail.status === "ON_GOING"
-                        ? "text-blue-600 bg-blue-100"
-                        : taskDetail.status === "REVIEWING"
-                          ? "text-yellow-600 bg-yellow-100"
-                          : taskDetail.status === "COMPLETED"
-                            ? "text-green-900 bg-green-300"
-                            : "text-blue-600 bg-blue-200"
-                        }`}
+                      className={`text-sm font-medium px-2 py-0.5 rounded-full ${getStatusColor(taskDetail.status)}`}
                     >
-                      {taskDetail.status}
+                      {getStatusText(taskDetail.status)}
                     </p>
+
                   </div>
                 </div>
               )}
@@ -270,7 +280,7 @@ const TaskDetailCard = () => {
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               📥 Submissions
             </h3>
-            {isClubOwner && (
+            {(isClubOwner && (bigTask.status != "COMPLETED" && bigTask.status != "OVERDUE")) && (
               <Button
                 variant={"custom"}
                 onClick={() => setIsAssignDialogOpen(true)}
@@ -400,7 +410,7 @@ const TaskDetailCard = () => {
           )}
         </CardContent>
       </Card>
-      {isClubOwner && (
+      {(isClubOwner && (bigTask.status != "COMPLETED" && bigTask.status != "OVERDUE")) && (
         <AssignMembersDialog
           isOpen={isAssignDialogOpen}
           onClose={() => setIsAssignDialogOpen(false)}

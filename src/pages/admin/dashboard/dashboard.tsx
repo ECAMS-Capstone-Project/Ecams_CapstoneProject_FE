@@ -120,7 +120,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Number of contract
+              Number of active contracts
             </CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,15 +138,13 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {statistics?.numOfContracts} contract
+              {statistics?.numOfContracts ? `${statistics?.numOfContracts} contract` : `${statistics?.numOfContracts} contracts`}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Sử dụng Suspense cho Lazy Loading */}
       <React.Suspense fallback={<LoadingAnimation />}>
-        {/* Hiển thị spinner nếu API chưa tải xong */}
         {isLoading ? (
           <LoadingAnimation />
         ) : (

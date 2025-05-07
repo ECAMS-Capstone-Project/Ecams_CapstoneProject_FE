@@ -42,9 +42,9 @@ const HomePage = () => {
             <>
               <h2 className="text-3xl font-bold text-gray-800 mt-8">
                 <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-                  Events{" "}
+                  Event{" "}
                 </span>
-                around you
+                recommendations
               </h2>
               <div className="flex flex-col items-center justify-center text-center mt-20 mb-24 text-gray-600">
                 <img

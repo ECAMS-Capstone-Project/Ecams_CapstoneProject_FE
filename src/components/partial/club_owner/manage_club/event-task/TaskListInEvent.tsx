@@ -87,18 +87,18 @@ export default function TaskListInEvent() {
     window.history.back();
   };
 
-  const getStatusColor = (status: string, percentage: number) => {
-    if (status === "COMPLETED" && percentage === 100)
+  const getStatusColor = (status: string) => {
+    if (status === "COMPLETED")
       return "bg-green-100 text-green-800";
-    if (percentage >= 0 && status === "ON_GOING")
+    if (status === "ON_GOING")
       return "bg-yellow-100 text-yellow-800";
     if (status === "NOT_STARTED") return "bg-gray-200 text-gray-800";
     return "bg-red-100 text-red-800";
   };
 
   const getStatusText = (status: string, percentage: number) => {
-    if (status === "COMPLETED" && percentage === 100) return "Completed";
-    if (percentage >= 0 && status === "ON_GOING")
+    if (status === "COMPLETED") return "Completed";
+    if (status === "ON_GOING")
       return `ON_GOING (${percentage}%)`;
     if (status === "NOT_STARTED") return "Not started";
     return "Overdue";
@@ -281,7 +281,7 @@ export default function TaskListInEvent() {
                   <span
                     className={cn(
                       "px-3 py-1.5 rounded-full text-sm font-medium",
-                      getStatusColor(task.status, task.completionPercentage)
+                      getStatusColor(task.status)
                     )}
                   >
                     {getStatusText(task.status, task.completionPercentage)}
@@ -308,7 +308,7 @@ export default function TaskListInEvent() {
             Sub task list
           </h2>
 
-          {isClubOwner && (
+          {isClubOwner && (task.status != "COMPLETED" && task.status != "OVERDUE") && (
             <div className="flex justify-between">
               <div className="w-1/4 md:w-1/4 xs:1/2">
                 <Input
@@ -352,10 +352,10 @@ export default function TaskListInEvent() {
                 >
                   <Card
                     className={`rounded-lg border ${task.priority.toUpperCase() === "HIGH"
-                        ? "bg-red-50 border-red-200 text-red-900"
-                        : task.priority.toUpperCase() === "MEDIUM"
-                          ? "bg-yellow-50 border-yellow-200 text-yellow-900"
-                          : "bg-blue-50 border-blue-200 text-blue-900"
+                      ? "bg-red-50 border-red-200 text-red-900"
+                      : task.priority.toUpperCase() === "MEDIUM"
+                        ? "bg-yellow-50 border-yellow-200 text-yellow-900"
+                        : "bg-blue-50 border-blue-200 text-blue-900"
                       }`}
                   >
                     <CardContent className="p-5 space-y-4">
@@ -463,7 +463,7 @@ export default function TaskListInEvent() {
             )}
           </div>
 
-          {!isLoading && totalPages !== undefined && (
+          {!isLoading && totalPages !== undefined && totalPages > 0 && (
             <div className="flex justify-center items-center gap-4 mt-4">
               <Button
                 variant="outline"
@@ -477,7 +477,7 @@ export default function TaskListInEvent() {
               </span>
               <Button
                 variant="outline"
-                disabled={pageNo === totalPages}
+                disabled={pageNo === totalPages || totalPages == 0}
                 onClick={() => setPageNo((prev) => prev + 1)}
               >
                 Next

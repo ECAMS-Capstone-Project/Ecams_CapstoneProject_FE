@@ -145,26 +145,72 @@ const DashboardAdminRepRequestsPage: React.FC = () => {
             <Paper
               elevation={3}
               sx={{
-                height: 250,
-                width: 250,
+                height: 300,
+                width: 300,
                 borderRadius: 4,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                bgcolor: "#f5f5f5",
-                color: "#666",
+                background: "linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%)",
+                color: "#2c3e50",
                 textAlign: "center",
-                px: 2,
+                px: 3,
+                position: "relative",
+                overflow: "hidden",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: "4px",
+                  background: "linear-gradient(90deg, #136CB9, #49BBBD)",
+                },
               }}
             >
-              <HiOutlineCalendar size={48} style={{ marginBottom: 8 }} />
-              <Typography variant="subtitle1" fontWeight={600}>
-                No change request
-              </Typography>
-              <Typography variant="body2">
-                Once new events are created, they’ll show up here 👀
-              </Typography>
+              <div className="relative z-10">
+                <div className="mb-4 bg-white p-4 rounded-full shadow-lg flex justify-center">
+                  <HiOutlineCalendar size={48} className="text-[#136CB9]" />
+                </div>
+                <Typography
+                  variant="h6"
+                  fontWeight={700}
+                  sx={{
+                    background: "linear-gradient(90deg, #136CB9, #49BBBD)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    mb: 1,
+                  }}
+                >
+                  No Change Requests
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#666",
+                    maxWidth: "200px",
+                    mx: "auto",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  When representatives request changes, they will appear here.
+                </Typography>
+                <div className="mt-4 flex gap-2 justify-center">
+                  <div
+                    className="w-2 h-2 rounded-full bg-[#136CB9] animate-bounce"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <div
+                    className="w-2 h-2 rounded-full bg-[#49BBBD] animate-bounce"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <div
+                    className="w-2 h-2 rounded-full bg-[#136CB9] animate-bounce"
+                    style={{ animationDelay: "300ms" }}
+                  />
+                </div>
+              </div>
             </Paper>
           </Box>
         </div>
