@@ -31,7 +31,7 @@ export default function PoliciesDialog({
       try {
         setLoading(true);
         const packageData = await getPolicyList(100, 1);
-        setListPolicies(packageData.data?.data || []);
+        setListPolicies(packageData.data?.data.filter(a=>a.roleName.includes("REPRESENTATIVE")) || []);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         console.log(error.message);
@@ -45,7 +45,7 @@ export default function PoliciesDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Privacy Policies</DialogTitle>
             {loading ? (
