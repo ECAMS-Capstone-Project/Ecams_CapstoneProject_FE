@@ -100,7 +100,7 @@ const EventSlider3: React.FC<EventSliderProps> = ({ clubs, title }) => {
                                 No club requests found
                             </Typography>
                             <Typography variant="body2">
-                                New club requests will appear here 👥
+                                New club requests will appear here
                             </Typography>
                         </Paper>
                     </Box>
