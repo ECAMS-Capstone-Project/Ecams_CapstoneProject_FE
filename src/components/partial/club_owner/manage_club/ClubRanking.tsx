@@ -178,7 +178,7 @@ export default function FancyClubRankingPage() {
                   </CardHeader>
                   <CardContent className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
                     <div>
-                      <p className="text-base text-gray-500">Total Score: <span className="font-bold">{club.totalScore}</span></p>
+                      <p className="text-base text-gray-500">Total Score: <span className="font-bold">{club.totalScore.toFixed(2)}</span></p>
                       <p className={`text-base mt-1 ${getRankClass(club.rank)}`}>Rank: {club.rank}</p>
                     </div>
                     <div>

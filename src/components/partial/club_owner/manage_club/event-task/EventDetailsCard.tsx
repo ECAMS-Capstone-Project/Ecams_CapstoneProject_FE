@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { Calendar, MapPin, Building2, ArrowLeft, School } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -60,17 +60,19 @@ export const EventDetailsTaskCard = ({
               <p className="text-gray-200 mt-1">{selectedEvent.description}</p>
             </div>
           </div>
-          {selectedEvent.status == "ENDED" && isClubOwner && (
-            <div>
-              <Button
-                onClick={() => setOpen(true)}
-                variant={"custom"}
-                className="font-bold"
-              >
-                End event
-              </Button>
-            </div>
-          )}
+          {selectedEvent.status == "ACTIVE" &&
+            isClubOwner &&
+            differenceInDays(new Date(), new Date(selectedEvent.endDate)) <= 2 && (
+              <div>
+                <Button
+                  onClick={() => setOpen(true)}
+                  variant={"custom"}
+                  className="font-bold"
+                >
+                  End event
+                </Button>
+              </div>
+            )}
         </div>
 
         {/* Badge */}

@@ -94,6 +94,6 @@ export const newSubtaskSchema = z.object({
   deadlineTime: z.string().min(1, "Deadline is required"),
   priority: z.string().min(1, "Priority is required"),
   assignedMemberIds: z.array(z.string()).optional(),
-  taskDependencyIds: z.array(z.string()).optional(),
+  taskDependencyIds: z.array(z.string()).default([]),
   isDependencyExtended: z.boolean().optional(),
 });

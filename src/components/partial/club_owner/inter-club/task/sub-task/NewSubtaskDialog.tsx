@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-binary-expression */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -31,7 +32,7 @@ import { cn, fixTime, fixTime2 } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -56,6 +57,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { newSubtaskSchema } from "@/schema/InterTaskSchema";
 import { isArray } from "lodash";
+import SpecificTaskList from "@/components/partial/representative/representative-task/SpecificTasktList";
 
 const subtaskSchema = z
   .object({
@@ -90,7 +92,13 @@ const subtaskSchema = z
   });
 
 // Helper function to combine date and time
-const combineDateTime = (dateObj: Date, timeStr: string) => {
+// Helper function to combine date and time
+const combineDateTime = (dateObj: Date, timeStr: string | undefined) => {
+  if (!timeStr) {
+    // Nếu timeStr không có giá trị (undefined hoặc null), trả về ngay lập tức hoặc gán thời gian mặc định
+    return dateObj;
+  }
+
   const [hours, minutes] = timeStr.split(":").map(Number);
 
   // Tạo date mới và set giờ phút
@@ -161,9 +169,9 @@ export const NewSubtaskDialog = ({
           detailName: "",
           description: "",
           startTime: new Date(),
-          startTimeTime: "00:00",
+          // startTimeTime: "",
           deadline: new Date(),
-          deadlineTime: "00:00",
+          // deadlineTime: "",
           status: "NOT_STARTED",
           priority: "MEDIUM",
           assignedMemberIds: [],
@@ -171,7 +179,56 @@ export const NewSubtaskDialog = ({
         },
   });
 
+  const { watch, getValues, setValue } = form;
+  const selectedTasks = watch("taskDependencyIds");
+
   console.log("form.formState.errors", form.formState.errors);
+
+  const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
+  const [subtaskDependency, setSubtaskDependency] = useState<
+    TaskDependencyResponseDTO[] | undefined
+  >(undefined);
+  const { data: avaiMembers } = getAvailableMemberQuery(
+    currentClub.clubId,
+    fixTime(form.getValues("startTime")).toISOString(),
+    fixTime(form.getValues("deadline")).toISOString(),
+    form.getValues("priority")
+  );
+  const availableMembers = (avaiMembers?.data ?? []) as AvailableMember[];
+
+  const startTime = combineDateTime(
+    form.getValues("startTime"),
+    form.getValues("startTimeTime")
+  );
+  const deadline = combineDateTime(
+    form.getValues("deadline"),
+    form.getValues("deadlineTime")
+  );
+
+  // Fix the time and convert to ISO string
+  const fixedStartTime = fixTime(startTime).toISOString();
+  const fixedDeadline = fixTime(deadline).toISOString();
+  const priority = form.getValues("priority");
+
+  // Call the API or query function
+  const { data: subtaskDependencies } = getSubtaskDependencyQuery(
+    task.eventTaskId,
+    fixedStartTime,
+    fixedDeadline,
+    priority
+  );
+
+  useEffect(() => {
+    // Combine start time and deadline
+
+    if (Array.isArray(subtaskDependencies?.data)) {
+      setSubtaskDependency(subtaskDependencies.data);
+    } // You can now use subtaskDependency for further processing here
+  }, [subtaskDependencies?.data]);
+
+  const getMemberRecommendation = (memberId: string) => {
+    return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
+  };
 
   const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
     // Combine date and time
@@ -182,13 +239,20 @@ export const NewSubtaskDialog = ({
       ? combineDateTime(values.deadline, values.deadlineTime)
       : values.deadline;
 
+    const taskDependencyIds = selectedTasks.map((id: string) => {
+      const eventTask =
+        subtaskDependency &&
+        Array.isArray(subtaskDependency) &&
+        subtaskDependency?.find((s) => s.eventTaskDetailId === id);
+      return eventTask ? eventTask.eventTaskDetailId : id;
+    });
     // Tạo subtask mới với assignedMembers đúng format và thời gian đã combine
     const newSubtask = {
       ...values,
       startTime: fixTime2(startTime),
       deadline: fixTime2(deadline),
       assignedMemberIds: values.assignedMemberIds || [],
-      taskDependencyIds: values.taskDependencyIds || [],
+      taskDependencyIds: taskDependencyIds || [],
     };
 
     try {
@@ -198,40 +262,22 @@ export const NewSubtaskDialog = ({
       console.error("Error submitting subtask:", error);
     }
   };
-  const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
 
-  const { data: avaiMembers } = getAvailableMemberQuery(
-    currentClub.clubId,
-    fixTime(form.getValues("startTime")).toISOString(),
-    fixTime(form.getValues("deadline")).toISOString(),
-    form.getValues("priority")
-  );
-  const availableMembers = (avaiMembers?.data ?? []) as AvailableMember[];
-
-  const { data: subtaskDependency } = getSubtaskDependencyQuery(
-    task.eventTaskId,
-    fixTime(
-      combineDateTime(
-        form.getValues("startTime"),
-        form.getValues("startTimeTime")
-      )
-    ).toISOString(),
-    fixTime(
-      combineDateTime(
-        form.getValues("deadline"),
-        form.getValues("deadlineTime")
-      )
-    ).toISOString(),
-    form.getValues("priority")
-  );
-
-  const getMemberRecommendation = (memberId: string) => {
-    return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
+  const handleToggleTask = (taskId: string, checked: boolean) => {
+    const current = getValues("taskDependencyIds");
+    if (checked) {
+      setValue("taskDependencyIds", [...current, taskId]);
+    } else {
+      setValue(
+        "taskDependencyIds",
+        current.filter((id: string) => id !== taskId)
+      );
+    }
   };
 
   const filteredSubtaskDependency =
-    subtaskDependency?.data && Array.isArray(subtaskDependency.data)
-      ? subtaskDependency.data.filter((subtask: any) => {
+    subtaskDependency && Array.isArray(subtaskDependency)
+      ? subtaskDependency.filter((subtask: TaskDependencyResponseDTO) => {
           const searchStr = searchQuery.toLowerCase();
           const name = subtask.detailName.toLowerCase();
           return name.includes(searchStr);
@@ -517,71 +563,24 @@ export const NewSubtaskDialog = ({
                             />
                           </div>
                         </div>
-                        {isArray(subtaskDependency?.data) &&
-                          subtaskDependency?.data.length == 0 && (
+                        {isArray(subtaskDependency) &&
+                          subtaskDependency.length == 0 && (
                             <div className="p-4 space-y-2">
                               <p>No task dependencies found</p>
                             </div>
                           )}
-                        {isArray(subtaskDependency?.data) &&
-                          subtaskDependency?.data.length > 0 && (
-                            <ScrollArea className="h-[150px] rounded-md border">
-                              <div className="p-4 space-y-2">
-                                {filteredSubtaskDependency.map(
-                                  (dependency: TaskDependencyResponseDTO) => (
-                                    <div
-                                      key={dependency.eventTaskDetailId}
-                                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <Checkbox
-                                          id={dependency.eventTaskDetailId}
-                                          checked={form
-                                            .getValues("taskDependencyIds")
-                                            ?.some(
-                                              (m) =>
-                                                m ===
-                                                dependency.eventTaskDetailId
-                                            )}
-                                          onCheckedChange={(checked) => {
-                                            const newValue =
-                                              form.getValues(
-                                                "taskDependencyIds"
-                                              ) || [];
-                                            if (checked) {
-                                              form.setValue(
-                                                "taskDependencyIds",
-                                                [
-                                                  ...newValue,
-                                                  dependency.eventTaskDetailId,
-                                                ]
-                                              );
-                                            } else {
-                                              form.setValue(
-                                                "taskDependencyIds",
-                                                newValue.filter(
-                                                  (m) =>
-                                                    m !==
-                                                    dependency.eventTaskDetailId
-                                                )
-                                              );
-                                            }
-                                          }}
-                                        />
-                                        <label
-                                          htmlFor={dependency.eventTaskDetailId}
-                                          className="flex items-center gap-2 cursor-pointer text-sm"
-                                        >
-                                          <span className="font-medium">
-                                            {dependency.detailName}
-                                          </span>
-                                        </label>
-                                      </div>
-                                    </div>
-                                  )
+                        {isArray(subtaskDependency) &&
+                          subtaskDependency.length > 0 && (
+                            <Suspense fallback={<div>Loading task...</div>}>
+                              <SpecificTaskList
+                                handleToggleTask={handleToggleTask}
+                                tasks={filteredSubtaskDependency}
+                                selected={selectedTasks}
+                                taskDependencies={task.eventTaskDetails.flatMap(
+                                  (task) => task.taskDependencies
                                 )}
-                              </div>
-                            </ScrollArea>
+                              />
+                            </Suspense>
                           )}
                       </div>
                       <FormMessage />
