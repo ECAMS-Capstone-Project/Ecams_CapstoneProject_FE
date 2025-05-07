@@ -145,7 +145,11 @@ export const TaskItem = ({
                     e.stopPropagation();
                     setIsEditOpen(true);
                   }}
-                  disabled={task.completionPercentage === 100 || !isHost}
+                  disabled={
+                    task.completionPercentage === 100 ||
+                    !isHost ||
+                    selectedEvent.status === "ENDED"
+                  }
                 >
                   Edit
                 </DropdownMenuItem>

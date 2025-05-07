@@ -81,23 +81,28 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
               You have joined this event!
             </Button>
           ))}
-        {event.status.toLowerCase() == "canceled" && isRequestRefund && (
+        {event.status.toLowerCase() == "canceled" && (
           <Button
             className={`w-full p-6 mt-5 font-light text-md ${
               event.eventRegistrations?.find(
                 (user2) => user2.userId === user?.userId
               )?.refundStatus === "REFUNDED"
                 ? "inline-flex items-center gap-2 px-4 py-4 bg-indigo-100 text-indigo-800 rounded-full hover:bg-indigo-200 transition-colors duration-200 shadow-sm"
-                : "  bg-red-500 text-white hover:bg-red-600"
+                : event.eventRegistrations?.find(
+                    (user2) => user2.userId === user?.userId
+                  )?.refundStatus === "PENDING"
+                ? " bg-red-500 text-white hover:bg-red-600"
+                : "w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white"
             }  `}
             onClick={() => setIsRefundPopupOpen(true)}
           >
             {isRequestRefund &&
             event.eventRegistrations?.find(
               (user2) => user2.userId === user?.userId
-            )?.refundStatus !== "REFUNDED" ? (
+            )?.refundStatus == "PENDING" ? (
               "Your refund is pending!"
-            ) : event.eventRegistrations?.find(
+            ) : isRequestRefund &&
+              event.eventRegistrations?.find(
                 (user2) => user2.userId === user?.userId
               )?.refundStatus === "REFUNDED" ? (
               <div className="flex items-center gap-2">

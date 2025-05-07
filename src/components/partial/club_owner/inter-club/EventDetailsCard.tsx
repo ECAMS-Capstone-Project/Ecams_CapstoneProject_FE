@@ -132,7 +132,7 @@ export const EventDetailsCard = ({
           {(shouldHostSeeProgress || shouldMemberSeeProgress) && (
             <Button
               variant="custom"
-              className="relative bg-[#136cb9]/60 text-[#136cb9] border-[#136cb9]/20 p-3 overflow-hidden hover:bg-none"
+              className="relative mb-4 bg-[#136cb9]/60 text-[#136cb9] border-[#136cb9]/20 p-3 overflow-hidden hover:bg-none"
             >
               <div
                 className="absolute inset-0 bg-gradient-to-r from-[#136cb9] to-[#49bbbd] transition-all duration-1000 ease-in-out rounded-md"
