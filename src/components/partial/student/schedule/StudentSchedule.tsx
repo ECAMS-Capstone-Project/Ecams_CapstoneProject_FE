@@ -116,7 +116,7 @@ export const StudentSchedule = () => {
   // Process one-time event schedules.
   let eventEvents: any[] = [];
   if (Array.isArray(data.eventSchedules)) {
-    data.eventSchedules.forEach((event) => {
+    data.eventSchedules.filter(a=> a.status != "CANCELED").forEach((event) => {
       const start = new Date(event.startDate);
       const end = new Date(event.endDate);
       const diffDays =
