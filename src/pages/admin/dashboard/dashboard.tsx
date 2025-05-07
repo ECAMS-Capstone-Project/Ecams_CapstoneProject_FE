@@ -2,14 +2,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 
-// Lazy loading các component
-const PendingUniversityList = React.lazy(
-  () =>
-    import(
-      "@/components/partial/admin/admin-dashboard/pending-request/PendingRequest"
-    )
-);
-
 import { UniversityList } from "@/api/agent/UniversityAgent";
 // import { getReportList } from "@/api/agent/ReportAgent";
 import { University } from "@/models/University";
@@ -22,6 +14,7 @@ import {
 } from "@/api/admin/Statistic";
 import { formatPrice } from "@/lib/FormatPrice";
 import DashboardAdminRepRequestsPage from "./DashboardAdminRepRequestsPage";
+import PendingUniversityList from "@/components/partial/admin/admin-dashboard/pending-request/PendingRequest";
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);

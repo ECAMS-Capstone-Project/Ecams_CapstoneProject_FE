@@ -166,42 +166,52 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/package",
         element: <Package />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/university",
         element: <University />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/university/pending",
         element: <PendingUniversity />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/contract",
         element: <Contract />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/contract/:contractId",
         element: <ContractDetail />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/user",
         element: <User />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/notification",
         element: <Notifications />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/policy",
         element: <Policy />,
+        errorElement: <ErrorException />,
       },
       {
         path: "/admin/request-representative",
         element: <AdminRepRequestsPage />,
+        errorElement: <ErrorException />,
       },
     ],
   },
