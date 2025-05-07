@@ -60,6 +60,7 @@ export const StudentEventDetail: React.FC = () => {
               eventId={eventId}
               studentId={user.userId}
               isEventEnded={isEventEnded}
+              event={event}
             />
           </div>
         )}
