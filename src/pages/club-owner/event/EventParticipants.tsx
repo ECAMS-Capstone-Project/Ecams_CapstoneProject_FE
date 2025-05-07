@@ -1,16 +1,18 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useEffect, useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import ParticipantsList from "@/components/partial/club_owner/event-participants/ParticipantsTable";
 import { useLocation } from "react-router-dom";
 import ParticipantsSearchBar from "@/components/partial/club_owner/event-participants/ParticipantsSearchBar";
-import { ParticipantStatus } from "@/models/Participants";
+import { Participant, ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import ParticipantsHeader from "@/components/partial/staff/staff-events/event-participants/ParticipantsHeader";
 import { ClubEventFeedback } from "./EventFeedback";
 import { Separator } from "@/components/ui/separator";
 import ParticipantPagination from "@/components/partial/staff/staff-events/event-participants/ParticipantPagination";
+import { GetEventParticipants } from "@/api/club-owner/ClubEvent";
 
 interface props {
   eventId: string;
@@ -30,6 +32,19 @@ const EventParticipants = ({ eventId }: props) => {
     searchTerm ? 999 : pageSize,
     currentPage
   );
+  // Fetching participants data for the full list (without pagination)
+  const [allParticipants, setAllParticipants] = useState<Participant[]>();
+
+  useEffect(() => {
+    const fetchAllParticipants = async () => {
+      const participant = await GetEventParticipants(eventId, 999, currentPage);
+      setAllParticipants(participant.data?.data);
+    };
+
+    fetchAllParticipants();
+  }, [eventId, totalPages, currentPage]);
+  console.log("all", allParticipants);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -48,14 +63,14 @@ const EventParticipants = ({ eventId }: props) => {
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate statistics
-  const totalParticipants = participants.length;
-  const checkedInCount = participants.filter(
-    (p) => p.status === "CHECKED_IN"
-  ).length;
-  const waitingCount = participants.filter(
-    (p) => p.status === "WAITING"
-  ).length;
+  // Calculate statistics based on all participants
+  const totalParticipants = allParticipants && allParticipants.length;
+  const checkedInCount =
+    allParticipants &&
+    allParticipants.filter((p) => p.status === "CHECKED_IN").length;
+  const waitingCount =
+    allParticipants &&
+    allParticipants.filter((p) => p.status === "WAITING").length;
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -66,10 +81,10 @@ const EventParticipants = ({ eventId }: props) => {
           <div className="space-y-6">
             <ParticipantsHeader
               eventName={eventName}
-              totalParticipants={totalParticipants}
+              totalParticipants={totalParticipants || 0}
               participants={participants}
-              checkedInCount={checkedInCount}
-              waitingCount={waitingCount}
+              checkedInCount={checkedInCount || 0}
+              waitingCount={waitingCount || 0}
             />
 
             {participants.length > 0 ? (

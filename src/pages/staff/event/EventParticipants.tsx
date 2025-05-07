@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import LoadingAnimation from "@/components/ui/loading";
 import ParticipantsList from "@/components/partial/club_owner/event-participants/ParticipantsTable";
 import { useLocation } from "react-router-dom";
 import ParticipantsHeader from "@/components/partial/club_owner/event-participants/ParticipantsHeader";
 import ParticipantsSearchBar from "@/components/partial/club_owner/event-participants/ParticipantsSearchBar";
-import { ParticipantStatus } from "@/models/Participants";
+import { Participant, ParticipantStatus } from "@/models/Participants";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { Separator } from "@/components/ui/separator";
 import { RepEventFeedback } from "@/components/partial/staff/staff-events/event-participants/EventFeedback";
 import ParticipantPagination from "@/components/partial/staff/staff-events/event-participants/ParticipantPagination";
+import { GetEventParticipants } from "@/api/club-owner/ClubEvent";
 
 interface props {
   eventId: string;
@@ -48,14 +49,27 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate statistics
-  const totalParticipants = participants.length;
-  const checkedInCount = participants.filter(
-    (p) => p.status === "CHECKED_IN"
-  ).length;
+  const [allParticipants, setAllParticipants] = useState<Participant[]>();
+
+  useEffect(() => {
+    const fetchAllParticipants = async () => {
+      const participant = await GetEventParticipants(eventId, 999, currentPage);
+      setAllParticipants(participant.data?.data);
+    };
+
+    fetchAllParticipants();
+  }, [eventId, totalPages, currentPage]);
+  console.log("all", allParticipants);
+
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
+
+  // Calculate statistics based on all participants
+  const totalParticipants = allParticipants && allParticipants.length;
+  const checkedInCount =
+    allParticipants &&
+    allParticipants.filter((p) => p.status === "CHECKED_IN").length;
 
   return (
     <React.Suspense fallback={<LoadingAnimation />}>
@@ -65,9 +79,9 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
         <div className="space-y-6">
           <ParticipantsHeader
             eventName={eventName}
-            totalParticipants={totalParticipants}
+            totalParticipants={totalParticipants || 0}
             participants={participants}
-            checkedInCount={checkedInCount}
+            checkedInCount={checkedInCount || 0}
             totalRevenue={totalRevenue}
           />
 
