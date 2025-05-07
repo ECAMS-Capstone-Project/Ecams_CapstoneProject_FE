@@ -1,10 +1,6 @@
+import ListPackageUpdate from "@/components/partial/representative/representative-update-package/list-package-update";
 import { Package } from "@/models/Package";
-import React from "react";
 import { useLocation } from "react-router-dom";
-
-const ListPackageUpdate = React.lazy(
-  () => import("@/components/partial/representative/representative-update-package/list-package-update")
-);
 
 export default function PackageListUpdatePage() {
   const location = useLocation();

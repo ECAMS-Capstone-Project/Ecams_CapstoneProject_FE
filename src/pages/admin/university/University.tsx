@@ -7,9 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { University } from "@/models/University";
 import { UniversityList } from "@/api/agent/UniversityAgent";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-const UniversityTable = React.lazy(
-  () => import("@/components/partial/admin/university/UniversityTable")
-);
+import UniversityTable from "@/components/partial/admin/university/UniversityTable";
 
 const University = () => {
   const [isLoading, setIsLoading] = useState(true);

@@ -13,10 +13,8 @@ import { useAreas } from "@/hooks/staff/Area/useArea";
 import { EditAreaDialog } from "@/components/partial/staff/staff-area/EditAreaDialog";
 import { UserAuthDTO } from "@/models/Auth/UserAuth";
 import { getCurrentUserAPI } from "@/api/auth/LoginAPI";
+import AreaTable from "@/components/partial/staff/staff-area/AreaTable";
 
-const AreaTable = React.lazy(
-  () => import("@/components/partial/staff/staff-area/AreaTable")
-);
 const Area = () => {
   // const [isLoading, setIsLoading] = useState(true);
   const [pageNo, setPageNo] = useState(1);
