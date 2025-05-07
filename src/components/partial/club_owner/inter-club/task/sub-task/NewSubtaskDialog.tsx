@@ -221,16 +221,10 @@ export const NewSubtaskDialog = ({
   useEffect(() => {
     // Combine start time and deadline
 
-    if (Array.isArray(subtaskDependencies)) {
-      setSubtaskDependency(subtaskDependencies);
+    if (Array.isArray(subtaskDependencies?.data)) {
+      setSubtaskDependency(subtaskDependencies.data);
     } // You can now use subtaskDependency for further processing here
-  }, [
-    form.getValues("startTime"),
-    form.getValues("startTimeTime"),
-    form.getValues("deadline"),
-    form.getValues("deadlineTime"),
-    form.getValues("priority"),
-  ]);
+  }, [subtaskDependencies?.data]);
 
   const getMemberRecommendation = (memberId: string) => {
     return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
