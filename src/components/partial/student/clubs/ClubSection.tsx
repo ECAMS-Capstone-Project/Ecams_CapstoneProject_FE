@@ -104,7 +104,7 @@ export const ClubsSection = () => {
               <img
                 src={club.logoUrl}
                 alt={club.clubName}
-                className="w-full h-1/4 aspect-video object-cover rounded-lg"
+                className="w-full h-1/4 aspect-video object-contain rounded-lg"
               />
 
               <div className="p-4 h-3/4 text-left flex flex-col gap-4">
