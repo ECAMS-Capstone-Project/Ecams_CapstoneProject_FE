@@ -67,9 +67,9 @@ export const EventRecommendedSection = ({ userId, flag }: Props) => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold text-gray-800 ">
           <span className="bg-gradient-to-r from-[#136CB9] to-[#49BBBD] bg-clip-text text-transparent">
-            Events{" "}
+            Event{" "}
           </span>
-          around you
+          recommendations
         </h2>
         {events.length > 0 && (
           <div className="flex justify-center items-center gap-2">
