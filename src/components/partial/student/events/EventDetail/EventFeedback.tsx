@@ -15,17 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Event } from "@/models/Event";
 
 interface EventFeedbackProps {
   eventId: string;
   studentId: string;
   isEventEnded: boolean;
+  event: Event | undefined
 }
 
 export const EventFeedback: React.FC<EventFeedbackProps> = ({
   eventId,
   studentId,
   isEventEnded,
+  event
 }) => {
   const [pageNo, setPageNo] = useState(1);
   const [pageSize] = useState(5);
@@ -57,7 +60,7 @@ export const EventFeedback: React.FC<EventFeedbackProps> = ({
     <div className="mt-8 overflow-hidden">
       <div className="bg-gradient-to-r from-[#136CB5] to-[#49BBBD] p-4 rounded-t-xl flex items-center justify-between">
         <h3 className="text-xl font-medium text-white">Event Feedback</h3>
-        <FeedbackDialog studentId={studentId} eventId={eventId} />
+        {(event?.registrationStatus != null && event?.registrationStatus != undefined) && (<FeedbackDialog studentId={studentId} eventId={eventId} />)}
       </div>
       <div className="p-6 bg-gradient-to-r from-[#136CB9]/10 to-[#49BBBD]/10 rounded-b-xl shadow-sm">
         <div className="flex items-center gap-2 mb-6">

@@ -13,10 +13,7 @@ import type { Policy } from "@/models/Policy";
 import { EditPolicyDialog } from "@/components/partial/admin/policy/PolicyFormDialog";
 import RolePolicy from "@/components/partial/admin/policy/RolePolicy";
 import { usePolicy } from "@/hooks/admin/usePolicy";
-
-const PolicyTable = React.lazy(
-  () => import("@/components/partial/admin/policy/PolicyTable")
-);
+import PolicyTable from "@/components/partial/admin/policy/PolicyTable";
 
 const Policy = () => {
   const [pageNo, setPageNo] = useState(1);

@@ -104,7 +104,7 @@ export const SubtaskDetailPage = () => {
           toast.error("This task has not started");
         } else {
           navigate("/club/task-submission-student", {
-            state: { taskDetail: subtask, submission: submission },
+            state: { taskDetail: subtask, submission: submission, bigTask: task },
           });
         }
       }

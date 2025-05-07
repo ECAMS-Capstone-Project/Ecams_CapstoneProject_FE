@@ -11,9 +11,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { EditPackageDialog } from "@/components/partial/admin/package/packageFormDialog";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { usePackages } from "@/hooks/admin/usePackage";
-const PackageTable = React.lazy(
-  () => import("@/components/partial/admin/package/PackageTable")
-);
+import PackageTable from "@/components/partial/admin/package/PackageTable";
 
 const Package = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -8,10 +8,7 @@ import { DataTablePagination } from "@/components/ui/datatable/data-table-pagina
 import { getStaff, Student } from "@/models/User";
 import { getStudentList, StaffList } from "@/api/agent/UserAgent";
 import StaffTable from "@/components/partial/admin/user/staff/StaffTable";
-
-const StudentTable = React.lazy(
-  () => import("@/components/partial/admin/user/student/StudentTable")
-);
+import StudentTable from "@/components/partial/admin/user/student/StudentTable";
 
 const User = () => {
   const [isLoading, setIsLoading] = useState(true);
