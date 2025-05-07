@@ -8,6 +8,7 @@ import {
   InterTaskSubmission,
   ReviewInterTaskSubmissionRequest,
   SubtaskCreateRequest,
+  TaskDependencyResponseDTO,
   UpdateInterTaskRequest,
   UpdateInterTaskRequest2,
   UpdateInterTaskRequest3,
@@ -253,9 +254,9 @@ export const GetSubtaskDependency = async (
   startTime?: string,
   deadline?: string,
   priority?: string
-): Promise<ResponseDTO<AvailableMember>> => {
+): Promise<ResponseDTO<TaskDependencyResponseDTO>> => {
   try {
-    const response = await get<ResponseDTO<AvailableMember>>(
+    const response = await get<ResponseDTO<TaskDependencyResponseDTO>>(
       `EventTask/${eventTaskId}/dependencies?StartTime=${startTime}&Deadline=${deadline}&Priority=${priority}`
     );
     return response;

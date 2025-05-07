@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-binary-expression */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -91,7 +92,13 @@ const subtaskSchema = z
   });
 
 // Helper function to combine date and time
-const combineDateTime = (dateObj: Date, timeStr: string) => {
+// Helper function to combine date and time
+const combineDateTime = (dateObj: Date, timeStr: string | undefined) => {
+  if (!timeStr) {
+    // Nếu timeStr không có giá trị (undefined hoặc null), trả về ngay lập tức hoặc gán thời gian mặc định
+    return dateObj;
+  }
+
   const [hours, minutes] = timeStr.split(":").map(Number);
 
   // Tạo date mới và set giờ phút
@@ -162,9 +169,9 @@ export const NewSubtaskDialog = ({
           detailName: "",
           description: "",
           startTime: new Date(),
-          startTimeTime: "",
+          // startTimeTime: "",
           deadline: new Date(),
-          deadlineTime: "",
+          // deadlineTime: "",
           status: "NOT_STARTED",
           priority: "MEDIUM",
           assignedMemberIds: [],
@@ -178,7 +185,9 @@ export const NewSubtaskDialog = ({
   console.log("form.formState.errors", form.formState.errors);
 
   const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
-
+  const [subtaskDependency, setSubtaskDependency] = useState<
+    TaskDependencyResponseDTO[] | undefined
+  >(undefined);
   const { data: avaiMembers } = getAvailableMemberQuery(
     currentClub.clubId,
     fixTime(form.getValues("startTime")).toISOString(),
@@ -187,22 +196,41 @@ export const NewSubtaskDialog = ({
   );
   const availableMembers = (avaiMembers?.data ?? []) as AvailableMember[];
 
-  const { data: subtaskDependency } = getSubtaskDependencyQuery(
-    task.eventTaskId,
-    fixTime(
-      combineDateTime(
-        form.getValues("startTime"),
-        form.getValues("startTimeTime")
-      )
-    ).toISOString(),
-    fixTime(
-      combineDateTime(
-        form.getValues("deadline"),
-        form.getValues("deadlineTime")
-      )
-    ).toISOString(),
-    form.getValues("priority")
+  const startTime = combineDateTime(
+    form.getValues("startTime"),
+    form.getValues("startTimeTime")
   );
+  const deadline = combineDateTime(
+    form.getValues("deadline"),
+    form.getValues("deadlineTime")
+  );
+
+  // Fix the time and convert to ISO string
+  const fixedStartTime = fixTime(startTime).toISOString();
+  const fixedDeadline = fixTime(deadline).toISOString();
+  const priority = form.getValues("priority");
+
+  // Call the API or query function
+  const { data: subtaskDependencies } = getSubtaskDependencyQuery(
+    task.eventTaskId,
+    fixedStartTime,
+    fixedDeadline,
+    priority
+  );
+
+  useEffect(() => {
+    // Combine start time and deadline
+
+    if (Array.isArray(subtaskDependencies)) {
+      setSubtaskDependency(subtaskDependencies);
+    } // You can now use subtaskDependency for further processing here
+  }, [
+    form.getValues("startTime"),
+    form.getValues("startTimeTime"),
+    form.getValues("deadline"),
+    form.getValues("deadlineTime"),
+    form.getValues("priority"),
+  ]);
 
   const getMemberRecommendation = (memberId: string) => {
     return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
@@ -219,9 +247,9 @@ export const NewSubtaskDialog = ({
 
     const taskDependencyIds = selectedTasks.map((id: string) => {
       const eventTask =
-        subtaskDependency?.data &&
-        Array.isArray(subtaskDependency.data) &&
-        subtaskDependency?.data.find((s) => s.eventTaskDetailId === id);
+        subtaskDependency &&
+        Array.isArray(subtaskDependency) &&
+        subtaskDependency?.find((s) => s.eventTaskDetailId === id);
       return eventTask ? eventTask.eventTaskDetailId : id;
     });
     // Tạo subtask mới với assignedMembers đúng format và thời gian đã combine
@@ -254,8 +282,8 @@ export const NewSubtaskDialog = ({
   };
 
   const filteredSubtaskDependency =
-    subtaskDependency?.data && Array.isArray(subtaskDependency.data)
-      ? subtaskDependency.data.filter((subtask: TaskDependencyResponseDTO) => {
+    subtaskDependency && Array.isArray(subtaskDependency)
+      ? subtaskDependency.filter((subtask: TaskDependencyResponseDTO) => {
           const searchStr = searchQuery.toLowerCase();
           const name = subtask.detailName.toLowerCase();
           return name.includes(searchStr);
@@ -541,14 +569,14 @@ export const NewSubtaskDialog = ({
                             />
                           </div>
                         </div>
-                        {isArray(subtaskDependency?.data) &&
-                          subtaskDependency?.data.length == 0 && (
+                        {isArray(subtaskDependency) &&
+                          subtaskDependency.length == 0 && (
                             <div className="p-4 space-y-2">
                               <p>No task dependencies found</p>
                             </div>
                           )}
-                        {isArray(subtaskDependency?.data) &&
-                          subtaskDependency?.data.length > 0 && (
+                        {isArray(subtaskDependency) &&
+                          subtaskDependency.length > 0 && (
                             <Suspense fallback={<div>Loading task...</div>}>
                               <SpecificTaskList
                                 handleToggleTask={handleToggleTask}
