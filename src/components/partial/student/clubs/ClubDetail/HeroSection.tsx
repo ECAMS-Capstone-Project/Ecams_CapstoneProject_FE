@@ -27,7 +27,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <img
             src={club.logoUrl}
             alt={`${club.clubName} banner`}
-            className="w-full h-full object-cover transform scale-105 filter blur-[2px] rounded-lg"
+            className="w-full h-full object-contain transform scale-105 filter blur-[2px] rounded-lg"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 rounded-lg" />
         </div>
@@ -43,7 +43,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="flex items-start gap-4 w-fit">
                 <div>
                   <Avatar className="w-32 h-32">
-                    <AvatarImage src={club.logoUrl} alt="@shadcn" />
+                    <AvatarImage
+                      src={club.logoUrl}
+                      alt="@shadcn"
+                      className="object-contain"
+                    />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </div>
