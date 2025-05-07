@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/models/Event";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeftCircle, Calendar } from "lucide-react";
+import { ArrowLeftCircle, Calendar, Edit } from "lucide-react";
 import { RefundFormPopup, RefundFormData } from "./RefundFormPopup";
 import { useEventSchedule } from "@/hooks/student/useEventRegister";
 import useAuth from "@/hooks/useAuth";
@@ -17,9 +17,20 @@ interface DateTimeCardProps {
 export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
   const navigate = useNavigate();
   const [isRefundPopupOpen, setIsRefundPopupOpen] = useState(false);
+  const [initialRefundData, setInitialRefundData] = useState<RefundFormData>({
+    UserId: "",
+    EventId: "",
+    BankNumber: "",
+    BankQR: "",
+    BankName: "",
+    Description: "",
+    EvidenceRegistration: "",
+  });
+
   const { user } = useAuth();
   const { refundEvent, isRefunding } = useEventSchedule(user?.userId ?? "");
   const queryClient = useQueryClient();
+
   const handleRefundSubmit = async (data: RefundFormData) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
@@ -36,6 +47,7 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
   const isRequestRefund =
     event.eventRegistrations?.find((student) => student.userId == user?.userId)
       ?.refundInforStatus === "UPDATED";
+
   const isNotYet =
     event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
       ?.refundInforStatus === "NOT_YET";
@@ -48,10 +60,31 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
     event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
       ?.refundStatus === "PENDING";
 
-  console.log("isRequestRefund", isRequestRefund);
-  console.log("isNotYet", isNotYet);
-  console.log("isRefunded", isRefunded);
-  console.log("isRefundPending", isRefundPending);
+  const { getRefundDetail } = useEventSchedule();
+  const refundRequest = getRefundDetail(
+    event.eventRegistrations?.find((user2) => user2.userId === user?.userId)
+      ?.refundId ?? ""
+  );
+  const refund = refundRequest.data?.data;
+  console.log("ref", refund);
+  // Lấy dữ liệu cũ khi người dùng click "Edit"
+  const handleEdit = () => {
+    const registrationData = event.eventRegistrations?.find(
+      (student) => student.userId === user?.userId
+    );
+    if (registrationData) {
+      setInitialRefundData({
+        UserId: registrationData.userId,
+        EventId: event.eventId,
+        BankNumber: refund?.bankNumber || "",
+        BankQR: refund?.bankQR || "",
+        BankName: refund?.bankName || "",
+        Description: refund?.description || "",
+        EvidenceRegistration: refund?.evidenceRegistration || "",
+      });
+      setIsRefundPopupOpen(true);
+    }
+  };
 
   return (
     <div className="rounded-lg bg-white p-8 shadow space-y-6 w-3/5">
@@ -108,8 +141,12 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
         {event.status.toLowerCase() === "canceled" &&
           isRequestRefund &&
           isRefundPending && (
-            <Button className="w-full p-6 mt-5 font-light text-md cursor-default bg-slate-400 text-white">
-              Your refund is pending!
+            <Button
+              onClick={handleEdit}
+              className="w-full p-6 font-light text-md mt-3 bg-slate-400 text-white hover:bg-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex justify-between items-center"
+            >
+              <span>Your refund is pending!</span>
+              <Edit className="cursor-pointer text-gray-600 hover:text-gray-800 transition-colors duration-200 ml-2" />
             </Button>
           )}
         {event.status.toLowerCase() === "canceled" &&
@@ -132,6 +169,7 @@ export const DateTimeCard: React.FC<DateTimeCardProps> = ({ event }) => {
         onSubmit={handleRefundSubmit}
         event={event}
         isRefunding={isRefunding}
+        initialRefundData={initialRefundData} // Chuyển thông tin cũ vào popup
       />
     </div>
   );

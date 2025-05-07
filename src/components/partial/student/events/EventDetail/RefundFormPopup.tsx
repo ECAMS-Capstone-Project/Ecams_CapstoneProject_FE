@@ -1,5 +1,5 @@
 // /* eslint-disable @typescript-eslint/no-unused-expressions */
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas-pro"; // Import thư viện html2canvas
 
 import {
@@ -25,6 +25,7 @@ interface RefundFormPopupProps {
   onSubmit: (data: RefundFormData) => void;
   event: Event;
   isRefunding: boolean;
+  initialRefundData: RefundFormData;
 }
 
 export interface RefundFormData {
@@ -43,6 +44,7 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
   onSubmit,
   event,
   isRefunding,
+  initialRefundData, // Thêm dữ liệu ban đầu để điền lại
 }) => {
   const [formData, setFormData] = useState<RefundFormData>({
     UserId: "",
@@ -57,7 +59,13 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
     "qr"
   );
   const { user } = useAuth();
+  const [selectedFile, setSelectedFile] = useState<string | null>(null); // Để lưu trữ URL của hình ảnh chọn từ máy tính
+
   const formRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    // Cập nhật lại formData khi nhận thông tin cũ
+    setFormData(initialRefundData);
+  }, [initialRefundData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -65,14 +73,15 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
+    const { files } = e.target;
     if (files && files[0]) {
-      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      const file = files[0];
+      const fileURL = URL.createObjectURL(file); // Tạo URL cho file
+      setSelectedFile(fileURL); // Cập nhật state với URL của file
+      setFormData((prev) => ({ ...prev, BankQR: fileURL })); // Lưu URL vào formData
     }
   };
-
   const handleMethodChange = (value: string) => {
     setSelectedMethod(value as "bank" | "qr");
     // Reset form data when changing method
@@ -226,6 +235,16 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
                         onChange={handleFileChange}
                       />
                     </div>
+                    {formData.BankQR && (
+                      <div className="mt-4">
+                        <p className="font-semibold">QR Code:</p>
+                        <img
+                          src={formData.BankQR || selectedFile || ""}
+                          alt="QR Code"
+                          className="w-32 h-32 object-cover mt-2 border rounded-md"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -233,7 +252,7 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
-                Hủy
+                Cancel
               </Button>
               <Button type="submit">
                 {isRefunding ? "Sending" : "Send request"}
