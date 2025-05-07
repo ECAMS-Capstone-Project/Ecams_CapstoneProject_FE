@@ -53,7 +53,7 @@ const RepresentativeEventParticipants = ({ eventId, totalRevenue }: props) => {
 
   useEffect(() => {
     const fetchAllParticipants = async () => {
-      const participant = await GetEventParticipants(eventId, 999, currentPage);
+      const participant = await GetEventParticipants(eventId, 999, 1);
       setAllParticipants(participant.data?.data);
     };
 
