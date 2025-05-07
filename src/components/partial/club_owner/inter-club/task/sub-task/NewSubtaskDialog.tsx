@@ -31,7 +31,7 @@ import { cn, fixTime, fixTime2 } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -56,6 +56,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { newSubtaskSchema } from "@/schema/InterTaskSchema";
 import { isArray } from "lodash";
+import SpecificTaskList from "@/components/partial/representative/representative-task/SpecificTasktList";
 
 const subtaskSchema = z
   .object({
@@ -171,33 +172,11 @@ export const NewSubtaskDialog = ({
         },
   });
 
+  const { watch, getValues, setValue } = form;
+  const selectedTasks = watch("taskDependencyIds");
+
   console.log("form.formState.errors", form.formState.errors);
 
-  const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
-    // Combine date and time
-    const startTime = values.startTimeTime
-      ? combineDateTime(values.startTime, values.startTimeTime)
-      : values.startTime;
-    const deadline = values.deadlineTime
-      ? combineDateTime(values.deadline, values.deadlineTime)
-      : values.deadline;
-
-    // Tạo subtask mới với assignedMembers đúng format và thời gian đã combine
-    const newSubtask = {
-      ...values,
-      startTime: fixTime2(startTime),
-      deadline: fixTime2(deadline),
-      assignedMemberIds: values.assignedMemberIds || [],
-      taskDependencyIds: values.taskDependencyIds || [],
-    };
-
-    try {
-      onSubmit(newSubtask);
-    } catch (error) {
-      // Giữ dialog mở khi có lỗi
-      console.error("Error submitting subtask:", error);
-    }
-  };
   const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
 
   const { data: avaiMembers } = getAvailableMemberQuery(
@@ -229,9 +208,54 @@ export const NewSubtaskDialog = ({
     return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
   };
 
+  const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
+    // Combine date and time
+    const startTime = values.startTimeTime
+      ? combineDateTime(values.startTime, values.startTimeTime)
+      : values.startTime;
+    const deadline = values.deadlineTime
+      ? combineDateTime(values.deadline, values.deadlineTime)
+      : values.deadline;
+
+    const taskDependencyIds = selectedTasks.map((id: string) => {
+      const eventTask =
+        subtaskDependency?.data &&
+        Array.isArray(subtaskDependency.data) &&
+        subtaskDependency?.data.find((s) => s.eventTaskDetailId === id);
+      return eventTask ? eventTask.eventTaskDetailId : id;
+    });
+    // Tạo subtask mới với assignedMembers đúng format và thời gian đã combine
+    const newSubtask = {
+      ...values,
+      startTime: fixTime2(startTime),
+      deadline: fixTime2(deadline),
+      assignedMemberIds: values.assignedMemberIds || [],
+      taskDependencyIds: taskDependencyIds || [],
+    };
+
+    try {
+      onSubmit(newSubtask);
+    } catch (error) {
+      // Giữ dialog mở khi có lỗi
+      console.error("Error submitting subtask:", error);
+    }
+  };
+
+  const handleToggleTask = (taskId: string, checked: boolean) => {
+    const current = getValues("taskDependencyIds");
+    if (checked) {
+      setValue("taskDependencyIds", [...current, taskId]);
+    } else {
+      setValue(
+        "taskDependencyIds",
+        current.filter((id: string) => id !== taskId)
+      );
+    }
+  };
+
   const filteredSubtaskDependency =
     subtaskDependency?.data && Array.isArray(subtaskDependency.data)
-      ? subtaskDependency.data.filter((subtask: any) => {
+      ? subtaskDependency.data.filter((subtask: TaskDependencyResponseDTO) => {
           const searchStr = searchQuery.toLowerCase();
           const name = subtask.detailName.toLowerCase();
           return name.includes(searchStr);
@@ -525,63 +549,16 @@ export const NewSubtaskDialog = ({
                           )}
                         {isArray(subtaskDependency?.data) &&
                           subtaskDependency?.data.length > 0 && (
-                            <ScrollArea className="h-[150px] rounded-md border">
-                              <div className="p-4 space-y-2">
-                                {filteredSubtaskDependency.map(
-                                  (dependency: TaskDependencyResponseDTO) => (
-                                    <div
-                                      key={dependency.eventTaskDetailId}
-                                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg transition-colors"
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <Checkbox
-                                          id={dependency.eventTaskDetailId}
-                                          checked={form
-                                            .getValues("taskDependencyIds")
-                                            ?.some(
-                                              (m) =>
-                                                m ===
-                                                dependency.eventTaskDetailId
-                                            )}
-                                          onCheckedChange={(checked) => {
-                                            const newValue =
-                                              form.getValues(
-                                                "taskDependencyIds"
-                                              ) || [];
-                                            if (checked) {
-                                              form.setValue(
-                                                "taskDependencyIds",
-                                                [
-                                                  ...newValue,
-                                                  dependency.eventTaskDetailId,
-                                                ]
-                                              );
-                                            } else {
-                                              form.setValue(
-                                                "taskDependencyIds",
-                                                newValue.filter(
-                                                  (m) =>
-                                                    m !==
-                                                    dependency.eventTaskDetailId
-                                                )
-                                              );
-                                            }
-                                          }}
-                                        />
-                                        <label
-                                          htmlFor={dependency.eventTaskDetailId}
-                                          className="flex items-center gap-2 cursor-pointer text-sm"
-                                        >
-                                          <span className="font-medium">
-                                            {dependency.detailName}
-                                          </span>
-                                        </label>
-                                      </div>
-                                    </div>
-                                  )
+                            <Suspense fallback={<div>Loading task...</div>}>
+                              <SpecificTaskList
+                                handleToggleTask={handleToggleTask}
+                                tasks={filteredSubtaskDependency}
+                                selected={selectedTasks}
+                                taskDependencies={task.eventTaskDetails.flatMap(
+                                  (task) => task.taskDependencies
                                 )}
-                              </div>
-                            </ScrollArea>
+                              />
+                            </Suspense>
                           )}
                       </div>
                       <FormMessage />
