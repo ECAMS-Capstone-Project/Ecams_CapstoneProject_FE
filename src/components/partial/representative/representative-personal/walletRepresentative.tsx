@@ -12,7 +12,7 @@ import { Contract } from "@/models/Contract";
 import ConfirmDialog from "./confirmDialog";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
-import { format, differenceInMonths } from "date-fns";
+import { format, differenceInMonths, differenceInDays } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
@@ -67,15 +67,14 @@ const WalletRepresentative = () => {
   };
 
   const canUpgradePackage = () => {
-    if (!curPackage?.endDate || !curPackage?.duration) return false;
+    if (!curPackage?.endDate) return false;
+  
     const endDate = new Date(curPackage.endDate);
-    const startDate = new Date(endDate);
-    startDate.setMonth(startDate.getMonth() - curPackage.duration);
-    const monthsUsed = differenceInMonths(new Date(), startDate);
-    const oneThirdDuration = Math.ceil(curPackage.duration / 3);
-    const remainingMonths = curPackage.duration - monthsUsed;
-    return remainingMonths <= oneThirdDuration;
+    const remainingMonths = differenceInDays(endDate, new Date());
+  
+    return remainingMonths > 30;
   };
+  
 
   if (loading) {
     return (

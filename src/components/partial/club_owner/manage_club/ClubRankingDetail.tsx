@@ -95,7 +95,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-700">Score:</span>
-                                <span className="text-gray-900">{clubDetail.newMemberScore}</span>
+                                <span className="text-gray-900">{clubDetail.newMemberScore.toFixed(2)}</span>
                             </div>
                         </div>
                         {/* Events */}
@@ -107,7 +107,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-700">Score:</span>
-                                <span className="text-gray-900">{clubDetail.eventScore}</span>
+                                <span className="text-gray-900">{clubDetail.eventScore.toFixed(2)}</span>
                             </div>
                         </div>
                         {/* Event Ratings */}
@@ -119,7 +119,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-700">Score:</span>
-                                <span className="text-gray-900">{clubDetail.eventRatingScore}</span>
+                                <span className="text-gray-900">{clubDetail.eventRatingScore.toFixed(2)}</span>
                             </div>
                         </div>
                         {/* Activities */}
@@ -131,7 +131,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-700">Score:</span>
-                                <span className="text-gray-900">{clubDetail.activityScore}</span>
+                                <span className="text-gray-900">{clubDetail.activityScore.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@ const ClubRankingDetail: React.FC<ClubRankingDetailProps> = ({ clubId, month, on
                     <div className="mt-6 w-full border-t pt-4">
                         <div className="flex justify-between items-center">
                             <span className="text-2xl font-bold text-gray-800">Total Score:</span>
-                            <span className="text-2xl font-bold text-blue-600">{clubDetail.totalScore}</span>
+                            <span className="text-2xl font-bold text-blue-600">{clubDetail.totalScore.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between items-center mt-2">
                             <span className="text-xl text-gray-700">Rank:</span>
