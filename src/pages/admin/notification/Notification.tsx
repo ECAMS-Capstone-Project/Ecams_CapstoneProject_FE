@@ -10,9 +10,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
 import { ViewNotiDialog } from "@/components/partial/admin/notification/ViewNotiDialog";
 import { useNotification } from "@/hooks/admin/useNoti";
-const NotiTable = React.lazy(
-  () => import("@/components/partial/admin/notification/NotiTable")
-);
+import NotiTable from "@/components/partial/admin/notification/NotiTable";
 
 const Notifications = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

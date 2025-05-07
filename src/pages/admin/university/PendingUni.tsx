@@ -6,9 +6,7 @@ import { Heading } from "@/components/ui/heading";
 import type { University } from "@/models/University";
 import { UniversityList } from "@/api/agent/UniversityAgent";
 import { DataTablePagination } from "@/components/ui/datatable/data-table-pagination";
-const UniversityTable = React.lazy(
-  () => import("@/components/partial/admin/university/UniversityTable")
-);
+import UniversityTable from "@/components/partial/admin/university/UniversityTable";
 
 const PendingUniversity = () => {
   const [isLoading, setIsLoading] = useState(true);

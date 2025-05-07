@@ -12,14 +12,7 @@ import ImportButton from "./ImportButton";
 import { Button } from "@/components/ui/button";
 import ExportButton from "./ExportButton";
 import { PlusCircle } from "lucide-react";
-
-// Lazy load bảng (nếu muốn)
-const ApproveStudentTable = React.lazy(
-  () =>
-    import(
-      "@/components/partial/representative/representative-approve/ApproveStudentTable"
-    )
-);
+import ApproveStudentTable from "@/components/partial/representative/representative-approve/ApproveStudentTable";
 
 const ApproveStudentPage = () => {
   const { user } = useAuth();

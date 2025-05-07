@@ -1,8 +1,4 @@
-import React from "react";
-
-const Pricing = React.lazy(
-  () => import("@/components/partial/representative/list-package")
-);
+import Pricing from "@/components/partial/representative/list-package";
 
 export default function PackageList() {
   return (
