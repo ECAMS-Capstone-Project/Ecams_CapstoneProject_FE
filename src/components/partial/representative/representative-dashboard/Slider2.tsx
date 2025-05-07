@@ -113,7 +113,7 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
                   No events available
                 </Typography>
                 <Typography variant="body2">
-                  Once new events are created, they’ll show up here 👀
+                  Once new events are created, they’ll show up here
                 </Typography>
               </Paper>
             </Box>
@@ -146,7 +146,7 @@ const EventSlider2: React.FC<EventSliderProps> = ({ events, title }) => {
                 No events available
               </Typography>
               <Typography variant="body2">
-                Once new events are created, they’ll show up here 👀
+                Once new events are created, they’ll show up here
               </Typography>
             </Paper>
           </Box>
