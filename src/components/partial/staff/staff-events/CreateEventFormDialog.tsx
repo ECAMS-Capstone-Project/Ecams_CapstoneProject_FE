@@ -92,8 +92,8 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedClub, setSelectedClub] = useState<AvailableClubResponse>();
   const [openDialog, setOpenDialog] = useState(false);
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [isClubEvent, setIsClubEvent] = useState(false);
   const location = useLocation();
   const initialData = location.state?.initialData;
@@ -168,21 +168,22 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     }
   }, [isClubEvent]);
 
-  // Kiểm tra xem một giá trị có phải là đối tượng Date hợp lệ hay không
-  const isValidDate = (date: any) =>
-    date instanceof Date && !isNaN(date.getTime());
+  // Handle startDate and endDate only when valid
+  const validStartDate =
+    startDate && !isNaN(startDate.getTime())
+      ? fixTime(startDate).toISOString()
+      : ""; // Or undefined if API expects undefined
 
-  // Nếu startDate hoặc endDate không hợp lệ, sử dụng ngày hiện tại làm mặc định
-  const validStartDate = isValidDate(startDate) ? startDate : new Date();
-  const validEndDate = isValidDate(endDate) ? endDate : new Date();
+  const validEndDate =
+    endDate && !isNaN(endDate.getTime()) ? fixTime(endDate).toISOString() : ""; // Or undefined if API expects undefined
 
+  // Call the API with these valid dates
   const { availableClubs } = useClub(
     "",
     userInfo?.universityId,
-    fixTime(validStartDate).toISOString(),
-    fixTime(validEndDate).toISOString()
+    validStartDate,
+    validEndDate
   );
-
   // Now that we have start and end dates, we can call the useClub hook
   console.log(form.formState.errors);
   const { fields, append, remove, update } = useFieldArray({

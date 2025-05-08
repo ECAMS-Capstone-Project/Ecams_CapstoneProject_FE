@@ -104,7 +104,11 @@ export const SubtaskDetailPage = () => {
           toast.error("This task has not started");
         } else {
           navigate("/club/task-submission-student", {
-            state: { taskDetail: subtask, submission: submission, bigTask: task },
+            state: {
+              taskDetail: subtask,
+              submission: submission,
+              bigTask: task,
+            },
           });
         }
       }
@@ -147,7 +151,8 @@ export const SubtaskDetailPage = () => {
       // Add each file to the zip
       selectedSubmission.submissionFile.forEach((fileUrl, index) => {
         const fileName = fileUrl.split("/").pop(); // You can adjust this logic if file name extraction is different
-        fetch(fileUrl)
+        const secureFileUrl = fileUrl.replace(/^http:/, "https:");
+        fetch(secureFileUrl)
           .then((response) => response.blob())
           .then((blob) => {
             if (fileName) {

@@ -145,7 +145,7 @@ export const SubmissionDetailDialog = ({
                       className="flex justify-between items-center mb-2"
                     >
                       <a
-                        href={fileUrl}
+                        href={fileUrl.replace(/^http:/, "https:")}
                         className="text-sm text-[#136CB9] underline"
                         target="_blank"
                         rel="noopener noreferrer"
