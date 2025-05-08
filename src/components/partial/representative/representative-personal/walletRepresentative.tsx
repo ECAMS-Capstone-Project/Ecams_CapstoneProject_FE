@@ -68,13 +68,22 @@ const WalletRepresentative = () => {
 
   const canUpgradePackage = () => {
     if (!curPackage?.endDate) return false;
-  
+
     const endDate = new Date(curPackage.endDate);
     const remainingMonths = differenceInDays(endDate, new Date());
-  
+
     return remainingMonths > 30;
   };
-  
+
+  const canExtendPackage = () => {
+    if (!curPackage?.endDate) return false;
+
+    const endDate = new Date(curPackage.endDate);
+    const remainingMonths = differenceInDays(endDate, new Date());
+
+    return remainingMonths < 30;
+  };
+
 
   if (loading) {
     return (
@@ -150,11 +159,10 @@ const WalletRepresentative = () => {
                     <Typography mb={2}>
                       🔘 <b>Package Status:</b>{" "}
                       <span
-                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${
-                          curPackage.status
-                            ? "bg-green-100 text-green-600"
-                            : "bg-red-100 text-red-600"
-                        }`}
+                        className={`inline-block px-3 py-1 rounded text-sm font-semibold ${curPackage.status
+                          ? "bg-green-100 text-green-600"
+                          : "bg-red-100 text-red-600"
+                          }`}
                       >
                         {curPackage.status ? "Active" : "Inactive"}
                       </span>
@@ -219,7 +227,7 @@ const WalletRepresentative = () => {
                 cursor: canCancelPackage() ? "pointer" : "not-allowed",
               }}
               onClick={() => {
-                if (curPackage?.endDate && canCancelPackage()) {
+                if (canCancelPackage()) {
                   setOpenCancel(true);
                 }
               }}
@@ -234,7 +242,12 @@ const WalletRepresentative = () => {
                 textTransform: "none",
               }}
               variant="contained"
-              onClick={() => setOpen(true)}
+              disabled={!canExtendPackage()}
+              onClick={() => {
+                if (canExtendPackage()) {
+                  setOpen(true)
+                }
+              }}
             >
               Extend package
             </Button>
