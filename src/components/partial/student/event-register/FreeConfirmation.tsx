@@ -217,7 +217,11 @@ export const FreeEventConfirm = () => {
                 </CardContent>
 
                 <CardFooter className="flex justify-end gap-1 p-0">
-                  <Button variant="ghost" className="text-red-900 ">
+                  <Button
+                    variant="ghost"
+                    className="text-red-900 "
+                    onClick={() => navigate(-1)}
+                  >
                     <XCircleIcon /> Cancel
                   </Button>
                   <Button variant="custom" onClick={handleSubmit}>
