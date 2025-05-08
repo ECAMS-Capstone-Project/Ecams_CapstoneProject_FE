@@ -391,19 +391,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="trainingPoint"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Training Point</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} min={0} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+
                       <FormField
                         control={form.control}
                         name="maxParticipants"
