@@ -4,7 +4,6 @@ import { Event, EventRefundDTO } from "@/models/Event";
 import { useEvents } from "@/hooks/staff/Event/useEvent";
 import { toast } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import useAuth from "@/hooks/useAuth";
 import { useParams } from "react-router-dom";
 import { columns } from "./columns";
 import { RefundRequestDialog } from "./RefundRequestDialog";
@@ -31,7 +30,7 @@ export const EventRefund: React.FC<EventRefundProps> = ({ event }) => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const { refundEvent, getAllRefundList } = useEvents();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const { eventId = "" } = useParams();
 
   const { data: refundsData, isLoading } = getAllRefundList(
@@ -56,7 +55,13 @@ export const EventRefund: React.FC<EventRefundProps> = ({ event }) => {
 
         await refundEvent(formData);
         queryClient.invalidateQueries({
-          queryKey: ["eventDetail", event.eventId, user?.userId],
+          queryKey: [
+            "refunds",
+            event.eventId,
+            statusFilter,
+            pageNumber,
+            pageSize,
+          ],
         });
 
         setIsViewDialogOpen(false);
