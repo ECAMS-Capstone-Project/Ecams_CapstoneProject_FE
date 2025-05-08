@@ -2,7 +2,7 @@
 import { InterClubChat } from "@/components/partial/club_owner/inter-club/InterClubChat";
 import { InterClubTask } from "@/components/partial/club_owner/inter-club/InterClubTask";
 import { EventDetailsCard } from "@/components/partial/club_owner/inter-club/EventDetailsCard";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Check, X } from "lucide-react";
 import { useEventDetail } from "@/hooks/club/useEventDetail";
 import useAuth from "@/hooks/useAuth";
@@ -38,7 +38,7 @@ export const EventDetailPage = () => {
   const { data: event } = getInterEventDetailQuery(clubEventId || "");
   const { user } = useAuth();
   const { clubs } = useClubs(user?.universityId, 1, 50);
-
+  const navigate = useNavigate();
   // Lấy club của user đang login
   const currentClub = clubs?.find((club) =>
     club.clubMembers?.some(
@@ -54,9 +54,11 @@ export const EventDetailPage = () => {
 
   // Lấy status của club trong event
   const clubStatus = currentClubInEvent?.status;
+  console.log("status", clubStatus);
 
   // Kiểm tra xem club hiện tại có phải là club tạo event không
   const isCreatorClub = event?.data?.clubs.find((clb) => clb.isHost);
+  console.log("host", isCreatorClub);
 
   const handleAccept = async () => {
     try {
@@ -75,13 +77,15 @@ export const EventDetailPage = () => {
 
   const handleDeny = async () => {
     try {
-      await rejectInterEvent({
+      const response = await rejectInterEvent({
         eventId: event?.data?.eventId || "",
         clubId: currentClub?.clubId || "",
         reason: reason,
       });
+      console.log("res", response);
       toast.success("Denied event invitation successfully!");
       setIsRejectDialogOpen(false);
+      navigate("/club/inter-club-event");
       setReason("");
     } catch (error: any) {
       toast.error(error.response.data.message);
@@ -209,7 +213,7 @@ export const EventDetailPage = () => {
       {/* Chỉ hiện chat và task nếu:
           1. Club là creator (không có trong danh sách clubs)
           2. Hoặc club có status ACTIVE */}
-      {(isCreatorClub || clubStatus === "ACTIVE") && event.data && (
+      {currentClubInEvent && clubStatus !== "WAITING" && event.data && (
         <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-[#e5e7eb]">
           <Tabs defaultValue="chat" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-[#f8f9fa] p-1">
