@@ -74,18 +74,18 @@ const WalletRepresentative = () => {
     if (!curPackage?.endDate) return false;
 
     const endDate = new Date(curPackage.endDate);
-    const remainingMonths = differenceInDays(endDate, new Date());
+    const remainingDays = Math.max(differenceInDays(endDate, new Date()), 0);
 
-    return remainingMonths > 30;
+    return remainingDays > 30;
   };
 
   const canExtendPackage = () => {
     if (!curPackage?.endDate) return false;
 
     const endDate = new Date(curPackage.endDate);
-    const remainingMonths = differenceInDays(endDate, new Date());
+    const remainingDays = Math.max(differenceInDays(endDate, new Date()), 0);
 
-    return remainingMonths < 30;
+    return remainingDays < 30;
   };
 
 
