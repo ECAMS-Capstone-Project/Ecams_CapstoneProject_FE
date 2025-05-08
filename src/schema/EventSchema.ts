@@ -429,14 +429,6 @@ export const InterClubEventSchema = z
           path: ["eventAreas", index, "EndTime"],
         });
       }
-
-      if (area.Date <= data.registeredEndDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Event date must be after registered end date.",
-          path: ["eventAreas", index, "Date"],
-        });
-      }
     });
   });
 
