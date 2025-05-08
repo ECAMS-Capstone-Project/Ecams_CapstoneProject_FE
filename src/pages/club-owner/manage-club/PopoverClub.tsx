@@ -413,7 +413,6 @@ export function PopoverClub({ isClubOwner, clubId, clubOwnerId, club, setFlag }:
                     className="pl-10"
                   />
                   <div
-                    className="max-h-32 overflow-y-auto"
                     onWheel={(e) => e.stopPropagation()}
                   >
                     <CommandList>

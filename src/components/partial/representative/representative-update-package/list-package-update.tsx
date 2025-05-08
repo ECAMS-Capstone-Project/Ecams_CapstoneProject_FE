@@ -154,10 +154,9 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
           </Typography>
         </Box>
 
-        {loading && <CircularProgress />}
         {error && <Alert severity="error">{error}</Alert>}
 
-        {!loading && !error && packages.length > 0 && (
+        {loading ? <div className="flex justify-center"><CircularProgress /></div> : !loading && !error && packages.length > 0 ? (
           <SliderContainer>
             <Slider {...settings}>
               {packages.map((plan, index) => {
@@ -227,6 +226,27 @@ const ListPackageUpdate: React.FC<props> = ({ curPackage }: props) => {
               })}
             </Slider>
           </SliderContainer>
+        ) : (
+          <Box
+            p={4}
+            border="2px dashed #00C853"
+            borderRadius="16px"
+            textAlign="center"
+            bgcolor="#E8F5E9"
+            color="#2E7D32"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <CheckIcon sx={{ fontSize: 50, mb: 1 }} />
+            <Typography variant="h6" fontWeight="bold">
+              You already have the highest package in the system
+            </Typography>
+            <Typography variant="body1" mt={1}>
+              There is currently no higher plan available to upgrade to.
+            </Typography>
+          </Box>
         )}
         <Box display="flex" justifyContent="center">
           <Button
