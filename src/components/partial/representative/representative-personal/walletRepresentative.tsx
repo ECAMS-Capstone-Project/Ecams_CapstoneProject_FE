@@ -12,7 +12,7 @@ import { Contract } from "@/models/Contract";
 import ConfirmDialog from "./confirmDialog";
 import DialogLoading from "@/components/ui/dialog-loading";
 import { formatPrice } from "@/lib/FormatPrice";
-import { format, differenceInMonths, differenceInDays } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
 import { useNavigate } from "react-router-dom";
@@ -59,29 +59,33 @@ const WalletRepresentative = () => {
 
   const canCancelPackage = () => {
     if (!curPackage?.endDate || !curPackage?.duration) return false;
+
     const endDate = new Date(curPackage.endDate);
     const startDate = new Date(endDate);
     startDate.setMonth(startDate.getMonth() - curPackage.duration);
-    const monthsUsed = differenceInMonths(new Date(), startDate);
-    return monthsUsed >= 1;
+
+    const totalDays = differenceInDays(endDate, startDate);
+    const usedDays = differenceInDays(new Date(), startDate);
+
+    return usedDays > totalDays / 3;
   };
 
   const canUpgradePackage = () => {
     if (!curPackage?.endDate) return false;
 
     const endDate = new Date(curPackage.endDate);
-    const remainingMonths = differenceInDays(endDate, new Date());
+    const remainingDays = Math.max(differenceInDays(endDate, new Date()), 0);
 
-    return remainingMonths > 30;
+    return remainingDays > 30;
   };
 
   const canExtendPackage = () => {
     if (!curPackage?.endDate) return false;
 
     const endDate = new Date(curPackage.endDate);
-    const remainingMonths = differenceInDays(endDate, new Date());
+    const remainingDays = Math.max(differenceInDays(endDate, new Date()), 0);
 
-    return remainingMonths < 30;
+    return remainingDays < 30;
   };
 
 
