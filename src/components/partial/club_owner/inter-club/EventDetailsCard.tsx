@@ -54,7 +54,7 @@ export const EventDetailsCard = ({
   const isClubEnded = selectedEvent.clubs.find(
     (club) => club.clubId == currentClub.clubId
   )?.isEnd;
-  const isEventEnded = selectedEvent.status === "ENDED";
+  // const isEventEnded = selectedEvent.status === "ENDED";
   useEffect(() => {
     // Kiểm tra xem club host đã bấm "End Event" chưa
     const hostClub = selectedEvent.clubs.find((club) => club.isHost);
@@ -85,7 +85,7 @@ export const EventDetailsCard = ({
   //   (club) => club.clubId == currentClub.clubId
   // )?.isEnd;
   // Host - chưa end nhưng event đã kết thúc => cần End
-  const shouldHostSeeEndButton = isHost && isEventEnded && !isHostEnded;
+  const shouldHostSeeEndButton = isHost && !isHostEnded;
 
   // Host - đã end rồi => hiển thị tiến trình
   const shouldHostSeeProgress = isHost && isHostEnded;

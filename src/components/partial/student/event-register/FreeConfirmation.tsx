@@ -210,7 +210,8 @@ export const FreeEventConfirm = () => {
 
                   {event.price > 0 && (
                     <button className="w-full p-2 mt-0 font-light text-md text-slate-500 italic">
-                      Please note that this event is non-refundable.
+                      Please note that this event is non-refundable unless the
+                      event is canceled.
                     </button>
                   )}
                 </CardContent>
