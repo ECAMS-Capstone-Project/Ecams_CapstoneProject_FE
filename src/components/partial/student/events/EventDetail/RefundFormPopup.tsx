@@ -32,7 +32,7 @@ export interface RefundFormData {
   UserId: string;
   EventId: string;
   BankNumber: string;
-  BankQR: string;
+  BankQR: string | File;
   BankName: string;
   Description: string;
   EvidenceRegistration: string | File;
@@ -76,12 +76,15 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files && files[0]) {
-      const file = files[0];
-      const fileURL = URL.createObjectURL(file); // Tạo URL cho file
-      setSelectedFile(fileURL); // Cập nhật state với URL của file
-      setFormData((prev) => ({ ...prev, BankQR: fileURL })); // Lưu URL vào formData
+      const file = files[0]; // Get the file directly
+      setSelectedFile(URL.createObjectURL(file)); // Store URL for display
+      setFormData((prev) => ({
+        ...prev,
+        BankQR: file, // Store the actual file in formData
+      }));
     }
   };
+
   const handleMethodChange = (value: string) => {
     setSelectedMethod(value as "bank" | "qr");
     // Reset form data when changing method
@@ -239,7 +242,13 @@ export const RefundFormPopup: React.FC<RefundFormPopupProps> = ({
                       <div className="mt-4">
                         <p className="font-semibold">QR Code:</p>
                         <img
-                          src={formData.BankQR || selectedFile || ""}
+                          src={
+                            typeof formData.BankQR === "string"
+                              ? formData.BankQR // Nếu BankQR là string (URL), dùng trực tiếp
+                              : selectedFile ||
+                                (formData.BankQR &&
+                                  URL.createObjectURL(formData.BankQR)) // Nếu là File, tạo URL từ file
+                          }
                           alt="QR Code"
                           className="w-32 h-32 object-cover mt-2 border rounded-md"
                         />
