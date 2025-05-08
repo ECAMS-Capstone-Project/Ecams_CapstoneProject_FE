@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-constant-binary-expression */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -114,6 +115,8 @@ const combineDateTime = (dateObj: Date, timeStr: string | undefined) => {
 
 interface SubtaskDialogProps {
   isOpen: boolean;
+  shouldResetForm: boolean; // Nhận prop từ component cha
+
   onClose: () => void;
   onSubmit: (
     data: Omit<z.infer<typeof subtaskSchema>, "startTime" | "deadline"> & {
@@ -138,6 +141,7 @@ interface SubtaskDialogProps {
 
 export const NewSubtaskDialog = ({
   isOpen,
+  shouldResetForm,
   onClose,
   onSubmit,
   initialValues,
@@ -182,16 +186,16 @@ export const NewSubtaskDialog = ({
   const { watch, getValues, setValue } = form;
   const selectedTasks = watch("taskDependencyIds");
 
-  console.log("form.formState.errors", form.formState.errors);
-
   const { getAvailableMemberQuery, getSubtaskDependencyQuery } = useInterTask();
   const [subtaskDependency, setSubtaskDependency] = useState<
     TaskDependencyResponseDTO[] | undefined
   >(undefined);
   const { data: avaiMembers } = getAvailableMemberQuery(
     currentClub.clubId,
-    fixTime(form.getValues("startTime")).toISOString(),
-    fixTime(form.getValues("deadline")).toISOString(),
+    form.getValues("startTime") &&
+      fixTime(form.getValues("startTime")).toISOString(),
+    form.getValues("deadline") &&
+      fixTime(form.getValues("deadline")).toISOString(),
     form.getValues("priority")
   );
   const availableMembers = (avaiMembers?.data ?? []) as AvailableMember[];
@@ -206,8 +210,8 @@ export const NewSubtaskDialog = ({
   );
 
   // Fix the time and convert to ISO string
-  const fixedStartTime = fixTime(startTime).toISOString();
-  const fixedDeadline = fixTime(deadline).toISOString();
+  const fixedStartTime = startTime && fixTime(startTime).toISOString();
+  const fixedDeadline = deadline && fixTime(deadline).toISOString();
   const priority = form.getValues("priority");
 
   // Call the API or query function
@@ -229,6 +233,11 @@ export const NewSubtaskDialog = ({
   const getMemberRecommendation = (memberId: string) => {
     return aiRecommendations.find((rec) => rec.clubMemberId === memberId);
   };
+  useEffect(() => {
+    if (shouldResetForm == true) {
+      form.reset(); // Reset form
+    }
+  }, [shouldResetForm]);
 
   const handleSubmit = (values: z.infer<typeof newSubtaskSchema>) => {
     // Combine date and time
@@ -257,7 +266,7 @@ export const NewSubtaskDialog = ({
 
     try {
       onSubmit(newSubtask);
-      form.reset();
+      shouldResetForm == true && form.reset();
     } catch (error) {
       // Giữ dialog mở khi có lỗi
       console.error("Error submitting subtask:", error);

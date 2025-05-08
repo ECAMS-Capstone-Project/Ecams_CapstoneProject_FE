@@ -55,6 +55,8 @@ export const TaskDetailPage = () => {
   const [editingTask, setEditingTask] = useState<EventTaskDetail | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [shouldResetForm, setShouldResetForm] = useState(false); // Biến trạng thái kiểm tra khi nào cần reset form
+
   const { members: clubMembers } = useClub(currentClub.clubId);
   const [pageNo, setPageNo] = useState(1);
   const pageSize = 5;
@@ -67,6 +69,11 @@ export const TaskDetailPage = () => {
 
     return () => clearTimeout(handler);
   }, [searchTerm]);
+  useEffect(() => {
+    if (isCreateDialogOpen == true) {
+      setShouldResetForm(true); // Reset lại khi mở dialog tạo mới
+    }
+  }, [isCreateDialogOpen]);
   const {
     isUpdating,
     createSubtask,
@@ -156,8 +163,12 @@ export const TaskDetailPage = () => {
 
       if (response.statusCode === 200) {
         setIsCreateDialogOpen(false);
+        setShouldResetForm(true);
+        return true; // Return true on success
       } else {
         setIsCreateDialogOpen(true);
+        setShouldResetForm(false);
+        return false; // Return false if there's an error
       }
     } catch (error) {
       console.error("Failed to create subtask:", error);
@@ -392,6 +403,7 @@ export const TaskDetailPage = () => {
         </div>
       </div>
       <NewSubtaskDialog
+        shouldResetForm={shouldResetForm}
         isOpen={isCreateDialogOpen}
         onClose={() => setIsCreateDialogOpen(false)}
         onSubmit={async (data) => {

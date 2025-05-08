@@ -168,15 +168,19 @@ export const CreateEvent: React.FC<EventDialogProps> = ({
     }
   }, [isClubEvent]);
 
+  // Kiểm tra xem một giá trị có phải là đối tượng Date hợp lệ hay không
+  const isValidDate = (date: any) =>
+    date instanceof Date && !isNaN(date.getTime());
+
+  // Nếu startDate hoặc endDate không hợp lệ, sử dụng ngày hiện tại làm mặc định
+  const validStartDate = isValidDate(startDate) ? startDate : new Date();
+  const validEndDate = isValidDate(endDate) ? endDate : new Date();
+
   const { availableClubs } = useClub(
     "",
     userInfo?.universityId,
-    startDate
-      ? format(new Date(startDate), "yyyy-MM-dd")
-      : format(new Date(), "yyyy-MM-dd"),
-    endDate
-      ? format(new Date(endDate), "yyyy-MM-dd")
-      : format(new Date(), "yyyy-MM-dd")
+    fixTime(validStartDate).toISOString(),
+    fixTime(validEndDate).toISOString()
   );
 
   // Now that we have start and end dates, we can call the useClub hook
