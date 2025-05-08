@@ -69,11 +69,7 @@ export const TaskDetailPage = () => {
 
     return () => clearTimeout(handler);
   }, [searchTerm]);
-  useEffect(() => {
-    if (isCreateDialogOpen == true) {
-      setShouldResetForm(true); // Reset lại khi mở dialog tạo mới
-    }
-  }, [isCreateDialogOpen]);
+
   const {
     isUpdating,
     createSubtask,

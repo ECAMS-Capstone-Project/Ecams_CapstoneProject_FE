@@ -88,7 +88,8 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
   const [userInfo, setUserInfo] = useState<UserAuthDTO>();
   const [isLoading, setIsLoading] = useState(false);
   // const { clubs } = useClubs(userInfo?.universityId, 1, 10);
-
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   // Chỉ fetch thông tin user khi cần thiết
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -133,6 +134,24 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
       trainingPoint: 0,
     },
   });
+
+  const watchEventAreas = form.watch("eventAreas");
+
+  useEffect(() => {
+    const eventDates = watchEventAreas.map((area) => area.Date);
+
+    if (eventDates.length > 0) {
+      const areaStartDate = new Date(
+        Math.min(...eventDates.map((date) => new Date(date).getTime()))
+      );
+      const areaEndDate = new Date(
+        Math.max(...eventDates.map((date) => new Date(date).getTime()))
+      );
+
+      setStartDate(areaStartDate);
+      setEndDate(areaEndDate);
+    }
+  }, [watchEventAreas]);
 
   console.log("form error", form.formState.errors);
 
@@ -444,22 +463,7 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="listClubName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Select Clubs</FormLabel>
-                            <FormControl>
-                              <ClubPicker
-                                value={field.value}
-                                onChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+
                       {/* Hiển thị ngày bắt đầu và kết thúc cho mỗi khu vực */}
                     </div>
 
@@ -603,6 +607,24 @@ export const CreateInterClubEvent: React.FC<EventDialogProps> = ({
                         )}
                       />
                     </div>
+                    <FormField
+                      control={form.control}
+                      name="listClubName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Select Clubs</FormLabel>
+                          <FormControl>
+                            <ClubPicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              startDate={startDate}
+                              endDate={endDate}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="eventAreas"
