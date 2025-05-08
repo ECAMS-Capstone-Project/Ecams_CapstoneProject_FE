@@ -240,7 +240,7 @@ const Pricing: React.FC = () => {
         )}
         <Box display="flex" justifyContent="center">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/representative")}
             variant="contained"
             color="primary"
             sx={{
