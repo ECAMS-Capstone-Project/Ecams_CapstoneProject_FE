@@ -35,7 +35,10 @@ const schema = z
     fullName: z.string().min(1, "First name is required"),
     studentId: z.string().min(1, "Student ID is required"),
     email: z.string().email("Invalid email address"),
-    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
+    phoneNumber: z
+      .string()
+      .length(10, "Phone number must be exactly 10 digits")
+      .regex(/^\d{10}$/, "Phone number must contain only digits"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(8, "Confirm Password is required"),
     universityId: z.string().min(1, "University is required"),
