@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { CheckIcon, ChevronDownIcon, X } from "lucide-react";
+import { useClubs } from "@/hooks/student/useClub";
 import { EventClubDTO } from "@/api/representative/EventAgent";
 import { Badge } from "@/components/ui/badge";
 import { cn, fixTime } from "@/lib/utils";
@@ -36,9 +37,11 @@ const ClubPicker: React.FC<ClubPickerProps> = ({
   endDate,
 }) => {
   const [open, setOpen] = useState(false);
+  const [pageNo] = useState(1);
+  const [pageSize] = useState(10);
 
   const { user } = useAuth();
-  // const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
+  const { clubs } = useClubs(user?.universityId, pageNo, pageSize);
   const validStartDate =
     startDate && !isNaN(startDate.getTime())
       ? fixTime(startDate).toISOString()
@@ -54,10 +57,21 @@ const ClubPicker: React.FC<ClubPickerProps> = ({
     validStartDate,
     validEndDate
   );
+  const currentClub = clubs?.find((club: EventClubDTO | ClubResponse) =>
+    club.clubMembers?.some(
+      (member) =>
+        member.userId === user?.userId && member.clubRoleName === "CLUB_OWNER"
+    )
+  );
 
-  const selectedClubs =
+  const clubsNotCurrentClub =
     isArray(availableClubs) &&
-    availableClubs.filter((club: EventClubDTO | ClubResponse) =>
+    availableClubs.filter(
+      (club: EventClubDTO | ClubResponse) => club.clubId !== currentClub?.clubId
+    );
+  const selectedClubs =
+    isArray(clubsNotCurrentClub) &&
+    clubsNotCurrentClub.filter((club: EventClubDTO | ClubResponse) =>
       value.includes(club.clubName.trim())
     );
 
@@ -122,8 +136,8 @@ const ClubPicker: React.FC<ClubPickerProps> = ({
           <CommandList>
             <CommandEmpty>No clubs found.</CommandEmpty>
             <CommandGroup>
-              {isArray(availableClubs) &&
-                availableClubs.map((club: EventClubDTO) => {
+              {isArray(clubsNotCurrentClub) &&
+                clubsNotCurrentClub.map((club: EventClubDTO) => {
                   const isSelected = value.includes(club.clubName.trim());
                   return (
                     <CommandItem
