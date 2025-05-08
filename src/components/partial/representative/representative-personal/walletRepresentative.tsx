@@ -238,8 +238,9 @@ const WalletRepresentative = () => {
             <Button
               className="block mt-4 hover:scale-105"
               sx={{
-                background: "linear-gradient(to right, #136CB5, #49BBBD)",
+                background: canExtendPackage() ? "linear-gradient(to right, #136CB5, #49BBBD)" : "#cccccc",
                 textTransform: "none",
+                cursor: canExtendPackage() ? "pointer" : "not-allowed",
               }}
               variant="contained"
               disabled={!canExtendPackage()}

@@ -48,7 +48,10 @@ const VisuallyHiddenInput = styled("input")({
 const schema = z.object({
   UniversityName: z.string().min(1, "University name is required"),
   ShortName: z.string().min(1, "Short name is required"),
-  ContactPhone: z.string().min(10, "Phone number must be at least 10 digits"),
+  ContactPhone: z
+    .string()
+    .length(10, "Phone number must be exactly 10 digits")
+    .regex(/^\d{10}$/, "Phone number must contain only digits"),
   ContactEmail: z.string().email("Invalid email address"),
   UniversityAddress: z.string().min(1, "Address is required"),
   WebsiteUrl: z.string().min(1, "Website url is required"),
@@ -261,8 +264,8 @@ const AdditionInfoUniversityForm: React.FC = () => {
                             "ShortName",
                             newValue
                               ? universityOptions.find(
-                                  (option) => option.label === newValue.label
-                                )?.code || ""
+                                (option) => option.label === newValue.label
+                              )?.code || ""
                               : ""
                           );
                         }
