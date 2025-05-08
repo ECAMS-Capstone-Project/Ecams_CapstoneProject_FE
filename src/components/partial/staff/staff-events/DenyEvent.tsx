@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const DenySchema = z.object({
-  eventId: z.string().uuid(), //
+  eventId: z.string(), //
   reason: z.string().min(1, { message: "Reason is Required" }),
 });
 
