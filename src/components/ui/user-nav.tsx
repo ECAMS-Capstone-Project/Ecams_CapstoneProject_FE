@@ -58,7 +58,7 @@ export function UserNav() {
                 <AvatarImage
                   src={
                     userInfo?.avatar ||
-                    "https://res.cloudinary.com/ecams/image/upload/v1746172907/default-avt_kzt4jp.png"
+                    "https://github.com/shadcn.png"
                   }
                   alt={userInfo?.fullname}
                 />
